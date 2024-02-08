@@ -10,7 +10,7 @@
 // ********* https://www.buymeacoffee.com/zpunet *********
 
 // ********* This is the main component of the website *********
-
+import 'tailwindcss/tailwind.css';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Aos from 'aos';
