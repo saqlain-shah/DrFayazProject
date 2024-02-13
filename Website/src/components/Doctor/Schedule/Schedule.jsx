@@ -167,7 +167,7 @@ const Schedule = () => {
         <>
             <DashboardLayout>
                 <div className="w-100 mb-3 rounded p-3" style={{ background: '#f8f9fa', height:'90vh' }}>
-                    <h5 className='text-title'>Schedule Timings</h5>
+                    <h5 className='text-title'>Schedule Timingsss</h5>
                     <TabForm content={content} data={data} handleOnSelect={handleOnSelect} showEditModal={showEditModal} showModal={showModal} />
                 </div>
             </DashboardLayout >

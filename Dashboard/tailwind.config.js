@@ -13,13 +13,15 @@ module.exports = {
       },
       colors: {
         main: '#183253',
-        subMain: '#66B5A3',
+        subMain: ' #1977CC',
         text: '#F2FAF8',
         border: '#E8EBEE',
         textGray: '#A0A0A0',
         dry: '#F8F9FA',
         greyed: '#F3F5F7',
+        fontWeight: 500
       },
+      
     },
   },
   plugins: [],

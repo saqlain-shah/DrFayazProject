@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import log from '../../images/doc/info.svg';
 import register from '../../images/doc/register.svg';
 import SignIn from './SignIn';
-import './SignInForm.css';
 import SignUp from './SignUp';
 
 const SignInForm = () => {
     const [isSignUp, setSignUp] = useState(false);
+
     return (
         <div className={`${isSignUp ? "signin-signup-container sign-up-mode" : "signin-signup-container"}`}>
             <Link to="/">
@@ -16,7 +16,7 @@ const SignInForm = () => {
             </Link>
             <div className="forms-container">
                 <div className="signIn-singUp">
-                    <SignIn />
+                    <SignIn setSignUp={setSignUp} /> {/* Pass setSignUp function as a prop */}
                     <SignUp setSignUp={setSignUp} />
                 </div>
             </div>

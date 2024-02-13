@@ -57,6 +57,11 @@ export const MenuDatas = [
     icon: TbFileInvoice,
   },
   {
+    title: "Schedule Timing",
+    path: "/schedule",
+    icon: TbFileInvoice,
+  },
+  {
     title: "Services",
     path: "/services",
     icon: MdOutlineInventory2,

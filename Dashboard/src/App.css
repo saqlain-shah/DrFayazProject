@@ -5,6 +5,8 @@
 
 body{
   font-family: 'Poppins', sans-serif;
+  color: #05335c;
+  background-color: #f8f9fa;
 }
 ::-webkit-scrollbar {
   /* display: none; */
@@ -130,6 +132,6 @@ color: #7e7e7e !important;
   font-weight: 600 !important;
 }
 .react-datepicker__day--in-range{
-  background-color: #66B5A3 !important;
+  background: #3291e6 !important;
   color: #fff !important;
 }

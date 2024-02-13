@@ -10,7 +10,7 @@ const Dashboard = () => {
     return (
         <>
             <DashboardLayout>
-                {role === 'doctor' && <DoctorDashCard /> }
+                {role === 'doctor' && <DoctorDashCard />}
 
                 <div className="row">
                     {role === 'patient' ?

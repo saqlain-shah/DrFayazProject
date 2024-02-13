@@ -1,7 +1,7 @@
 import React from 'react';
 import img from '../../../images/doc/doctor 3.jpg';
 import moment from 'moment';
-import { useGetPatientAppointmentsQuery, useGetPatientInvoicesQuery } from '../../../redux/api/appointmentApi';
+// import { useGetPatientNewointmentsQuery, useGetPatientInvoicesQuery } from '../../../redux/api/NewointmentApi';
 import { useGetPatientPrescriptionQuery } from '../../../redux/api/prescriptionApi';
 import { Button, Tabs, Tag } from 'antd';
 import CustomTable from '../../UI/component/CustomTable';
@@ -10,10 +10,10 @@ import dayjs from 'dayjs';
 import { FaRegEye } from "react-icons/fa";
 
 const PatientDashboard = () => {
-    const { data, isLoading: pIsLoading } = useGetPatientAppointmentsQuery();
+    const { data, isLoading: pIsLoading } = useGetPatientNewointmentsQuery();
     const { data: prescriptionData, prescriptionIsLoading } = useGetPatientPrescriptionQuery();
     const { data: invoices, isLoading: InvoicesIsLoading } = useGetPatientInvoicesQuery();
-    
+
     const InvoiceColumns = [
         {
             title: 'Doctor',
@@ -26,8 +26,8 @@ const PatientDashboard = () => {
                             <img className="avatar-img rounded-circle" src={img} alt="" />
                         </div>
                         <div>
-                            <h6 className='text-nowrap mb-0'>{data?.appointment?.doctor?.firstName + ' ' + data?.appointment?.doctor?.lastName}</h6>
-                            <p className='form-text'>{data?.appointment?.doctor?.designation}</p>
+                            <h6 className='text-nowrap mb-0'>{data?.Newointment?.doctor?.firstName + ' ' + data?.Newointment?.doctor?.lastName}</h6>
+                            <p className='form-text'>{data?.Newointment?.doctor?.designation}</p>
                         </div>
                     </div>
                 )
@@ -65,7 +65,7 @@ const PatientDashboard = () => {
             width: 100,
             render: function (data) {
                 return (
-                    <Link to={`/booking/invoice/${data?.appointment?.id}`}>
+                    <Link to={`/booking/invoice/${data?.Newointment?.id}`}>
                         <Button type='primary' size='medium'>View</Button>
 
                     </Link>
@@ -75,7 +75,7 @@ const PatientDashboard = () => {
     ];
     const prescriptionColumns = [
         {
-            title: 'App Doctor',
+            title: 'New Doctor',
             key: 11,
             width: 150,
             render: function (data) {
@@ -93,10 +93,10 @@ const PatientDashboard = () => {
             }
         },
         {
-            title: 'Appointment Id',
-            dataIndex: "appointment",
+            title: 'Newointment Id',
+            dataIndex: "Newointment",
             key: 1,
-            render: ({trackingId}) =>{
+            render: ({ trackingId }) => {
                 return (
                     <Tag color="#f50">{trackingId}</Tag>
                 )
@@ -104,11 +104,11 @@ const PatientDashboard = () => {
         },
 
         {
-            title: 'Appointment Date',
+            title: 'Newointment Date',
             key: 12,
             width: 100,
             render: function (data) {
-                return <div>{moment(data?.appointment?.scheduleDate).format("LL")} <span className="d-block text-info">{data?.appointment?.scheduleTime}</span></div>
+                return <div>{moment(data?.Newointment?.scheduleDate).format("LL")} <span className="d-block text-info">{data?.Newointment?.scheduleTime}</span></div>
             }
         },
         {
@@ -123,8 +123,8 @@ const PatientDashboard = () => {
             title: 'Archived',
             dataIndex: "isArchived",
             key: 4,
-            render: function ({isArchived}) {
-                return <Tag color={isArchived ? "#f50" : "#108ee9"}>{isArchived ? "Yes" :"Under Treatment"}</Tag>;
+            render: function ({ isArchived }) {
+                return <Tag color={isArchived ? "#f50" : "#108ee9"}>{isArchived ? "Yes" : "Under Treatment"}</Tag>;
             }
         },
         {
@@ -139,7 +139,7 @@ const PatientDashboard = () => {
                                 <FaRegEye />
                             </Button>
                         </Link>
-                        {/* <Link to={`/dashboard/appointment/treatment/edit/${data.id}`}>
+                        {/* <Link to={`/dashboard/Newointment/treatment/edit/${data.id}`}>
                             <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
                                 <FaEdit />
                             </Button>
@@ -152,7 +152,7 @@ const PatientDashboard = () => {
             }
         },
     ];
-    const appointmentColumns = [
+    const NewointmentColumns = [
         {
             title: 'Doctor',
             key: 20,
@@ -172,7 +172,7 @@ const PatientDashboard = () => {
             }
         },
         {
-            title: 'App Date',
+            title: 'New Date',
             key: 22,
             width: 100,
             render: function (data) {
@@ -214,10 +214,10 @@ const PatientDashboard = () => {
     const items = [
         {
             key: '1',
-            label: 'Appointment',
+            label: 'Newointment',
             children: <CustomTable
                 loading={pIsLoading}
-                columns={appointmentColumns}
+                columns={NewointmentColumns}
                 dataSource={data}
                 showPagination={true}
                 pageSize={10}

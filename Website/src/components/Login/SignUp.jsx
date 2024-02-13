@@ -1,68 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { FaCheck, FaEnvelope, FaLock, FaTimes, FaUser } from 'react-icons/fa';
 import SocialSignUp from './SocialSignUp';
-import Spinner from 'react-bootstrap/Spinner'
-import swal from 'sweetalert';
+import Spinner from 'react-bootstrap/Spinner';
 import { useDoctorSignUpMutation, usePatientSignUpMutation } from '../../redux/api/authApi';
-
-// password regex
-// ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$
-// At least one upper case English letter, (?=.*?[A-Z])
-// At least one lower case English letter, (?=.*?[a-z])
-// At least one digit, (?=.*?[0-9])
-// At least one special character, (?=.*?[#?!@$%^&*-])
-// Minimum eight in length .{8,} (with the anchors)
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './SignInForm.css'
 const SignUp = ({ setSignUp }) => {
-    const [error, setError] = useState({});
     const [infoError, setInfoError] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const formField = {
         firstName: '',
         lastName: '',
         email: '',
         password: '',
-    }
-    const [user, setUser] = useState(formField)
-    const [userType, setUserType] = useState('patient');
-    const [doctorSignUp, { data: dData, isSuccess: dIsSuccess, isError: dIsError, error: dError, isLoading: dIsLoading }] = useDoctorSignUpMutation();
-    const [patientSignUp, { data: pData, isSuccess: pIsSuccess, isError: pIsError, error: pError, isLoading: pIsLoading }] = usePatientSignUpMutation();
+    };
+    const [user, setUser] = useState(formField);
     const [passwordValidation, setPasswordValidation] = useState({
         carLength: false,
         specailChar: false,
         upperLowerCase: false,
         numeric: false
-    })
+    });
+    const [doctorSignUp, { isSuccess: dIsSuccess, isError: dIsError, error: dError, isLoading: dIsLoading }] = useDoctorSignUpMutation();
+    const [patientSignUp, { isSuccess: pIsSuccess, isError: pIsError, error: pError, isLoading: pIsLoading }] = usePatientSignUpMutation();
 
     const handleSignUpSuccess = () => {
-        setLoading(false);
-        setUser(formField)
-        setSignUp(false)
-        swal({
-            icon: 'success',
-            text: `Successfully ${userType === 'doctor' ? 'Doctor' : 'Patient'} Account Created Please Login`,
-            timer: 2000
-        })
-    }
+        console.log('Sign-up successful!');
+        navigate("/login"); // Navigate to login page after successful registration
+    };
+
     useEffect(() => {
-        // doctor account
         if (dIsError && dError) {
-            setLoading(false)
-            setInfoError(dError.data.message)
+            setLoading(false);
+            setInfoError(dError.data.message);
         }
         if (!dIsError && dIsSuccess) {
             handleSignUpSuccess();
         }
-        // Patient account
         if (pIsError && pError) {
-            setLoading(false)
-            setInfoError(pError.data.message)
+            setLoading(false);
+            setInfoError(pError.data.message);
         }
         if (!pIsError && pIsSuccess) {
             handleSignUpSuccess();
         }
-
-    }, [dIsError, dError, pError, pIsError, , pIsLoading, dIsLoading, pData, dData, setSignUp, setLoading, dIsSuccess])
+    }, [dIsError, dError, pError, pIsError, pIsLoading, dIsLoading, setSignUp, setLoading, dIsSuccess]);
 
     const [emailError, setEmailError] = useState({
         emailError: false
@@ -75,7 +59,8 @@ const SignUp = ({ setSignUp }) => {
             })
         }
     }
-    const hanldeValidation = (name, value) => {
+
+    const handleValidation = (name, value) => {
         if (name === 'password') {
             setPasswordValidation({
                 carLength: (value.length > 8),
@@ -86,73 +71,59 @@ const SignUp = ({ setSignUp }) => {
         }
     }
 
-    const hanldeOnChange = (e) => {
+    const handleChange = (e) => {
         let { name, value } = e.target;
-        hanldeValidation(name, value)
-        handleEmailError(name, value)
-        let isPassValid = true;
+        handleValidation(name, value);
+        handleEmailError(name, value);
 
-        if (value === 'email') {
-            isPassValid = /\S+@\S+\.\S+/.test(value);
-        }
-        if (value === 'password') {
-            isPassValid = ((value.length > 8)
-                && /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/.test(value)
-                && /^(?=.*[a-z])(?=.*[A-Z])/.test(value)
-                && /^(?=.*\d)/.test(value))
-        }
-        if (isPassValid) {
-            const newPass = { ...user };
-            newPass[name] = value
-            setUser(newPass)
-        }
+        // Update user state for all input fields
+        const newUser = { ...user, [name]: value };
+        setUser(newUser);
     }
 
-    const handleUserTypeChange = (e) => {
-        setUserType(e.target.value);
-    }
-    const hanldeOnSubmit = async (e) => {
+
+    const registerUser = async () => {
+        try {
+            const response = await axios.post('http://localhost:8800/api/auth/register', user);
+            if (response.data.success) {
+                console.log(response.data);
+                handleSignUpSuccess();
+                navigate("/login"); // Call handleSignUpSuccess on successful registration
+            } else {
+                setLoading(false);
+                setInfoError(response.data.message);
+            }
+        } catch (error) {
+            setLoading(false);
+            setInfoError('An error occurred while signing up.');
+            console.error('Error signing up:', error);
+        }
+    };
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if (userType === "doctor") {
-            doctorSignUp(user);
-        } else {
-            patientSignUp(user)
-        }
+        registerUser();
     }
 
     return (
-        <form className="sign-up-form" onSubmit={hanldeOnSubmit}>
+        <form className="sign-up-form" onSubmit={handleSubmit}>
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="Name" name="firstName" type="text" onChange={(e) => hanldeOnChange(e)} value={user.firstName} />
+                <input placeholder="Name" name="firstName" type="text" onChange={(e) => handleChange(e)} value={user.firstName} />
             </div>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="Name" name="lastName" type="text" onChange={(e) => hanldeOnChange(e)} value={user.lastName} />
+                <input placeholder="Name" name="lastName" type="text" onChange={(e) => handleChange(e)} value={user.lastName} />
             </div>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>
-                <input placeholder="Email" name="email" type="email" onChange={(e) => hanldeOnChange(e)} value={user.email} />
+                <input placeholder="Email" name="email" type="email" onChange={(e) => handleChange(e)} value={user.email} />
             </div>
             <div className="input-field">
                 <span className="fIcon"><FaLock /></span>
-                <input type="password" name="password" placeholder="password" onChange={(e) => hanldeOnChange(e)} value={user.password} />
+                <input type="password" name="password" placeholder="password" onChange={(e) => handleChange(e)} value={user.password} />
             </div>
-            <div className='input-field d-flex align-items-center gap-2 justify-content-center'>
-                <div className='text-nowrap'>I'M A</div>
-                <select
-                    className="form-select w-50"
-                    aria-label="select"
-                    onChange={(e) => handleUserTypeChange(e)}
-                    defaultValue='patient'
-                >
-                    <option value="patient">Patient</option>
-                    <option value="doctor">Doctor</option>
-                </select>
-            </div>
-            {error.length && <h6 className="text-danger text-center">{error}</h6>}
             {infoError && <h6 className="text-danger text-center">{infoError}</h6>}
             <button type="submit"
                 className="btn btn-primary btn-block mt-2 iBtn"
@@ -164,7 +135,6 @@ const SignUp = ({ setSignUp }) => {
             </button>
 
             <div className="password-validatity mx-auto">
-
                 <div style={emailError.emailError ? { color: "green" } : { color: "red" }}>
                     <p>{passwordValidation.numeric ? <FaCheck /> : <FaTimes />}
                         <span className="ms-2">Must Have Valid Email.</span></p>
@@ -172,29 +142,28 @@ const SignUp = ({ setSignUp }) => {
 
                 <div style={passwordValidation.carLength ? { color: "green" } : { color: "red" }}>
                     <p>{passwordValidation.numeric ? <FaCheck /> : <FaTimes />}
-                        <span className="ms-2">Password Must Have atlast 8 character.</span></p>
+                        <span className="ms-2">Password Must Have at least 8 characters.</span></p>
                 </div>
 
                 <div style={passwordValidation.specailChar ? { color: "green" } : { color: "red" }}>
                     <p>{passwordValidation.numeric ? <FaCheck /> : <FaTimes />}
-                        <span className="ms-2">Password Must Have a special cracter.</span></p>
+                        <span className="ms-2">Password Must Have a special character.</span></p>
                 </div>
 
                 <div style={passwordValidation.upperLowerCase ? { color: "green" } : { color: "red" }}>
                     <p>{passwordValidation.numeric ? <FaCheck /> : <FaTimes />}
-                        <span className="ms-2">Password Must Have uppercase and lower case.</span></p>
+                        <span className="ms-2">Password Must Have uppercase and lowercase letters.</span></p>
                 </div>
 
                 <div style={passwordValidation.numeric ? { color: "green" } : { color: "red" }}>
                     <p>{passwordValidation.numeric ? <FaCheck /> : <FaTimes />}
-                        <span className="ms-2">Password Must Have Number.</span></p>
+                        <span className="ms-2">Password Must Have a Number.</span></p>
                 </div>
             </div>
 
-            <p className="social-text">Or Sign up with social account</p>
+            <p className="social-text">Or Sign up with a social account</p>
             <SocialSignUp />
         </form>
-
     );
 };
 

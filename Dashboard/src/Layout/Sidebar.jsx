@@ -16,11 +16,15 @@ function Sidebar() {
   return (
     <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-screen w-full border-r border-border">
       <Link to="/">
-        <img
-          src="/images/logo.png"
-          alt="logo"
-          className="w-2/4 h-12 ml-4 object-contain"
-        />
+        {/* <img
+  src="/images/logo.png"
+  alt="logo"
+  className="w-48 h-12 ml-4 object-contain rounded-lg shadow-md"
+/> */}
+       <div className="text-2xl font-bold text-blue-900 bg-blue-200 rounded-lg shadow-md px-6 py-3">
+  DR Fayaz
+</div>
+
       </Link>
       <div className="flex-colo gap-2 mt-12">
         {MenuDatas.map((item, index) => (
@@ -29,18 +33,17 @@ function Sidebar() {
             key={index}
             className={`
             ${currentPath(item.path) === item.path ? 'bg-text' : ''}
-            flex gap-4 transitions group items-center w-full p-4 rounded-lg hover:bg-text`}
+            flex gap-4 transitions group items-center w-full p-4 rounded-lg hover:bg-gray-200`}
           >
             <item.icon
               className={`text-xl text-subMain
             `}
             />
             <p
-              className={`text-sm font-medium group-hover:text-subMain ${
-                currentPath(item.path) === item.path
+              className={`text-sm font-medium ${currentPath(item.path) === item.path
                   ? 'text-subMain'
                   : 'text-gray-500'
-              }`}
+                } group-hover:text-blue-800`}
             >
               {item.title}
             </p>

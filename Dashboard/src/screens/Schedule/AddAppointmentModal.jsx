@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Modal from './Modal'
+import Modal from '../../components/Modals/AddApointmentModal';
 import {
   Button,
   Checkbox,
@@ -8,12 +8,12 @@ import {
   Select,
   Textarea,
   TimePickerComp,
-} from '../Form';
+} from '../../components/Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import { memberData, servicesData, sortsDatas } from '../Datas';
+import { memberData, servicesData, sortsDatas } from '../../components/Datas';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
-import PatientMedicineServiceModal from './PatientMedicineServiceModal';
+import PatientMedicineServiceModal from '../../components/Modals/PatientMedicineServiceModal';
 
 // edit member data
 const doctorsData = memberData.map((item) => {

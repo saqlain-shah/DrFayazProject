@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { Toast } from 'react-bootstrap';
 import { useUserLoginMutation } from '../../redux/api/authApi';
 import { message } from 'antd';
-
+import './SignInForm.css'
+import axios from 'axios'
 const SignIn = ({ handleResponse }) => {
     const [infoError, setInfoError] = useState('');
     const [show, setShow] = useState(true);
@@ -17,16 +18,28 @@ const SignIn = ({ handleResponse }) => {
     setTimeout(() => {
         setShow(false);
     }, 10000)
-    const [userLogin, {isError, isLoading, isSuccess, error}] = useUserLoginMutation();
+    const [userLogin, { isError, isLoading, isSuccess, error }] = useUserLoginMutation();
 
     const onSubmit = async (event) => {
-        userLogin({...event})
+        try {
+            const response = await axios.post('http://localhost:8800/api/auth/login', event);
+            if (response.data.success) {
+                message.success('Successfully Logged in');
+                navigate("/");
+            } else {
+                setInfoError(response.data.message);
+            }
+        } catch (error) {
+            setInfoError('An error occurred while logging in');
+            console.error('Error signing in:', error);
+        }
     }
+
     useEffect(() => {
-        if(isError){
+        if (isError) {
             setInfoError(error?.data?.message)
         }
-        if(isSuccess){
+        if (isSuccess) {
             message.success('Successfully Logged in');
             navigate("/")
         }
@@ -65,7 +78,7 @@ const SignIn = ({ handleResponse }) => {
             <button className="iBtn" type="submit" value="sign In" >
                 {isLoading ? <Spinner animation="border" variant="info" /> : "Sign In"}
             </button>
-            <p className="social-text">Or Sign in with social platforms</p>
+            <p className="social-text">Or Sign in with social platformssss</p>
             <SocialSignUp handleResponse={handleResponse} />
         </form>
     );
