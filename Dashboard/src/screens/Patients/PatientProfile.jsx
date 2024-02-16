@@ -47,7 +47,7 @@ function PatientProfile() {
         >
           <IoArrowBackOutline />
         </Link>
-        <h1 className="text-xl font-semibold">Saqlain Shah</h1>
+        <h1 className="text-xl font-semibold">Sajad Hussain</h1>
       </div>
       <div className=" grid grid-cols-12 gap-6 my-8 items-start">
         <div
@@ -74,11 +74,10 @@ function PatientProfile() {
                 onClick={() => setActiveTab(tab.id)}
                 key={index}
                 className={`
-                ${
-                  activeTab === tab.id
+                ${activeTab === tab.id
                     ? "bg-text text-subMain"
                     : "bg-dry text-main hover:bg-text hover:text-subMain"
-                }
+                  }
                 text-xs gap-4 flex items-center w-full p-4 rounded`}
               >
                 <tab.icon className="text-lg" /> {tab.title}

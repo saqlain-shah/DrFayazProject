@@ -23,9 +23,9 @@ const Home = () => {
             <BookDoctor />
             {/* <Blog /> */}
             <Availabe />
-            <OurDoctors/>
+            <OurDoctors />
             {/* <Testimonial /> */}
-            <Gallery/>
+            <Gallery />
             <Footer />
         </>
     );

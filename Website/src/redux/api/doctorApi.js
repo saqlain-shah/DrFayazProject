@@ -11,7 +11,7 @@ export const doctorApi = baseApi.injectEndpoints({
                 method: 'GET',
                 params: arg
             }),
-            transformResponse: (response) =>{
+            transformResponse: (response) => {
                 return {
                     doctors: response.data,
                     meta: response.meta

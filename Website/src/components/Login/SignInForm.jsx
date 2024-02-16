@@ -11,7 +11,7 @@ const SignInForm = () => {
 
     return (
         <div className={`${isSignUp ? "signin-signup-container sign-up-mode" : "signin-signup-container"}`}>
-            <Link to="/">
+            <Link>
                 <span className="pageCloseBtn"><FaTimes /></span>
             </Link>
             <div className="forms-container">

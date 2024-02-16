@@ -99,21 +99,19 @@
 // export default App;
 
 
-import { createContext } from 'react';
-import './App.css';
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from './components/Home/Home/Home';
 import SignInForm from './components/Login/SignInForm';
-import Appointments from './components/Doctor/Appointments/Appointments';
-import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
-import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
-import SearchDoctor from './components/Doctor/SearchDoctor/SearchDoctor';
-import Dashboard from './components/Doctor/Dashboard/dashboard';
+import Contact from './components/Contact/Contact';
 import AppointmentPage from './components/Appointment/AppointmentPage';
 import TrackAppointment from './components/TrackAppointment/TrackAppointment';
+import SearchDoctor from './components/Doctor/SearchDoctor/SearchDoctor';
+import Dashboard from './components/Doctor/Dashboard/dashboard';
 import Prescription from './components/Doctor/Prescription/Prescription';
 import PrescriptionView from './components/Doctor/Prescription/PrescriptionView';
-import Contact from './components/Contact/Contact';
+import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
+import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
@@ -131,9 +129,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div>
-      <RouterProvider router={router} />
-    </div>
+    <RouterProvider router={router} />
   );
 }
+
 export default App;
+

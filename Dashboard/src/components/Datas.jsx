@@ -77,6 +77,21 @@ export const MenuDatas = [
     path: "/settings",
     icon: AiOutlineSetting,
   },
+  {
+    title: "Medicine",
+    path: "/medicine",
+    icon: RiMedicineBottleLine,
+  },
+  {
+    title: "Receptions",
+    path: "/receptions",
+    icon: HiOutlineUsers,
+  },
+  {
+    title: "Doctors",
+    path: "/doctors",
+    icon: RiUserHeartLine,
+  },
 ];
 
 /*

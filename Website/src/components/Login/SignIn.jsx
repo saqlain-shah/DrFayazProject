@@ -79,7 +79,8 @@ const SignIn = ({ handleResponse }) => {
                 {isLoading ? <Spinner animation="border" variant="info" /> : "Sign In"}
             </button>
             <p className="social-text">Or Sign in with social platformssss</p>
-            <SocialSignUp handleResponse={handleResponse} />
+            <SocialSignUp onSignUpSuccess={handleResponse} />
+
         </form>
     );
 };
