@@ -85,8 +85,8 @@ function Patients() {
                 {box.title === 'Today Patients'
                   ? 'today'
                   : box.title === 'Monthly Patients'
-                  ? 'this month'
-                  : 'this year'}
+                    ? 'this month'
+                    : 'this year'}
               </p>
             </div>
             <div

@@ -69,7 +69,7 @@ function App() {
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/preview/:id" element={<DoctorProfile />} />
           {/* {Schedule} */}
-          <Route path='/schedule' element={<Schedule/>} />
+          <Route path='/schedule' element={<Schedule />} />
           {/* reception */}
           <Route path="/receptions" element={<Receptions />} />
           {/* others */}

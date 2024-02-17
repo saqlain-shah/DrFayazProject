@@ -17,7 +17,8 @@ const patientSchema = new mongoose.Schema({
         city: { type: String },
         state: { type: String },
         postalCode: { type: String }
-    }
+    },
+    healthInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'HealthInfo' }
     // Add more fields as needed
 });
 
