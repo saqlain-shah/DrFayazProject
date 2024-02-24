@@ -4,10 +4,14 @@ const appointmentSchema = new mongoose.Schema({
     patientName: { type: String, required: true },
     purposeOfVisit: { type: String, required: true },
     dateOfVisit: { type: Date, required: true },
-    startTime: { type: String, required: true },
+    startTime: { type: Date, required: true },
     endTime: { type: String, required: true },
     doctor: { type: String },
-    status: { type: String, enum: ['Scheduled', 'Completed', 'Cancelled'], default: 'Scheduled' },
+    status: {
+        type: String,
+        enum: ['Pending', 'Confirmed', 'Cancelled', 'Approved'], // Add 'Pending' to the enum values
+        required: true
+    },
     description: { type: String },
     share: {
         sms: { type: Boolean, default: false },

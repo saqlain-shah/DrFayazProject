@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import {
   Button,
@@ -19,10 +19,9 @@ import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
 
 function CreateInvoice() {
-  const [dateRange, setDateRange] = useState([
-    new Date(),
-    new Date(new Date().setDate(new Date().getDate() + 7)),
-  ]);
+  const [dateRange, setDateRange] = useState([new Date(), new Date(new Date().setDate(new Date().getDate() + 7))]);
+  const [invoices, setInvoices] = useState([]);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [startDate, endDate] = dateRange;
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
@@ -31,6 +30,23 @@ function CreateInvoice() {
   // date picker
   const onChangeDates = (update) => {
     setDateRange(update);
+  };
+  useEffect(() => {
+    fetchInvoices();
+  }, []);
+
+  const fetchInvoices = async () => {
+    try {
+      const response = await fetch('http://localhost:8800/api/invoices/invoices');
+      if (!response.ok) {
+        throw new Error('Failed to fetch invoices');
+      }
+      const data = await response.json();
+      setInvoices(data);
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
   };
 
   return (
@@ -97,16 +113,10 @@ function CreateInvoice() {
         <div className="grid grid-cols-6 gap-6 mt-8">
           <div className="col-span-6 lg:col-span-4 p-6 border border-border rounded-xl overflow-hidden">
             <InvoiceProductsTable
-              data={invoicesData[1].items}
-              functions={{
-                deleteItem: (id) => {
-                  toast.error('This feature is not available yet');
-                },
-              }}
+              data={selectedInvoice ? selectedInvoice.items : []}
               button={true}
             />
 
-            {/* add */}
             <button
               onClick={() => setItemOpen(!itemOpen)}
               className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm mt-4"

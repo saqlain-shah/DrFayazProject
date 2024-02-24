@@ -1,99 +1,69 @@
-import Invoice from '../../models/Invoice/invoiceModel.js';
+// invoiceController.js
 
-export const createInvoice = async (req, res, next) => {
+import Invoice from "../../models/Invoice/invoiceModel.js";
+
+export const createInvoice = async (req, res) => {
     try {
-        // Extract data from the request body
-        const { from, to, items, dates, currency, discount, tax } = req.body;
-
-        // Create a new invoice instance
-        const newInvoice = new Invoice({ from, to, items, dates, currency, discount, tax });
-
-        // Save the new invoice to the database
+        // Create the invoice
+        const newInvoice = new Invoice(req.body.invoiceData);
         const savedInvoice = await newInvoice.save();
 
-        // Send a success response
-        res.status(201).json({ message: 'Invoice created successfully', invoice: savedInvoice });
-    } catch (err) {
-        // Handle errors
-        next(err);
+        // Create items associated with the invoice
+        const itemsData = req.body.itemsData; // Assuming itemsData contains an array of item details
+        const savedItems = await Item.insertMany(itemsData.map(item => ({ ...item, invoice: savedInvoice._id })));
+
+        // Return the saved invoice and items data
+        res.status(201).json({ invoice: savedInvoice, items: savedItems });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 
-export const getAllInvoices = async (req, res, next) => {
+// Controller to get all invoices
+export const getAllInvoices = async (req, res) => {
     try {
-        // Retrieve all invoices from the database
         const invoices = await Invoice.find();
-
-        // Send a success response with the list of invoices
-        res.status(200).json(invoices);
-    } catch (err) {
-        // Handle errors
-        next(err);
+        res.json(invoices);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
-export const getInvoiceById = async (req, res, next) => {
+// Controller to get a single invoice by ID
+export const getInvoiceById = async (req, res) => {
     try {
-        // Extract invoice ID from request parameters
-        const { id } = req.params;
-
-        // Find the invoice by ID in the database
-        const invoice = await Invoice.findById(id);
-
-        // If invoice not found, send a 404 response
-        if (!invoice) {
+        const invoice = await Invoice.findById(req.params.id);
+        if (invoice === null) {
             return res.status(404).json({ message: 'Invoice not found' });
         }
-
-        // Send a success response with the invoice details
-        res.status(200).json(invoice);
-    } catch (err) {
-        // Handle errors
-        next(err);
+        res.json(invoice);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
-export const updateInvoice = async (req, res, next) => {
+// Controller to update an invoice by ID
+export const updateInvoice = async (req, res) => {
     try {
-        // Extract invoice ID from request parameters
-        const { id } = req.params;
-
-        // Extract updated fields from request body
-        const updatedFields = req.body;
-
-        // Find the invoice by ID and update it with the new data
-        const updatedInvoice = await Invoice.findByIdAndUpdate(id, updatedFields, { new: true });
-
-        // If invoice not found, send a 404 response
-        if (!updatedInvoice) {
+        const updatedInvoice = await Invoice.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (updatedInvoice === null) {
             return res.status(404).json({ message: 'Invoice not found' });
         }
-
-        // Send a success response with the updated invoice details
-        res.status(200).json({ message: 'Invoice updated successfully', invoice: updatedInvoice });
-    } catch (err) {
-        // Handle errors
-        next(err);
+        res.json(updatedInvoice);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 
-export const deleteInvoice = async (req, res, next) => {
+// Controller to delete an invoice by ID
+export const deleteInvoice = async (req, res) => {
     try {
-        // Extract invoice ID from request parameters
-        const { id } = req.params;
-
-        // Find the invoice by ID and delete it
-        const deletedInvoice = await Invoice.findByIdAndDelete(id);
-
-        // If invoice not found, send a 404 response
-        if (!deletedInvoice) {
+        const deletedInvoice = await Invoice.findByIdAndDelete(req.params.id);
+        if (deletedInvoice === null) {
             return res.status(404).json({ message: 'Invoice not found' });
         }
-
-        // Send a success response
-        res.status(200).json({ message: 'Invoice deleted successfully' });
-    } catch (err) {
-        // Handle errors
-        next(err);
+        res.json({ message: 'Invoice deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

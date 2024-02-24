@@ -1,24 +1,81 @@
-import React from 'react';
-import Uploder from '../Uploader';
+// PersonalInfo.jsx
+import React, { useState } from 'react';
+
 import { sortsDatas } from '../Datas';
-import { Button, DatePickerComp, Input, Select } from '../Form';
+import { Button, DatePickerComp, Select, Input } from '../Form';
 import { BiChevronDown } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { RiDeleteBin5Line } from 'react-icons/ri';
+import axios from 'axios';
 
 function PersonalInfo({ titles }) {
-  const [title, setTitle] = React.useState(sortsDatas.title[0]);
-  const [date, setDate] = React.useState(new Date());
-  const [gender, setGender] = React.useState(sortsDatas.genderFilter[0]);
+  const [profilePicture, setImageUrl] = useState('');
+  const [title, setTitle] = useState(sortsDatas.title[0]);
+  const [date, setDate] = useState(new Date());
+  const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState('');
+  const [address, setAddress] = useState('');
+
+  const saveChanges = async () => {
+    try {
+      const data = new FormData();
+      data.append('profilePicture', profilePicture); // Append the selected file
+      data.append('firstName', firstName);
+      data.append('email', email);
+      data.append('phone', phone);
+      data.append('gender', gender.name);
+      data.append('dateOfBirth', date.toISOString());
+      data.append('emergencyContact', emergencyContact);
+      data.append('address', address);
+      data.append('bloodGroup', bloodGroup);
+
+      console.log('Data to be sent:', data); // Log the FormData object
+
+      await axios.post('http://localhost:8800/api/patients', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set content type for FormData
+        },
+      });
+
+      toast.success('Patient created successfully');
+
+      // Reset form fields after successful save
+      setImageUrl('');
+      setTitle(sortsDatas.title[0]);
+      setDate(new Date());
+      setGender(sortsDatas.genderFilter[0]);
+      setBloodGroup('');
+      setFirstName('');
+      setPhone('');
+      setEmail('');
+      setEmergencyContact('');
+      setAddress('');
+    } catch (error) {
+      console.error('Error creating patient:', error);
+      toast.error('Failed to create patient');
+    }
+  };
+
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImageUrl(file); // Set the file object directly
+    }
+  };
+
   return (
-    <div className="flex-colo gap-4">
-      {/* uploader */}
+    <div className="flex-col gap-4">
       <div className="flex gap-3 flex-col w-full col-span-6">
         <p className="text-sm">Profile Image</p>
-        <Uploder />
+        <input type="file" accept="image/*" onChange={handleImageUpload} />
       </div>
-      {/* select  */}
+
       {titles && (
         <div className="flex w-full flex-col gap-3">
           <p className="text-black text-sm">Title</p>
@@ -34,15 +91,56 @@ function PersonalInfo({ titles }) {
         </div>
       )}
 
-      {/* fullName */}
-      <Input label="Full Name" color={true} type="text" />
-      {/* phone */}
-      <Input label="Phone Number" color={true} type="number" />
-      {/* email */}
-      <Input label="Email" color={true} type="email" />
+      <Input
+        label="Full Name"
+        color={true}
+        type="text"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+      />
+
+
+      <Input
+        label="Phone Number"
+        color={true}
+        type="number"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+
+      <Input
+        label="Email"
+        color={true}
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <Input
+        label="Emergency Contact"
+        color={true}
+        type="text"
+        value={emergencyContact}
+        onChange={(e) => setEmergencyContact(e.target.value)}
+      />
+      <Input
+        label="Blood Group"
+        color={true}
+        type="text"
+        value={bloodGroup}
+        onChange={(e) => setBloodGroup(e.target.value)}
+        placeholder="Enter your blood group"
+      />
+      <Input
+        label="Address"
+        color={true}
+        type="text"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+      />
+
       {!titles && (
         <>
-          {/* gender */}
           <div className="flex w-full flex-col gap-3">
             <p className="text-black text-sm">Gender</p>
             <Select
@@ -55,19 +153,15 @@ function PersonalInfo({ titles }) {
               </div>
             </Select>
           </div>
-          {/* emergancy contact */}
-          <Input label="Emergency Cotact" color={true} type="number" />
-          {/* date */}
+
           <DatePickerComp
             label="Date of Birth"
             startDate={date}
             onChange={(date) => setDate(date)}
           />
-          {/* address */}
-          <Input label="Address" color={true} type="text" />
         </>
       )}
-      {/* submit */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
         <Button
           label={'Delete Account'}
@@ -79,9 +173,7 @@ function PersonalInfo({ titles }) {
         <Button
           label={'Save Changes'}
           Icon={HiOutlineCheckCircle}
-          onClick={() => {
-            toast.error('This feature is not available yet');
-          }}
+          onClick={saveChanges}
         />
       </div>
     </div>

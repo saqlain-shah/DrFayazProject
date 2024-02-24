@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { FiEdit, FiEye } from 'react-icons/fi';
 import { RiDeleteBin6Line, RiDeleteBinLine } from 'react-icons/ri';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
 const thclass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
 const tdclass = 'text-start text-sm py-4 px-2 whitespace-nowrap';
 
@@ -319,97 +318,76 @@ export function ServiceTable({ data, onEdit }) {
 
 // patient table
 export function PatientTable({ data, functions, used }) {
-  const DropDown1 = !used
-    ? [
-      {
-        title: 'View',
-        icon: FiEye,
-        onClick: (data) => {
-          functions.preview(data.id);
-        },
+  const navigate = useNavigate();
+  const DropDown1 = [
+    {
+      title: 'View',
+      icon: FiEye,
+      onClick: (item) => {
+        navigate(`/patients/preview/${item._id}`);
+
       },
-      {
-        title: 'Delete',
-        icon: RiDeleteBin6Line,
-        onClick: () => {
-          toast.error('This feature is not available yet');
-        },
+    },
+    {
+      title: 'Delete',
+      icon: RiDeleteBin6Line,
+      onClick: (data) => {
+        console.log('Patient data:', data); // Log the data object
+        functions.delete(data._id); // Access _id instead of id
       },
-    ]
-    : [
-      {
-        title: 'View',
-        icon: FiEye,
-        onClick: (data) => {
-          functions.preview(data.id);
-        },
-      },
-    ];
-  const thclasse = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
-  const tdclasse = 'text-start text-xs py-4 px-2 whitespace-nowrap';
+    },
+  ];
+
+  const thClass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
+  const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
+
   return (
     <table className="table-auto w-full">
+      {/* Table headers */}
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclasse}>#</th>
-          <th className={thclasse}>Patient</th>
-          <th className={thclasse}>Created At</th>
-          <th className={thclasse}>Gender</th>
-          {!used && (
-            <>
-              <th className={thclasse}>Blood Group</th>
-              <th className={thclasse}>Age</th>
-            </>
-          )}
-
-          <th className={thclasse}>Actions</th>
+          <th className={thClass}>#</th>
+          <th className={thClass}>Image</th>
+          <th className={thClass}>Full Name</th>
+          <th className={thClass}>Gender</th>
+          <th className={thClass}>Blood Group</th>
+          <th className={thClass}>Address</th>
+          <th className={thClass}>Email</th>
+          <th className={thClass}>Emergency Contact</th>
+          <th className={thClass}>Created At</th>
+          <th className={thClass}>Actions</th>
         </tr>
       </thead>
+      {/* Table body */}
       <tbody>
         {data.map((item, index) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
-            <td className={tdclasse}>{index + 1}</td>
-            <td className={tdclasse}>
-              <div className="flex gap-4 items-center">
-                {!used && (
-                  <span className="w-12">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-12 rounded-full object-cover border border-border"
-                    />
-                  </span>
+          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+            {/* Table cells */}
+            <td className={tdClass}>{index + 1}</td>
+            <td className={tdClass}>
+              <td className={tdClass}>
+                {item.profilePicture && (
+                  <img src={`http://localhost:8800/${item.profilePicture}`} alt={item.fullName} className="w-full h-12 rounded-full object-cover border border-border" />
                 )}
 
-                <div>
-                  <h4 className="text-sm font-medium">{item.title}</h4>
-                  <p className="text-xs mt-1 text-textGray">{item.phone}</p>
-                </div>
-              </div>
+              </td>
             </td>
-            <td className={tdclasse}>{item.date}</td>
-
-            <td className={tdclasse}>
+            {/* Add more cells for other data */}
+            <td className={tdClass}>{item.fullName}</td>
+            <td className={tdClass}>
               <span
-                className={`py-1 px-4 ${item.gender === 'Male'
-                  ? 'bg-subMain text-subMain'
-                  : 'bg-orange-500 text-orange-500'
+                className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
                   } bg-opacity-10 text-xs rounded-xl`}
               >
                 {item.gender}
               </span>
             </td>
-            {!used && (
-              <>
-                <td className={tdclasse}>{item.blood}</td>
-                <td className={tdclasse}>{item.age}</td>
-              </>
-            )}
-
-            <td className={tdclasse}>
+            <td className={tdClass}>{item.bloodGroup}</td>
+            <td className={tdClass}>{item.address}</td>
+            <td className={tdClass}>{item.email}</td>
+            <td className={tdClass}>{item.emergencyContact}</td>
+            <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
+            <td className={tdClass}>
               <MenuSelect datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
@@ -494,52 +472,64 @@ export function DoctorsTable({ data, functions, doctor }) {
   );
 }
 
-// appointment table
-export function AppointmentTable({ data, functions, doctor }) {
+export function AppointmentTable({ functions }) {
+  const [appointments, setAppointments] = useState([]); // State to hold appointments data
+  const [newAppointment, setNewAppointment] = useState(null); // State to hold new appointment data
+
+  useEffect(() => {
+    // Fetch appointments data and set state
+    // Replace this with your actual data fetching logic
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:8800/api/appointments');
+        const data = await response.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+
+    fetchData();
+  }, []); // Run only once on component mount
+
   return (
     <table className="table-auto w-full">
+      {/* Table headers */}
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclass}>Date</th>
-          <th className={thclass}>{doctor ? 'Patient' : 'Doctor'}</th>
+          <th className={thclass}>Date of Visit</th>
+          <th className={thclass}>Doctor</th>
+          <th className={thclass}>Start Time</th>
+          <th className={thclass}>End Time</th>
+          <th className={thclass}>Patient Name</th>
+          <th className={thclass}>Purpose of Visit</th>
           <th className={thclass}>Status</th>
-          <th className={thclass}>Time</th>
-          <th className={thclass}>Action</th>
+          <th className={thclass}>Share</th>
+          <th className={thclass}>Actions</th>
         </tr>
       </thead>
+      {/* Table body */}
       <tbody>
-        {data.map((item) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
+        {appointments.map((item) => (
+          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+            <td className={tdclass}>{new Date(item.dateOfVisit).toLocaleDateString()}</td>
+            <td className={tdclass}>{item.doctor}</td>
+            <td className={tdclass}>{new Date(item.startTime).toLocaleTimeString()}</td>
+            <td className={tdclass}>{new Date(item.endTime).toLocaleTimeString()}</td>
+            <td className={tdclass}>{item.patientName}</td>
+            <td className={tdclass}>{item.purposeOfVisit}</td>
             <td className={tdclass}>
-              <p className="text-xs">{item.date}</p>
-            </td>
-            <td className={tdclass}>
-              <h4 className="text-xs font-medium">
-                {doctor ? item.user.title : item.doctor.title}
-              </h4>
-              <p className="text-xs mt-1 text-textGray">
-                {doctor ? item.user.phone : item.doctor.phone}
-              </p>
-            </td>
-            <td className={tdclass}>
-              <span
-                className={`py-1  px-4 ${item.status === 'Approved'
-                  ? 'bg-subMain text-subMain'
-                  : item.status === 'Pending'
-                    ? 'bg-orange-500 text-orange-500'
-                    : item.status === 'Cancel' && 'bg-red-600 text-red-600'
-                  } bg-opacity-10 text-xs rounded-xl`}
-              >
+              <span className={`py-1 px-4 ${getStatusClass(item.status)} bg-opacity-10 text-xs rounded-xl`}>
                 {item.status}
               </span>
             </td>
             <td className={tdclass}>
-              <p className="text-xs">{`${item.from} - ${item.to}`}</p>
+              <div>
+                SMS: {item.share.sms ? 'Yes' : 'No'} <br />
+                Email: {item.share.email ? 'Yes' : 'No'} <br />
+                WhatsApp: {item.share.whatsapp ? 'Yes' : 'No'}
+              </div>
             </td>
-
             <td className={tdclass}>
               <button
                 onClick={() => functions.preview(item)}
@@ -550,10 +540,33 @@ export function AppointmentTable({ data, functions, doctor }) {
             </td>
           </tr>
         ))}
+        {/* Render the new appointment if it exists */}
+        {newAppointment && (
+          <tr key={newAppointment.id} className="border-b border-border hover:bg-greyed transitions">
+            {/* Table cells for new appointment */}
+            {/* Similar structure to existing appointments */}
+          </tr>
+        )}
       </tbody>
     </table>
   );
 }
+
+// Function to determine status class
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'Approved':
+      return 'bg-subMain text-subMain';
+    case 'Pending':
+      return 'bg-orange-500 text-orange-500';
+    case 'Cancel':
+      return 'bg-red-600 text-red-600';
+    default:
+      return '';
+  }
+};
+
+
 
 // payment table
 export function PaymentTable({ data, functions, doctor }) {
@@ -679,7 +692,7 @@ export function InvoiceProductsTable({ data, functions, button }) {
             Item Price
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
-          <th className={thclass}>Quantity</th>
+          <th className={thclass}>Quantityy</th>
           <th className={thclass}>
             Amout
             <span className="text-xs font-light ml-1">(Tsh)</span>

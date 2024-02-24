@@ -1,30 +1,95 @@
-import Patient from '../../models/Payment/paymentModel.js';
-export const createPatient = async (req, res, next) => {
+import Patient from '../../models/PatientModel/patient.js';
+import mongoose from 'mongoose';
+
+
+export const createPatient = async (req, res) => {
     try {
-        const { firstName, lastName, age, email, gender, phone } = req.body;
-        const { path } = req.file;
-        const newPatient = new Patient({ firstName, lastName, age, email, gender, phone, profileImage: path });
-        const savedPatient = await newPatient.save();
-        res.status(201).json({ message: 'Patient created successfully', patient: savedPatient });
-    } catch (err) {
-        next(err);
+        // Extracting necessary fields from the request body
+        const { firstName, email, phone, gender, dateOfBirth, emergencyContact, address, bloodGroup } = req.body;
+
+        // Check if all required fields are present
+        if (!firstName || !email || !phone || !gender || !dateOfBirth || !emergencyContact || !address || !bloodGroup) {
+            return res.status(400).json({ message: "Please provide all necessary fields" });
+        }
+
+        // Get profile picture from the request file (assuming multer is used for file upload)
+        const profilePicture = req.file;
+
+        // Create the patient object
+        const patient = new Patient({
+            fullName: firstName,
+            email,
+            phone,
+            gender,
+            dateOfBirth,
+            emergencyContact,
+            address,
+            bloodGroup,
+            profilePicture: profilePicture ? profilePicture.path : null // Assign profile picture path if available
+        });
+
+        // Save the patient to the database
+        await patient.save();
+
+        // Respond with the created patient object
+        res.status(201).json(patient);
+    } catch (error) {
+        // If an error occurs, return an error response
+        res.status(400).json({ message: error.message });
     }
 };
 
+// Existing imports and code...
 
 export const getAllPatients = async (req, res, next) => {
     try {
-        const patients = await Patient.find();
+        const { search, gender, sortBy } = req.query;
+        let patients = [];
+        let query = {};
+
+        if (search) {
+            query.fullName = { $regex: search, $options: 'i' };
+        }
+
+        if (gender && gender !== 'All') { // Only filter if gender is selected and not 'All'
+            const genderMap = {
+                male: 'Male',
+                female: 'Female',
+            };
+            query.gender = genderMap[gender];
+        }
+
+        let sortOption = {};
+        if (sortBy === 'new') {
+            sortOption = { createdAt: -1 };
+        } else if (sortBy === 'old') {
+            sortOption = { createdAt: 1 };
+        }
+
+        patients = await Patient.find(query).sort(sortOption);
         res.status(200).json(patients);
     } catch (err) {
         next(err);
     }
 };
 
+// Other controllers...
+
+
+
+
+// Controller to get a patient by ID
 export const getPatientById = async (req, res, next) => {
     try {
         const { id } = req.params;
+
+        // Check if the ID is valid ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid patient ID' });
+        }
+
         const patient = await Patient.findById(id);
+
         if (!patient) {
             return res.status(404).json({ message: 'Patient not found' });
         }
@@ -34,6 +99,8 @@ export const getPatientById = async (req, res, next) => {
     }
 };
 
+
+// Controller to update a patient by ID
 export const updatePatient = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -48,9 +115,16 @@ export const updatePatient = async (req, res, next) => {
     }
 };
 
+// Controller to delete a patient by ID
 export const deletePatient = async (req, res, next) => {
     try {
         const { id } = req.params;
+
+        // Check if the ID is valid ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid patient ID' });
+        }
+
         const deletedPatient = await Patient.findByIdAndDelete(id);
         if (!deletedPatient) {
             return res.status(404).json({ message: 'Patient not found' });
@@ -60,3 +134,6 @@ export const deletePatient = async (req, res, next) => {
         next(err);
     }
 };
+
+
+export default Patient;

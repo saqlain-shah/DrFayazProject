@@ -1,28 +1,31 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const medicalRecordSchema = new mongoose.Schema({
-    recordDate: { type: Date, required: true },
-    patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient', required: true },
-    data: [
-        {
-            title: { type: String, required: true },
-            value: { type: String, required: true }
-        }
-    ],
-    vitalSigns: [{
-        temperature: { type: Number },
-        bloodPressure: { type: String },
-        heartRate: { type: Number }
-    }],
-    // This should be an array of objects, not strings
-    prescriptions: [
-        {
-            medicineId: { type: mongoose.Schema.Types.ObjectId, ref: 'Medicine', required: true },
+    complaints: {
+        type: [String],
+        required: true
+    },
+    diagnosis: {
+        type: String,
+        required: true
+    },
+    treatment: {
+        type: [String], // Changed to an array of strings
+        required: true
+    },
+    vitalSigns: {
+        type: [String] // You can define a separate schema for vital signs if necessary
+    },
+    prescription: {
+        medicines: [{
+            name: { type: String, required: true },
+            quantity: { type: Number, required: true },
             dosage: { type: String, required: true }
+        }],
+        instructions: {
+            type: String
         }
-    ],
-    attachments: [{ type: String }],
-    invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice' }
+    }
 });
 
 const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);

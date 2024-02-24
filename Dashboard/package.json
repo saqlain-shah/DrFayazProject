@@ -5,6 +5,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.13",
     "@hookform/resolvers": "^3.0.1",
+    "@mui/material": "^5.15.10",
     "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -19,8 +20,10 @@
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-big-calendar": "^1.6.9",
+    "react-bootstrap": "^2.10.1",
     "react-copy-to-clipboard": "^5.1.0",
     "react-datepicker": "^4.25.0",
+    "react-datetime": "^3.2.0",
     "react-datetime-picker": "^5.6.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
@@ -60,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@vitejs/plugin-react": "^4.2.1",
     "tailwindcss": "^3.4.1",
     "vite": "^5.1.0"

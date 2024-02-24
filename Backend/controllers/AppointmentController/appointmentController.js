@@ -1,18 +1,39 @@
 import Appointment from '../../models/Appointment/appoinmentModel.js'
 
-// Controller to create a new appointment
 export const createAppointment = async (req, res, next) => {
     try {
-        const { patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, sharePatient } = req.body;
-        // Construct the appointment object
-        const newAppointment = new Appointment({ patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, sharePatient });
-        // Save the appointment
+        // Assuming `req.body` contains the appointment data sent from the client
+        const { patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
+
+        // Validate required fields
+        if (!patientName || !purposeOfVisit || !dateOfVisit || !startTime || !endTime) {
+            return res.status(400).json({ error: 'Patient name, purpose of visit, date of visit, start time, and end time are required.' });
+        }
+
+        // Create a new appointment instance
+        const newAppointment = new Appointment({
+            patientName,
+            purposeOfVisit,
+            dateOfVisit,
+            startTime,
+            endTime,
+            doctor,
+            status,
+            description,
+            share
+        });
+
+        // Save the appointment to the database
         const savedAppointment = await newAppointment.save();
+
+        // Respond with the saved appointment
         res.status(201).json({ message: 'Appointment created successfully', appointment: savedAppointment });
     } catch (error) {
+        // Handle errors
         next(error);
     }
 };
+;
 
 // Controller to get all appointments
 export const getAllAppointments = async (req, res, next) => {

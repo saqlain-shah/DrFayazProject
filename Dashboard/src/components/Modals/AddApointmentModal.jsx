@@ -1,21 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import Modal from './Modal'
-import {
-  Button,
-  Checkbox,
-  DatePickerComp,
-  Input,
-  Select,
-  Textarea,
-  TimePickerComp,
-} from '../Form';
+import React, { useState } from 'react';
+import axios from 'axios';
+import Modal from './Modal';
+import { servicesData } from '../Datas'; // Adjust the import path as per your project structure
+import { sortsDatas } from '../Datas'; // Adjust the import path as per your project structure
+import { memberData } from '../Datas'; // Adjust the import path as per your project structure
+import { Button, Checkbox, DatePickerComp, Input, Select, Textarea, TimePickerComp } from '../Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import { memberData, servicesData, sortsDatas } from '../Datas';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import PatientMedicineServiceModal from './PatientMedicineServiceModal';
 
-// edit member data
 const doctorsData = memberData.map((item) => {
   return {
     id: item.id,
@@ -23,7 +17,8 @@ const doctorsData = memberData.map((item) => {
   };
 });
 
-function AddAppointmentModal({ closeModal, isOpen, datas }) {
+function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }) {
+  const [patientName, setPatientName] = useState(''); // Receive handleNewAppointment function
   const [services, setServices] = useState(servicesData[0]);
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
@@ -37,21 +32,41 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
   });
   const [open, setOpen] = useState(false);
 
-  // on change share
   const onChangeShare = (e) => {
     setShares({ ...shares, [e.target.name]: e.target.checked });
   };
+  const handlePatientNameChange = (event) => {
+    setPatientName(event.target.value);
+  };
+  const handleSelectPatient = (selectedPatient) => {
+    setPatientName(selectedPatient);
+  };
+  const saveAppointment = () => {
+    const apiUrl = 'http://localhost:8800/api/appointments';
+    const data = {
+      patientName: patientName,
+      purposeOfVisit: services.name,
+      dateOfVisit: startDate,
+      startTime: startTime,
+      endTime: endTime,
+      doctor: doctors.name,
+      status: status.name,
+      description: datas?.message,
+      share: shares,
+    };
 
-  // set data
-  useEffect(() => {
-    if (datas?.title) {
-      setServices(datas?.service);
-      setStartTime(datas?.start);
-      setEndTime(datas?.end);
-      setShares(datas?.shareData);
-    }
-  }, [datas]);
-
+    axios.post(apiUrl, data)
+      .then(response => {
+        console.log('Appointment saved successfully:', response.data);
+        toast.success('Appointment saved successfully');
+        closeModal();
+        handleNewAppointment(response.data); // Pass the new appointment data to the parent component
+      })
+      .catch(error => {
+        console.error('Error saving appointment:', error);
+        toast.error('Error saving appointment. Please try again later.');
+      });
+  };
   return (
     <Modal
       closeModal={closeModal}
@@ -71,6 +86,8 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
           <div className="sm:col-span-10">
             <Input
               label="Patient Name"
+              value={patientName}
+              onChange={handlePatientNameChange}
               color={true}
               placeholder={
                 datas?.title
@@ -111,13 +128,13 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <TimePickerComp
             label="Start time"
-            startDate={startTime}
-            onChange={(date) => setStartTime(date)}
+            time={startTime}
+            onChange={(time) => setStartTime(time)}
           />
           <TimePickerComp
             label="End time"
-            startDate={endTime}
-            onChange={(date) => setEndTime(date)}
+            time={endTime}
+            onChange={(time) => setEndTime(time)}
           />
         </div>
 
@@ -196,9 +213,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
           <Button
             label="Save"
             Icon={HiOutlineCheckCircle}
-            onClick={() => {
-              toast.error('This feature is not available yet');
-            }}
+            onClick={saveAppointment}
           />
         </div>
       </div>

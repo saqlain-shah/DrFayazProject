@@ -40,6 +40,7 @@ const CustomToolbar = (toolbar) => {
   // day button handler
   const goToDay = () => {
     toolbar.onView('day');
+
   };
 
   // view button group
@@ -82,14 +83,13 @@ const CustomToolbar = (toolbar) => {
                 item.view === 'month'
                   ? goToMonth
                   : item.view === 'week'
-                  ? goToWeek
-                  : goToDay
+                    ? goToWeek
+                    : goToDay
               }
-              className={`border-l text-xl py-2 flex-colo border-subMain ${
-                toolbar.view === item.view
-                  ? 'bg-subMain text-white'
-                  : 'text-subMain'
-              }`}
+              className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
+                ? 'bg-subMain text-white'
+                : 'text-subMain'
+                }`}
             >
               {item.view === 'month' ? (
                 <HiOutlineViewGrid />

@@ -5,7 +5,7 @@ import upload from '../utils/multerConfig.js';
 const router = express.Router();
 
 router.route('/')
-    .post(upload.single('profileImage'), patientController.createPatient)
+    .post(upload.single('profilePicture'), patientController.createPatient)
     .get(patientController.getAllPatients);
 
 router.route('/:id')

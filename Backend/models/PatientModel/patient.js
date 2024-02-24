@@ -1,27 +1,57 @@
 import mongoose from 'mongoose';
-
-const patientSchema = new mongoose.Schema({
-    firstName: { type: String, required: true },
-    profileImage: { type: String }, // Assuming you'll store the URL/path to the image
-    dateOfBirth: { type: Date },
-    phone: { type: String },
-    email: { type: String },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
+const Schema = mongoose.Schema;
+// Patient Schema
+const PatientSchema = new Schema({
+    fullName: {
+        type: String,
+        required: true
+    },
+    profilePicture: {
+        type: String,
+        default: null
+    },
+    email: {
+        type: String,
+        required: true
+    },
     emergencyContact: {
-        name: { type: String },
-        phone: { type: String },
-        relationship: { type: String }
+        type: String,
+        required: true
+    },
+    bloodGroup: {
+        type: String,
+        required: true
     },
     address: {
-        street: { type: String },
-        city: { type: String },
-        state: { type: String },
-        postalCode: { type: String }
+        type: String,
+        required: true
     },
-    healthInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'HealthInfo' }
-    // Add more fields as needed
-});
+    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    medicalRecords: [{
+        type: Schema.Types.ObjectId,
+        ref: 'HealthInfo'
+    }],
+    appointments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Appointment'
+    }],
+    invoices: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Invoice'
+    }],
+    payments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Payment'
+    }],
+    images: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Image'
+    }],
+    mentalHealth: {
+        type: Schema.Types.ObjectId,
+        ref: 'MentalHealth'
+    }
+}, { timestamps: true }); // Add timestamps option here
 
-const Patient = mongoose.model('Patient', patientSchema);
-
+const Patient = mongoose.model('Patient', PatientSchema);
 export default Patient;

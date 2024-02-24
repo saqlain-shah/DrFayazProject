@@ -21,9 +21,9 @@ function Sidebar() {
   alt="logo"
   className="w-48 h-12 ml-4 object-contain rounded-lg shadow-md"
 /> */}
-       <div className="text-2xl font-bold text-blue-900 bg-blue-200 rounded-lg shadow-md px-6 py-3">
-  DR Fayaz
-</div>
+        <div className="text-2xl font-bold text-blue-900 bg-blue-200 rounded-lg shadow-md px-6 py-3">
+          DR Fayaz
+        </div>
 
       </Link>
       <div className="flex-colo gap-2 mt-12">
@@ -41,8 +41,8 @@ function Sidebar() {
             />
             <p
               className={`text-sm font-medium ${currentPath(item.path) === item.path
-                  ? 'text-subMain'
-                  : 'text-gray-500'
+                ? 'text-subMain'
+                : 'text-gray-500'
                 } group-hover:text-blue-800`}
             >
               {item.title}
