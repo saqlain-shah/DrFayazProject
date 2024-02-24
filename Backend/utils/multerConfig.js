@@ -1,17 +1,17 @@
-// utils/multerConfig.js
+// multerConfig.js
 import multer from 'multer';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// Set up Multer storage options
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Specify the destination directory where uploaded files will be stored
+        cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Specify the filename for the uploaded file
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
 
-// Create Multer instance with configured storage options
-const upload = multer({ storage: storage });
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export default upload;
+export const upload = multer({ storage: storage });

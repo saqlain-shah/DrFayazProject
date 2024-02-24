@@ -41,6 +41,22 @@ function Patients() {
     setGender(selectedGender.value); // Update to set the gender value
   };
 
+  const handleDelete = async (patientId) => {
+    try {
+      // Make an API call to delete the patient with the provided ID
+      await axios.delete(`http://localhost:8800/api/patients/${patientId}`);
+      // Refetch the patients after deletion
+      const response = await axios.get('http://localhost:8800/api/patients', {
+        params: { search: searchQuery, gender: gender.value, sortBy }
+      });
+      setPatients(response.data);
+      toast.success('Patient deleted successfully');
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      toast.error('Failed to delete patient');
+    }
+  };
+
 
   // Function to handle sorting change
   const handleSortChange = (value) => {
@@ -110,6 +126,7 @@ function Patients() {
         <div className="mt-8 w-full overflow-x-scroll">
           <PatientTable
             data={patients}
+            functions={{ delete: handleDelete }}
           />
         </div>
       </div>
