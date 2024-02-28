@@ -1,5 +1,3 @@
-// server.js
-
 import express from 'express';
 import dotenv from 'dotenv';
 import connectToDatabase from './db.js';
@@ -12,13 +10,12 @@ import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import healthInfoRoutes from './routes/healthInfoRoutes.js';
-import servicesRoute from './routes/services.js'
-import { upload } from './utils/multerConfig.js';
-import medicineRoutes from './routes/medicineRoutes.js'
+import servicesRoute from './routes/services.js';
+import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
-import cors from 'cors'; // Import cors package
+import cors from 'cors';
 
 const app = express();
 app.use(express.json());
@@ -28,7 +25,6 @@ setupMiddleware();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Add CORS middleware
 app.use(cors());
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -36,10 +32,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
-app.post('/api/uploadMultiple', upload.array('files'), (req, res) => {
-  const files = req.files;
-  res.json({ message: 'Files uploaded successfully' });
-});
+app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
@@ -54,7 +47,7 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/healthInfo', healthInfoRoutes);
 app.use('/api/services', servicesRoute);
-app.use('/api/medicine', medicineRoutes);
+
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

@@ -4,19 +4,19 @@ import { toast } from 'react-hot-toast';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { FiUploadCloud } from 'react-icons/fi';
 
-const Uploader = ({ setUploadedFiles }) => { // Receive setUploadedFiles function as prop
+// Inside the Uploader component
+const Uploader = ({ setUploadedFiles }) => {
   const [loading, setLoading] = useState(false);
-  const [uploadedFiles, setUploadedFilesLocal] = useState([]); // Local state for uploaded files
+  const [uploadedFiles, setUploadedFilesLocal] = useState([]);
 
   const onDrop = async (acceptedFiles) => {
     try {
       setLoading(true);
-      // Simulating file upload delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Update local state with uploaded files
+      console.log('Accepted files:', acceptedFiles); // Log the accepted files
+
       setUploadedFilesLocal(acceptedFiles);
-      // Call parent function to update parent state
       setUploadedFiles(acceptedFiles);
       toast.success(`${acceptedFiles.length} file(s) uploaded successfully.`);
     } catch (error) {
@@ -27,7 +27,7 @@ const Uploader = ({ setUploadedFiles }) => { // Receive setUploadedFiles functio
   };
 
   const { getRootProps, getInputProps } = useDropzone({
-    multiple: true, // Allow multiple file selection
+    multiple: true,
     onDrop,
   });
 
@@ -44,7 +44,6 @@ const Uploader = ({ setUploadedFiles }) => { // Receive setUploadedFiles functio
         <p className="text-sm mt-2">Drag and drop your files here, or click to select files</p>
         <em className="text-xs text-gray-400">(Only *.jpeg and *.png images will be accepted)</em>
       </div>
-      {/* Display uploaded files */}
       <div className="lg:col-span-2 sm:col-span-4 col-span-12">
         {loading ? (
           <div className="px-6 w-full bg-dry flex-colo h-32 border-2 border-border border-dashed rounded-md">
@@ -62,6 +61,9 @@ const Uploader = ({ setUploadedFiles }) => { // Receive setUploadedFiles functio
                     alt={`Attachment ${index}`}
                     className="w-full h-20 rounded-lg object-cover"
                   />
+                  <p>Filename: {file.name}</p> {/* Log the filename */}
+                  <p>Size: {file.size} bytes</p> {/* Log the file size */}
+                  <p>Type: {file.type}</p> {/* Log the file type */}
                 </li>
               ))}
             </ul>
@@ -73,5 +75,6 @@ const Uploader = ({ setUploadedFiles }) => { // Receive setUploadedFiles functio
     </div>
   );
 };
+
 
 export default Uploader;

@@ -9,6 +9,7 @@ import axios from 'axios';
 import Uploader from '../../components/Uploader';
 import { servicesData, memberData } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
+
 // const doctorsData = memberData.map((item) => {
 //   return {
 //     id: item.id,
@@ -18,7 +19,7 @@ import { toast } from 'react-hot-toast';
 function NewMedicalRecord() {
   //   const [doctors, setDoctors] = useState(doctorsData[0]);
   const [isOpen, setIsOpen] = useState(false);
-  const [attachments, setAttachments] = useState([]);
+  const [attachment, setAttachment] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [complaints, setComplaints] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
@@ -48,20 +49,26 @@ function NewMedicalRecord() {
     setTreatmeants(newTreatmeants);
   };
 
+  // Inside the saveMedicalRecord function in NewMedicalRecord component
   const saveMedicalRecord = () => {
     if (!complaints || !diagnosis || !vitalSigns) {
       setError('All fields except treatment and attachments are required');
       return;
     }
 
+    // Log the accepted image files
+    console.log('Accepteds files:', uploadedFiles);
+
     const formData = new FormData();
     formData.append('complaints', complaints);
     formData.append('diagnosis', diagnosis);
     formData.append('vitalSigns', vitalSigns);
     // Append all uploaded files
+    // Inside the saveMedicalRecord function
     uploadedFiles.forEach((file, index) => {
-      formData.append(`attachment${index + 1}`, file);
+      formData.append(`attachment`, file); // Use the same field name 'attachment'
     });
+
 
     formData.append('treatment', JSON.stringify(treatmeants.map(item => ({ name: item.name, checked: item.checked }))));
     console.log('FormData:', formData);
@@ -74,10 +81,16 @@ function NewMedicalRecord() {
         console.log('Upload Progress:', Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%');
       }
     })
+
       .then(response => {
         toast.success(response.data.message);
-        console.log('Response from backend:', response);
-        // Handle successful response...
+        setComplaints('');
+        setDiagnosis('');
+        setVitalSigns('');
+        setUploadedFiles([]); // Clear uploaded files
+        setTreatmeants(prevTreatments => (
+          prevTreatments.map(item => ({ ...item, checked: false }))
+        ));
       })
       .catch(error => {
         if (error.response) {
@@ -91,7 +104,9 @@ function NewMedicalRecord() {
           setError('Error: ' + error.message);
         }
       });
+
   };
+
 
   return (
     <Layout>
@@ -214,6 +229,7 @@ function NewMedicalRecord() {
           </div>
         </div>
       </div>
+
     </Layout>
   );
 }

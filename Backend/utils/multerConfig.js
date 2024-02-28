@@ -1,7 +1,4 @@
-// multerConfig.js
-import multer from 'multer';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import multer from "multer";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -9,9 +6,17 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname);
-    }
+    },
 });
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const fileFilter = (req, file, cb) => {
+    if (file.fieldname === 'attachment') {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Only JPEG and PNG files are allowed!'), false);
+        }
+    }
+    cb(null, true);
+};
 
-export const upload = multer({ storage: storage });
+export const upload = multer({ storage: storage, fileFilter: fileFilter });
+export const uploads = multer({ storage: storage, fileFilter: fileFilter }).array('attachment', 10);

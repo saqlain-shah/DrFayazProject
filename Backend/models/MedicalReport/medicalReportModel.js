@@ -19,19 +19,19 @@ const medicalRecordSchema = new mongoose.Schema({
     vitalSigns: {
         type: [String]
     },
-    // prescription: {
-    //     medicines: [{
-    //         name: { type: String, required: true },
-    //         quantity: { type: Number, required: true },
-    //         dosage: { type: String, required: true }
-    //     }],
-    //     instructions: {
-    //         type: String
-    //     }
-    // },
-    // attachments: {
-    //     type: [String] // Array of attachment URLs
-    // }
+    prescription: {
+        medicines: [{
+            name: { type: String, required: true },
+            quantity: { type: Number, required: true },
+            dosage: { type: String, required: true }
+        }],
+        instructions: {
+            type: String
+        }
+    },
+    attachments: {
+        type: [String] // Array of attachment URLs
+    }
 });
 
 const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);

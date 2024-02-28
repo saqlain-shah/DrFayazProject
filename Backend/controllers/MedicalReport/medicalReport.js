@@ -30,37 +30,40 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 // };
 export const createMedicalRecord = async (req, res) => {
     try {
-        console.log('Request Body:', req.body);
-        console.log('Request File:', req.file)
         const { complaints, diagnosis, treatment, vitalSigns } = req.body;
 
-        // Convert the treatment string back to an array of objects
+        // Parse the treatment string back to an array of objects
         const parsedTreatment = JSON.parse(treatment);
 
-        // Assuming you have stored the uploaded file path in req.file.filename
-        const attachment = req.file ? req.file.filename : null; // Check if file exists
+        // Map over the files array to extract the file paths
+        const attachments = req.files.map(file => file.path);
 
+        // Create a new medical record instance
         const medicalRecord = new MedicalRecord({
             complaints,
             diagnosis,
             treatment: parsedTreatment, // Assign the parsed treatment array
             vitalSigns,
-            attachment // Attach the file path to the medical record
+            attachments // Attach the file paths to the medical record
         });
 
+        // Save the medical record to the database
         await medicalRecord.save();
 
         // Include the attachment data in the response
         const responseData = {
             message: 'Medical record created successfully',
-            data: { ...medicalRecord.toObject(), attachment }
+            data: { ...medicalRecord.toObject(), attachments }
         };
 
+        // Send a success response
         res.status(201).json(responseData);
     } catch (error) {
+        // If an error occurs, send an error response
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
+
 
 
 
