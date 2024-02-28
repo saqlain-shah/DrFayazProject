@@ -1,15 +1,41 @@
 import Payment from '../../models/Payment/paymentModel.js';
 
+import Stripe from 'stripe';
+
+const stripe = new Stripe('YOUR_STRIPE_SECRET_KEY');
+
 export const createPayment = async (req, res, next) => {
     try {
-        const { status, user, items, date, dueDate, paidBy, currency, subTotal, discount, tax, grandTotal, notes } = req.body;
-        const newPayment = new Payment({ status, user, items, date, dueDate, paidBy, currency, subTotal, discount, tax, grandTotal, notes });
-        const savedPayment = await newPayment.save();
-        res.status(201).json({ message: 'Payment created successfully', payment: savedPayment });
-    } catch (err) {
-        next(err);
+        // Extract payment details from request body
+        const { amount, currency, description, source } = req.body;
+
+        // Create a payment intent using Stripe API
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency,
+            description,
+            payment_method: source, // Payment source (e.g., card token)
+            confirm: true, // Confirm the payment immediately
+        });
+
+        // If payment intent is successful, save payment details to your database
+        if (paymentIntent.status === 'succeeded') {
+            const { status, user, items, dueDate, paidBy, subTotal, discount, tax, grandTotal, notes } = req.body;
+            const newPayment = new Payment({ status, user, items, dueDate, paidBy, currency, subTotal, discount, tax, grandTotal, notes });
+            await newPayment.save();
+
+            // Handle successful payment
+            res.status(200).json({ message: 'Payment successful' });
+        } else {
+            // Handle failed payment intent
+            res.status(400).json({ error: 'Payment failed' });
+        }
+    } catch (error) {
+        // Handle errors
+        next(error);
     }
 };
+
 
 export const getAllPayments = async (req, res, next) => {
     try {

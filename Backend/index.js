@@ -11,6 +11,7 @@ import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import healthInfoRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
+import sandGridRoutes from './routes/sendgridRoutes.js'
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -47,7 +48,7 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/healthInfo', healthInfoRoutes);
 app.use('/api/services', servicesRoute);
-
+app.use('/api/sandgrid', sandGridRoutes)
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

@@ -229,7 +229,6 @@ function NewMedicalRecord() {
           </div>
         </div>
       </div>
-
     </Layout>
   );
 }
