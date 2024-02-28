@@ -12,7 +12,7 @@ export const sendConfirmationEmail = async (req, res, next) => {
         // Construct the email message
         const msg = {
             to,
-            from: 'your-email@example.com', // Replace with your email
+            from: 'add email', // Replace with your email
             subject,
             text,
             html,
