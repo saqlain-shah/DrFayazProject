@@ -7,8 +7,12 @@ import { FaTimes } from 'react-icons/fa';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import axios from 'axios';
 import Uploader from '../../components/Uploader';
-import { servicesData, memberData } from '../../components/Datas';
+import { servicesData, memberData , medicineData} from '../../components/Datas';
 import { toast } from 'react-hot-toast';
+import { MedicineDosageTable } from '../../components/Tables';
+ import { BiChevronDown, BiPlus } from 'react-icons/bi';
+
+
 // const doctorsData = memberData.map((item) => {
 //   return {
 //     id: item.id,
@@ -181,6 +185,28 @@ function NewMedicalRecord() {
 
               </div>
             </div>
+            <div className="flex w-full flex-col gap-4 mb-6">
+              <p className="text-black text-sm">Medicine</p>
+              <div className="w-full overflow-x-scroll">
+                <MedicineDosageTable
+                  data={medicineData?.slice(0, 3)}
+                  functions={{
+                    delete: (id) => {
+                      toast.error('This feature is not available yet');
+                    },
+                  }}
+                  button={true}
+                />
+              </div>
+              <button
+                onClick={() => {
+                  setIsOpen(true);
+                }}
+                className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm"
+              >
+                <BiPlus /> Add Medicine
+              </button>
+            </div>
             <div className="flex w-full flex-col gap-4">
               <p className="text-black text-sm">Attachments</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -227,9 +253,7 @@ export default NewMedicalRecord;
 // import { Link } from 'react-router-dom';
 // import { IoArrowBackOutline } from 'react-icons/io5';
 // import { Button, Checkbox, Select, Textarea } from '../../components/Form';
-// import { BiChevronDown, BiPlus } from 'react-icons/bi';
 // import { medicineData, memberData, servicesData } from '../../components/Datas';
-// import { MedicineDosageTable } from '../../components/Tables';
 // import { toast } from 'react-hot-toast';
 // import MedicineDosageModal from '../../components/Modals/MedicineDosage';
 // import { FaTimes } from 'react-icons/fa';
@@ -375,29 +399,8 @@ export default NewMedicalRecord;
 //                 ))}
 //               </div>
 //             </div>
-//             {/* medicine */}
-//             <div className="flex w-full flex-col gap-4 mb-6">
-//               <p className="text-black text-sm">Medicine</p>
-//               <div className="w-full overflow-x-scroll">
-//                 <MedicineDosageTable
-//                   data={medicineData?.slice(0, 3)}
-//                   functions={{
-//                     delete: (id) => {
-//                       toast.error('This feature is not available yet');
-//                     },
-//                   }}
-//                   button={true}
-//                 />
-//               </div>
-//               <button
-//                 onClick={() => {
-//                   setIsOpen(true);
-//                 }}
-//                 className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm"
-//               >
-//                 <BiPlus /> Add Medicine
-//               </button>
-//             </div>
+            {/* medicine */}
+           
 //             {/* attachment */}
 //             <div className="flex w-full flex-col gap-4">
 //               <p className="text-black text-sm">Attachments</p>

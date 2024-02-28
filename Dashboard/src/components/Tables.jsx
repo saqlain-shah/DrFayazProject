@@ -370,10 +370,10 @@ export function PatientTable({ data, functions, used }) {
           <th className={thClass}>Full Name</th>
           <th className={thClass}>Gender</th>
           <th className={thClass}>Blood Group</th>
-          <th className={thClass}>Address</th>
+          {/* <th className={thClass}>Address</th> */}
           <th className={thClass}>Email</th>
           <th className={thClass}>Emergency Contact</th>
-          <th className={thClass}>Created At</th>
+          {/* <th className={thClass}>Created At</th> */}
           <th className={thClass}>Actions</th>
         </tr>
       </thead>
@@ -402,10 +402,10 @@ export function PatientTable({ data, functions, used }) {
               </span>
             </td>
             <td className={tdClass}>{item.bloodGroup}</td>
-            <td className={tdClass}>{item.address}</td>
+            {/* <td className={tdClass}>{item.address}</td> */}
             <td className={tdClass}>{item.email}</td>
             <td className={tdClass}>{item.emergencyContact}</td>
-            <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
+            {/* <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td> */}
             <td className={tdClass}>
               <MenuSelect datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
