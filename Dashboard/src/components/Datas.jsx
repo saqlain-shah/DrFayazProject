@@ -1376,6 +1376,7 @@ export const medicalRecodData = [
       "Blood Pressure: 120/80 mmHg",
     ],
   },
+
 ];
 
 export const doctorsData = [

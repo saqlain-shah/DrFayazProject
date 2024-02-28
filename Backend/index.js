@@ -12,14 +12,16 @@ import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import healthInfoRoutes from './routes/healthInfoRoutes.js';
+import servicesRoute from './routes/services.js'
 import { upload } from './utils/multerConfig.js';
+import medicineRoutes from './routes/medicineRoutes.js'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors'; // Import cors package
 
 const app = express();
-
+app.use(express.json());
 dotenv.config();
 setupMiddleware();
 
@@ -51,7 +53,8 @@ app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/healthInfo', healthInfoRoutes);
-
+app.use('/api/services', servicesRoute);
+app.use('/api/medicine', medicineRoutes);
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

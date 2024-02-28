@@ -1,35 +1,69 @@
-import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js'
+import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
+// import Doctor from '../../models/Doctor/doctorModel.js';
 
-// Controller functions for CRUD operations
+// export const createMedicalRecord = async (req, res) => {
+//     try {
+//         const { complaints, diagnosis, treatment, vitalSigns, } = req.body;
+//         // doctor, medicineDosage, attachments //
+//         // Check if the doctor exists
+//         // const doctorInfo = await Doctor.findById(doctor);
+//         // if (!doctorInfo) {
+//         //     return res.status(404).json({ message: 'Doctor not found' });
+//         // }
 
-// Create a new medical record
+//         const medicalRecord = new MedicalRecord({
+//             complaints,
+//             diagnosis,
+//             treatment,
+//             vitalSigns,
+//             // doctor: doctorInfo,
+//             // medicineDosage,
+//             // attachments
+//         });
+
+//         await medicalRecord.save();
+
+//         res.status(201).json({ message: 'Medical record created successfully', data: medicalRecord });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
+//     }
+// };
 export const createMedicalRecord = async (req, res) => {
     try {
-        const { complaints, diagnosis, treatment, vitalSigns, doctor } = req.body;
+        console.log('Request Body:', req.body);
+        console.log('Request File:', req.file)
+        const { complaints, diagnosis, treatment, vitalSigns } = req.body;
 
-        // Assuming 'doctor' contains the ID of the selected doctor
-        const doctorInfo = await Doctor.findById(doctor);
-        if (!doctorInfo) {
-            return res.status(404).json({ message: 'Doctor not found' });
-        }
+        // Convert the treatment string back to an array of objects
+        const parsedTreatment = JSON.parse(treatment);
+
+        // Assuming you have stored the uploaded file path in req.file.filename
+        const attachment = req.file ? req.file.filename : null; // Check if file exists
 
         const medicalRecord = new MedicalRecord({
             complaints,
             diagnosis,
-            treatment,
+            treatment: parsedTreatment, // Assign the parsed treatment array
             vitalSigns,
-            doctor: doctorInfo // Saving doctor information as a reference
+            attachment // Attach the file path to the medical record
         });
 
         await medicalRecord.save();
-        res.status(201).json({ message: 'Medical record created successfully', data: medicalRecord });
+
+        // Include the attachment data in the response
+        const responseData = {
+            message: 'Medical record created successfully',
+            data: { ...medicalRecord.toObject(), attachment }
+        };
+
+        res.status(201).json(responseData);
     } catch (error) {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
 
 
-// Get all medical records
+
 export const getAllMedicalRecords = async (req, res) => {
     try {
         const medicalRecords = await MedicalRecord.find();
@@ -39,7 +73,6 @@ export const getAllMedicalRecords = async (req, res) => {
     }
 };
 
-// Get a single medical record by ID
 export const getMedicalRecordById = async (req, res) => {
     try {
         const medicalRecord = await MedicalRecord.findById(req.params.id);
@@ -52,7 +85,6 @@ export const getMedicalRecordById = async (req, res) => {
     }
 };
 
-// Update a medical record by ID
 export const updateMedicalRecord = async (req, res) => {
     try {
         const medicalRecord = await MedicalRecord.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -65,7 +97,6 @@ export const updateMedicalRecord = async (req, res) => {
     }
 };
 
-// Delete a medical record by ID
 export const deleteMedicalRecord = async (req, res) => {
     try {
         const medicalRecord = await MedicalRecord.findByIdAndDelete(req.params.id);

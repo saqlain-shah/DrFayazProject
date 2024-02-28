@@ -7,7 +7,8 @@ import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 const thclass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
 const tdclass = 'text-start text-sm py-4 px-2 whitespace-nowrap';
-
+import axios from 'axios';
+import { sortsDatas } from './Datas';
 export function Transactiontable({ data, action, functions }) {
   const DropDown1 = [
     {
@@ -184,8 +185,12 @@ export function InvoiceTable({ data }) {
   );
 }
 
-// prescription table
-export function MedicineTable({ data, onEdit }) {
+// MedicineTable component
+export function MedicineTable({ data, onEdit, onDelete }) {
+  console.log("responsive", data)
+  const thclass = "border-b border-border py-2 px-4 text-left text-sm font-medium text-main";
+  const tdclass = "border-b border-border py-2 px-4 text-sm text-main";
+
   const DropDown1 = [
     {
       title: 'Edit',
@@ -197,11 +202,12 @@ export function MedicineTable({ data, onEdit }) {
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: () => {
-        toast.error('This feature is not available yet');
+      onClick: (item) => {
+        onDelete(item);
       },
     },
   ];
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
@@ -210,34 +216,31 @@ export function MedicineTable({ data, onEdit }) {
           <th className={thclass}>
             Price <span className="text-xs font-light">(Tsh)</span>
           </th>
-          <th className={thclass}>Status</th>
           <th className={thclass}>InStock</th>
           <th className={thclass}>Measure</th>
+          <th className={thclass}>Description</th>
           <th className={thclass}>Actions</th>
         </tr>
       </thead>
       <tbody>
-        {data.map((item, index) => (
+        {Array.isArray(data) && data.map((item, index) => (
           <tr
-            key={item.id}
+            key={item._id} // Assuming _id is the unique identifier
             className="border-b border-border hover:bg-greyed transitions"
           >
             <td className={tdclass}>
-              <h4 className="text-sm font-medium">{item?.name}</h4>
+              <h4 className="text-sm font-medium">{item?.medicineName}</h4>
             </td>
             <td className={`${tdclass} font-semibold`}>{item?.price}</td>
             <td className={tdclass}>
               <span
-                className={`text-xs font-medium ${item?.status === 'Out of stock'
-                  ? 'text-red-600'
-                  : 'text-green-600'
-                  }`}
+                className={`text-xs font-medium ${item?.inStock ? 'text-green-600' : 'text-red-600'}`}
               >
-                {item?.status}
+                {item?.inStock ? 'In Stock' : 'Out of Stock'}
               </span>
             </td>
-            <td className={tdclass}>{item?.stock}</td>
             <td className={tdclass}>{item?.measure}</td>
+            <td className={tdclass}>{item?.description}</td>
             <td className={tdclass}>
               <MenuSelect datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
@@ -252,8 +255,8 @@ export function MedicineTable({ data, onEdit }) {
   );
 }
 
-// service table
-export function ServiceTable({ data, onEdit }) {
+
+export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const DropDown1 = [
     {
       title: 'Edit',
@@ -265,11 +268,25 @@ export function ServiceTable({ data, onEdit }) {
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: () => {
-        toast.error('This feature is not available yet');
+      onClick: (item) => {
+        onDelete(item);
       },
     },
   ];
+
+  const handleStatusToggle = async (item) => {
+    try {
+      const updatedItem = { ...item, status: !item.status };
+      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('http://localhost:8800/api/services');
+      setServicesData(updatedResponse.data);
+      toast.success('Service status updated successfully.');
+    } catch (error) {
+      console.error('Error updating service status:', error);
+      toast.error('Failed to update service status. Please try again.');
+    }
+  };
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
@@ -285,21 +302,19 @@ export function ServiceTable({ data, onEdit }) {
       </thead>
       <tbody>
         {data.map((item, index) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
+          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
             <td className={tdclass}>
               <h4 className="text-sm font-medium">{item?.name}</h4>
             </td>
-            <td className={tdclass}>{item?.date}</td>
+            <td className={tdclass}>{new Date(item?.createdAt).toLocaleString()}</td>
             <td className={`${tdclass} font-semibold`}>{item?.price}</td>
             <td className={tdclass}>
               <span
-                className={`text-xs font-medium ${!item?.status ? 'text-red-600' : 'text-green-600'
+                className={`text-xs font-medium cursor-pointer ${!item?.status ? 'text-red-600' : 'text-green-600'
                   }`}
+                onClick={() => handleStatusToggle(item)}
               >
-                {!item?.status ? 'Disabled' : 'Enabled'}
+                {item?.status ? 'Enable Patient' : 'Disable Patient'}
               </span>
             </td>
             <td className={tdclass}>
@@ -315,6 +330,10 @@ export function ServiceTable({ data, onEdit }) {
     </table>
   );
 }
+
+
+
+
 
 // patient table
 export function PatientTable({ data, functions, used }) {

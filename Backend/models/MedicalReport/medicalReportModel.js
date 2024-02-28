@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const medicalRecordSchema = new mongoose.Schema({
     complaints: {
@@ -10,22 +10,28 @@ const medicalRecordSchema = new mongoose.Schema({
         required: true
     },
     treatment: {
-        type: [String], // Changed to an array of strings
+        type: [{
+            name: String, // Name of the treatment
+            checked: Boolean // Whether the treatment is checked or not
+        }],
         required: true
     },
     vitalSigns: {
-        type: [String] // You can define a separate schema for vital signs if necessary
+        type: [String]
     },
-    prescription: {
-        medicines: [{
-            name: { type: String, required: true },
-            quantity: { type: Number, required: true },
-            dosage: { type: String, required: true }
-        }],
-        instructions: {
-            type: String
-        }
-    }
+    // prescription: {
+    //     medicines: [{
+    //         name: { type: String, required: true },
+    //         quantity: { type: Number, required: true },
+    //         dosage: { type: String, required: true }
+    //     }],
+    //     instructions: {
+    //         type: String
+    //     }
+    // },
+    // attachments: {
+    //     type: [String] // Array of attachment URLs
+    // }
 });
 
 const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);

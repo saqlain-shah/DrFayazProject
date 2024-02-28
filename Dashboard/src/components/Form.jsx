@@ -80,7 +80,9 @@ export function Select({ children, selectedPerson, setSelectedPerson, datas }) {
     <div className="text-sm relative w-full ">
       <div className="w-full">
         <Listbox value={selectedPerson} onChange={setSelectedPerson}>
-          <Listbox.Button className={'w-full'}>{children}</Listbox.Button>
+          <Listbox.Button className={'w-full'}>
+            {selectedPerson.name}
+          </Listbox.Button>
           <Listbox.Options className="flex  flex-col gap-4 top-10 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none">
             {datas.map((person) => (
               <Listbox.Option
@@ -120,21 +122,32 @@ export function Switchi({ checked, onChange }) {
 
 // textarea
 
-export function Textarea({ label, name, register, placeholder, rows }) {
+export function Textarea({ label, name, value, onChange, placeholder, rows }) {
+  const handleChange = (e) => {
+    // Log the event and updated value
+    console.log('Textarea onChange event:', e);
+    console.log('Textarea value:', e.target.value);
+
+    // Call the provided onChange function to update the state in the parent component
+    onChange(e);
+  };
+
   return (
     <div className="text-sm w-full">
       <label className={'text-black text-sm'}>{label}</label>
       <textarea
         name={name}
         rows={rows}
-        {...register}
+        value={value}
+        onChange={handleChange} // Use the handleChange function
         placeholder={placeholder}
-        className={`focus:border-subMain w-full bg-transparent text-sm mt-3 p-4 border border-border rounded font-light 
-         `}
+        className={`focus:border-subMain w-full bg-transparent text-sm mt-3 p-4 border border-border rounded font-light`}
       />
     </div>
   );
 }
+
+
 
 // date picker
 
@@ -166,9 +179,6 @@ export function TimePickerComp({ label, time, onChange }) {
     </div>
   );
 }
-
-// checkbox
-
 export function Checkbox({ label, name, onChange, checked }) {
   return (
     <div className="text-sm w-full flex flex-row items-center">
@@ -178,16 +188,14 @@ export function Checkbox({ label, name, onChange, checked }) {
           type="checkbox"
           name={name}
           checked={checked}
-          onChange={onChange}
+          onChange={() => onChange(name, !checked)} // Pass name and updated checked value
           className="absolute opacity-0 w-0 h-0"
         />
         <span
           className={` border rounded  w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 ${checked ? 'border-subMain bg-subMain' : 'border-gray-300 bg-white'
             }`}
         >
-          <FaCheck
-            className={`text-[10px] ${checked ? 'block text-white' : 'hidden'}`}
-          />
+          {checked && <FaCheck className="text-[10px] block text-white" />}
         </span>
       </label>
 
@@ -195,6 +203,8 @@ export function Checkbox({ label, name, onChange, checked }) {
     </div>
   );
 }
+
+
 
 // from to date picker
 export function FromToDate({ label, startDate, onChange, endDate, bg }) {
