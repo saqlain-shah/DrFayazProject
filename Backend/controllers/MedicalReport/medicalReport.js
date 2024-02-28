@@ -1,62 +1,43 @@
 import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
-// import Doctor from '../../models/Doctor/doctorModel.js';
+import multer from 'multer';
 
-// export const createMedicalRecord = async (req, res) => {
-//     try {
-//         const { complaints, diagnosis, treatment, vitalSigns, } = req.body;
-//         // doctor, medicineDosage, attachments //
-//         // Check if the doctor exists
-//         // const doctorInfo = await Doctor.findById(doctor);
-//         // if (!doctorInfo) {
-//         //     return res.status(404).json({ message: 'Doctor not found' });
-//         // }
+import { upload } from '../../utils/multerConfig.js'; 
 
-//         const medicalRecord = new MedicalRecord({
-//             complaints,
-//             diagnosis,
-//             treatment,
-//             vitalSigns,
-//             // doctor: doctorInfo,
-//             // medicineDosage,
-//             // attachments
-//         });
+const uploadMiddleware = upload.array('attachments', 5); 
 
-//         await medicalRecord.save();
 
-//         res.status(201).json({ message: 'Medical record created successfully', data: medicalRecord });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
-//     }
-// };
 export const createMedicalRecord = async (req, res) => {
     try {
-        console.log('Request Body:', req.body);
-        console.log('Request File:', req.file)
-        const { complaints, diagnosis, treatment, vitalSigns } = req.body;
+        uploadMiddleware(req, res, async function (err) {
+            if (err) {
+                if (err instanceof multer.MulterError) {
+                    return res.status(500).json({ message: 'Failed to upload files', error: err.message });
+                } else {
+                    return res.status(500).json({ message: 'Unknown error occurred', error: err.message });
+                }
+            }
+            console.log('Request Body:', req.body);
+            console.log('Request Files:', req.files)
+            const { complaints, diagnosis, treatment, vitalSigns } = req.body;
 
-        // Convert the treatment string back to an array of objects
-        const parsedTreatment = JSON.parse(treatment);
+            const parsedTreatment = JSON.parse(treatment);
+            const attachments = req.files ? req.files.map(file => file.filename) : []; 
+            const medicalRecord = new MedicalRecord({
+                complaints,
+                diagnosis,
+                treatment: parsedTreatment, 
+                vitalSigns,
+                attachments 
+            });
 
-        // Assuming you have stored the uploaded file path in req.file.filename
-        const attachment = req.file ? req.file.filename : null; // Check if file exists
+            await medicalRecord.save();
+            const responseData = {
+                message: 'Medical record created successfully',
+                data: { ...medicalRecord.toObject(), attachments }
+            };
 
-        const medicalRecord = new MedicalRecord({
-            complaints,
-            diagnosis,
-            treatment: parsedTreatment, // Assign the parsed treatment array
-            vitalSigns,
-            attachment // Attach the file path to the medical record
+            res.status(201).json(responseData);
         });
-
-        await medicalRecord.save();
-
-        // Include the attachment data in the response
-        const responseData = {
-            message: 'Medical record created successfully',
-            data: { ...medicalRecord.toObject(), attachment }
-        };
-
-        res.status(201).json(responseData);
     } catch (error) {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }

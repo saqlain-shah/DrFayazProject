@@ -29,9 +29,9 @@ const medicalRecordSchema = new mongoose.Schema({
     //         type: String
     //     }
     // },
-    // attachments: {
-    //     type: [String] // Array of attachment URLs
-    // }
+    attachments: {
+        type: [String] // Array of attachment URLs
+    }
 });
 
 const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema);

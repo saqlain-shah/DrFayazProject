@@ -5,7 +5,7 @@ import { upload } from '../utils/multerConfig.js';
 const router = express.Router();
 
 router.route('/')
-    .post(upload.array('attachment'), MedicalRecordController.createMedicalRecord)
+    .post( MedicalRecordController.createMedicalRecord)
     .get(MedicalRecordController.getAllMedicalRecords);
 
 router.route('/:id')
