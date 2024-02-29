@@ -28,12 +28,14 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 //         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
 //     }
 // };
+
+
 export const createMedicalRecord = async (req, res) => {
     try {
-        const { complaints, diagnosis, treatment, vitalSigns } = req.body;
+        const { complaints, diagnosis, vitalSigns, prescription } = req.body;
 
-        // Parse the treatment string back to an array of objects
-        const parsedTreatment = JSON.parse(treatment);
+        // Parse the prescription string back to an array of strings
+        const parsedPrescription = JSON.parse(prescription);
 
         // Map over the files array to extract the file paths
         const attachments = req.files.map(file => file.path);
@@ -42,8 +44,8 @@ export const createMedicalRecord = async (req, res) => {
         const medicalRecord = new MedicalRecord({
             complaints,
             diagnosis,
-            treatment: parsedTreatment, // Assign the parsed treatment array
             vitalSigns,
+            prescription: parsedPrescription, // Assign the parsed prescription array
             attachments // Attach the file paths to the medical record
         });
 
@@ -63,9 +65,6 @@ export const createMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
-
-
-
 
 export const getAllMedicalRecords = async (req, res) => {
     try {
@@ -111,3 +110,4 @@ export const deleteMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete medical record', error: error.message });
     }
 };
+

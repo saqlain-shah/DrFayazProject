@@ -2,94 +2,130 @@ import React, { useState } from 'react';
 import Layout from '../../Layout';
 import { Link } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
-import { Button, Textarea, Checkbox } from '../../components/Form';
+import { Button, Textarea, Checkboxe } from '../../components/Form';
 import { FaTimes } from 'react-icons/fa';
+import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import axios from 'axios';
+import { MedicineDosageTable } from '../../components/Tables';
 import Uploader from '../../components/Uploader';
-import { servicesData, memberData } from '../../components/Datas';
+import { servicesData, medicineData } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
+import MedicineDosageModal from '../../components/Modals/MedicineDosage';
 
-// const doctorsData = memberData.map((item) => {
-//   return {
-//     id: item.id,
-//     name: item.title,
-//   };
-// });
 function NewMedicalRecord() {
-  //   const [doctors, setDoctors] = useState(doctorsData[0]);
   const [isOpen, setIsOpen] = useState(false);
-  const [attachment, setAttachment] = useState([]);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [complaints, setComplaints] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
   const [vitalSigns, setVitalSigns] = useState('');
   const [error, setError] = useState('');
-  const [treatmeants, setTreatmeants] = useState(
-    servicesData.map((item) => {
-      return {
-        name: item.name,
-        checked: false,
-        price: item.price,
-      };
-    })
+  const [prescription, setPrescription] = useState([]);
+  const [medicine, setMedicine] = useState([]);
+  const [treatments, setTreatments] = useState(
+    servicesData.map((item) => ({
+      name: item.name,
+      checked: false,
+      price: item.price,
+    }))
   );
 
 
-  const onChangeTreatmeants = (name, checked) => {
-    const newTreatmeants = treatmeants.map((item) => {
-      if (item.name === name) {
+  const addMedicineDosage = (medicineDosage) => {
+    console.log('Medicinee Dosage:', medicineDosage);
+  };
+
+  const onChangeTreatments = (name, checked) => {
+    const updatedTreatments = treatments.map((item) =>
+      item.name === name ? { ...item, checked: checked } : item
+    );
+    setTreatments(updatedTreatments);
+  };
+
+
+  const onChangeMedicine = (name, checked) => {
+    const updatedMedicineData = medicineData.map(item => {
+      if (item && item.name === name) {
         return {
           ...item,
-          checked: checked,
+          checked: checked
         };
       }
       return item;
     });
-    setTreatmeants(newTreatmeants);
+    setMedicine(updatedMedicineData); // Update the medicineData state
   };
 
-  // Inside the saveMedicalRecord function in NewMedicalRecord component
+
+  const onChangePrescription = (name, checked) => {
+    const updatedPrescription = [...prescription];
+    if (checked) {
+      updatedPrescription.push(name);
+    } else {
+      const index = updatedPrescription.indexOf(name);
+      if (index !== -1) {
+        updatedPrescription.splice(index, 1);
+      }
+    }
+    setPrescription(updatedPrescription);
+  };
+
   const saveMedicalRecord = () => {
     if (!complaints || !diagnosis || !vitalSigns) {
       setError('All fields except treatment and attachments are required');
       return;
     }
 
-    // Log the accepted image files
-    console.log('Accepteds files:', uploadedFiles);
+    // Initialize prescription and medicine arrays
+    let prescription = [];
+    let selectedMedicine = []; // Updated to store selected medicine from state
+
+    // Filter checked treatments for prescription
+    prescription = treatments
+      .filter(item => item.checked)
+      .map(item => item.name);
+
+    // Filter checked medicine for selected medicine
+    selectedMedicine = medicine
+      .filter(item => item.checked)
+      .map(item => item.name);
+
+    console.log('Prescription:', prescription);
+    console.log('Selected Medicine:', selectedMedicine); // Log selected medicine
 
     const formData = new FormData();
     formData.append('complaints', complaints);
     formData.append('diagnosis', diagnosis);
     formData.append('vitalSigns', vitalSigns);
     // Append all uploaded files
-    // Inside the saveMedicalRecord function
     uploadedFiles.forEach((file, index) => {
       formData.append(`attachment`, file); // Use the same field name 'attachment'
     });
+    // Convert prescription and selected medicine arrays to JSON strings
+    formData.append('prescription', JSON.stringify(prescription));
+    formData.append('medicine', JSON.stringify(selectedMedicine)); // Append the selected medicine array
 
 
-    formData.append('treatment', JSON.stringify(treatmeants.map(item => ({ name: item.name, checked: item.checked }))));
-    console.log('FormData:', formData);
     axios.post('http://localhost:8800/api/medical-records', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
       onUploadProgress: progressEvent => {
-        // Log upload progress if needed
         console.log('Upload Progress:', Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%');
       }
     })
-
       .then(response => {
         toast.success(response.data.message);
         setComplaints('');
         setDiagnosis('');
         setVitalSigns('');
         setUploadedFiles([]); // Clear uploaded files
-        setTreatmeants(prevTreatments => (
+        setTreatments(prevTreatments => (
           prevTreatments.map(item => ({ ...item, checked: false }))
+        ));
+        // Clear selected medicine after successful submission
+        setMedicine(prevMedicine => (
+          prevMedicine.map(item => ({ ...item, checked: false }))
         ));
       })
       .catch(error => {
@@ -104,9 +140,7 @@ function NewMedicalRecord() {
           setError('Error: ' + error.message);
         }
       });
-
   };
-
 
   return (
     <Layout>
@@ -114,6 +148,9 @@ function NewMedicalRecord() {
         <MedicineDosageModal
           isOpen={isOpen}
           closeModal={() => setIsOpen(false)}
+          addMedicineDosage={addMedicineDosage}
+          onChangeMedicine={onChangeMedicine}
+          medicine={medicine}
         />
       )}
       <div className="flex items-center gap-4">
@@ -179,21 +216,42 @@ function NewMedicalRecord() {
               value={vitalSigns}
               onChange={(e) => setVitalSigns(e.target.value)}
             />
+            {/* medicine */}
+            <div className="flex w-full flex-col gap-4 mb-6">
+              <p className="text-black text-sm">Medicine</p>
+              <div className="w-full overflow-x-scroll">
+                <MedicineDosageTable
+                  data={medicineData.slice(0, 3)} // Ensure medicineData is properly initialized
+                  functions={{
+                    delete: (id) => {
+                      toast.error('This feature is not available yet');
+                    },
+                  }}
+                  button={true}
+                />
+              </div>
+              <button
+                onClick={() => setIsOpen(true)}
+                className="text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm"
+              >
+                <BiPlus /> Add Medicine
+              </button>
+            </div>
+
             <div className="flex w-full flex-col gap-4">
               <p className="text-black text-sm">Treatment</p>
               <div className="grid xs:grid-cols-2 md:grid-cols-3 gap-6 pb-6">
                 {servicesData?.slice(1, 100).map((item) => (
-                  <Checkbox
+                  <Checkboxe
                     label={item.name}
                     checked={
-                      treatmeants.find((i) => i.name === item.name).checked
+                      treatments.find((i) => i.name === item.name).checked
                     }
-                    onChange={onChangeTreatmeants}
+                    onChange={onChangeTreatments}
                     name={item.name}
                     key={item.id}
                   />
                 ))}
-
               </div>
             </div>
             <div className="flex w-full flex-col gap-4">
@@ -204,7 +262,7 @@ function NewMedicalRecord() {
                     {/* Render the uploaded image */}
                     <img
                       src={URL.createObjectURL(file)}
-                      alt={`Attachment ${index + 1}`}
+                      // alt={`Attachment ${index + 1}`}
                       className="w-full h-40 rounded-lg object-cover"
                     />
                     {/* Render a button for deletion (if needed) */}
@@ -219,7 +277,6 @@ function NewMedicalRecord() {
               </div>
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            {/* Pass setUploadedFiles function to Uploader component */}
             <Uploader setUploadedFiles={setUploadedFiles} />
             <Button
               label={'Save'}

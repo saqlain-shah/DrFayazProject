@@ -4,6 +4,7 @@ import { BiLoaderCircle } from 'react-icons/bi';
 import DatePicker from 'react-datepicker';
 import { FaCheck } from 'react-icons/fa';
 import Datetime from 'react-datetime';
+
 import 'react-datetime/css/react-datetime.css';
 export function Input({ label, name, type, color, placeholder, onChange, value }) {
   return (
@@ -188,11 +189,11 @@ export function Checkbox({ label, name, onChange, checked }) {
           type="checkbox"
           name={name}
           checked={checked}
-          onChange={() => onChange(name, !checked)} // Pass name and updated checked value
+          onChange={() => onChange(!checked)} // Toggle checked value
           className="absolute opacity-0 w-0 h-0"
         />
         <span
-          className={` border rounded  w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 ${checked ? 'border-subMain bg-subMain' : 'border-gray-300 bg-white'
+          className={`border rounded w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 ${checked ? 'border-subMain bg-subMain' : 'border-gray-300 bg-white'
             }`}
         >
           {checked && <FaCheck className="text-[10px] block text-white" />}
@@ -203,6 +204,35 @@ export function Checkbox({ label, name, onChange, checked }) {
     </div>
   );
 }
+export function Checkboxe({ label, name, onChange, checked }) {
+  return (
+    <div className="text-sm w-full flex flex-row items-center">
+      <label className="flex-colo cursor-pointer relative">
+        <input
+          type="checkbox"
+          name={name}
+          checked={checked}
+          onChange={() => onChange(name, !checked)} // Pass the correct checked value
+          className="absolute opacity-0 w-0 h-0"
+        />
+        <span
+          className={`border rounded w-5 h-5 flex flex-shrink-0 justify-center items-center mr-2 ${checked ? 'border-subMain bg-subMain' : 'border-gray-300 bg-white'
+            }`}
+        >
+          {checked && <FaCheck className="text-[10px] block text-white" />}
+        </span>
+      </label>
+
+      {label && <p className={'text-black text-xs ml-2'}>{label}</p>}
+    </div>
+  );
+}
+
+
+
+
+
+
 
 
 

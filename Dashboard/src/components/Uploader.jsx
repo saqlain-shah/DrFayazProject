@@ -14,8 +14,6 @@ const Uploader = ({ setUploadedFiles }) => {
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      console.log('Accepted files:', acceptedFiles); // Log the accepted files
-
       setUploadedFilesLocal(acceptedFiles);
       setUploadedFiles(acceptedFiles);
       toast.success(`${acceptedFiles.length} file(s) uploaded successfully.`);
@@ -52,18 +50,18 @@ const Uploader = ({ setUploadedFiles }) => {
           </div>
         ) : uploadedFiles.length > 0 ? (
           <div>
-            <h3 className="text-lg font-semibold">Uploaded Files</h3>
+            {/* <h3 className="text-lg font-semibold">Uploaded Files</h3> */}
             <ul>
               {uploadedFiles.map((file, index) => (
                 <li key={index}>
-                  <img
+                  {/* <img
                     src={URL.createObjectURL(file)}
                     alt={`Attachment ${index}`}
                     className="w-full h-20 rounded-lg object-cover"
                   />
-                  <p>Filename: {file.name}</p> {/* Log the filename */}
-                  <p>Size: {file.size} bytes</p> {/* Log the file size */}
-                  <p>Type: {file.type}</p> {/* Log the file type */}
+                  <p>Filename: {file.name}</p> 
+                  <p>Size: {file.size} bytes</p> 
+                  <p>Type: {file.type}</p>  */}
                 </li>
               ))}
             </ul>
