@@ -32,7 +32,10 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createMedicalRecord = async (req, res) => {
     try {
-        const { complaints, diagnosis, vitalSigns, prescription } = req.body;
+        const { complaints, diagnosis, vitalSigns, prescription, treatment } = req.body;
+        const parsedTreatment = JSON.parse(treatment);
+
+
 
         // Parse the prescription string back to an array of strings
         const parsedPrescription = JSON.parse(prescription);
@@ -46,6 +49,7 @@ export const createMedicalRecord = async (req, res) => {
             diagnosis,
             vitalSigns,
             prescription: parsedPrescription, // Assign the parsed prescription array
+            treatment: parsedTreatment,
             attachments // Attach the file paths to the medical record
         });
 
@@ -61,10 +65,13 @@ export const createMedicalRecord = async (req, res) => {
         // Send a success response
         res.status(201).json(responseData);
     } catch (error) {
-        // If an error occurs, send an error response
+        // If an error occurs, log the error message and send an error response
+        console.error('Validation Error:', error.message);
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
+
+
 
 export const getAllMedicalRecords = async (req, res) => {
     try {

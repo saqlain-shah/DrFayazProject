@@ -13,17 +13,17 @@ function MedicalRecodModal({ closeModal, isOpen, data }) {
     >
       <div className="flex-colo gap-6">
         {/* Render prescription items */}
-        {/* <div className="grid grid-cols-12 gap-4 w-full">
+        <div className="grid grid-cols-12 gap-4 w-full">
           <div className="col-span-12 md:col-span-3">
             <p className="text-sm font-medium">Prescriptions</p>
           </div>
           <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
             {/* Render prescription items */}
-        {/* {data.prescription.map((item, index) => (
+            {data.prescription.map((item, index) => (
               <span key={index}>{item}, </span>
             ))}
           </div>
-        // </div> */}
+        </div>
         {/* Render Attachments */}
         <div className="grid grid-cols-12 gap-4 w-full">
           <div className="col-span-12 md:col-span-3">
@@ -38,6 +38,20 @@ function MedicalRecodModal({ closeModal, isOpen, data }) {
                 alt={`Attachment ${index}`}
                 className="w-full md:h-32 object-cover rounded-md"
               />
+            ))}
+          </div>
+        </div>
+        {/* Render Treatments */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Treatments:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            {/* Render treatment data */}
+            {data.treatment.map((item, index) => (
+              <p key={index} className="text-sm font-light">
+                {item.name}
+              </p>
             ))}
           </div>
         </div>

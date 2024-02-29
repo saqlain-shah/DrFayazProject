@@ -25,10 +25,11 @@ function NewMedicalRecord() {
   const [treatments, setTreatments] = useState(
     servicesData.map((item) => ({
       name: item.name,
-      checked: false,
+      checked: false, // Ensure checked is set to a Boolean value
       price: item.price,
     }))
   );
+
 
 
   const addMedicineDosage = (medicineDosage) => {
@@ -37,10 +38,11 @@ function NewMedicalRecord() {
 
   const onChangeTreatments = (name, checked) => {
     const updatedTreatments = treatments.map((item) =>
-      item.name === name ? { ...item, checked: checked } : item
+      item.name === name ? { ...item, checked: !!checked } : item // Convert checked to Boolean
     );
     setTreatments(updatedTreatments);
   };
+
 
 
   const onChangeMedicine = (name, checked) => {
@@ -93,6 +95,14 @@ function NewMedicalRecord() {
     console.log('Prescription:', prescription);
     console.log('Selected Medicine:', selectedMedicine); // Log selected medicine
 
+    // Construct the treatment array with the expected schema
+    const treatment = treatments.map(item => ({
+      name: item.name,
+      checked: item.checked
+    }));
+
+    console.log('Treatment:', treatment); // Log the treatment array
+
     const formData = new FormData();
     formData.append('complaints', complaints);
     formData.append('diagnosis', diagnosis);
@@ -104,7 +114,10 @@ function NewMedicalRecord() {
     // Convert prescription and selected medicine arrays to JSON strings
     formData.append('prescription', JSON.stringify(prescription));
     formData.append('medicine', JSON.stringify(selectedMedicine)); // Append the selected medicine array
+    formData.append('treatment', JSON.stringify(treatments));
+    // Append the treatment array
 
+    console.log('FormData:', formData); // Log the FormData object before sending the request
 
     axios.post('http://localhost:8800/api/medical-records', formData, {
       headers: {
@@ -141,6 +154,7 @@ function NewMedicalRecord() {
         }
       });
   };
+
 
   return (
     <Layout>
@@ -244,14 +258,13 @@ function NewMedicalRecord() {
                 {servicesData?.slice(1, 100).map((item) => (
                   <Checkboxe
                     label={item.name}
-                    checked={
-                      treatments.find((i) => i.name === item.name).checked
-                    }
-                    onChange={onChangeTreatments}
+                    checked={treatments.find((i) => i.name === item.name).checked}
+                    onChange={(checked) => onChangeTreatments(item.name, checked)} // Call onChangeTreatments with the treatment name and checked value
                     name={item.name}
                     key={item.id}
                   />
                 ))}
+
               </div>
             </div>
             <div className="flex w-full flex-col gap-4">
