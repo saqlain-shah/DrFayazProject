@@ -749,41 +749,41 @@ export function InvoiceProductsTable({ data, functions, button }) {
 // medicine Dosage table
 
 export function MedicineDosageTable({ data, functions, button }) {
-  const thclasse = 'text-start text-xs font-medium py-3 px-2 whitespace-nowrap';
-  const tdclasse = 'text-start text-xs py-4 px-2 whitespace-nowrap';
+  console.log("datas", data)
+  const thClass = 'text-start text-xs font-medium py-3 px-2 whitespace-nowrap';
+  const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclasse}>Item</th>
-          <th className={thclasse}>
+          <th className={thClass}>Item</th>
+          <th className={thClass}>
             Item Price
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
-          <th className={thclasse}>Dosage</th>
-          <th className={thclasse}>Instraction</th>
-          <th className={thclasse}>Quantity</th>
-          <th className={thclasse}>
-            Amout
+          <th className={thClass}>Dosage</th>
+          <th className={thClass}>Instruction</th>
+          <th className={thClass}>Quantity</th>
+          <th className={thClass}>
+            Amount
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
-          {button && <th className={thclasse}>Actions</th>}
+          {button && <th className={thClass}>Actions</th>}
         </tr>
       </thead>
       <tbody>
         {data?.map((item) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
-            <td className={tdclasse}>{item.name}</td>
-            <td className={tdclasse}>{item.price}</td>
-            <td className={tdclasse}>{item.id} - M/A/E</td>
-            <td className={tdclasse}>{item.instraction}</td>
-            <td className={tdclasse}>{item.id}</td>
-            <td className={tdclasse}>{item.price * item.id}</td>
+          <tr key={item.id} className="border-b border-border hover:bg-greyed transitions">
+            <td className={tdClass}>{item.item}</td>
+            <td className={tdClass}>{item.itemPrice}</td>
+            <td className={tdClass}>{item.dosage}</td>
+            <td className={tdClass}>{item.instruction}</td> {/* Corrected from item.instraction to item.instruction */}
+
+            <td className={tdClass}>{item.quantity}</td>
+            <td className={tdClass}>{item.amount}</td>
             {button && (
-              <td className={tdclasse}>
+              <td className={tdClass}>
                 <button
                   onClick={() => functions.delete(item.id)}
                   className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"

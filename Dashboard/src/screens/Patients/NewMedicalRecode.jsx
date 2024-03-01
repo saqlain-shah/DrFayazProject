@@ -21,7 +21,7 @@ function NewMedicalRecord() {
   const [vitalSigns, setVitalSigns] = useState('');
   const [error, setError] = useState('');
   const [prescription, setPrescription] = useState([]);
-  const [medicine, setMedicine] = useState([]);
+  const [medicineDosages, setMedicineDosages] = useState([]);
   const [treatments, setTreatments] = useState(
     servicesData.map((item) => ({
       name: item.name,
@@ -33,7 +33,9 @@ function NewMedicalRecord() {
 
 
   const addMedicineDosage = (medicineDosage) => {
-    console.log('Medicinee Dosage:', medicineDosage);
+    // Add the new medicine dosage to the medicine dosages state
+    setMedicineDosages(prevMedicineDosages => [...prevMedicineDosages, medicineDosage]);
+    console.log('Medicine Dosage:', medicineDosage);
   };
 
   const onChangeTreatments = (name, checked) => {
@@ -45,18 +47,18 @@ function NewMedicalRecord() {
 
 
 
-  const onChangeMedicine = (name, checked) => {
-    const updatedMedicineData = medicineData.map(item => {
-      if (item && item.name === name) {
-        return {
-          ...item,
-          checked: checked
-        };
-      }
-      return item;
-    });
-    setMedicine(updatedMedicineData); // Update the medicineData state
-  };
+  // const onChangeMedicine = (name, checked) => {
+  //   const updatedMedicineData = medicineData.map(item => {
+  //     if (item && item.name === name) {
+  //       return {
+  //         ...item,
+  //         checked: checked
+  //       };
+  //     }
+  //     return item;
+  //   });
+  //   setMedicine(updatedMedicineData); // Update the medicineData state
+  // };
 
 
   const onChangePrescription = (name, checked) => {
@@ -87,10 +89,10 @@ function NewMedicalRecord() {
       .filter(item => item.checked)
       .map(item => item.name);
 
-    // Filter checked medicine for selected medicine
-    selectedMedicine = medicine
-      .filter(item => item.checked)
-      .map(item => item.name);
+    // // Filter checked medicine for selected medicine
+    // selectedMedicine = medicine
+    //   .filter(item => item.checked)
+    //   .map(item => item.name);
 
     console.log('Prescription:', prescription);
     console.log('Selected Medicine:', selectedMedicine); // Log selected medicine
@@ -163,8 +165,6 @@ function NewMedicalRecord() {
           isOpen={isOpen}
           closeModal={() => setIsOpen(false)}
           addMedicineDosage={addMedicineDosage}
-          onChangeMedicine={onChangeMedicine}
-          medicine={medicine}
         />
       )}
       <div className="flex items-center gap-4">
@@ -234,15 +234,7 @@ function NewMedicalRecord() {
             <div className="flex w-full flex-col gap-4 mb-6">
               <p className="text-black text-sm">Medicine</p>
               <div className="w-full overflow-x-scroll">
-                <MedicineDosageTable
-                  data={medicineData.slice(0, 3)} // Ensure medicineData is properly initialized
-                  functions={{
-                    delete: (id) => {
-                      toast.error('This feature is not available yet');
-                    },
-                  }}
-                  button={true}
-                />
+                <MedicineDosageTable data={medicineDosages} />
               </div>
               <button
                 onClick={() => setIsOpen(true)}

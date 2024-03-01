@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import MedicalRecodModal from '../../components/Modals/MedicalRecodModal';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 function MedicalRecord() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,15 +15,17 @@ function MedicalRecord() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch medical records from the backend when the component mounts
     fetchMedicalRecords();
-  }, []); // Empty dependency array ensures the effect runs only once after initial render
+  }, []);
 
   const fetchMedicalRecords = async () => {
     try {
       const response = await axios.get('http://localhost:8800/api/medical-records');
-      console.log('Fetched medical records:', response.data.data); // Log fetched data
-      setMedicalRecords(response.data.data);
+      console.log('Fetched medical records:', response.data.data);
+      setMedicalRecords(response.data.data.map(record => ({
+        ...record,
+        treatment: record.treatment.map(t => t.name) // Assuming `treatment` is an array of objects
+      })));
     } catch (error) {
       console.error('Error fetching medical records:', error);
     }
@@ -36,7 +38,7 @@ function MedicalRecord() {
         <MedicalRecodModal
           closeModal={() => {
             setIsOpen(false);
-            setSelectedData(record); // Pass the entire record as selected data
+            setSelectedData(record);
           }}
           isOpen={isOpen}
           data={selectedData}
@@ -63,14 +65,11 @@ function MedicalRecord() {
             key={record.id}
             className="bg-dry items-start grid grid-cols-12 gap-4 rounded-xl border-[1px] border-border p-6"
           >
-
             <div className="col-span-12 md:col-span-2">
-              {/* Date */}
               <p className="text-xs text-textGray font-medium">{new Date(record.createdAt).toLocaleString()}</p>
             </div>
 
             <div className="col-span-12 md:col-span-6 flex flex-col gap-2">
-              {/* Rendering data */}
               {record.data?.map((item) => (
                 <p key={item.id} className="text-xs text-main font-light">
                   <span className="font-medium">{item.title}:</span>{' '}
@@ -78,41 +77,42 @@ function MedicalRecord() {
                 </p>
               ))}
 
-              {/* Render complaints */}
               {record.complaints && (
                 <p className="text-xs text-main font-light">
                   <span className="font-medium">Complaints:</span> {record.complaints.join(', ')}
                 </p>
               )}
 
-              {/* Render diagnosis */}
               {record.diagnosis && (
                 <p className="text-xs text-main font-light">
                   <span className="font-medium">Diagnosis:</span> {record.diagnosis}
                 </p>
               )}
 
-              {/* Render vital signs */}
               {record.vitalSigns && (
                 <p className="text-xs text-main font-light">
                   <span className="font-medium">Vital Signs:</span> {record.vitalSigns.join(', ')}
                 </p>
               )}
+
+              {record.treatment && (
+                <p className="text-xs text-main font-light">
+                  <span className="font-medium">Treatment:</span> {record.treatment.join(', ')}
+                </p>
+              )}
             </div>
 
             <div className="col-span-12 md:col-span-2">
-              {/* Price */}
               <p className="text-xs text-subMain font-semibold">
                 <span className="font-light text-main">(Tsh)</span> {record.amount}
               </p>
             </div>
 
             <div className="col-span-12 md:col-span-2 flex-rows gap-2">
-              {/* Actions */}
               <button
                 onClick={() => {
                   setIsOpen(true);
-                  setSelectedData(record); // Pass the entire record as selected data
+                  setSelectedData(record);
                 }}
                 className="text-sm flex-colo bg-white text-subMain border border-border rounded-md w-2/4 md:w-10 h-10"
               >
@@ -135,4 +135,3 @@ function MedicalRecord() {
 }
 
 export default MedicalRecord;
-

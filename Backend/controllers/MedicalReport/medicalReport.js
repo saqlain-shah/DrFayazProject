@@ -33,34 +33,35 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 export const createMedicalRecord = async (req, res) => {
     try {
         const { complaints, diagnosis, vitalSigns, prescription, treatment } = req.body;
-        const parsedTreatment = JSON.parse(treatment);
-
-
-
-        // Parse the prescription string back to an array of strings
-        const parsedPrescription = JSON.parse(prescription);
-
+        // Parse the treatment and prescription strings back to arrays
+        const parsedTreatment = treatment ? JSON.parse(treatment) : [];
+        // Filter the parsed treatment array to include only the checked treatments
+        const selectedTreatments = parsedTreatment.filter(item => item.checked);
         // Map over the files array to extract the file paths
         const attachments = req.files.map(file => file.path);
-
         // Create a new medical record instance
         const medicalRecord = new MedicalRecord({
             complaints,
             diagnosis,
             vitalSigns,
-            prescription: parsedPrescription, // Assign the parsed prescription array
-            treatment: parsedTreatment,
+            prescription,
+            treatment: selectedTreatments, // Assign the filtered treatment array
             attachments // Attach the file paths to the medical record
         });
 
+
+
         // Save the medical record to the database
         await medicalRecord.save();
+
+        console.log('Medical record saved successfully');
 
         // Include the attachment data in the response
         const responseData = {
             message: 'Medical record created successfully',
             data: { ...medicalRecord.toObject(), attachments }
         };
+
 
         // Send a success response
         res.status(201).json(responseData);
@@ -70,6 +71,7 @@ export const createMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
+
 
 
 
