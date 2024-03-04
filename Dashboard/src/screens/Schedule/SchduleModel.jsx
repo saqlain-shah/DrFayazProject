@@ -5,9 +5,10 @@ import {
 } from '../../components/Form';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
-import DatePicker from 'react-datepicker'; // Import DatePicker
+import DatePicker from 'react-datepicker';
+import axios from 'axios'; // Import axios
 
-import 'react-datepicker/dist/react-datepicker.css'; // Import DatePicker styles
+import 'react-datepicker/dist/react-datepicker.css';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     const [startDateTime, setStartDateTime] = useState(new Date());
@@ -18,7 +19,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         whatsapp: false,
     });
 
-    // Set data
     useEffect(() => {
         if (appointmentData?.title) {
             setStartDateTime(new Date(appointmentData?.start));
@@ -31,8 +31,25 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         // Here you can handle saving the appointment
         // You can use startDateTime, endDateTime, and shares state values
         // For example, you can send a request to your backend API to save the appointment
-        toast.error('This feature is not available yet');
-        closeModal();
+
+        const appointmentPayload = {
+            startDateTime,
+            endDateTime,
+            shares
+        };
+
+        axios.post('http://localhost:8800/api/schdule', appointmentPayload)
+            .then(response => {
+                // Handle success
+                toast.success('Appointment saved successfully');
+                closeModal();
+            })
+            .catch(error => {
+                // Handle error
+                console.error('Error saving appointment:', error);
+                toast.error('Failed to save appointment');
+            });
+        console.log("appointment date", appointmentPayload)
     };
 
     return (

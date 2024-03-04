@@ -120,7 +120,7 @@ function Services() {
               placeholder='Search "teeth cleaning"'
               className="h-14 w-full text-sm text-main rounded-md bg-dry border border-border px-4"
             />
-            <Selects
+            <Select
               selectedPerson={status}
               setSelectedPerson={setStatus}
               datas={[
@@ -133,7 +133,7 @@ function Services() {
               <div className="w-full flex-btn text-main text-sm p-4 border bg-dry border-border font-light rounded-lg focus:border focus:border-subMain">
                 {status.name} <BiChevronDown className="text-xl" />
               </div>
-            </Selects>
+            </Select>
           </div>
 
           <Button

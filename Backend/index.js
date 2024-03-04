@@ -13,6 +13,7 @@ import healthInfoRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
+import schduleRoutes from './routes/schedule.js'
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -44,6 +45,7 @@ app.get('/api/auth/google/callback', passport.authenticate('google', { failureRe
 app.use('/api/auth', authRoute);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/schdule', schduleRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);

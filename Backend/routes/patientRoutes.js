@@ -13,5 +13,7 @@ router.route('/:id')
     .put(patientController.updatePatient)
     .delete(patientController.deletePatient);
 
-export default router;
+// Add route for changing patient's password
+router.put('/:userId/change-password', patientController.changePassword);
 
+export default router;

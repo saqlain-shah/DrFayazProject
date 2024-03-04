@@ -1,6 +1,5 @@
 // PersonalInfo.jsx
 import React, { useState } from 'react';
-
 import { sortsDatas } from '../Datas';
 import { Button, DatePickerComp, Select, Input } from '../Form';
 import { BiChevronDown } from 'react-icons/bi';
@@ -9,7 +8,7 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import axios from 'axios';
 
-function PersonalInfo({ titles }) {
+function PersonalInfo({ titles, onSave }) {
   const [profilePicture, setImageUrl] = useState('');
   const [title, setTitle] = useState(sortsDatas.title[0]);
   const [date, setDate] = useState(new Date());
@@ -42,7 +41,7 @@ function PersonalInfo({ titles }) {
         },
       });
 
-      toast.success('Patient created successfully');
+      toast.success('Patient created and Update successfully');
 
       // Reset form fields after successful save
       setImageUrl('');

@@ -135,5 +135,41 @@ export const deletePatient = async (req, res, next) => {
     }
 };
 
+export const changePassword = async (req, res) => {
+    const { id: patientId, oldPassword, newPassword } = req.body;
+
+    try {
+        // Find the patient by ID
+        const patient = await Patient.findById(patientId);
+
+        // Log the received patient ID
+        console.log('Received patient ID:', patientId);
+
+        // Check if the patient exists
+        if (!patient) {
+            return res.status(404).json({ message: 'Patient not found' });
+        }
+
+        // Check if the old password matches
+        const isMatch = await bcrypt.compare(oldPassword, patient.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid old password' });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the patient's password
+        patient.password = hashedPassword;
+        await patient.save();
+
+        // Send a success response
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 
 export default Patient;
