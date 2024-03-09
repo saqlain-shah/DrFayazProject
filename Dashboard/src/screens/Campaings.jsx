@@ -5,7 +5,6 @@ import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
 import { HiOutlineMail } from 'react-icons/hi';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { FaShare } from "react-icons/fa";
-
 import { toast } from 'react-hot-toast';
 import { campaignData } from '../components/Datas';
 import { TbBrandWhatsapp, TbMessage } from 'react-icons/tb';
@@ -15,10 +14,40 @@ import { FiEye } from 'react-icons/fi';
 function Campaings() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [data, setData] = React.useState({});
+  const [showShareOptions, setShowShareOptions] = React.useState(false);
 
   const closeModal = () => {
     setIsOpen(!isOpen);
     setData({});
+  };
+
+  const shareViaWhatsApp = (item) => {
+    const message = `Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    setShowShareOptions(false);
+  };
+
+  const shareViaEmail = (item) => {
+    const subject = encodeURIComponent("Check out this campaign");
+    const body = encodeURIComponent(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`);
+    const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=&su=${subject}&body=${body}`;
+    
+    window.open(gmailUrl, '_blank');
+    setShowShareOptions(false);
+};
+
+
+
+
+  
+  
+  
+  
+  
+
+  const toggleShareOptions = () => {
+    setShowShareOptions(!showShareOptions);
   };
 
   const actions = [
@@ -40,9 +69,7 @@ function Campaings() {
     {
       title: "Share",
       icon: FaShare,
-      onClick: () => {
-        toast.error("This feature is not available yet");
-      },
+      onClick: toggleShareOptions,
     },
   ];
 
@@ -114,6 +141,13 @@ function Campaings() {
                 </span>
               </div>
             </div>
+            {/* Share options */}
+            {showShareOptions && (
+              <div className="mt-4 flex gap-4">
+                <Button label="Share via WhatsApp" onClick={() => shareViaWhatsApp(item)} />
+                <Button label="Share via Email" onClick={() => shareViaEmail(item)} />
+              </div>
+            )}
           </div>
         ))}
       </div>
