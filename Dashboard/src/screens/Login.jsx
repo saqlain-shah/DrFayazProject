@@ -4,9 +4,11 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../AuthContext';
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,16 +17,16 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Send a POST request to your authentication endpoint
       const response = await axios.post('http://localhost:8800/api/auth/login', {
         email,
         password,
       });
       if (response.status === 200) {
+        const { token, userId } = response.data; // Assuming your backend sends back both token and userId
+        login(token, userId); // Update authentication state with token and userId
         toast.success('Login successful');
         navigate('/');
       } else {
-        // Handle other status codes if needed
         console.error('Login failed:', response.data);
       }
     } catch (error) {
@@ -35,13 +37,16 @@ function Login() {
     }
   };
 
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
         <img
           src="/images/logo.png"
           alt="logo"
-          className="w-48 h-16 object-contain"
+          className="w-48 h-16 object-contain mb-4"
         />
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input
@@ -61,12 +66,22 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <Button
-          label={loading ? 'Logging in...' : 'Login'}
-          Icon={BiLogInCircle}
-          disabled={loading}
-          type="submit"
-        />
+        <div className="flex justify-between items-center">
+          <Button
+            label={loading ? 'Logging in...' : 'Login'}
+            Icon={BiLogInCircle}
+            disabled={loading}
+            type="submit"
+          />
+          <div style={{ marginLeft: '10px' }}>
+            <Button
+              label="Register"
+              onClick={handleRegisterClick}
+              color="primary"
+            />
+          </div>
+        </div>
+
       </form>
     </div>
   );

@@ -18,7 +18,13 @@ function Services() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get('http://localhost:8800/api/services');
+        // Fetch token from wherever you store it (e.g., localStorage)
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8800/api/services', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setServicesData(response.data);
       } catch (error) {
         console.error('Error fetching services:', error);

@@ -1,4 +1,3 @@
-// AppointmentsUsed.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AppointmentTable } from '../Tables';
@@ -12,7 +11,12 @@ function AppointmentsUsed({ doctor }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/api/appointments');
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8800/api/appointments', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setAppointments(response.data);
       } catch (error) {
         console.error('Error fetching appointment data:', error);
@@ -72,28 +76,3 @@ function AppointmentsUsed({ doctor }) {
 }
 
 export default AppointmentsUsed;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

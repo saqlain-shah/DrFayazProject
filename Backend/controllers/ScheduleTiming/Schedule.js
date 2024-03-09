@@ -3,13 +3,13 @@ import Schedule from '../../models/ScheduleTiming/Schedule.js';
 const scheduleController = {
     saveSchedule: async (req, res) => {
         try {
-            const { startDateTime, endDateTime, shares } = req.body;
+            const { startDateTime, endDateTime, ...appointmentData } = req.body;
 
             // Create new schedule instance
             const schedule = new Schedule({
                 startDateTime,
                 endDateTime,
-                shares
+                ...appointmentData
             });
 
             // Save schedule to the database

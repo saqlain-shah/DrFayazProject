@@ -3,7 +3,7 @@ import { DatePicker } from 'antd';
 
 const SelectDateAndTime = ({ content, handleDateChange, disabledDateTime, selectedDate, dContent, selectTime }) => {
     return (
-        <div style={{ marginTop: '5rem'}}>
+        <div style={{ marginTop: '5rem' }}>
             <div>
                 <h5 className='text-title'>Selected Doctor</h5>
                 {content}
@@ -23,7 +23,7 @@ const SelectDateAndTime = ({ content, handleDateChange, disabledDateTime, select
 
                 <div className="col-md-7 col-sm-12 mt-3">
                     {selectedDate && <h5 className='text-title mb-3'>Selected Date: {selectedDate && moment(selectedDate).format('LL')}
-                        {selectTime && 'Time :' + selectTime}</h5> }
+                        {selectTime && 'Time :' + selectTime}</h5>}
                     <div className="date-card rounded">
                         <div className="row text-center mt-3">
                             {

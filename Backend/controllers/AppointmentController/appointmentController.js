@@ -6,8 +6,8 @@ export const createAppointment = async (req, res, next) => {
         const { patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
 
         // Validate required fields
-        if (!patientName || !purposeOfVisit || !dateOfVisit || !startTime || !endTime) {
-            return res.status(400).json({ error: 'Patient name, purpose of visit, date of visit, start time, and end time are required.' });
+        if (!startTime || !endTime) {
+            return res.status(400).json({ error: 'Patient names, purpose of visit, date of visit, start time, and end time are required.' });
         }
 
         // Create a new appointment instance

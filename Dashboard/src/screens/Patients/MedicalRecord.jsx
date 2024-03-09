@@ -20,7 +20,10 @@ function MedicalRecord() {
 
   const fetchMedicalRecords = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/medical-records');
+      const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+      const response = await axios.get('http://localhost:8800/api/medical-records', {
+        headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+      });
       console.log('Fetched medical records:', response.data.data);
       setMedicalRecords(response.data.data.map(record => ({
         ...record,

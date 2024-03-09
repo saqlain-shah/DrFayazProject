@@ -86,8 +86,8 @@ const CustomToolbar = (toolbar) => {
                     : goToDay
               }
               className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
-                  ? 'bg-subMain text-white'
-                  : 'text-subMain'
+                ? 'bg-subMain text-white'
+                : 'text-subMain'
                 }`}
             >
               {item.view === 'month' ? (

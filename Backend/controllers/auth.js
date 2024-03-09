@@ -1,40 +1,81 @@
+// controllers/authController.js
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
 import { createError } from '../utils/error.js';
+import User from '../models/User.js'; // Import your User model
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    // Check if email and password are provided
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
-    }
-
-    // Check if user exists in the database
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Check if password is correct
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
+    // Compare trimmed password using bcrypt
+    const isValidPassword = await bcrypt.compare(password.trim(), user.password);
+    if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate JWT token for authentication
-    const expiresIn = 90 * 24 * 60 * 60; // 90 days in seconds
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn });
+    // Generate token upon successful login
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
 
-    // Send JWT token in response as a cookie named "access_token"
-    res.cookie("access_token", token, { httpOnly: true }).status(200).json({ message: "Login successful", token });
-
+    // Send token in response
+    res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
     console.error('Error logging in:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const register = async (req, res, next) => {
+  const { name, email, password } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    const newUser = new User({ name, email, password });
+    await newUser.save();
+
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
+    res.cookie('access_token', token, { httpOnly: true }).status(201).json({ message: 'Registration successful', token });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+export const changePassword = async (req, res, next) => {
+  const { userId, oldPassword, newPassword } = req.body;
+
+  try {
+    console.log('Request body:', req.body); // Log the request body to check userId, oldPassword, and newPassword
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('User found:', user); // Log the user object to check if the correct user is retrieved
+
+    // Check if the provided old password matches the password in the database
+    const isPasswordValid = await user.comparePassword(oldPassword);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid old password' });
+    }
+
+    // Hash the new password before saving it
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };

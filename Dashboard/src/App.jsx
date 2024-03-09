@@ -12,7 +12,8 @@
 // ********* This is the main component of the website *********
 import 'tailwindcss/tailwind.css';
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
 import Toast from './components/Notifications/Toast';
@@ -37,8 +38,16 @@ import Receptions from './screens/Receptions';
 import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
+import Register from './screens/Register'; // Import the Register component
 import Schedule from './screens/Schedule/Schedule';
+import { useAuth } from './AuthContext'; // Import useAuth
+import { Navigate } from 'react-router-dom';
 
+function PrivateRoute({ element, ...props }) {
+  const { user } = useAuth();
+
+  return user ? element : <Navigate to="/login" replace />;
+}
 
 function App() {
   Aos.init();
@@ -50,7 +59,16 @@ function App() {
       {/* Routes */}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> {/* Add registration route */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute
+                element={<Dashboard />}
+              />
+            }
+          />
           {/* invoce */}
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/invoices/create" element={<CreateInvoice />} />
@@ -73,7 +91,6 @@ function App() {
           {/* reception */}
           <Route path="/receptions" element={<Receptions />} />
           {/* others */}
-          <Route path="/login" element={<Login />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/campaigns" element={<Campaings />} />
           <Route path="/medicine" element={<Medicine />} />
@@ -87,10 +104,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-

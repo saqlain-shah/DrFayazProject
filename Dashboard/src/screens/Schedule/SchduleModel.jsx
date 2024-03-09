@@ -32,13 +32,20 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         // You can use startDateTime, endDateTime, and shares state values
         // For example, you can send a request to your backend API to save the appointment
 
+        // Fetch token from localStorage
+        const token = localStorage.getItem('token');
+
         const appointmentPayload = {
             startDateTime,
             endDateTime,
             shares
         };
 
-        axios.post('http://localhost:8800/api/schdule', appointmentPayload)
+        axios.post('http://localhost:8800/api/appointments', appointmentPayload, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
             .then(response => {
                 // Handle success
                 toast.success('Appointment saved successfully');
@@ -49,6 +56,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
                 console.error('Error saving appointment:', error);
                 toast.error('Failed to save appointment');
             });
+
         console.log("appointment date", appointmentPayload)
     };
 

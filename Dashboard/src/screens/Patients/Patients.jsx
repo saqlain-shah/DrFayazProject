@@ -22,8 +22,10 @@ function Patients() {
 
     const fetchPatients = async () => {
       try {
+        const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
         const response = await axios.get('http://localhost:8800/api/patients', {
-          params: { search: searchQuery, gender: gender.value, sortBy }
+          params: { search: searchQuery, gender: gender.value, sortBy },
+          headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
         });
         console.log('Received patients:', response.data);
         setPatients(response.data);
@@ -43,11 +45,15 @@ function Patients() {
 
   const handleDelete = async (patientId) => {
     try {
-      // Make an API call to delete the patient with the provided ID
-      await axios.delete(`http://localhost:8800/api/patients/${patientId}`);
+      const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+      // Make an API call to delete the patient with the provided ID and include the token in the headers
+      await axios.delete(`http://localhost:8800/api/patients/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       // Refetch the patients after deletion
       const response = await axios.get('http://localhost:8800/api/patients', {
-        params: { search: searchQuery, gender: gender.value, sortBy }
+        params: { search: searchQuery, gender: gender.value, sortBy },
+        headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
       });
       setPatients(response.data);
       toast.success('Patient deleted successfully');
@@ -56,6 +62,7 @@ function Patients() {
       toast.error('Failed to delete patient');
     }
   };
+
 
 
   // Function to handle sorting change

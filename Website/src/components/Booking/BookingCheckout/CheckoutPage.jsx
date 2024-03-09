@@ -2,16 +2,26 @@ import moment from 'moment';
 import img from '../../../images/doc/doctor 3.jpg';
 import { Link } from 'react-router-dom';
 import './BookingCheckout.css';
-
-const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime }) => {
+import { useState, useEffect } from 'react';
+const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime, setIsConfirmDisable, setIsDisable }) => {
     const { nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv, paymentType, paymentMethod } = selectValue;
     const handleCheck = () => {
         setIsChecked(!isCheck)
     }
 
     let price = data?.price ? data.price : 60;
+    const formattedSelectedTime = moment(selectTime, 'HH:mm:ss').format('hh:mm A');
+    const vat = (15 / 100) * (Number(price));
 
-    const vat = (15 / 100) * (Number(price))
+    useEffect(() => {
+        const { firstName, lastName, email, phone, reasonForVisit } = selectValue;
+        const isInputEmpty = !firstName || !lastName || !email || !phone || !reasonForVisit;
+        const isPaymentFieldsFilled = nameOnCard && cardNumber && expiredMonth && cardExpiredYear && cvv && paymentType && paymentMethod;
+
+        // Check if selectTime is not empty or null
+        setIsDisable(isInputEmpty || !selectTime || selectTime === '' || !isPaymentFieldsFilled); // Include isPaymentFieldsFilled in the condition
+    }, [selectValue, selectTime]); // Remove IsDisable from the dependency array
+
     return (
         <div className="container mt-5">
             <div className="row">
@@ -111,7 +121,7 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                 </div>
 
                 <div className="col-md-5 col-sm-12">
-                    <div className="rounded p-3" style={{ background: "#f8f9fa" }}>
+                    {/* <div className="rounded p-3" style={{ background: "#f8f9fa" }}>
                         {data && <Link to={`/doctors/profile/${data?.id}`} className="booking-doc-img d-flex justify-content-center mb-2">
                             <img src={img} alt="" />
                         </Link>}
@@ -128,7 +138,7 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                         <div className="booking-item-wrap">
                             <ul className="booking-date">
                                 <li>Date <span>{moment(selectedDate).format('LL')}</span></li>
-                                <li>Time <span>{selectTime}</span></li>
+                                <li>Time <span>{formattedSelectedTime}</span></li>
                             </ul>
                             <ul className="booking-fee">
                                 <li>Consulting Fee <span>${price}</span></li>
@@ -143,7 +153,7 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                                 </li>
                             </ul>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

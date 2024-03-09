@@ -1,5 +1,32 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
 const PersonalInformation = ({ handleChange, selectValue }) => {
-    const { firstName, lastName, email, phone, reasonForVisit, description, address } = selectValue
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Get token from localStorage
+
+            const response = await axios.post('http://localhost:8800/api/appointment', selectValue, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include token in request headers
+                },
+            });
+            setData(response.data);
+            console.log('Response data:', response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+
+    const { firstName, lastName, email, phone, reasonForVisit, description, address } = selectValue;
+
     return (
         <form className="rounded p-3 mt-5" style={{ background: "#f8f9fa" }}>
             <div className="row">

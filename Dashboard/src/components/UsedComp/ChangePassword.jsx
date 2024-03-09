@@ -3,25 +3,49 @@ import { Button, Input } from '../Form';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useAuth } from '../../AuthContext';
 
-function ChangePassword({ userId }) {
-  console.log("ChangePassword component received userId:", userId);
+function ChangePassword() {
+  const { user } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChangePassword = async () => {
+    if (!user) {
+      console.log('User is not logged in');
+      // Handle the case where the user is not logged in
+      return;
+    }
+
+    // Log user ID to ensure it's correctly retrieved from authentication context
+    console.log('User ID:', user.id);
+
+    setLoading(true);
     try {
-      // Check if new password matches confirmation
+      // Validate passwords
       if (newPassword !== confirmPassword) {
-        return toast.error('New password and confirm password do not match');
+        throw new Error('New password and confirm password do not match');
       }
 
-      // Make API request to change password
-      await axios.put(`http://localhost:8800/api/patients/${userId}/change-password`, {
-        oldPassword,
-        newPassword,
-      });
+      // Get the token from local storage
+      const token = localStorage.getItem('token');
+
+      // Make API request to change password with authorization header
+      const response = await axios.put(
+        'http://localhost:8800/api/auth/change-password',
+        {
+          userId: user.id,
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        }
+      );
 
       toast.success('Password changed successfully');
       // Clear input fields
@@ -29,14 +53,15 @@ function ChangePassword({ userId }) {
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error('Error changing password:', error);
-      toast.error('Failed to change password');
+      console.error('Error changing password:', error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-
   return (
-    <div className="flex-colo gap-4">
+    <div className="flex-col gap-4">
       {/* old password */}
       <Input
         label="Old Password"
@@ -72,3 +97,4 @@ function ChangePassword({ userId }) {
 }
 
 export default ChangePassword;
+

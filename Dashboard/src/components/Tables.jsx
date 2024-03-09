@@ -331,20 +331,17 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   );
 }
 
-
-
-
-
 // patient table
-export function PatientTable({ data, functions, used }) {
+export function PatientTable({ data, functions }) {
   const navigate = useNavigate();
+
   const DropDown1 = [
     {
       title: 'View',
       icon: FiEye,
       onClick: (item) => {
-        navigate(`/patients/preview/${item._id}`);
-
+        // Navigate to patient profile with additional data
+        navigate(`/patients/preview/${item._id}`, { state: { profileData: item } });
       },
     },
     {
@@ -384,12 +381,13 @@ export function PatientTable({ data, functions, used }) {
             {/* Table cells */}
             <td className={tdClass}>{index + 1}</td>
             <td className={tdClass}>
-              <td className={tdClass}>
-                {item.profilePicture && (
-                  <img src={`http://localhost:8800/${item.profilePicture}`} alt={item.fullName} className="w-full h-12 rounded-full object-cover border border-border" />
-                )}
-
-              </td>
+              {item.profilePicture && (
+                <img
+                  src={`http://localhost:8800/${item.profilePicture}`}
+                  alt={item.fullName}
+                  className="w-full h-11 rounded-full object-cover border border-border"
+                />
+              )}
             </td>
             {/* Add more cells for other data */}
             <td className={tdClass}>{item.fullName}</td>
@@ -409,9 +407,10 @@ export function PatientTable({ data, functions, used }) {
             <td className={tdClass}>
               <MenuSelect datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                  <BiDotsHorizontalRounded />
+                  <FiEye />
                 </div>
               </MenuSelect>
+
             </td>
           </tr>
         ))}
@@ -420,8 +419,10 @@ export function PatientTable({ data, functions, used }) {
   );
 }
 
-// doctor table
 export function DoctorsTable({ data, functions, doctor }) {
+  const thclass = 'py-3 px-4 text-left font-semibold';
+  const tdclass = 'py-3 px-4';
+
   const DropDown1 = [
     {
       title: 'View',
@@ -433,50 +434,43 @@ export function DoctorsTable({ data, functions, doctor }) {
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: () => {
-        toast.error('This feature is not available yet');
+      onClick: (data) => {
+        functions.delete(data.id); // Call the delete function with the doctor's id
       },
     },
   ];
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
           <th className={thclass}>#</th>
           <th className={thclass}>{doctor ? 'Doctor' : 'Receptionist'}</th>
+          <th className={thclass}>FullName</th>
           <th className={thclass}>Created At</th>
           <th className={thclass}>Phone</th>
-          <th className={thclass}>Title</th>
           <th className={thclass}>Email</th>
           <th className={thclass}>Actions</th>
         </tr>
       </thead>
       <tbody>
         {data.map((item, index) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
+          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
             <td className={tdclass}>{index + 1}</td>
             <td className={tdclass}>
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={item.user.image}
-                    alt={item.user.title}
+                    src={`http://localhost:8800/${item.profileImage.replace(/\\/g, '/')}`}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>
-                <h4 className="text-sm font-medium">{item.user.title}</h4>
               </div>
             </td>
-            <td className={tdclass}>12 May, 2021</td>
-            <td className={tdclass}>
-              <p className="text-textGray">{item.user.phone}</p>
-            </td>
-            <td className={tdclass}>{item.title}</td>
-            <td className={tdclass}>{item.user.email}</td>
-
+            <td className={tdclass}>{item.fullName}</td>
+            <td className={tdclass}>{item.createdAt}</td>
+            <td className={tdclass}>{item.phone}</td>
+            <td className={tdclass}>{item.email}</td>
             <td className={tdclass}>
               <MenuSelect datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
@@ -497,10 +491,14 @@ export function AppointmentTable({ functions }) {
 
   useEffect(() => {
     // Fetch appointments data and set state
-    // Replace this with your actual data fetching logic
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8800/api/appointments');
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8800/api/appointments', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setAppointments(data);
       } catch (error) {
@@ -510,6 +508,22 @@ export function AppointmentTable({ functions }) {
 
     fetchData();
   }, []); // Run only once on component mount
+
+  const thclass = 'py-3 px-4 text-left font-semibold';
+  const tdclass = 'py-3 px-4';
+
+  const getStatusClass = (status) => {
+    // Define your status class logic here
+    // Return the appropriate class based on the status
+    // For example:
+    if (status === 'Pending') {
+      return 'bg-yellow-500';
+    } else if (status === 'Completed') {
+      return 'bg-green-500';
+    } else {
+      return 'bg-blue-500';
+    }
+  };
 
   return (
     <table className="table-auto w-full">
