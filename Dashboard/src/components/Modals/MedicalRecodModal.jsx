@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from './Modal';
 import { Button } from '../Form';
 import { FiEye } from 'react-icons/fi';
-import { MedicineDosageTable } from '../../components/Tables'
+import { MedicineDosageTable } from '../../components/Tables';
+
 function MedicalRecodModal({ closeModal, isOpen, data }) {
-  const { prescription, attachments } = data;
+  const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
+  const [showMedicineDosages, setShowMedicineDosages] = useState(false);
   const medicineDosages = prescription ? prescription.medicines : [];
-  console.log("fetch", data)
-  console.log("medicineDosages", medicineDosages)
 
   return (
     <Modal
@@ -25,7 +25,7 @@ function MedicalRecodModal({ closeModal, isOpen, data }) {
               <p className="text-sm font-medium">Prescriptions</p>
             </div>
             <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
-              <MedicineDosageTable data={medicineDosages} />
+              {showMedicineDosages && <MedicineDosageTable data={medicineDosages} />}
             </div>
           </div>
         )}
@@ -48,15 +48,53 @@ function MedicalRecodModal({ closeModal, isOpen, data }) {
           </div>
         </div>
 
-        {/* View Invoice */}
-        <div className="flex justify-end items-center w-full">
-          <div className="md:w-3/4 w-full">
-            <Button
-              label="View Invoice"
-              Icon={FiEye}
-            // onClick={/* Handle View Invoice click */}
-            />
+        {/* Render Complaints */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Complaints:</p>
           </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{complaints}</p>
+          </div>
+        </div>
+
+        {/* Render Diagnosis */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Diagnosis:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{diagnosis}</p>
+          </div>
+        </div>
+
+        {/* Render Vital Signs */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Vital Signs:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{vitalSigns}</p>
+          </div>
+        </div>
+
+        {/* Render Treatment */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Treatment:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{treatment}</p>
+          </div>
+        </div>
+
+        {/* Render eye icon to toggle MedicineDosageTable */}
+        <div className="flex items-center justify-end">
+          <FiEye
+            className="cursor-pointer mr-2"
+            onClick={() => setShowMedicineDosages(!showMedicineDosages)}
+          />
+          <p>Show Medicine Dosages</p>
         </div>
       </div>
     </Modal>
@@ -64,6 +102,3 @@ function MedicalRecodModal({ closeModal, isOpen, data }) {
 }
 
 export default MedicalRecodModal;
-
-
-

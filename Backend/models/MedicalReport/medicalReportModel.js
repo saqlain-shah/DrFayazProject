@@ -24,11 +24,12 @@ const medicalRecordSchema = new mongoose.Schema(
             medicines: [{
                 name: { type: String, required: true },
                 quantity: { type: Number, required: true },
-                dosage: { type: String, required: true }
+                dosage: { type: String, required: true },
+                instructions: { type: String, required: true }
             }],
-            instructions: {
-                type: String
-            }
+            // instructions: {
+            //     type: String
+            // }
         },
         attachments: {
             type: [String] // Array of attachment URLs

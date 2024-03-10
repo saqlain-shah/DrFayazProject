@@ -17,7 +17,7 @@ const SelectApppointment = ({ appointmentSlots, selectedDate, setSelectedDate, s
         <div>
             <h2>Select Appointment</h2>
             {/* Render your appointment slots here */}
-            {appointmentSlots.map((slot) => (
+            {appointmentSlots && appointmentSlots.map((slot) => (
                 <div key={slot.id}>
                     <div>Date: {moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                     <div>Time: {moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>

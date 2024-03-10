@@ -332,10 +332,17 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
 }
 
 // patient table
-export function PatientTable({ data, functions }) {
+export function PatientTable({ data, functions,onEdit }) {
   const navigate = useNavigate();
 
   const DropDown1 = [
+    {
+      title: 'Edit',
+      icon: FiEdit,
+      onClick: (item) => {
+        onEdit(item);
+      },
+    },
     {
       title: 'View',
       icon: FiEye,
@@ -354,70 +361,73 @@ export function PatientTable({ data, functions }) {
     },
   ];
 
-  const thClass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
+  const thClass = 'text-start text-sm font-medium py-3 px-1 whitespace-nowrap'; // Decrease px value for header width
   const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
 
   return (
-    <table className="table-auto w-full">
-      {/* Table headers */}
-      <thead className="bg-dry rounded-md overflow-hidden">
-        <tr>
-          <th className={thClass}>#</th>
-          <th className={thClass}>Image</th>
-          <th className={thClass}>Full Name</th>
-          <th className={thClass}>Gender</th>
-          <th className={thClass}>Blood Group</th>
-          <th className={thClass}>Address</th>
-          <th className={thClass}>Email</th>
-          <th className={thClass}>Emergency Contact</th>
-          <th className={thClass}>Created At</th>
-          <th className={thClass}>Actions</th>
-        </tr>
-      </thead>
-      {/* Table body */}
-      <tbody>
-        {data.map((item, index) => (
-          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-            {/* Table cells */}
-            <td className={tdClass}>{index + 1}</td>
-            <td className={tdClass}>
-              {item.profilePicture && (
-                <img
-                  src={`http://localhost:8800/${item.profilePicture}`}
-                  alt={item.fullName}
-                  className="w-full h-11 rounded-full object-cover border border-border"
-                />
-              )}
-            </td>
-            {/* Add more cells for other data */}
-            <td className={tdClass}>{item.fullName}</td>
-            <td className={tdClass}>
-              <span
-                className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
-                  } bg-opacity-10 text-xs rounded-xl`}
-              >
-                {item.gender}
-              </span>
-            </td>
-            <td className={tdClass}>{item.bloodGroup}</td>
-            <td className={tdClass}>{item.address}</td>
-            <td className={tdClass}>{item.email}</td>
-            <td className={tdClass}>{item.emergencyContact}</td>
-            <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
-            <td className={tdClass}>
-              <MenuSelect datas={DropDown1} item={item}>
-                <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                  <FiEye />
-                </div>
-              </MenuSelect>
-
-            </td>
+    <div className="overflow-x-auto">
+      <table className="table-auto">
+        {/* Table headers */}
+        <thead className="bg-dry rounded-md overflow-hidden">
+          <tr>
+            <th className={thClass} style={{ width: '2%' }}>#</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Image</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Full Name</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Gender</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Blood Group</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Address</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Email</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Emergency Contact</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Created At</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '5%' }}>Actions</th> {/* Adjust width as needed */}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        {/* Table body */}
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+              {/* Table cells */}
+              <td className={tdClass}>{index + 1}</td>
+              <td className={tdClass}>
+                {item.profilePicture && (
+                  <img
+                    src={`http://localhost:8800/${item.profilePicture}`}
+                    alt={item.fullName}
+                    className="w-full h-11 rounded-full object-cover border border-border"
+                  />
+                )}
+              </td>
+              {/* Add more cells for other data */}
+              <td className={tdClass}>{item.fullName}</td>
+              <td className={tdClass}>
+                <span
+                  className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+                    } bg-opacity-10 text-xs rounded-xl`}
+                >
+                  {item.gender}
+                </span>
+              </td>
+              <td className={tdClass}>{item.bloodGroup}</td>
+              <td className={tdClass}>{item.address}</td>
+              <td className={tdClass}>{item.email}</td>
+              <td className={tdClass}>{item.emergencyContact}</td>
+              <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
+              <td className={tdClass} style={{ position: 'relative' }}>
+                <MenuSelect datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
+
+
 
 export function DoctorsTable({ data, functions, doctor }) {
   const thclass = 'py-3 px-4 text-left font-semibold';

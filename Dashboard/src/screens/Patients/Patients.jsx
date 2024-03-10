@@ -1,59 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { sortsDatas } from '../../components/Datas';
-import { Link, useNavigate } from 'react-router-dom';
-import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import { MdFilterList } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { BiPlus } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
-import { Button, FromToDate, Select } from '../../components/Form';
 import { PatientTable } from '../../components/Tables';
 import axios from 'axios';
-
+import DatePicker from "react-datepicker"; // Import the date picker component
+import "react-datepicker/dist/react-datepicker.css"; // Import the styles for the date picker
+import AddEditPatientModal  from './EditPatient';
 function Patients() {
+  const [isOpen, setIsOpen] = useState(false);
   const [patients, setPatients] = useState([]);
-  const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
-  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-  const [sortBy, setSortBy] = useState('new'); // State for sorting
-  const navigate = useNavigate();
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState(null); // State for the start date filter
 
-  useEffect(() => {
-    console.log('Gender state before fetching patients:', gender); // Log the gender state before making the API request
-
-    const fetchPatients = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+  const fetchPatients = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const formattedDate = startDate ? startDate.toLocaleDateString('en-US') : ''; // Format selected date as MM/DD/YYYY
         const response = await axios.get('http://localhost:8800/api/patients', {
-          params: { search: searchQuery, gender: gender.value, sortBy },
-          headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+            params: { search: searchQuery, startDate: formattedDate }, // Include the formatted date
+            headers: { Authorization: `Bearer ${token}` }
         });
-        console.log('Received patients:', response.data);
         setPatients(response.data);
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching patients:', error);
         toast.error('Failed to fetch patients');
-      }
-    };
-
-    fetchPatients();
-  }, [searchQuery, gender, sortBy]);
+    }
+};
 
 
-  const handleGenderChange = (selectedGender) => {
-    setGender(selectedGender.value); // Update to set the gender value
-  };
+  useEffect(() => {
+    fetchPatients(); // Call fetchPatients function on component mount and when dependencies change
+  }, [searchQuery, startDate]);
+
 
   const handleDelete = async (patientId) => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
-      // Make an API call to delete the patient with the provided ID and include the token in the headers
+      const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:8800/api/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Refetch the patients after deletion
       const response = await axios.get('http://localhost:8800/api/patients', {
-        params: { search: searchQuery, gender: gender.value, sortBy },
-        headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+        params: { search: searchQuery, startDate }, // Include the startDate parameter
+        headers: { Authorization: `Bearer ${token}` }
       });
       setPatients(response.data);
       toast.success('Patient deleted successfully');
@@ -65,13 +56,38 @@ function Patients() {
 
 
 
-  // Function to handle sorting change
-  const handleSortChange = (value) => {
-    // Toggle between 'new' and 'old' when the same option is clicked again
-    const newSortBy = sortBy === 'new' ? 'old' : 'new';
-    setSortBy(newSortBy);
+  const handleEdit = (patient) => {
+    setSelectedPatient(patient);
+    setIsOpen(true);
   };
 
+  const handleSavePatient = async (patientData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (patientData._id) {
+        // If patient already exists, update it
+        await axios.put(`http://localhost:8800/api/patients/${patientData._id}`, patientData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Patient updated successfully');
+      } else {
+        // Otherwise, create a new patient
+        await axios.post('http://localhost:8800/api/patients', patientData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Patient created successfully');
+      }
+      fetchPatients(); // Refresh patient data after save
+    } catch (error) {
+      console.error('Error saving patient:', error);
+      toast.error('Failed to save patient');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setSelectedPatient(null);
+  }
   return (
     <Layout>
       <Link
@@ -82,61 +98,43 @@ function Patients() {
       </Link>
       <h1 className="text-xl font-semibold">Patients</h1>
       <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
-        <div className="grid lg:grid-cols-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2">
-          <input
-            type="text"
-            placeholder='Search "Patients"'
-            className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Select
-            selectedPerson={gender}
-            setSelectedPerson={handleGenderChange}
-            datas={[
-              { name: 'All', value: '' }, // Option for showing all patients
-              ...sortsDatas.genderFilter
-            ]}
-          >
-
-            <div className="h-14 w-full text-xs text-main rounded-md bg-dry border border-border px-4 flex items-center justify-between">
-              <p>{gender.name}</p>
-              <BiChevronDown className="text-xl" />
-            </div>
-          </Select>
-          <FromToDate
-            startDate={dateRange[0]}
-            endDate={dateRange[1]}
-            bg="bg-dry"
-            onChange={(update) => setDateRange(update)}
-          />
-          <Select
-            selectedPerson={sortBy}
-            setSelectedPerson={handleSortChange}
-            datas={[
-              { name: 'Newest First', value: 'new' },
-              { name: 'Oldest First', value: 'old' },
-            ]}
-          >
-            <div className="h-14 w-full text-xs text-main rounded-md bg-dry border border-border px-4 flex items-center justify-between">
-              {sortBy === 'new' ? 'Newest First' : 'Oldest First'} <BiChevronDown className="text-xl" />
-            </div>
-          </Select>
-          <Button
-            label="Filter"
-            Icon={MdFilterList}
-            onClick={() => {
-              toast.error('Filter data is not available yet');
-            }}
-          />
+        <div className="flex flex-wrap justify-between items-center gap-2">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder='Search "Patients"'
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex-1">
+            {/* Date Picker */}
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={startDate}
+              placeholderText="Select start date"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4"
+            />
+          </div>
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
           <PatientTable
             data={patients}
+            onEdit={handleEdit} 
             functions={{ delete: handleDelete }}
           />
         </div>
       </div>
+      <AddEditPatientModal
+        isOpen={isOpen}
+        closeModal={handleCloseModal}
+        patientData={selectedPatient}
+        onSave={handleSavePatient}
+      />
     </Layout>
   );
 }

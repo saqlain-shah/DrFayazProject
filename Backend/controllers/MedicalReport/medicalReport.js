@@ -32,36 +32,36 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createMedicalRecord = async (req, res) => {
     try {
-        const { complaints, diagnosis, vitalSigns, prescription, treatment } = req.body;
-        // Parse the treatment and prescription strings back to arrays
-        const parsedTreatment = treatment ? JSON.parse(treatment) : [];
-        // Filter the parsed treatment array to include only the checked treatments
-        const selectedTreatments = parsedTreatment.filter(item => item.checked);
-        // Map over the files array to extract the file paths
-        const attachments = req.files.map(file => file.path);
+        const { complaints, diagnosis, vitalSigns, prescription, treatment, medicine } = req.body;
+
+        // Parse the prescription array if it's a string
+        const parsedPrescription = typeof prescription === 'string' ? JSON.parse(prescription) : prescription;
+
+        // Parse the treatment array if it's a string
+        const parsedTreatment = typeof treatment === 'string' ? JSON.parse(treatment) : treatment;
+
         // Create a new medical record instance
         const medicalRecord = new MedicalRecord({
             complaints,
             diagnosis,
+            treatment: parsedTreatment,
             vitalSigns,
-            prescription,
-            treatment: selectedTreatments, // Assign the filtered treatment array
-            attachments // Attach the file paths to the medical record
+            prescription: parsedPrescription,
+            medicine: medicine // Include the medicine data
         });
-
-
 
         // Save the medical record to the database
         await medicalRecord.save();
 
         console.log('Medical record saved successfully');
 
-        // Include the attachment data in the response
+        // Include the created medical record and medicine data in the response
         const responseData = {
             message: 'Medical record created successfully',
-            data: { ...medicalRecord.toObject(), attachments }
+            data: {
+                medicalRecord,
+            }
         };
-
 
         // Send a success response
         res.status(201).json(responseData);
@@ -71,6 +71,8 @@ export const createMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
+
+
 
 
 

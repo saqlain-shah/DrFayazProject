@@ -5,10 +5,10 @@ import mongoose from 'mongoose';
 export const createPatient = async (req, res) => {
     try {
         // Extracting necessary fields from the request body
-        const { firstName, email, phone, gender, dateOfBirth, emergencyContact, address, bloodGroup } = req.body;
+        const { firstName, email, gender, emergencyContact, address, bloodGroup } = req.body;
 
         // Check if all required fields are present
-        if (!firstName || !email || !phone || !gender || !dateOfBirth || !emergencyContact || !address || !bloodGroup) {
+        if (!firstName || !email || !gender || !emergencyContact || !address || !bloodGroup) {
             return res.status(400).json({ message: "Please provide all necessary fields" });
         }
 
@@ -19,9 +19,9 @@ export const createPatient = async (req, res) => {
         const patient = new Patient({
             fullName: firstName,
             email,
-            phone,
+            
             gender,
-            dateOfBirth,
+            
             emergencyContact,
             address,
             bloodGroup,
@@ -39,39 +39,35 @@ export const createPatient = async (req, res) => {
     }
 };
 
-// Existing imports and code...
-
 export const getAllPatients = async (req, res, next) => {
     try {
-        const { search, gender, sortBy } = req.query;
+        const { search, gender, startDate } = req.query;
         let patients = [];
         let query = {};
 
         if (search) {
             query.fullName = { $regex: search, $options: 'i' };
         }
-
-        if (gender && gender !== 'All') { // Only filter if gender is selected and not 'All'
-            const genderMap = {
-                male: 'Male',
-                female: 'Female',
-            };
-            query.gender = genderMap[gender];
+        
+        if (gender) {
+            query.gender = gender;
         }
 
-        let sortOption = {};
-        if (sortBy === 'new') {
-            sortOption = { createdAt: -1 };
-        } else if (sortBy === 'old') {
-            sortOption = { createdAt: 1 };
+        if (startDate) {
+            const selectedDate = new Date(startDate); // Parse the selected date
+            selectedDate.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
+            const nextDay = new Date(selectedDate); // Get the next day
+            nextDay.setDate(nextDay.getDate() + 1); // Add 1 day to get the end of the selected day
+            query.createdAt = { $gte: selectedDate, $lt: nextDay }; // Filter patients created on the selected date
         }
 
-        patients = await Patient.find(query).sort(sortOption);
+        patients = await Patient.find(query);
         res.status(200).json(patients);
     } catch (err) {
         next(err);
     }
 };
+
 
 // Other controllers...
 
