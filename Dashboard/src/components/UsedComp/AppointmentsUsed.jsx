@@ -60,7 +60,7 @@ function AppointmentsUsed({ doctor }) {
           handleNewAppointment={handleNewAppointment} // Pass the function to handle new appointment creation
         />
       )}
-      <h1 className="text-sm font-medium mb-6">Appointments</h1>
+      <h1 className="text-sm font-medium mb-6">Appointment</h1>
       <div className="w-full overflow-x-scroll">
         <AppointmentTable
           data={appointments}

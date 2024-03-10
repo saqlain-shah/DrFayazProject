@@ -41,7 +41,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
             shares
         };
 
-        axios.post('http://localhost:8800/api/appointments', appointmentPayload, {
+        axios.post('http://localhost:8800/api/schedule', appointmentPayload, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
