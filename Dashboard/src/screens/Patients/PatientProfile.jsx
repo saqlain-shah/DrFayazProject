@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from "../../Layout";
 import { patientTab } from "../../components/Datas";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
 import MedicalRecord from "./MedicalRecord";
 import AppointmentsUsed from "../../components/UsedComp/AppointmentsUsed";
@@ -11,14 +11,30 @@ import PersonalInfo from "../../components/UsedComp/PersonalInfo";
 import PatientImages from "./PatientImages";
 import HealthInfomation from "./HealthInfomation";
 import DentalChart from "./DentalChart";
-import { useLocation, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 function PatientProfile() {
-  const { profileData } = useLocation().state || { profileData: {} };
   const { id } = useParams();
+  const [profileData, setProfileData] = useState({});
+  const [activeTab, setActiveTab] = useState(1);
 
-  console.log('Profile Data:', profileData);
-  const [activeTab, setActiveTab] = React.useState(1);
+  useEffect(() => {
+    // Fetch profile data using the patient ID
+    const fetchProfileData = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+        const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
+          headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+        });
+        setProfileData(response.data);
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+  
+    fetchProfileData();
+  }, [id]);
+  
 
   const tabPanel = () => {
     switch (activeTab) {
@@ -52,54 +68,40 @@ function PatientProfile() {
         >
           <IoArrowBackOutline />
         </Link>
-        <h1 className="text-xl font-semibold">{profileData.name}</h1>
+        <h1 className="text-xl font-semibold">{profileData.fullName}</h1>
       </div>
-      <div className=" grid grid-cols-12 gap-6 my-8 items-start">
-        <div
-          data-aos="fade-right"
-          data-aos-duration="1000"
-          data-aos-delay="100"
-          data-aos-offset="200"
-          className="col-span-12 flex-colo gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28"
-        >
+      <div className="grid grid-cols-12 gap-6 my-8 items-start">
+        {/* Profile Details */}
+        <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex flex-col items-center justify-center">
           <img
             src={`http://localhost:8800/${profileData.profilePicture}`}
             alt="profile"
             className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
           />
-
           <div className="gap-2 flex-col">
             <h2 className="text-sm font-semibold">{profileData.fullName}</h2>
             <p className="text-xs text-textGray">{profileData.email}</p>
             <p className="text-xs">{profileData.emergencyContact}</p>
           </div>
-
-          {/* tabs */}
-          <div className="flex-colo gap-3 px-2 xl:px-12 w-full">
+          {/* Tabs */}
+          <div className="flex-col gap-3 px-2 xl:px-12 w-full">
             {patientTab.map((tab, index) => (
               <button
                 onClick={() => setActiveTab(tab.id)}
                 key={index}
-                className={`
-                ${activeTab === tab.id
+                className={`${
+                  activeTab === tab.id
                     ? "bg-text text-subMain"
                     : "bg-dry text-main hover:bg-text hover:text-subMain"
-                  }
-                text-xs gap-4 flex items-center w-full p-4 rounded`}
+                } text-xs gap-4 flex items-center w-full p-4 rounded`}
               >
                 <tab.icon className="text-lg" /> {tab.title}
               </button>
             ))}
           </div>
         </div>
-        {/* tab panel */}
-        <div
-          data-aos="fade-left"
-          data-aos-duration="1000"
-          data-aos-delay="100"
-          data-aos-offset="200"
-          className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6"
-        >
+        {/* Tab Panel */}
+        <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6">
           {tabPanel()}
         </div>
       </div>

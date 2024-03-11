@@ -33,8 +33,13 @@ const SelectApppointment = ({ selectedDate, selectTime, setSelectTime }) => {
         <div>
             <h2>Select Appointment</h2>
             {/* Render your appointment slots here */}
+<<<<<<< HEAD
             {appointmentSlots.map((slot) => (
                 <div key={slot._id}>
+=======
+            {appointmentSlots && appointmentSlots.map((slot) => (
+                <div key={slot.id}>
+>>>>>>> f9ec33d6338475730d781ee3f6f4ca57ec90fe8a
                     <div>Date: {moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                     <div>Time: {moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
                     <button onClick={() => handleSelectTime(moment(slot.startDateTime).format('HH:mm'))}>Select Time</button>

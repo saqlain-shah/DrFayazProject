@@ -7,13 +7,14 @@ import { RiDeleteBin6Line } from 'react-icons/ri';
 import MedicalRecodModal from '../../components/Modals/MedicalRecodModal';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { useParams } from 'react-router-dom';
 function MedicalRecord() {
   const [isOpen, setIsOpen] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [selectedData, setSelectedData] = useState();
+  const [medicineDosage, setMedicineDosage] = useState([]);
   const navigate = useNavigate();
-
+  const { id } = useParams();
   useEffect(() => {
     fetchMedicalRecords();
   }, []);
@@ -33,6 +34,20 @@ function MedicalRecord() {
       console.error('Error fetching medical records:', error);
     }
   };
+  const handleDelete = async (recordId) => {
+    try {
+      const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+      await axios.delete(`http://localhost:8800/api/medical-records/${recordId}`, {
+        headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+      });
+      // Assuming you want to update the medical records after deletion
+      fetchMedicalRecords();
+      toast.success('Medical record deleted successfully');
+    } catch (error) {
+      console.error('Error deleting medical record:', error);
+      toast.error('Failed to delete medical record');
+    }
+  };
 
   return (
     <>
@@ -42,6 +57,7 @@ function MedicalRecord() {
           closeModal={() => {
             setIsOpen(false);
             setSelectedData(record);
+            medicineDosage = { medicineDosage }
           }}
           isOpen={isOpen}
           data={selectedData}
@@ -56,7 +72,7 @@ function MedicalRecord() {
               label="New Record"
               Icon={BiPlus}
               onClick={() => {
-                navigate(`/patients/visiting/2`);
+                navigate(`/patients/visiting/${id}`);
               }}
             />
           </div>
@@ -103,6 +119,7 @@ function MedicalRecord() {
                   <span className="font-medium">Treatment:</span> {record.treatment.join(', ')}
                 </p>
               )}
+
             </div>
 
             <div className="col-span-12 md:col-span-2">
@@ -115,20 +132,19 @@ function MedicalRecord() {
               <button
                 onClick={() => {
                   setIsOpen(true);
-                  setSelectedData(record);
+                  setSelectedData(record); // Use record here
                 }}
                 className="text-sm flex-colo bg-white text-subMain border border-border rounded-md w-2/4 md:w-10 h-10"
               >
                 <FiEye />
               </button>
               <button
-                onClick={() => {
-                  toast.error('This feature is not available yet');
-                }}
+                onClick={() => handleDelete(record._id)}
                 className="text-sm flex-colo bg-white text-red-600 border border-border rounded-md w-2/4 md:w-10 h-10"
               >
                 <RiDeleteBin6Line />
               </button>
+
             </div>
           </div>
         ))}
