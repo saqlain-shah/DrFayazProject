@@ -19,9 +19,9 @@ export const createPatient = async (req, res) => {
         const patient = new Patient({
             fullName: firstName,
             email,
-            
+
             gender,
-            
+
             emergencyContact,
             address,
             bloodGroup,
@@ -48,18 +48,24 @@ export const getAllPatients = async (req, res, next) => {
         if (search) {
             query.fullName = { $regex: search, $options: 'i' };
         }
-        
-        if (gender) {
-            query.gender = gender;
+
+        // Modify the query to include gender filter
+        if (gender && gender !== 'all') { // Check if gender is provided and not 'all'
+            let genderValue = gender.toLowerCase(); // Convert to lowercase for consistency
+            // If the selected gender is 'male', directly set the query field to 'Male'
+            // Otherwise, use a case-insensitive regular expression to match any case of the provided gender value
+            query.gender = (genderValue === 'male') ? 'Male' : { $regex: new RegExp(genderValue, 'i') };
         }
 
         if (startDate) {
-            const selectedDate = new Date(startDate); // Parse the selected date
-            selectedDate.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
-            const nextDay = new Date(selectedDate); // Get the next day
-            nextDay.setDate(nextDay.getDate() + 1); // Add 1 day to get the end of the selected day
-            query.createdAt = { $gte: selectedDate, $lt: nextDay }; // Filter patients created on the selected date
+            const selectedDate = new Date(startDate);
+            selectedDate.setHours(0, 0, 0, 0);
+            const nextDay = new Date(selectedDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            query.createdAt = { $gte: selectedDate, $lt: nextDay };
         }
+
+        console.log('Generated MongoDB query:', query); // Add this line to log the query
 
         patients = await Patient.find(query);
         res.status(200).json(patients);
@@ -67,6 +73,10 @@ export const getAllPatients = async (req, res, next) => {
         next(err);
     }
 };
+
+
+
+
 
 
 // Other controllers...

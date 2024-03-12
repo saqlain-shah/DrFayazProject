@@ -11,7 +11,7 @@ import axios from 'axios';
 function PersonalInfo({ titles, onSave }) {
   const [profilePicture, setImageUrl] = useState('');
   const [title, setTitle] = useState(sortsDatas.title[0]);
- // const [date, setDate] = useState(new Date());
+  // const [date, setDate] = useState(new Date());
   const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
   const [bloodGroup, setBloodGroup] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -27,31 +27,32 @@ function PersonalInfo({ titles, onSave }) {
       data.append('profilePicture', profilePicture);
       data.append('firstName', firstName);
       data.append('email', email);
-     // data.append('phone', phone);
+      // data.append('phone', phone);
       data.append('gender', gender.name);
-     // data.append('dateOfBirth', date.toISOString());
+      // data.append('dateOfBirth', date.toISOString());
       data.append('emergencyContact', emergencyContact);
       data.append('address', address);
       data.append('bloodGroup', bloodGroup);
-  
+
       console.log('Data to be sent:', data);
-  
+
       await axios.post('http://localhost:8800/api/patients', data, {
+
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}` // Include token in the request headers
         },
       });
-  
+
       toast.success('Patient created and Update successfully');
-  
+
       setImageUrl('');
       setTitle(sortsDatas.title[0]);
-     // setDate(new Date());
+      // setDate(new Date());
       setGender(sortsDatas.genderFilter[0]);
       setBloodGroup('');
       setFirstName('');
-    //  setPhone('');
+      //  setPhone('');
       setEmail('');
       setEmergencyContact('');
       setAddress('');
@@ -60,7 +61,7 @@ function PersonalInfo({ titles, onSave }) {
       toast.error('Failed to create patient');
     }
   };
-  
+
 
 
   const handleImageUpload = (event) => {

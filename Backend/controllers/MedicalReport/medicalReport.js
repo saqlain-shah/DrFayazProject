@@ -32,6 +32,7 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createMedicalRecord = async (req, res) => {
     try {
+        console.log('Request Files:', req.files); // Log request files
         const { complaints, diagnosis, vitalSigns, prescription, treatment, medicine } = req.body;
 
         // Parse the prescription array if it's a string
@@ -40,6 +41,17 @@ export const createMedicalRecord = async (req, res) => {
         // Parse the treatment array if it's a string
         const parsedTreatment = typeof treatment === 'string' ? JSON.parse(treatment) : treatment;
 
+        // Extract uploaded files from request
+        const attachments = req.files.map(file => ({
+            filename: file.filename,
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size,
+            // Add any other relevant file data you want to store
+        }));
+
+        console.log('Extracted Attachments:', attachments); // Log extracted attachments
+
         // Create a new medical record instance
         const medicalRecord = new MedicalRecord({
             complaints,
@@ -47,7 +59,8 @@ export const createMedicalRecord = async (req, res) => {
             treatment: parsedTreatment,
             vitalSigns,
             prescription: parsedPrescription,
-            medicine: medicine // Include the medicine data
+            medicine: medicine, // Include the medicine data
+            attachments: attachments // Include the file attachments
         });
 
         // Save the medical record to the database
@@ -71,6 +84,7 @@ export const createMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
 };
+
 
 
 

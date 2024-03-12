@@ -43,6 +43,7 @@ import Schedule from './screens/Schedule/Schedule';
 import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
 
+
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
 
@@ -83,6 +84,7 @@ function App() {
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
+
           {/* doctors */}
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/preview/:id" element={<DoctorProfile />} />

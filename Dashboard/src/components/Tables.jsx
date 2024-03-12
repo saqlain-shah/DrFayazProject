@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
-import { FiEdit, FiEye } from 'react-icons/fi';
-import { RiDeleteBin6Line, RiDeleteBinLine } from 'react-icons/ri';
+import { FiEye, FiEdit } from 'react-icons/fi';
+import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 const thclass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
@@ -332,9 +332,14 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
 }
 
 // patient table
-export function PatientTable({ data, functions,onEdit }) {
+export function PatientTable({ data, functions, onEdit }) {
   const navigate = useNavigate();
 
+  if (!Array.isArray(data)) {
+    console.error('Data is not an array:', data);
+    return <div>Error: Data is not an array</div>;
+  }
+  console.log('Data:', data)
   const DropDown1 = [
     {
       title: 'Edit',
@@ -361,32 +366,29 @@ export function PatientTable({ data, functions,onEdit }) {
     },
   ];
 
-  const thClass = 'text-start text-sm font-medium py-3 px-1 whitespace-nowrap'; // Decrease px value for header width
+  const thClass = 'text-start text-sm font-medium py-3 px-1 whitespace-nowrap';
   const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
 
   return (
     <div className="overflow-x-auto">
       <table className="table-auto">
-        {/* Table headers */}
         <thead className="bg-dry rounded-md overflow-hidden">
           <tr>
-            <th className={thClass} style={{ width: '2%' }}>#</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Image</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Full Name</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Gender</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Blood Group</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Address</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Email</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Emergency Contact</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Created At</th> {/* Adjust width as needed */}
-            <th className={thClass} style={{ width: '5%' }}>Actions</th> {/* Adjust width as needed */}
+            <th className={thClass} style={{ width: '2%' }}>#</th>
+            <th className={thClass} style={{ width: '1%' }}>Image</th>
+            <th className={thClass} style={{ width: '5%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '5%' }}>Gender</th>
+            <th className={thClass} style={{ width: '3%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '5%' }}>Address</th>
+            <th className={thClass} style={{ width: '5%' }}>Email</th>
+            <th className={thClass} style={{ width: '5%' }}>Emergency Contact</th>
+            <th className={thClass} style={{ width: '5%' }}>Created At</th>
+            <th className={thClass} style={{ width: '5%' }}>Actions</th>
           </tr>
         </thead>
-        {/* Table body */}
         <tbody>
           {data.map((item, index) => (
             <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-              {/* Table cells */}
               <td className={tdClass}>{index + 1}</td>
               <td className={tdClass}>
                 {item.profilePicture && (
@@ -397,7 +399,6 @@ export function PatientTable({ data, functions,onEdit }) {
                   />
                 )}
               </td>
-              {/* Add more cells for other data */}
               <td className={tdClass}>{item.fullName}</td>
               <td className={tdClass}>
                 <span
@@ -421,6 +422,62 @@ export function PatientTable({ data, functions,onEdit }) {
               </td>
             </tr>
           ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+export function PatientTableArray({ data, onEdit }) {
+
+  if (!Array.isArray(data)) {
+    console.error('Data is not an array:', data);
+    return <div>Error: Data is not an array</div>;
+  }
+
+  const thClass = 'text-start text-sm font-medium py-3 px-1 whitespace-nowrap';
+  const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="table-auto">
+        <thead className="bg-dry rounded-md overflow-hidden">
+          <tr>
+            <th className={thClass} style={{ width: '2%' }}>#</th>
+            <th className={thClass} style={{ width: '10%' }}>Image</th>
+            <th className={thClass} style={{ width: '15%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '10%' }}>Gender</th>
+            <th className={thClass} style={{ width: '5%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '20%' }}>Address</th>
+            <th className={thClass} style={{ width: '15%' }}>Email</th>
+            <th className={thClass} style={{ width: '15%' }}>Emergency Contact</th>
+            <th className={thClass} style={{ width: '10%' }}>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={item._id || index} className="border-b border-border hover:bg-greyed transitions">
+              {/* Table cells */}
+              <td className={tdClass}>{index + 1}</td>
+              <td className={tdClass}>
+                {item.profilePicture && (
+                  <img
+                    src={`http://localhost:8800/${item.profilePicture}`}
+                    alt={item.fullName}
+                    className="w-full h-11 rounded-full object-cover border border-border"
+                  />
+                )}
+              </td>
+              <td className={tdClass}>{item.fullName}</td>
+              <td className={tdClass}>{item.gender}</td>
+              <td className={tdClass}>{item.bloodGroup}</td>
+              <td className={tdClass}>{item.address}</td>
+              <td className={tdClass}>{item.email}</td>
+              <td className={tdClass}>{item.emergencyContact}</td>
+              <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
+
+            </tr>
+          ))}
+
         </tbody>
       </table>
     </div>
@@ -495,15 +552,12 @@ export function DoctorsTable({ data, functions, doctor }) {
   );
 }
 
-export function AppointmentTable({ functions }) {
-  const [appointments, setAppointments] = useState([]); // State to hold appointments data
-  const [newAppointment, setNewAppointment] = useState(null); // State to hold new appointment data
+export function AppointmentTable({ functions, token }) {
+  const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
-    // Fetch appointments data and set state
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
         const response = await fetch('http://localhost:8800/api/appointments', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -517,15 +571,9 @@ export function AppointmentTable({ functions }) {
     };
 
     fetchData();
-  }, []); // Run only once on component mount
-
-  const thclass = 'py-3 px-4 text-left font-semibold';
-  const tdclass = 'py-3 px-4';
+  }, [token]);
 
   const getStatusClass = (status) => {
-    // Define your status class logic here
-    // Return the appropriate class based on the status
-    // For example:
     if (status === 'Pending') {
       return 'bg-yellow-500';
     } else if (status === 'Completed') {
@@ -535,79 +583,100 @@ export function AppointmentTable({ functions }) {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        // Remove the deleted appointment from the state
+        setAppointments(appointments.filter(appointment => appointment._id !== id));
+        // Display success toast message
+        toast.success('Appointment deleted successfully!', {
+          position: 'bottom-right',
+        });
+      } else {
+        console.error('Failed to delete appointment');
+        // Display error toast message if deletion fails
+        toast.error('Failed to delete appointment');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      // Display error toast message if an error occurs during deletion
+      toast.error('Error deleting appointment');
+    }
+  };
+
+  const handleEdit = (item) => {
+    // Call the edit function passed as a prop
+    functions.edit(item);
+  };
+
+  const DropDown1 = [
+    {
+      title: 'Edit',
+      icon: FiEdit,
+      onClick: (item) => {
+        // Call the handleEdit function
+        handleEdit(item);
+      },
+    },
+    {
+      title: 'Delete',
+      icon: RiDeleteBin6Line,
+      onClick: (item) => {
+        // Call the delete function
+        handleDelete(item._id);
+      },
+    },
+  ];
+
   return (
-    <table className="table-auto w-full">
-      {/* Table headers */}
-      <thead className="bg-dry rounded-md overflow-hidden">
-        <tr>
-          <th className={thclass}>Date of Visit</th>
-          <th className={thclass}>Doctor</th>
-          <th className={thclass}>Start Time</th>
-          <th className={thclass}>End Time</th>
-          <th className={thclass}>Patient Name</th>
-          <th className={thclass}>Purpose of Visit</th>
-          <th className={thclass}>Status</th>
-          <th className={thclass}>Share</th>
-          <th className={thclass}>Actions</th>
-        </tr>
-      </thead>
-      {/* Table body */}
-      <tbody>
-        {appointments.map((item) => (
-          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-            <td className={tdclass}>{new Date(item.dateOfVisit).toLocaleDateString()}</td>
-            <td className={tdclass}>{item.doctor}</td>
-            <td className={tdclass}>{new Date(item.startTime).toLocaleTimeString()}</td>
-            <td className={tdclass}>{new Date(item.endTime).toLocaleTimeString()}</td>
-            <td className={tdclass}>{item.patientName}</td>
-            <td className={tdclass}>{item.purposeOfVisit}</td>
-            <td className={tdclass}>
-              <span className={`py-1 px-4 ${getStatusClass(item.status)} bg-opacity-10 text-xs rounded-xl`}>
-                {item.status}
-              </span>
-            </td>
-            <td className={tdclass}>
-              <div>
-                SMS: {item.share.sms ? 'Yes' : 'No'} <br />
-                Email: {item.share.email ? 'Yes' : 'No'} <br />
-                WhatsApp: {item.share.whatsapp ? 'Yes' : 'No'}
-              </div>
-            </td>
-            <td className={tdclass}>
-              <button
-                onClick={() => functions.preview(item)}
-                className="text-sm flex-colo bg-white text-subMain border rounded-md w-10 h-10"
-              >
-                <FiEye />
-              </button>
-            </td>
+    <div className="overflow-x-auto">
+      <table className="table-auto w-full">
+        <thead className="bg-dry rounded-md overflow-hidden">
+          <tr>
+            <th className="py-3 px-4 text-left font-semibold">Date of Visit</th>
+            <th className="py-3 px-4 text-left font-semibold">Doctor</th>
+            <th className="py-3 px-4 text-left font-semibold">Start Time</th>
+            <th className="py-3 px-4 text-left font-semibold">End Time</th>
+            <th className="py-3 px-4 text-left font-semibold">Patient Name</th>
+            <th className="py-3 px-4 text-left font-semibold">Purpose of Visit</th>
+            <th className="py-3 px-4 text-left font-semibold">Status</th>
+            <th className="py-3 px-4 text-left font-semibold">Actions</th>
           </tr>
-        ))}
-        {/* Render the new appointment if it exists */}
-        {newAppointment && (
-          <tr key={newAppointment.id} className="border-b border-border hover:bg-greyed transitions">
-            {/* Table cells for new appointment */}
-            {/* Similar structure to existing appointments */}
-          </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {appointments.map((item) => (
+            <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+              <td className="py-3 px-4">{new Date(item.dateOfVisit).toLocaleDateString()}</td>
+              <td className="py-3 px-4">{item.doctor}</td>
+              <td className="py-3 px-4">{new Date(item.startTime).toLocaleTimeString()}</td>
+              <td className="py-3 px-4">{new Date(item.endTime).toLocaleTimeString()}</td>
+              <td className="py-3 px-4">{item.patientName}</td>
+              <td className="py-3 px-4">{item.purposeOfVisit}</td>
+              <td className="py-3 px-4">
+                <span className={`py-1 px-4 ${getStatusClass(item.status)} bg-opacity-10 text-xs rounded-xl`}>
+                  {item.status}
+                </span>
+              </td>
+              <td className="py-3 px-4" style={{ position: 'relative' }}>
+                <MenuSelect datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
-
-// Function to determine status class
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'Approved':
-      return 'bg-subMain text-subMain';
-    case 'Pending':
-      return 'bg-orange-500 text-orange-500';
-    case 'Cancel':
-      return 'bg-red-600 text-red-600';
-    default:
-      return '';
-  }
-};
 
 
 
@@ -773,7 +842,7 @@ export function InvoiceProductsTable({ data, functions, button }) {
 // medicine Dosage table
 
 export function MedicineDosageTable({ data, functions, button }) {
-  console.log("datas", data)
+  console.log("MedicineDosageTable data:", data);
   const thClass = 'text-start text-xs font-medium py-3 px-2 whitespace-nowrap';
   const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
 
@@ -781,35 +850,28 @@ export function MedicineDosageTable({ data, functions, button }) {
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thClass}>Item</th>
-          <th className={thClass}>
-            Item Price
-            <span className="text-xs font-light ml-1">(Tsh)</span>
-          </th>
+          <th className={thClass}>Name</th>
+          <th className={thClass}>Quantity</th>
           <th className={thClass}>Dosage</th>
           <th className={thClass}>Instruction</th>
-          <th className={thClass}>Quantity</th>
-          <th className={thClass}>
-            Amount
-            <span className="text-xs font-light ml-1">(Tsh)</span>
-          </th>
+          <th className={thClass}>Item Price (Tsh)</th>
+          <th className={thClass}>Amount (Tsh)</th>
           {button && <th className={thClass}>Actions</th>}
         </tr>
       </thead>
       <tbody>
-        {data?.map((item) => (
-          <tr key={item.id} className="border-b border-border hover:bg-greyed transitions">
-            <td className={tdClass}>{item.item}</td>
-            <td className={tdClass}>{item.itemPrice}</td>
-            <td className={tdClass}>{item.dosage}</td>
-            <td className={tdClass}>{item.instruction}</td> {/* Corrected from item.instraction to item.instruction */}
-
-            <td className={tdClass}>{item.quantity}</td>
-            <td className={tdClass}>{item.amount}</td>
+        {data?.map((medicine) => (
+          <tr key={medicine._id} className="border-b border-border hover:bg-greyed transitions">
+            <td className={tdClass}>{medicine.name}</td>
+            <td className={tdClass}>{medicine.quantity}</td>
+            <td className={tdClass}>{medicine.dosage}</td>
+            <td className={tdClass}>{medicine.instructions}</td>
+            <td className={tdClass}>{medicine.itemPrice}</td>
+            <td className={tdClass}>{medicine.amount}</td>
             {button && (
               <td className={tdClass}>
                 <button
-                  onClick={() => functions.delete(item.id)}
+                  onClick={() => functions.delete(medicine._id)}
                   className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"
                 >
                   <RiDeleteBinLine />
@@ -822,3 +884,4 @@ export function MedicineDosageTable({ data, functions, button }) {
     </table>
   );
 }
+

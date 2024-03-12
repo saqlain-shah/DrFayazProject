@@ -1,29 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal';
 import { BiSearch, BiPlus } from 'react-icons/bi';
-import { RadioGroup } from '@headlessui/react';
 import { Button } from '../Form';
+import axios from 'axios';
 
-function PatientMedicineServiceModal({ closeModal, isOpen, patient }) {
-  const [data, setData] = useState([]);
-  const [selected, setSelected] = useState(null); // Define the selected state variable
+function PatientMedicineServiceModal({ closeModal, isOpen, patient, onSelectPatient }) {
+  const [selectedPatient, setSelectedPatient] = useState(null); // State to store selected patient
+  const [searchValue, setSearchValue] = useState(''); // State to store search field value
+  const [patients, setPatients] = useState([]); // State to store fetched patients
 
   useEffect(() => {
-    fetchItems();
+    fetchPatients();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchPatients = async () => {
     try {
-      const response = await fetch('http://localhost:8800/api/invoices/items'); // Assuming '/api/items' is your endpoint to fetch items
-      if (!response.ok) {
-        throw new Error('Failed to fetch items');
-      }
-      const data = await response.json();
-      setData(data);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:8800/api/patients', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPatients(response.data);
     } catch (error) {
-      console.error(error);
-      // Handle error
+      console.error('Error fetching patients:', error);
     }
+  };
+
+  const handleAddPatientClick = () => {
+    setSelectedPatient(null); // Reset selected patient when "Add Patient" is clicked
+    setSearchValue(''); // Clear search field
+    closeModal();
+  };
+
+  const handlePatientSelect = (patient) => {
+    setSelectedPatient(patient); // Set selected patient
+    setSearchValue(patient.fullName); // Set search field value to selected patient's name
+    closeModal(); // Close the modal
+    onSelectPatient(patient.fullName); // Pass selected patient to parent component
+    setSearchValue(patient.fullName); // Set search value in parent component
   };
 
   return (
@@ -33,47 +46,34 @@ function PatientMedicineServiceModal({ closeModal, isOpen, patient }) {
       title={patient ? 'Patients' : 'Medicine & Services'}
       width={'max-w-xl'}
     >
-      <div className="flex-colo gap-6">
-        {/* search */}
-        <div className="flex items-center gap-4 w-full border border-border rounded-lg p-3">
-          <input type="text" placeholder="Search" className="w-full" />
-          <BiSearch className=" text-xl" />
+      <div className="flex flex-col gap-6">
+        {/* Search */}
+        <div className="relative flex items-center gap-4 w-full border border-border rounded-lg p-3">
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-full"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+          <BiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl" />
         </div>
-        {/* data */}
-        <div className="w-full h-[500px] overflow-y-scroll">
-          <RadioGroup value={selected} onChange={setSelected}>
-            <div className="space-y-2">
-              {data.map((user) => (
-                <RadioGroup.Option
-                  key={user.id}
-                  value={user}
-                  className={({ active, checked }) =>
-                    `${active ? 'border-subMain bg-subMain text-white' : ''}
-                    rounded-xl border-[1px] border-border p-4 group hover:bg-subMain hover:text-white`
-                  }
-                >
-                  {({ active, checked }) => (
-                    <>
-                      <h6 className="text-sm">
-                        {patient ? user.title : user.name}
-                      </h6>
-                      {patient && (
-                        <p
-                          className={`${active && 'text-white'}
-                            text-xs group-hover:text-white text-textGray mt-1`}
-                        >
-                          {user.email}
-                        </p>
-                      )}
-                    </>
-                  )}
-                </RadioGroup.Option>
-              ))}
-            </div>
-          </RadioGroup>
+        {/* Dropdown menu for patients */}
+        <div className="w-full max-h-60 overflow-y-auto border border-border rounded-lg shadow-md">
+          <ul className="divide-y divide-gray-200">
+            {patients.map((patient) => (
+              <li
+                key={patient.id}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => handlePatientSelect(patient)}
+              >
+                {patient.fullName}
+              </li>
+            ))}
+          </ul>
         </div>
-        {/* button */}
-        <Button onClick={closeModal} label="Add" Icon={BiPlus} />
+        {/* Button */}
+        <Button onClick={handleAddPatientClick} label="Add" Icon={BiPlus} />
       </div>
     </Modal>
   );
