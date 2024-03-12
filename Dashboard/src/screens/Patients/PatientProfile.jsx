@@ -55,7 +55,7 @@ function PatientProfile() {
     // Here, you would implement logic to verify the OTP code.
     // For demonstration, I'm just checking if the OTP code is '123456'.
     if (otpCode === '123456') {
-      setIsOtpValid(true);
+      setIsOtpValid(true); // Set isOtpValid to true after successful verification
       closeDentalModal();
     } else {
       // Handle invalid OTP here
@@ -63,9 +63,16 @@ function PatientProfile() {
     }
   };
 
+
   const handleMentalHealthTabClick = () => {
-    openDentalModal();
+    if (activeTab === 6 && isOtpValid) {
+      // If the active tab is DentalChart and OTP is valid, set active tab to DentalChart
+      setActiveTab(6);
+    } else {
+      openDentalModal(); // Open OTP verification modal if OTP is not yet verified
+    }
   };
+
 
   const tabPanel = () => {
     switch (activeTab) {
@@ -80,7 +87,7 @@ function PatientProfile() {
       case 5:
         return <PatientImages />;
       case 6:
-        return isOtpValid ? <DentalChart /> : null;
+        return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is verified
       case 7:
         return <PatientTableArray data={formatProfileData(profileData)} />;
       case 8:
@@ -89,6 +96,7 @@ function PatientProfile() {
         return null;
     }
   };
+
 
   const formatProfileData = (data) => {
     return [
