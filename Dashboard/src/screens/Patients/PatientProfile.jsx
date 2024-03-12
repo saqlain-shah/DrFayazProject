@@ -19,7 +19,6 @@ function PatientProfile() {
   const { id } = useParams();
   const [profileData, setProfileData] = useState({});
   const [activeTab, setActiveTab] = useState(1);
-  const [isDentalButtonVisible, setIsDentalButtonVisible] = useState(false);
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [isOtpValid, setIsOtpValid] = useState(false);
@@ -64,12 +63,9 @@ function PatientProfile() {
     }
   };
 
-  const handleDentalChartTabClick = () => {
-    setIsDentalButtonVisible(true); // Show the "Open OTP" button
-    setActiveTab(6); // Activate the "DentalChart" tab
-    openDentalModal(); // Open the dental modal immediately
+  const handleMentalHealthTabClick = () => {
+    openDentalModal();
   };
-
 
   const tabPanel = () => {
     switch (activeTab) {
@@ -131,28 +127,17 @@ function PatientProfile() {
             <p className="text-xs text-textGray">{profileData.email}</p>
             <p className="text-xs">{profileData.emergencyContact}</p>
           </div>
-          {/* {isDentalButtonVisible && (
-            <button
-              onClick={openDentalModal}
-              className="bg-dry text-main hover:bg-text hover:text-subMain text-xs gap-4 flex items-center w-full p-4 rounded"
-            >
-              Open OTP
-            </button>
-          )} */}
+
           <div className="flex-col gap-3 px-2 xl:px-12 w-full">
             {patientTab.map((tab, index) => (
               <button
-                onClick={handleDentalChartTabClick} // Update the onClick event
+                onClick={tab.id === 6 ? handleMentalHealthTabClick : () => setActiveTab(tab.id)}
                 key={index}
                 className={`${activeTab === tab.id ? 'bg-text text-subMain' : 'bg-dry text-main hover:bg-text hover:text-subMain'} text-xs gap-4 flex items-center w-full p-4 rounded`}
               >
                 <tab.icon className="text-lg" /> {tab.title}
               </button>
-
             ))}
-
-            {/* Button to open the dental chart modal */}
-
           </div>
         </div>
 
