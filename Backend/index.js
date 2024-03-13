@@ -9,13 +9,12 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import healthInfoRoutes from './routes/healthInfoRoutes.js';
+import healthInformationRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
 import doctorRoutes from './routes/doctor.js'
-import fileRoutes from './routes/fileRoutes.js';
-// import schduleRoutes from './routes/schedule.js'
+import schduleRoutes from './routes/schdule.js'
 import { authenticate } from './utils/authMiddleware.js';
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
@@ -48,18 +47,15 @@ app.use(authenticate);
 app.use('/api/auth', authRoute);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
-// app.use('/api/schdule', schduleRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
-app.use('/api/healthInfo', healthInfoRoutes);
+app.use('/api/health-information', healthInformationRoutes);
 app.use('/api/services', servicesRoute);
-app.use('/api/sandgrid', sandGridRoutes);
-app.use('/api/medicine', medicineRoute);
-//////////////file share 
-app.use('/api/files', fileRoutes);
-
+app.use('/api/schedule', schduleRoutes);
+app.use('/api/sandgrid', sandGridRoutes)
+app.use('/api/medicine', medicineRoute)
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

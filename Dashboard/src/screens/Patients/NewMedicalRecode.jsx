@@ -98,23 +98,24 @@ function NewMedicalRecord() {
       setError('All fields except treatment and attachments are required');
       return;
     }
-  
+
     // Initialize prescription array
     const prescriptionArray = prescription.map((name) => ({
       name,
     }));
-  
+
     // Include medicine dosages in prescription array
     medicineDosages.forEach((medicineDosage) => {
       prescriptionArray.push({
-        name: medicineDosage.item, // Assuming 'item' holds the medicine name
+        name: medicineDosage.item,
         quantity: medicineDosage.quantity,
         dosage: medicineDosage.dosageQuantity,
-        instructions: medicineDosage.instruction,
-
+        instructions: medicineDosage.instructions,
+        itemPrice: medicineDosage.itemPrice,
+        amount: medicineDosage.amount,
       });
     });
-  
+
     // Filter checked treatments for prescription
     const prescriptionTreatment = treatments
       .filter((item) => item.checked)
@@ -122,7 +123,7 @@ function NewMedicalRecord() {
         name: item.name,
         checked: item.checked,
       }));
-  
+
     const formData = new FormData();
     formData.append('complaints', complaints);
     formData.append('diagnosis', diagnosis);
@@ -140,13 +141,15 @@ function NewMedicalRecord() {
     );
     // Append the prescription treatment
     formData.append('treatment', JSON.stringify(prescriptionTreatment));
-  
+
     console.log('FormData:', formData); // Log the FormData object before sending the request
-  
+
+    const token = localStorage.getItem('token');
     axios
       .post('http://localhost:8800/api/medical-records', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
         },
         onUploadProgress: (progressEvent) => {
           console.log(
@@ -179,8 +182,9 @@ function NewMedicalRecord() {
         }
       });
   };
-  
-  
+
+
+
 
 
 
@@ -297,7 +301,7 @@ function NewMedicalRecord() {
                     {/* Render the uploaded image */}
                     <img
                       src={URL.createObjectURL(file)}
-                      // alt={`Attachment ${index + 1}`}
+                      alt={`Attachment ${index + 1}`}
                       className="w-full h-40 rounded-lg object-cover"
                     />
                     {/* Render a button for deletion (if needed) */}
@@ -645,7 +649,7 @@ export default NewMedicalRecord;
 // }
 
 // export default NewMedicalRecord;
-//  it show here in clonsloe Medicine Dosage: {instruction: 'asd', quantity: 23456, dosageQuantity: 32456, itemPrice: 234562, item: '34', …} but 
+//  it show here in clonsloe Medicine Dosage: {instruction: 'asd', quantity: 23456, dosageQuantity: 32456, itemPrice: 234562, item: '34', …} but
 // const addMedicineDosage = (medicineDosage) => {
 //     // Add the new medicine dosage to the medicine dosages state
 //     setMedicineDosages(prevMedicineDosages => [...prevMedicineDosages, medicineDosage]);

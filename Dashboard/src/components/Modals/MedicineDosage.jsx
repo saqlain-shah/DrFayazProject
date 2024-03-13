@@ -22,23 +22,27 @@ function MedicineDosageModal({ closeModal, isOpen, addMedicineDosage }) {
 
   const handleAddButtonClick = () => {
     const medicineDosage = {
-      instruction: instructionText, // Using the state variable for instruction
+      instructions: instructionText, // Include instruction
       quantity: parseInt(quantity),
       dosageQuantity: parseInt(dosageQuantity),
       itemPrice: parseFloat(itemPrice),
-      item: item, // Adding item to the medicine dosage object
-      dosage: dosage.filter(item => item.checked).map(item => item.name),
+      item: item,
+      dosage: dosage.filter((item) => item.checked).map((item) => item.name),
+      name: item, // Include name
     };
 
     // Calculate the amount
     const amount = parseFloat(itemPrice) * parseInt(quantity) * parseInt(dosageQuantity);
 
-    // Add amount to medicine dosage object
+    // Add itemPrice and amount to medicine dosage object
     medicineDosage.amount = amount;
 
     addMedicineDosage(medicineDosage);
     closeModal();
   };
+
+
+
 
 
   const onChangeDosage = (name, checked) => {

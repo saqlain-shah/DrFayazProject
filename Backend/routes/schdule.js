@@ -1,0 +1,14 @@
+// scheduleRoutes.js
+
+import express from 'express';
+import { getAllSchedules, createSchedule } from '../controllers/schdule/schdule.js';
+
+const router = express.Router();
+
+// GET all schedules
+router.get('/', getAllSchedules);
+
+// POST a new schedule
+router.post('/', createSchedule);
+
+export default router;

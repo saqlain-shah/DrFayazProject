@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -105,135 +105,62 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
+// import React, { useState } from 'react';
+// import Layout from '../../Layout';
+// import { Calendar, momentLocalizer } from 'react-big-calendar';
+// import moment from 'moment';
+// import { BiPlus } from 'react-icons/bi';
+// import AddAppointmentModal from './AddAppointmentModal';
+// import { servicesData } from '../../components/Datas';
+// import { fetchAppointmentData } from '../../api'; // import fetchAppointmentData function
+
 function Schedule() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [open, setOpen] = useState(false);
+  const [appointmentData, setAppointmentData] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // handle modal close
-  const handleClose = () => {
-    setOpen(!open);
-    setData({});
+  // Fetch appointment data when component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // Fetch appointment data function
+  const fetchData = async () => {
+    try {
+      const data = await fetchAppointmentData(); // Assuming you have a function to fetch appointment data
+      setAppointmentData(data);
+    } catch (error) {
+      console.error('Error fetching appointment data:', error);
+    }
   };
-
-  const events = [
-    {
-      id: 0,
-      start: moment({ hours: 7 }).toDate(),
-      end: moment({ hours: 9 }).toDate(),
-      color: '#FB923C',
-      title: 'Saqlain Shah',
-      message: 'He is not sure about the time',
-      service: servicesData[1],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: '#FC8181',
-      title: 'Anees Ibrahim',
-      message: 'She is coming for checkup',
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: '#FFC107',
-      title: 'Ali Naqi',
-      message: 'She is coming for checkup. but she is not sure about the time',
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
-  ];
 
   // onClick event handler
   const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+    setSelectedEvent(event);
+    setOpen(true);
   };
 
   return (
     <Layout>
       {open && (
         <AddAppointmentModal
-          datas={data}
+          appointmentData={selectedEvent} // Pass selected event data as appointmentData prop
           isOpen={open}
-          closeModal={() => {
-            handleClose();
-
-          }}
+          closeModal={() => setOpen(false)}
         />
       )}
-      {/* calender */}
       <button
-        onClick={handleClose}
+        onClick={() => setOpen(true)}
         className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
       >
         <BiPlus className="text-2xl" />
       </button>
-
       <Calendar
         localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{
-          // height fix screen
-          height: 900,
-          marginBottom: 50,
-        }}
-        onSelectEvent={(event) => handleEventClick(event)}
-        defaultDate={new Date()}
-        timeslots={1}
-        resizable
-        step={60}
-        selectable={true}
-        // custom event style
-        eventPropGetter={(event) => {
-          const style = {
-            backgroundColor: '#66B5A3',
-
-            borderRadius: '10px',
-            color: 'white',
-            border: '1px',
-            borderColor: '#F2FAF8',
-            fontSize: '12px',
-            padding: '5px 5px',
-          };
-          return {
-            style,
-          };
-        }}
-        // custom date style
-        dayPropGetter={(date) => {
-          const backgroundColor = 'white';
-          const style = {
-            backgroundColor,
-          };
-          return {
-            style,
-          };
-        }}
-        // remove agenda view
-        views={['month', 'day', 'week']}
-        // toolbar={false}
-        components={{ toolbar: CustomToolbar }}
+        events={appointmentData} // Pass appointment data to the Calendar component
+        // Your other Calendar props
+        onSelectEvent={handleEventClick} // Handle event click
       />
     </Layout>
   );

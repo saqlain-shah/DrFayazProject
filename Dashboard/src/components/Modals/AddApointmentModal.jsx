@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
-import { servicesData } from '../Datas'; // Adjust the import path as per your project structure
-import { sortsDatas } from '../Datas'; // Adjust the import path as per your project structure
-import { memberData } from '../Datas'; // Adjust the import path as per your project structure
+import { servicesData } from '../Datas';
+import { sortsDatas } from '../Datas';
+import { memberData } from '../Datas';
 import { Button, Checkbox, DatePickerComp, Input, Select, Textarea, TimePickerComp } from '../Form';
-import { BiChevronDown, BiPlus } from 'react-icons/bi';
+import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
-import PatientMedicineServiceModal from './PatientMedicineServiceModal';
+// import PatientMedicineServiceModal from './PatientMedicineServiceModal';
+import PatientList from '../../screens/Patients/PatientList'; // Import the PatientList component here
 
 const doctorsData = memberData.map((item) => {
   return {
@@ -18,7 +19,7 @@ const doctorsData = memberData.map((item) => {
 });
 
 function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }) {
-  const [patientName, setPatientName] = useState(''); // Receive handleNewAppointment function
+  const [patientName, setPatientName] = useState('');
   const [services, setServices] = useState(servicesData[0]);
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
@@ -30,17 +31,15 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
     sms: false,
     whatsapp: false,
   });
-  const [open, setOpen] = useState(false);
 
   const onChangeShare = (e) => {
     setShares({ ...shares, [e.target.name]: e.target.checked });
   };
-  const handlePatientNameChange = (event) => {
-    setPatientName(event.target.value);
-  };
-  const handleSelectPatient = (selectedPatient) => {
+
+  const handlePatientSelect = (selectedPatient) => {
     setPatientName(selectedPatient);
   };
+
   const saveAppointment = () => {
     const apiUrl = 'http://localhost:8800/api/appointments';
     const data = {
@@ -55,18 +54,23 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
       share: shares,
     };
 
-    axios.post(apiUrl, data)
+    const token = localStorage.getItem('token');
+
+    axios.post(apiUrl, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
       .then(response => {
         console.log('Appointment saved successfully:', response.data);
         toast.success('Appointment saved successfully');
         closeModal();
-        handleNewAppointment(response.data); // Pass the new appointment data to the parent component
+        handleNewAppointment(response.data);
       })
       .catch(error => {
         console.error('Error saving appointment:', error);
         toast.error('Error saving appointment. Please try again later.');
       });
   };
+
   return (
     <Modal
       closeModal={closeModal}
@@ -74,34 +78,19 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
       title={datas?.title ? 'Edit Appointment' : 'New Appointment'}
       width={'max-w-3xl'}
     >
-      {open && (
-        <PatientMedicineServiceModal
-          closeModal={() => setOpen(!isOpen)}
-          isOpen={open}
-          patient={true}
-        />
-      )}
+      {/* <PatientMedicineServiceModal
+        closeModal={() => { }}
+        isOpen={false}
+        patient={true}
+        onSelectPatient={handlePatientSelect}
+        setSearchValue={setPatientName}
+      /> */}
       <div className="flex-colo gap-6">
         <div className="grid sm:grid-cols-12 gap-4 w-full items-center">
           <div className="sm:col-span-10">
-            <Input
-              label="Patient Name"
-              value={patientName}
-              onChange={handlePatientNameChange}
-              color={true}
-              placeholder={
-                datas?.title
-                  ? datas.title
-                  : 'Select Patient and patient name will appear here'
-              }
-            />
+
+            <PatientList onSelectPatient={handlePatientSelect} setSearchValue={setPatientName} />
           </div>
-          <button
-            onClick={() => setOpen(!open)}
-            className="text-subMain flex-rows border border-dashed border-subMain text-sm py-3.5 sm:mt-6 sm:col-span-2 rounded"
-          >
-            <BiPlus /> Add
-          </button>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4 w-full">
@@ -117,7 +106,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
               </div>
             </Select>
           </div>
-          {/* date */}
           <DatePickerComp
             label="Date of visit"
             startDate={startDate}
@@ -138,7 +126,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
           />
         </div>
 
-        {/* status && doctor */}
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <div className="flex w-full flex-col gap-3">
             <p className="text-black text-sm">Doctor</p>
@@ -166,7 +153,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
           </div>
         </div>
 
-        {/* des */}
         <Textarea
           label="Description"
           placeholder={
@@ -178,7 +164,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
           rows={5}
         />
 
-        {/* share */}
         <div className="flex-col flex gap-8 w-full">
           <p className="text-black text-sm">Share with patient via</p>
           <div className="flex flex-wrap sm:flex-nowrap gap-4">
@@ -202,7 +187,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
             />
           </div>
         </div>
-        {/* buttones */}
+
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <button
             onClick={closeModal}

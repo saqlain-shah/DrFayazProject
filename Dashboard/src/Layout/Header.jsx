@@ -85,7 +85,7 @@ function Header({ fullName, profileImage }) {
               onClick={() => setShowDrawer(!showDrawer)}
             >
               {/* You can add an icon for the menu drawer toggle */}
-              <span>Menu</span>
+
             </button>
           </div>
         </div>
