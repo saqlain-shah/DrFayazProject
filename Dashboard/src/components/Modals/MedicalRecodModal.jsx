@@ -1,34 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import Modal from './Modal';
-import { Button } from '../Form';
 import { FiEye } from 'react-icons/fi';
 import { MedicineDosageTable } from '../../components/Tables';
-
-function MedicalRecodModal({ closeModal, isOpen, data, token }) {
-  const { id, prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
+import axios from 'axios';
+function MedicalRecodModal({ closeModal, isOpen, data }) {
+  const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
+  console.log('Attachments:', attachments);
   const [showMedicineDosages, setShowMedicineDosages] = useState(false);
   const medicineDosages = prescription ? prescription.medicines : [];
-  const [attachmentImages, setAttachmentImages] = useState([]);
-
-  useEffect(() => {
-    const fetchAttachmentImages = async () => {
-      try {
-        const imageRequests = attachments.map(async (attachment) => {
-          const imageUrl = `http://localhost:8800/${attachment.filename}`;
-          const response = await axios.get(imageUrl, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          return { url: imageUrl, data: response.data };
-        });
-        const images = await Promise.all(imageRequests);
-        setAttachmentImages(images);
-      } catch (error) {
-        console.error('Error fetching attachment images:', error);
-      }
-    };
-    fetchAttachmentImages();
-  }, [attachments, token]);
 
   return (
     <Modal
@@ -51,28 +30,31 @@ function MedicalRecodModal({ closeModal, isOpen, data, token }) {
           </div>
         )}
 
-        {/* Render Attachments */}
         <div className="grid grid-cols-12 gap-4 w-full">
           <div className="col-span-12 md:col-span-3">
             <p className="text-sm font-medium">Attachments:</p>
           </div>
           <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6 xs:grid-cols-2 md:grid-cols-4 grid gap-4">
-            {/* Render attachment images */}
             {attachments.map((attachment, index) => {
-              const imageUrl = `http://localhost:8800/${attachment.filename}`;
-              console.log('Image URL:', imageUrl);
+              const imageUrl = `http://localhost:8800/uploads/${attachment.filename}`;
+              console.log(imageUrl)
               return (
                 <img
-                  key={index}
                   src={imageUrl}
-                  alt={`Attachment ${index}`}
-                  className="w-full md:h-32 object-cover rounded-md"
-                  // Include token in the request headers
-                  headers={{ Authorization: `Bearer ${token}` }}
+                  alt={attachment.originalname}
+                  className="w-full h-40 rounded-lg object-cover"
+                  onLoad={() => {
+                    axios.get(imageUrl, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    }).then(response => {
+                      console.log('Image loaded successfully:', response);
+                    }).catch(error => {
+                      console.error('Error fetching attachment image:', error);
+                    });
+                  }}
                 />
               );
             })}
-
           </div>
         </div>
 

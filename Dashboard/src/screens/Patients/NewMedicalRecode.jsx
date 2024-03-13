@@ -111,11 +111,10 @@ function NewMedicalRecord() {
         quantity: medicineDosage.quantity,
         dosage: medicineDosage.dosageQuantity,
         instructions: medicineDosage.instructions,
-        itemPrice: medicineDosage.itemPrice, // Include itemPrice
-        amount: medicineDosage.amount // Include amount
+        itemPrice: medicineDosage.itemPrice,
+        amount: medicineDosage.amount,
       });
     });
-
 
     // Filter checked treatments for prescription
     const prescriptionTreatment = treatments
@@ -144,6 +143,7 @@ function NewMedicalRecord() {
     formData.append('treatment', JSON.stringify(prescriptionTreatment));
 
     console.log('FormData:', formData); // Log the FormData object before sending the request
+
     const token = localStorage.getItem('token');
     axios
       .post('http://localhost:8800/api/medical-records', formData, {
@@ -182,6 +182,7 @@ function NewMedicalRecord() {
         }
       });
   };
+
 
 
 
@@ -300,7 +301,7 @@ function NewMedicalRecord() {
                     {/* Render the uploaded image */}
                     <img
                       src={URL.createObjectURL(file)}
-                      // alt={`Attachment ${index + 1}`}
+                      alt={`Attachment ${index + 1}`}
                       className="w-full h-40 rounded-lg object-cover"
                     />
                     {/* Render a button for deletion (if needed) */}
