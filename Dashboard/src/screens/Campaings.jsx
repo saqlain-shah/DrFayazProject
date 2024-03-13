@@ -23,7 +23,7 @@ function Campaings() {
 
   const shareViaWhatsApp = (item) => {
     const message = `Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/+923000000000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     setShowShareOptions(false);
   };
