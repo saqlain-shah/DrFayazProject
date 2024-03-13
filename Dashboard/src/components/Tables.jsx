@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { FiEye, FiEdit } from 'react-icons/fi';
+import { RiDeleteBinLine } from 'react-icons/ri';
 import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -334,12 +335,6 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
 // patient table
 export function PatientTable({ data, functions, onEdit }) {
   const navigate = useNavigate();
-
-  if (!Array.isArray(data)) {
-    console.error('Data is not an array:', data);
-    return <div>Error: Data is not an array</div>;
-  }
-  console.log('Data:', data)
   const DropDown1 = [
     {
       title: 'Edit',

@@ -9,7 +9,7 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import healthInfoRoutes from './routes/healthInfoRoutes.js';
+import healthInformationRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
@@ -51,7 +51,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
-app.use('/api/healthInfo', healthInfoRoutes);
+app.use('/api/health-information', healthInformationRoutes);
 app.use('/api/services', servicesRoute);
 app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes)

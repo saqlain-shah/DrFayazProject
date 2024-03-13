@@ -34,13 +34,7 @@ function Invoices() {
               className="h-14 w-full text-sm text-main rounded-md bg-dry border border-border px-4"
             />
           </div>
-          <Button
-            label="Export"
-            Icon={MdOutlineCloudDownload}
-            onClick={() => {
-              toast.error('Exporting is not available yet');
-            }}
-          />
+
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
           <InvoiceTable data={invoicesData} />

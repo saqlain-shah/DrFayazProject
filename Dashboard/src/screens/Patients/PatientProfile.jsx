@@ -52,34 +52,51 @@ function PatientProfile() {
   };
 
   const verifyOtp = () => {
+    console.log('Verifying OTP...');
     // Here, you would implement logic to verify the OTP code.
     // For demonstration, I'm just checking if the OTP code is '123456'.
     if (otpCode === '123456') {
+      console.log('OTP Verified!');
       setIsOtpValid(true); // Set isOtpValid to true after successful verification
       closeDentalModal();
     } else {
       // Handle invalid OTP here
+      console.log('Invalid OTP code.');
       alert('Invalid OTP code. Please try again.');
+      setIsOtpValid(false);
     }
   };
-
 
   const handleMentalHealthTabClick = () => {
-    if (activeTab === 6 && isOtpValid) {
-      // If the active tab is DentalChart and OTP is valid, set active tab to DentalChart
-      setActiveTab(6);
+    console.log('Mental Health tab clicked');
+    if (activeTab === 6) {
+      if (isOtpValid) {
+        console.log('DentalChart tab is active and OTP is valid');
+        setActiveTab(6);
+      } else {
+        console.log('Opening OTP verification modal');
+        openDentalModal(); // Open OTP verification modal if OTP is not yet verified
+      }
     } else {
-      openDentalModal(); // Open OTP verification modal if OTP is not yet verified
+      if (isOtpValid) {
+        setActiveTab(6);
+      } else {
+        console.log('Opening OTP verification modal');
+        openDentalModal(); // Open OTP verification modal if OTP is not yet verified
+      }
     }
   };
 
+
+
+  console.log('Is OTP Valid?', isOtpValid);
 
   const tabPanel = () => {
     switch (activeTab) {
       case 1:
         return <MedicalRecord />;
       case 2:
-        return <AppointmentsUsed doctor={false} />;
+        return <AppointmentsUsed doctor={false} patientId={id} />;
       case 3:
         return <InvoiceUsed />;
       case 4:
@@ -87,6 +104,7 @@ function PatientProfile() {
       case 5:
         return <PatientImages />;
       case 6:
+        console.log('Rendering DentalChart. Is OTP Valid?', isOtpValid);
         return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is verified
       case 7:
         return <PatientTableArray data={formatProfileData(profileData)} />;
