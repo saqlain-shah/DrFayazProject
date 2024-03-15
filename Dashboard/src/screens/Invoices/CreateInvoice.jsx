@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import Layout from '../../Layout';
-
+import axios from 'axios';
 import { Button, FromToDate, Input, Select, Textarea } from '../../components/Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import PatientMedicineServiceModal from '../../components/Modals/PatientMedicineServiceModal';
 import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
 import { invoicesData, sortsDatas } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
@@ -13,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
 import { v4 as uuidv4 } from 'uuid';
+
 function CreateInvoice() {
   const [dateRange, setDateRange] = useState([
     new Date(),
@@ -23,7 +23,7 @@ function CreateInvoice() {
   const [itemOpen, setItemOpen] = useState(false);
   const [currency, setCurrency] = useState(sortsDatas.currency[0]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedService, setSelectedService] = useState(null); // Add selectedService to state
   const [invoiceItems, setInvoiceItems] = useState([]);
 
   // date picker
@@ -36,28 +36,79 @@ function CreateInvoice() {
   };
 
   const handleSelectPatient = (patient) => {
+    console.log('Selected patient:', patient);
     setSelectedPatient(patient);
-  };
-
-  const handleServiceSelect = (service) => {
-    setSelectedService(service);
   };
 
   const handleAddItem = (service, quantity) => {
     const newItem = {
-      id: service._id, // Use _id instead of id
+      _id: service._id, // Use _id instead of id
       name: service.name,
       price: service.price,
       quantity: parseInt(quantity),
     };
-    setInvoiceItems([...invoiceItems, newItem]);
+    setInvoiceItems([...invoiceItems, newItem]); // Add selected service to invoice items
+    setSelectedService(service); // Update selectedService state
+  };
+
+  const handleSaveAndSend = async () => {
+    console.log("Selected patient:", selectedPatient);
+    console.log("Selected service:", selectedService);
+    console.log("Invoice items:", invoiceItems);
+
+    try {
+      // Check if selectedPatient is valid
+      if (!selectedPatient || !selectedPatient._id || !selectedPatient.fullName) {
+        console.error("Selected patient object is missing required fields");
+        // Display an error message to the user
+        toast.error("Selected patient is missing required fields");
+        return; // Exit function
+      }
+
+      // Check if invoiceItems is empty
+      if (invoiceItems.length === 0) {
+        console.error("Invoice items are required");
+        // Display an error message to the user
+        toast.error("Please add items to the invoice");
+        return; // Exit function
+      }
+
+      // Simulate sending the invoice by making an API call
+      const token = localStorage.getItem("token");
+      const response = await axios.post('http://localhost:8800/api/invoices', {
+        selectedPatient,
+        selectedService,
+        invoiceItems
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log('Invoice sent successfully:', response.data);
+
+      // You can perform further actions here based on the response, such as showing a success message
+      toast.success('Invoice saved and sent successfully');
+    } catch (error) {
+      console.error('Error sending invoice:', error);
+      // Handle error, show error message, etc.
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // Display server error message to the user
+        toast.error(error.response.data.message);
+      } else {
+        // Display generic error message to the user
+        toast.error('Error occurred while sending the invoice');
+      }
+    }
   };
 
 
 
 
-  const deleteItem = (id) => {
-    const updatedItems = invoiceItems.filter((item) => item.id !== id);
+
+  const deleteItem = (itemId) => {
+    const updatedItems = invoiceItems.filter((item) => item._id !== itemId);
     setInvoiceItems(updatedItems);
     toast.success('Item deleted successfully');
   };
@@ -65,18 +116,11 @@ function CreateInvoice() {
 
   return (
     <Layout>
-      {isOpen && (
-        <PatientMedicineServiceModal
-          closeModal={() => setIsOpen(!isOpen)}
-          isOpen={isOpen}
-          patient={true}
-        />
-      )}
       {itemOpen && (
         <AddItemModal
           closeModal={() => setItemOpen(false)}
           isOpen={itemOpen}
-          handleAddItem={handleAddItem}
+          handleAddItem={handleAddItem} // Pass handleAddItem function
         />
       )}
       <div className="flex items-center gap-4">
@@ -189,9 +233,7 @@ function CreateInvoice() {
             />
             <Button
               label="Save & Send"
-              onClick={() => {
-                toast.error('This feature is not available yet');
-              }}
+              onClick={handleSaveAndSend}
               Icon={BsSend}
             />
           </div>

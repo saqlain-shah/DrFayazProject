@@ -1,69 +1,110 @@
-// invoiceController.js
+// controllers/invoiceController.js
+import Invoice from '../../models/Invoice/invoiceModel.js';
 
-import Invoice from "../../models/Invoice/invoiceModel.js";
-
+// Create a new invoice
 export const createInvoice = async (req, res) => {
     try {
+        const { selectedPatient, selectedService, invoiceItems } = req.body;
+
+        // Extract patient details from selectedPatient object
+        const { _id: patient } = selectedPatient;
+
+        // Extract service details from selectedService object
+        const services = selectedService ? [selectedService._id] : [];
+
+        // Calculate total based on invoiceItems
+        const total = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+        // Calculate dueDate (example: due in 30 days from now)
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+
         // Create the invoice
-        const newInvoice = new Invoice(req.body.invoiceData);
-        const savedInvoice = await newInvoice.save();
+        const invoice = new Invoice({
+            patient,
+            services,
+            invoiceItems,
+            total,
+            dueDate,
+        });
 
-        // Create items associated with the invoice
-        const itemsData = req.body.itemsData; // Assuming itemsData contains an array of item details
-        const savedItems = await Item.insertMany(itemsData.map(item => ({ ...item, invoice: savedInvoice._id })));
+        // Save the invoice
+        await invoice.save();
 
-        // Return the saved invoice and items data
-        res.status(201).json({ invoice: savedInvoice, items: savedItems });
+        // Fetch the newly created invoice with populated fields
+        const populatedInvoice = await Invoice.findById(invoice._id)
+            .populate('patient', 'fullName email profilePicture')
+            .populate('services', 'name');
+
+        // Respond with the populated invoice
+        res.status(201).json(populatedInvoice);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error creating invoice:', error);
+        res.status(500).json({ error: 'Failed to create invoice' });
     }
 };
 
-// Controller to get all invoices
+
+
+// Get all invoices
 export const getAllInvoices = async (req, res) => {
     try {
-        const invoices = await Invoice.find();
-        res.json(invoices);
+        const invoices = await Invoice.find()
+            .populate('patient', 'fullName email profilePicture') // Populate patient details
+            .populate('services', 'name'); // Populate service names
+        res.status(200).json(invoices);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching invoices:', error);
+        res.status(500).json({ error: 'Failed to fetch invoices' });
     }
 };
 
-// Controller to get a single invoice by ID
+// Get invoice by ID
 export const getInvoiceById = async (req, res) => {
     try {
-        const invoice = await Invoice.findById(req.params.id);
-        if (invoice === null) {
-            return res.status(404).json({ message: 'Invoice not found' });
+        const invoice = await Invoice.findById(req.params.id)
+            .populate('patient', 'fullName email profilePicture') // Populate patient details
+            .populate('services', 'name'); // Populate service names
+        if (!invoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
         }
-        res.json(invoice);
+        res.status(200).json(invoice);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching invoice by ID:', error);
+        res.status(500).json({ error: 'Failed to fetch invoice' });
     }
 };
 
-// Controller to update an invoice by ID
+// Update invoice by ID
 export const updateInvoice = async (req, res) => {
     try {
-        const updatedInvoice = await Invoice.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (updatedInvoice === null) {
-            return res.status(404).json({ message: 'Invoice not found' });
+        const { patient, services, invoiceItems, total, dueDate } = req.body;
+        const updatedInvoice = await Invoice.findByIdAndUpdate(req.params.id, {
+            patient,
+            services,
+            invoiceItems,
+            total,
+            dueDate
+        }, { new: true });
+        if (!updatedInvoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
         }
-        res.json(updatedInvoice);
+        res.status(200).json(updatedInvoice);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error updating invoice:', error);
+        res.status(500).json({ error: 'Failed to update invoice' });
     }
 };
 
-// Controller to delete an invoice by ID
 export const deleteInvoice = async (req, res) => {
     try {
         const deletedInvoice = await Invoice.findByIdAndDelete(req.params.id);
-        if (deletedInvoice === null) {
-            return res.status(404).json({ message: 'Invoice not found' });
+        if (!deletedInvoice) {
+            return res.status(404).json({ error: 'Invoice not found' });
         }
-        res.json({ message: 'Invoice deleted successfully' });
+        res.status(200).json({ message: 'Invoice deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error deleting invoice:', error);
+        res.status(500).json({ error: 'Failed to delete invoice' });
     }
 };

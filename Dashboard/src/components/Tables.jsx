@@ -106,7 +106,7 @@ export function Transactiontable({ data, action, functions }) {
 }
 
 // invoice table
-export function InvoiceTable({ data }) {
+export function InvoiceTable({ data, deleteInvoice }) {
   const navigate = useNavigate();
   const DropDown1 = [
     {
@@ -122,14 +122,16 @@ export function InvoiceTable({ data }) {
       onClick: (item) => {
         navigate(`/invoices/preview/${item.id}`);
       },
+
     },
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: () => {
-        toast.error('This feature is not available yet');
+      onClick: (item) => {
+        deleteInvoice(item._id);
       },
     },
+
   ];
   return (
     <table className="table-auto w-full">
@@ -148,7 +150,7 @@ export function InvoiceTable({ data }) {
       <tbody>
         {data.map((item) => (
           <tr
-            key={item.id}
+            key={item._id}
             className="border-b border-border hover:bg-greyed transitions"
           >
             <td className={tdclass}>#{item?.id}</td>
@@ -156,16 +158,18 @@ export function InvoiceTable({ data }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={item?.to?.image}
-                    alt={item?.to?.title}
+                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
+
                 </span>
                 <div>
-                  <h4 className="text-sm font-medium">{item?.to?.title}</h4>
+                  <h4 className="text-sm font-medium">{item?.patient?.fullName}</h4>
                   <p className="text-xs mt-1 text-textGray">
-                    {item?.to?.email}
+                    {item?.patient?.email}
                   </p>
+
                 </div>
               </div>
             </td>
@@ -797,12 +801,12 @@ export function InvoiceProductsTable({ data, functions, button }) {
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclass}>Itemss</th>
+          <th className={thclass}>Item</th>
           <th className={thclass}>
             Item Price
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
-          <th className={thclass}>Quantityy</th>
+          <th className={thclass}>Quantity</th>
           <th className={thclass}>
             Amount
             <span className="text-xs font-light ml-1">(Tsh)</span>
@@ -813,24 +817,19 @@ export function InvoiceProductsTable({ data, functions, button }) {
       <tbody>
         {/* Check if data is not empty and map over it */}
         {data?.map((item) => (
-          <tr key={item.id} className="border-b border-border hover:bg-greyed transitions">
+          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
             <td className={`${tdclass}  font-medium`}>{item.name}</td>
             <td className={`${tdclass} text-xs`}>{item.price}</td>
             <td className={tdclass}>{item.quantity}</td> {/* Display quantity */}
             <td className={tdclass}>{item.price * item.quantity}</td> {/* Calculate and display amount */}
             {button && (
               <td className={tdclass}>
-                {button && (
-                  <td className={tdclass}>
-                    <button
-                      onClick={() => functions.deleteItem(item.id)}
-                      className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"
-                    >
-                      <RiDeleteBinLine />
-                    </button>
-                  </td>
-                )}
-
+                <button
+                  onClick={() => functions.deleteItem(item._id)}
+                  className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"
+                >
+                  Delete
+                </button>
               </td>
             )}
           </tr>
@@ -839,6 +838,7 @@ export function InvoiceProductsTable({ data, functions, button }) {
     </table>
   );
 }
+
 
 // medicine Dosage table
 

@@ -25,6 +25,7 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   };
 
   const handleServiceSelect = (service) => {
+    console.log('Selected service:', service);
     onSelectService(service); // Pass selected service to parent component
     closeModal(); // Close the modal
   };
@@ -53,7 +54,7 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
           <ul className="divide-y divide-gray-200">
             {services.map((service) => (
               <li
-                key={service.id}
+                key={service._id}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleServiceSelect(service)}
               >
