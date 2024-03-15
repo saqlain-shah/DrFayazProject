@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '../../Layout';
-import {
-  Button,
-  FromToDate,
-  Input,
-  Select,
-  Textarea,
-} from '../../components/Form';
+
+import { Button, FromToDate, Input, Select, Textarea } from '../../components/Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import PatientMedicineServiceModal from '../../components/Modals/PatientMedicineServiceModal';
 import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
@@ -17,7 +12,7 @@ import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
-
+import { v4 as uuidv4 } from 'uuid';
 function CreateInvoice() {
   const [dateRange, setDateRange] = useState([
     new Date(),
@@ -27,11 +22,46 @@ function CreateInvoice() {
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
   const [currency, setCurrency] = useState(sortsDatas.currency[0]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
+  const [invoiceItems, setInvoiceItems] = useState([]);
 
   // date picker
   const onChangeDates = (update) => {
     setDateRange(update);
   };
+
+  const handleAddItemClick = () => {
+    setItemOpen(true); // Open the modal
+  };
+
+  const handleSelectPatient = (patient) => {
+    setSelectedPatient(patient);
+  };
+
+  const handleServiceSelect = (service) => {
+    setSelectedService(service);
+  };
+
+  const handleAddItem = (service, quantity) => {
+    const newItem = {
+      id: service._id, // Use _id instead of id
+      name: service.name,
+      price: service.price,
+      quantity: parseInt(quantity),
+    };
+    setInvoiceItems([...invoiceItems, newItem]);
+  };
+
+
+
+
+  const deleteItem = (id) => {
+    const updatedItems = invoiceItems.filter((item) => item.id !== id);
+    setInvoiceItems(updatedItems);
+    toast.success('Item deleted successfully');
+  };
+
 
   return (
     <Layout>
@@ -44,8 +74,9 @@ function CreateInvoice() {
       )}
       {itemOpen && (
         <AddItemModal
-          closeModal={() => setItemOpen(!itemOpen)}
+          closeModal={() => setItemOpen(false)}
           isOpen={itemOpen}
+          handleAddItem={handleAddItem}
         />
       )}
       <div className="flex items-center gap-4">
@@ -64,7 +95,6 @@ function CreateInvoice() {
         data-aos-offset="200"
         className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
       >
-        {/* header */}
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
             <img
@@ -83,7 +113,6 @@ function CreateInvoice() {
             />
           </div>
         </div>
-        {/* sender and recever */}
         <SenderReceverComp
           item={invoicesData?.[1].to}
           functions={{
@@ -92,23 +121,20 @@ function CreateInvoice() {
             },
           }}
           button={true}
+          selectedPatient={selectedPatient}
+          handleSelectPatient={handleSelectPatient}
         />
-        {/* products */}
+
         <div className="grid grid-cols-6 gap-6 mt-8">
           <div className="col-span-6 lg:col-span-4 p-6 border border-border rounded-xl overflow-hidden">
             <InvoiceProductsTable
-              data={invoicesData[1].items}
-              functions={{
-                deleteItem: (id) => {
-                  toast.error('This feature is not available yet');
-                },
-              }}
+              data={invoiceItems}
+              functions={{ deleteItem }}
               button={true}
             />
 
-            {/* add */}
             <button
-              onClick={() => setItemOpen(!itemOpen)}
+              onClick={handleAddItemClick}
               className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm mt-4"
             >
               <BiPlus /> Add Item
@@ -155,14 +181,12 @@ function CreateInvoice() {
               <p className="text-sm font-extralight">Grand Total:</p>
               <h6 className="text-sm font-medium text-green-600">$6000</h6>
             </div>
-            {/* notes */}
             <Textarea
               label="Notes"
               placeholder="Thank you for your business. We hope to work with you again soon!"
               color={true}
               rows={3}
             />
-            {/* button */}
             <Button
               label="Save & Send"
               onClick={() => {

@@ -1,4 +1,4 @@
-import {  Menu, Switch } from '@headlessui/react';
+import { Menu, Switch } from '@headlessui/react';
 import React from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
 import DatePicker from 'react-datepicker';

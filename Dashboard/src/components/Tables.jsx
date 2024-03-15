@@ -292,10 +292,10 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclass}>Name</th>
+          <th className={thclass}>Service Name</th>
           <th className={thclass}>Created At</th>
           <th className={thclass}>
-            Price <span className="text-xs font-light">(Tsh)</span>
+            Service  Price <span className="text-xs font-light">(Tsh)</span>
           </th>
           <th className={thclass}>Status</th>
           <th className={thclass}>Actions</th>
@@ -790,41 +790,47 @@ export function InvoiceUsedTable({ data, functions }) {
 
 // invoice table
 export function InvoiceProductsTable({ data, functions, button }) {
+  const thclass = "p-3 text-left font-medium text-gray-700 border-b border-gray-200";
+  const tdclass = "p-3 text-left text-gray-700 border-b border-gray-200";
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
-          <th className={thclass}>Item</th>
+          <th className={thclass}>Itemss</th>
           <th className={thclass}>
             Item Price
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
           <th className={thclass}>Quantityy</th>
           <th className={thclass}>
-            Amout
+            Amount
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
           {button && <th className={thclass}>Actions</th>}
         </tr>
       </thead>
       <tbody>
+        {/* Check if data is not empty and map over it */}
         {data?.map((item) => (
-          <tr
-            key={item.id}
-            className="border-b border-border hover:bg-greyed transitions"
-          >
+          <tr key={item.id} className="border-b border-border hover:bg-greyed transitions">
             <td className={`${tdclass}  font-medium`}>{item.name}</td>
             <td className={`${tdclass} text-xs`}>{item.price}</td>
-            <td className={tdclass}>{item.id}</td>
-            <td className={tdclass}>{item.price * item.id}</td>
+            <td className={tdclass}>{item.quantity}</td> {/* Display quantity */}
+            <td className={tdclass}>{item.price * item.quantity}</td> {/* Calculate and display amount */}
             {button && (
               <td className={tdclass}>
-                <button
-                  onClick={() => functions.deleteItem(item.id)}
-                  className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"
-                >
-                  <RiDeleteBinLine />
-                </button>
+                {button && (
+                  <td className={tdclass}>
+                    <button
+                      onClick={() => functions.deleteItem(item.id)}
+                      className="bg-red-600 bg-opacity-5 text-red-600 rounded-lg border border-red-100 py-3 px-4 text-sm"
+                    >
+                      <RiDeleteBinLine />
+                    </button>
+                  </td>
+                )}
+
               </td>
             )}
           </tr>

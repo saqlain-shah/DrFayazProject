@@ -4,46 +4,36 @@ import { BiSearch, BiPlus } from 'react-icons/bi';
 import { Button } from '../Form';
 import axios from 'axios';
 
-function PatientMedicineServiceModal({ closeModal, isOpen, patient, onSelectPatient }) {
-  const [selectedPatient, setSelectedPatient] = useState(null); // State to store selected patient
+function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   const [searchValue, setSearchValue] = useState(''); // State to store search field value
-  const [patients, setPatients] = useState([]); // State to store fetched patients
+  const [services, setServices] = useState([]); // State to store fetched services
 
   useEffect(() => {
-    fetchPatients();
+    fetchServices();
   }, []);
 
-  const fetchPatients = async () => {
+  const fetchServices = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8800/api/patients', {
+      const response = await axios.get('http://localhost:8800/api/services', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setPatients(response.data);
+      setServices(response.data);
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error('Error fetching services:', error);
     }
   };
 
-  const handleAddPatientClick = () => {
-    setSelectedPatient(null); // Reset selected patient when "Add Patient" is clicked
-    setSearchValue(''); // Clear search field
-    closeModal();
-  };
-
-  const handlePatientSelect = (patient) => {
-    setSelectedPatient(patient); // Set selected patient
-    setSearchValue(patient.fullName); // Set search field value to selected patient's name
+  const handleServiceSelect = (service) => {
+    onSelectService(service); // Pass selected service to parent component
     closeModal(); // Close the modal
-    onSelectPatient(patient.fullName); // Pass selected patient to parent component
-    setSearchValue(patient.fullName); // Set search value in parent component
   };
 
   return (
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title={patient ? 'Patients' : 'Medicine & Services'}
+      title="Services"
       width={'max-w-xl'}
     >
       <div className="flex flex-col gap-6">
@@ -58,22 +48,22 @@ function PatientMedicineServiceModal({ closeModal, isOpen, patient, onSelectPati
           />
           <BiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xl" />
         </div>
-        {/* Dropdown menu for patients */}
+        {/* Dropdown menu for services */}
         <div className="w-full max-h-60 overflow-y-auto border border-border rounded-lg shadow-md">
           <ul className="divide-y divide-gray-200">
-            {patients.map((patient) => (
+            {services.map((service) => (
               <li
-                key={patient.id}
+                key={service.id}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handlePatientSelect(patient)}
+                onClick={() => handleServiceSelect(service)}
               >
-                {patient.fullName}
+                {service.name}
               </li>
             ))}
           </ul>
         </div>
         {/* Button */}
-        <Button onClick={handleAddPatientClick} label="Add" Icon={BiPlus} />
+        <Button onClick={closeModal} label="Add" Icon={BiPlus} />
       </div>
     </Modal>
   );
