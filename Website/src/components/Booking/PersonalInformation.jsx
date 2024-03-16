@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PersonalInformation = ({ handleChange, selectValue, handleConfirmSchedule }) => {
+const PersonalInformation = ({ handleChange, selectValue }) => {
     const { firstName, lastName, email, phone, reasonForVisit, description, address } = selectValue;
 
     return (
@@ -49,17 +49,7 @@ const PersonalInformation = ({ handleChange, selectValue, handleConfirmSchedule 
                     </div>
                 </div>
             </div>
-            <div className="text-end">
-                <button
-                    className="btn btn-primary"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        handleConfirmSchedule(); // Call the parent component's function to handle confirming the appointment schedule
-                    }}
-                >
-                    Confirm
-                </button>
-            </div>
+
         </form>
     );
 };

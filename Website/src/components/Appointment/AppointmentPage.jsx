@@ -130,6 +130,9 @@ const AppointmentPage = () => {
         // Inside your handleConfirmSchedule function or wherever you want to display a toast message
         toast.success('Appointment scheduled successfully!');
 
+        // Navigate to the first page after confirming
+        navigation('/'); // Assuming the first page URL is '/'
+
         // Handle success, e.g., show a success message to the user
       })
       .catch(error => {

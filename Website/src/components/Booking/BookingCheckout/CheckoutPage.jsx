@@ -1,10 +1,11 @@
+import React, { useEffect, useState } from 'react'; // Import useState
 import moment from 'moment';
-import img from '../../../images/doc/doctor 3.jpg';
-import { Link } from 'react-router-dom';
-import './BookingCheckout.css';
-import { useState, useEffect } from 'react';
-const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime, setIsConfirmDisable, setIsDisable }) => {
+import { toast } from 'react-hot-toast';
+
+const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime, setIsDisable, handleConfirmSchedule }) => {
     const { nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv, paymentType, paymentMethod } = selectValue;
+    const [isConfirmDisable, setIsConfirmDisable] = useState(true); // Define isConfirmDisable state
+
     const handleCheck = () => {
         setIsChecked(!isCheck)
     }
@@ -21,6 +22,7 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
         // Check if selectTime is not empty or null
         setIsDisable(isInputEmpty || !selectTime || selectTime === '' || !isPaymentFieldsFilled); // Include isPaymentFieldsFilled in the condition
     }, [selectValue, selectTime]); // Remove IsDisable from the dependency array
+
 
     return (
         <div className="container mt-5">
@@ -154,6 +156,17 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                             </ul>
                         </div>
                     </div> */}
+                    <div className="col-md-5 col-sm-12">
+                        <div className="text-end">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => handleConfirmSchedule()}
+                                disabled={isConfirmDisable} // Use isConfirmDisable to determine the disabled state
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

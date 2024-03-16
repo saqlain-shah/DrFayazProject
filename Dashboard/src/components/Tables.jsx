@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { v4 as uuidv4 } from 'uuid';
 import { FiEye, FiEdit } from 'react-icons/fi';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
@@ -105,9 +106,12 @@ export function Transactiontable({ data, action, functions }) {
   );
 }
 
-// invoice table
+
+
 export function InvoiceTable({ data, deleteInvoice }) {
   const navigate = useNavigate();
+  const [idCounter, setIdCounter] = useState(2623); // Initialize the ID counter
+
   const DropDown1 = [
     {
       title: 'Edit',
@@ -131,8 +135,8 @@ export function InvoiceTable({ data, deleteInvoice }) {
         deleteInvoice(item._id);
       },
     },
-
   ];
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
@@ -142,18 +146,18 @@ export function InvoiceTable({ data, deleteInvoice }) {
           <th className={thclass}>Created Date</th>
           <th className={thclass}>Due Date</th>
           <th className={thclass}>
-            Amout <span className="text-xs font-light">(Tsh)</span>
+            Amount <span className="text-xs font-light">(Tsh)</span>
           </th>
           <th className={thclass}>Actions</th>
         </tr>
       </thead>
       <tbody>
-        {data.map((item) => (
+        {data.map((item, index) => (
           <tr
             key={item._id}
             className="border-b border-border hover:bg-greyed transitions"
           >
-            <td className={tdclass}>#{item?.id}</td>
+            <td className={tdclass}>#{idCounter + index}</td>
             <td className={tdclass}>
               <div className="flex gap-4 items-center">
                 <span className="w-12">
@@ -162,19 +166,17 @@ export function InvoiceTable({ data, deleteInvoice }) {
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
-
                 </span>
                 <div>
                   <h4 className="text-sm font-medium">{item?.patient?.fullName}</h4>
                   <p className="text-xs mt-1 text-textGray">
                     {item?.patient?.email}
                   </p>
-
                 </div>
               </div>
             </td>
-            <td className={tdclass}>{item?.createdDate}</td>
-            <td className={tdclass}>{item?.dueDate}</td>
+            <td className={tdclass}>{new Date(item?.createdDate).toLocaleString()}</td>
+            <td className={tdclass}>{new Date(item?.dueDate).toLocaleString()}</td>
             <td className={`${tdclass} font-semibold`}>{item?.total}</td>
             <td className={tdclass}>
               <MenuSelect datas={DropDown1} item={item}>
@@ -189,6 +191,8 @@ export function InvoiceTable({ data, deleteInvoice }) {
     </table>
   );
 }
+
+
 
 // MedicineTable component
 export function MedicineTable({ data, onEdit, onDelete }) {
