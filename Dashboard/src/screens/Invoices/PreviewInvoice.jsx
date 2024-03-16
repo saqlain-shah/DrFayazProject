@@ -15,38 +15,53 @@ import { InvoiceProductsTable } from '../../components/Tables';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-
-
-
 function PreviewInvoice() {
   const { id } = useParams();
   const [isOpen, setIsoOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [loader, setLoader] = useState(false)
 
-  const convertToPDF = (fileName) => {
-    const capture = document.querySelector('.actual-receipt');
-    if (!capture) {
-      console.error(`Element with selector not found.`);
-      return;
-    }
-    setLoader(true);
-    html2canvas(capture).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const doc = new jsPDF('p', 'mm', 'a4');
-      const componentWidth = doc.internal.pageSize.getWidth();
-      const componentHeight = doc.internal.pageSize.getHeight();
-      doc.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
-      setLoader(false);
-      return doc
+  const convertToPDF = () => {
+    return new Promise((resolve, reject) => {
+      const capture = document.querySelector('.actual-receipt');
+      if (!capture) {
+        const error = new Error("Element with class 'actual-receipt' not found.");
+        console.error(error);
+        reject(error);
+        return;
+      }
+  
+      // Generate the PDF
+      html2canvas(capture)
+        .then((canvas) => {
+          // Create a new jsPDF instance
+          const doc = new jsPDF('p', 'mm', 'a4');
+          
+          // Calculate the width and height of the canvas
+          const width = canvas.width * 0.264583;
+          const height = canvas.height * 0.264583;
+          
+          // Add image data to the PDF
+          doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, width, height);
+  
+          // Generate Blob object from the PDF document
+          const pdfBlob = doc.output('blob');
+  
+          // Resolve the promise with the Blob object
+          resolve(pdfBlob);
+        })
+        .catch((error) => {
+          console.error('Error converting to PDF:', error);
+          reject(error);
+        });
     });
   };
+  
+  
 
   const buttonClass = 'bg-subMain flex-rows gap-3 bg-opacity-5 text-subMain rounded-lg border border-subMain border-dashed px-4 py-3 text-sm';
 
   const invoice = invoicesData.find((invoice) => invoice.id.toString() === id);
-
-
 
   const downloadPDF = () => {
     const capture = document.querySelector('.actual-receipt');
@@ -56,46 +71,80 @@ function PreviewInvoice() {
     }
     setLoader(true);
     html2canvas(capture).then((canvas) => {
-      const imgData = canvas.toDataURL(' img/png');
+      const imgData = canvas.toDataURL('image/png');
       const doc = new jsPDF('p', 'mm', 'legal')
       const componentWidth = doc.internal.pageSize.getWidth();
       const componentHeight = doc.internal.pageSize.getHeight();
-      doc.addImage(imgData, ' PNG', 0, 0, componentWidth, componentHeight);
+      doc.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
       setLoader(false);
-      doc.save(' receipt. pdf');
-    })
-  }
-
-  const shareViaEmail = (emailAddress, subject, body, attachmentFileName, containerSelector) => {
-    const attachmentDataURL = convertToPDF(attachmentFileName);
-    // Here you can implement the functionality to share via email using the fetched email address, subject, body, and attachment data
-    // Example:
-    window.open(`mailto:${emailAddress}?subject=${subject}&body=${body}`);
+      doc.save('receipt.pdf');
+    });
   };
 
-  const shareViaWhatsApp = (phoneNumber, message, attachmentFileName, containerSelector) => {
-    const attachmentDataURL = convertToPDF(attachmentFileName);
-    // Here you can implement the functionality to share via WhatsApp using the fetched phone number, message, and attachment data
-    // Example:
-    window.open(`https://wa.me/+923554472161?text=${message}`);
+  const shareViaEmail = async () => {
+    try {
+      // Convert content to PDF
+      const doc = await convertToPDF();
+  
+      // Convert PDF blob to URL
+      const attachmentURL = doc.output('blob');
+  
+      // Construct the mailto link with pre-filled data
+      const gmailURL = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}&attachment=${attachmentURL}`;
+  
+      // Open mailto link in a new tab
+      window.open(gmailURL, '_blank');
+    } catch (error) {
+      console.error('Error sharing via email:', error);
+    }
   };
-
+  
+  const shareViaWhatsApp = async (phoneNumber) => {
+    try {
+      // Convert content to PDF
+      const doc = await convertToPDF();
+  
+      // Check if doc is a Blob object
+      if (!(doc instanceof Blob)) {
+        throw new Error('PDF conversion failed: Invalid Blob object');
+      }
+  
+      // Generate a message with the PDF file
+      const message = 'Here is the invoice';
+  
+      // Create an object representing the PDF file
+      const pdfFile = new File([doc], 'invoice.pdf', { type: 'application/pdf' });
+  
+      // Construct the WhatsApp message with the PDF file
+      const whatsappMessage = `https://wa.me/${1234567890}?text=${encodeURIComponent(message)}`;
+  
+      // Open WhatsApp with pre-filled message and PDF file
+      window.open(whatsappMessage, '_blank');
+    } catch (error) {
+      console.error('Error sharing via WhatsApp:', error);
+    }
+  };
+  
+  
+  
+  
+  
   const printPDF = () => {
-    // const doc = convertToPDF('receipt');
-    // Here you can implement the functionality to print the PDF document
-    // Example:
-    var prtContent = document.querySelector('.actual-receipt');
-    var WinPrint = window.open();
-    WinPrint.document.write(prtContent.innerHTML);
-    WinPrint.print();
-    // const capture = document.querySelector('.actual-receipt');
-    // capture.window.print()
-    // window.print(capture);
+    const prtContent = document.querySelector('.actual-receipt').innerHTML;
+    const originalBodyContent = document.body.innerHTML;
+  
+    // Replace the entire body content with the content of .actual-receipt
+    document.body.innerHTML = prtContent;
+  
+    // Trigger the print dialog
+    window.print();
+  
+    // Restore the original body content
+    document.body.innerHTML = originalBodyContent;
   };
-
-
-
-
+  
+  
+  
 
   return (
     <Layout>
@@ -126,7 +175,6 @@ function PreviewInvoice() {
           <h1 className="text-xl font-semibold">Preview Invoice</h1>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          {/* button */}
           <button
             onClick={() => {
               setIsShareOpen(true);
@@ -135,19 +183,22 @@ function PreviewInvoice() {
           >
             Share <RiShareBoxLine />
           </button>
-
           <button
             className={buttonClass}
             onClick={shareViaWhatsApp}
           >
-            Whatsapp 
+            WhatsApp 
           </button>
-
-
+          <button
+            className={buttonClass}
+            onClick={shareViaEmail}
+          >
+            Email 
+          </button>
           <button
             className={buttonClass}
             onClick={downloadPDF}
-            disabled={!(loader === false)}
+            disabled={loader}
           >
             {loader ? (
               <span>Downloading</span>
@@ -156,37 +207,28 @@ function PreviewInvoice() {
             )}
           </button>
           <button
-            onClick={() => printPDF()}
+            onClick={printPDF}
             className={buttonClass}
           >
             Print <AiOutlinePrinter />
           </button>
-          <Link to={`/invoices/edit/` + invoice?.id} className={buttonClass}>
+          <Link to={`/invoices/edit/${invoice?.id}`} className={buttonClass}>
             Edit <FiEdit />
           </Link>
         </div>
       </div>
       <div className='actual-receipt'>
-        <div
-          data-aos="fade-up"
-          data-aos-duration="1000"
-          data-aos-delay="100"
-          data-aos-offset="200"
-          className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
-        >
-          {/* header */}
+        <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
           <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
             <div className="lg:col-span-3">
               <img
                 src="/images/logo.png"
                 alt="logo"
-                className=" w-32 object-contain"
+                className="w-32 object-contain"
               />
             </div>
-
             <div className="flex flex-col gap-4 sm:items-end">
               <h6 className="text-xs font-medium">#{invoice?.id}</h6>
-
               <div className="flex gap-4">
                 <p className="text-sm font-extralight">Date:</p>
                 <h6 className="text-xs font-medium">{invoice?.createdDate}</h6>
@@ -197,9 +239,7 @@ function PreviewInvoice() {
               </div>
             </div>
           </div>
-          {/* sender and recever */}
           <SenderReceverComp item={invoice.to} functions={{}} button={false} />
-          {/* products */}
           <div className="grid grid-cols-6 gap-6 mt-8">
             <div className="lg:col-span-4 col-span-6 p-6 border border-border rounded-xl overflow-hidden">
               <InvoiceProductsTable
@@ -229,7 +269,6 @@ function PreviewInvoice() {
                 <p className="text-sm font-extralight">Grand Total:</p>
                 <h6 className="text-sm font-medium text-green-600">$6000</h6>
               </div>
-              {/* notes */}
               <div className="w-full p-4 border border-border rounded-lg">
                 <h1 className="text-sm font-medium">Notes</h1>
                 <p className="text-xs mt-2 font-light leading-5">
