@@ -1034,32 +1034,22 @@ export const notificationsData = [
   },
 ];
 
-export const shareData = [
-  {
-    id: 1,
-    icon: HiOutlineMail,
-    title: "Email",
-    description: "Send to patient email address",
-  },
-  {
-    id: 2,
-    icon: MdOutlineTextsms,
-    title: "SMS",
-    description: "Send to patient phone number",
-  },
-  {
-    id: 3,
-    icon: FaWhatsapp,
-    title: "WhatsApp",
-    description: "Send to patient WhatsApp account",
-  },
-  {
-    id: 4,
-    icon: FaTelegramPlane,
-    title: "Telegram",
-    description: "Send to patient Telegram account",
-  },
-];
+// export const shareData = [
+//   {
+//     id: 1,
+//     icon: HiOutlineMail,
+//     title: "Email",
+//     description: "Send to patient email address",
+//   },
+ 
+//   {
+//     id: 3,
+//     icon: FaWhatsapp,
+//     title: "WhatsApp",
+//     description: "Send to patient WhatsApp account",
+//   },
+
+// ];
 
 export const medicineData = [
   {
