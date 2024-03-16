@@ -5,16 +5,20 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios'; // Import Axios
 
+
+
+// Update the AddEditServiceModal component
 function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
   const [serviceData, setServiceData] = useState({
     name: '',
     price: 0,
     description: '',
-    status: false // Add the status field with default value false
+    status: false
   });
 
   useEffect(() => {
-    if (datas?.name) {
+    // Populate modal data when datas prop changes (i.e., when editing)
+    if (datas.name) {
       setServiceData(datas);
     }
   }, [datas]);
@@ -36,14 +40,10 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
 
   const handleSave = async () => {
     try {
-      // Call the onCreate function passed as props to send the service data to the server
       await onCreate(serviceData);
-      // Optionally, you can update your UI or show a success message here
       closeModal();
     } catch (error) {
-      // Handle error
       console.error('Error saving service:', error);
-      // Show an error message
       toast.error('Failed to save service. Please try again.');
     }
   };
@@ -52,7 +52,7 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title={datas?.name ? 'Edit Service' : 'New Service'}
+      title={datas.name ? 'Edit Service' : 'New Service'}
       width={'max-w-3xl'}
     >
       <div className="flex-colo gap-6">
@@ -65,7 +65,7 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
         />
 
         <Input
-          label="Price (Tsh)"
+          label="Service Price (Tsh)"
           type="number"
           name="price"
           color={true}
@@ -73,9 +73,8 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
           onChange={handleChange}
         />
 
-        {/* des */}
         <Textarea
-          label="Description"
+          label="Service Description"
           name="description"
           placeholder="Write description here..."
           color={true}
@@ -83,7 +82,7 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
           value={serviceData.description}
           onChange={handleChange}
         />
-        {/* switch */}
+
         <div className="flex items-center gap-2 w-full">
           <Switchi
             label="Status"
@@ -94,13 +93,13 @@ function AddEditServiceModal({ closeModal, isOpen, datas, onCreate }) {
             {serviceData.status ? 'Enabled' : 'Disabled'}
           </p>
         </div>
-        {/* buttones */}
+
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <button
             onClick={closeModal}
             className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
           >
-            {datas?.name ? 'Discard' : 'Cancel'}
+            {datas.name ? 'Discard' : 'Cancel'}
           </button>
           <Button
             label="Save"

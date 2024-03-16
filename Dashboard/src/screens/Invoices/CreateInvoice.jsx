@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import Layout from '../../Layout';
-import {
-  Button,
-  FromToDate,
-  Input,
-  Select,
-  Textarea,
-} from '../../components/Form';
+import axios from 'axios';
+import { Button, FromToDate, Input, Select, Textarea } from '../../components/Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import PatientMedicineServiceModal from '../../components/Modals/PatientMedicineServiceModal';
 import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
 import { invoicesData, sortsDatas } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
@@ -17,6 +11,7 @@ import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
+import { v4 as uuidv4 } from 'uuid';
 
 function CreateInvoice() {
   const [dateRange, setDateRange] = useState([
@@ -27,25 +22,105 @@ function CreateInvoice() {
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
   const [currency, setCurrency] = useState(sortsDatas.currency[0]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedService, setSelectedService] = useState(null); // Add selectedService to state
+  const [invoiceItems, setInvoiceItems] = useState([]);
 
   // date picker
   const onChangeDates = (update) => {
     setDateRange(update);
   };
 
+  const handleAddItemClick = () => {
+    setItemOpen(true); // Open the modal
+  };
+
+  const handleSelectPatient = (patient) => {
+    console.log('Selected patient:', patient);
+    setSelectedPatient(patient);
+  };
+
+  const handleAddItem = (service, quantity) => {
+    const newItem = {
+      _id: service._id, // Use _id instead of id
+      name: service.name,
+      price: service.price,
+      quantity: parseInt(quantity),
+    };
+    setInvoiceItems([...invoiceItems, newItem]); // Add selected service to invoice items
+    setSelectedService(service); // Update selectedService state
+  };
+
+  const handleSaveAndSend = async () => {
+    console.log("Selected patient:", selectedPatient);
+    console.log("Selected service:", selectedService);
+    console.log("Invoice items:", invoiceItems);
+
+    try {
+      // Check if selectedPatient is valid
+      if (!selectedPatient || !selectedPatient._id || !selectedPatient.fullName) {
+        console.error("Selected patient object is missing required fields");
+        // Display an error message to the user
+        toast.error("Selected patient is missing required fields");
+        return; // Exit function
+      }
+
+      // Check if invoiceItems is empty
+      if (invoiceItems.length === 0) {
+        console.error("Invoice items are required");
+        // Display an error message to the user
+        toast.error("Please add items to the invoice");
+        return; // Exit function
+      }
+
+      // Simulate sending the invoice by making an API call
+      const token = localStorage.getItem("token");
+      const response = await axios.post('http://localhost:8800/api/invoices', {
+        selectedPatient,
+        selectedService,
+        invoiceItems
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      console.log('Invoice sent successfully:', response.data);
+
+      // You can perform further actions here based on the response, such as showing a success message
+      toast.success('Invoice saved and sent successfully');
+    } catch (error) {
+      console.error('Error sending invoice:', error);
+      // Handle error, show error message, etc.
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // Display server error message to the user
+        toast.error(error.response.data.message);
+      } else {
+        // Display generic error message to the user
+        toast.error('Error occurred while sending the invoice');
+      }
+    }
+  };
+
+
+
+
+
+  const deleteItem = (itemId) => {
+    const updatedItems = invoiceItems.filter((item) => item._id !== itemId);
+    setInvoiceItems(updatedItems);
+    toast.success('Item deleted successfully');
+  };
+
+
   return (
     <Layout>
-      {isOpen && (
-        <PatientMedicineServiceModal
-          closeModal={() => setIsOpen(!isOpen)}
-          isOpen={isOpen}
-          patient={true}
-        />
-      )}
       {itemOpen && (
         <AddItemModal
-          closeModal={() => setItemOpen(!itemOpen)}
+          closeModal={() => setItemOpen(false)}
           isOpen={itemOpen}
+          handleAddItem={handleAddItem} // Pass handleAddItem function
         />
       )}
       <div className="flex items-center gap-4">
@@ -64,7 +139,6 @@ function CreateInvoice() {
         data-aos-offset="200"
         className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
       >
-        {/* header */}
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
             <img
@@ -83,7 +157,6 @@ function CreateInvoice() {
             />
           </div>
         </div>
-        {/* sender and recever */}
         <SenderReceverComp
           item={invoicesData?.[1].to}
           functions={{
@@ -92,23 +165,20 @@ function CreateInvoice() {
             },
           }}
           button={true}
+          selectedPatient={selectedPatient}
+          handleSelectPatient={handleSelectPatient}
         />
-        {/* products */}
+
         <div className="grid grid-cols-6 gap-6 mt-8">
           <div className="col-span-6 lg:col-span-4 p-6 border border-border rounded-xl overflow-hidden">
             <InvoiceProductsTable
-              data={invoicesData[1].items}
-              functions={{
-                deleteItem: (id) => {
-                  toast.error('This feature is not available yet');
-                },
-              }}
+              data={invoiceItems}
+              functions={{ deleteItem }}
               button={true}
             />
 
-            {/* add */}
             <button
-              onClick={() => setItemOpen(!itemOpen)}
+              onClick={handleAddItemClick}
               className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm mt-4"
             >
               <BiPlus /> Add Item
@@ -155,19 +225,15 @@ function CreateInvoice() {
               <p className="text-sm font-extralight">Grand Total:</p>
               <h6 className="text-sm font-medium text-green-600">$6000</h6>
             </div>
-            {/* notes */}
             <Textarea
               label="Notes"
               placeholder="Thank you for your business. We hope to work with you again soon!"
               color={true}
               rows={3}
             />
-            {/* button */}
             <Button
               label="Save & Send"
-              onClick={() => {
-                toast.error('This feature is not available yet');
-              }}
+              onClick={handleSaveAndSend}
               Icon={BsSend}
             />
           </div>

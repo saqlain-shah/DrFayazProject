@@ -22,6 +22,7 @@ function PatientProfile() {
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [isOtpValid, setIsOtpValid] = useState(false);
+  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -30,6 +31,19 @@ function PatientProfile() {
         const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
+        console.log('Response from API:', response.data);
+
+        // Check if 'attachments' data is nested within the response object
+        if ('attachments' in response.data) {
+          console.log('Attachments data found in the response:', response.data.attachments);
+          const fetchedAttachments = response.data.attachments;
+          console.log('Fetched Attachments:', fetchedAttachments);
+          setAttachments(fetchedAttachments);
+        } else {
+          console.warn('Attachments data not found in the response.');
+        }
+
         setProfileData(response.data);
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -38,6 +52,9 @@ function PatientProfile() {
 
     fetchProfileData();
   }, [id]);
+
+
+  console.log('Attachments:', attachments);
 
   const openDentalModal = () => {
     setIsDentalModalOpen(true);
@@ -102,7 +119,7 @@ function PatientProfile() {
       case 4:
         return <PaymentsUsed doctor={false} />;
       case 5:
-        return <PatientImages />;
+        return <PatientImages images={attachments} />;
       case 6:
         console.log('Rendering DentalChart. Is OTP Valid?', isOtpValid);
         return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is verified

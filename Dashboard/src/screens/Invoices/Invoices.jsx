@@ -1,15 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { Button } from '../../components/Form';
-import { MdOutlineCloudDownload } from 'react-icons/md';
-import { toast } from 'react-hot-toast';
-import { InvoiceTable } from '../../components/Tables';
-import { invoicesData } from '../../components/Datas';
-import { BiPlus } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-import { memberData } from '../../components/Datas'; // Import memberData
+import { BiPlus } from 'react-icons/bi';
+import { InvoiceTable } from '../../components/Tables';
+import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 function Invoices() {
+  const [invoicesData, setInvoicesData] = useState([]);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        // Retrieve token from local storage
+        const token = localStorage.getItem('token');
+
+        // Make an HTTP GET request to fetch invoice data from the API
+        const response = await axios.get('http://localhost:8800/api/invoices', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the request headers
+          },
+        });
+
+        setInvoicesData(response.data);
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+        // Handle error, show error message, etc.
+        toast.error('Error fetching invoices');
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  // Function to delete an invoice
+  const deleteInvoice = async (id) => {
+    try {
+      // Make an HTTP DELETE request to delete the invoice
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:8800/api/invoices/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Update state to remove the deleted invoice
+      setInvoicesData(invoicesData.filter((invoice) => invoice._id !== id));
+
+      toast.success('Invoice deleted successfully');
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      // Handle error, show error message, etc.
+      toast.error('Error deleting invoice');
+    }
+  };
+
   return (
     <Layout>
       <Link
@@ -34,10 +79,9 @@ function Invoices() {
               className="h-14 w-full text-sm text-main rounded-md bg-dry border border-border px-4"
             />
           </div>
-
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
-          <InvoiceTable data={invoicesData} />
+          <InvoiceTable data={invoicesData} deleteInvoice={deleteInvoice} />
         </div>
       </div>
     </Layout>

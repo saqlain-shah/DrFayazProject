@@ -13,11 +13,11 @@ function PatientImages({ images }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
       {images.map((image, index) => {
-        console.log('Image URL:', URL.createObjectURL(image));
+        console.log('Image URL:', `http://localhost:8800/uploads/${image.filename}`);
         return (
           <div key={index} className="relative w-full">
             <img
-              src={URL.createObjectURL(image)} // Use createObjectURL to display uploaded images
+              src={`http://localhost:8800/uploads/${image.filename}`} // Assuming the image filename is stored in the attachments
               alt={`patient-${index}`}
               className="w-full h-72 rounded-lg object-cover"
             />

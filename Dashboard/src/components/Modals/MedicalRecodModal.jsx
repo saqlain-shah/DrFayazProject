@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { FiEye } from 'react-icons/fi';
 import { MedicineDosageTable } from '../../components/Tables';
 import axios from 'axios';
-function MedicalRecodModal({ closeModal, isOpen, data }) {
+function MedicalRecodModal({ closeModal, isOpen, data, }) {
   const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
   console.log('Attachments:', attachments);
   const [showMedicineDosages, setShowMedicineDosages] = useState(false);
