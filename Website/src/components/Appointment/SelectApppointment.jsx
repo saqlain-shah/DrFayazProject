@@ -33,7 +33,7 @@ const SelectAppointment = ({ handleSelectAppointment }) => {
 
 
     return (
-<<<<<<< HEAD
+
         <div className="container mx-auto py-8">
             <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
             <div className="flex flex-wrap" style={{ maxWidth: '100%', overflowX: 'auto' }}>
@@ -51,18 +51,17 @@ const SelectAppointment = ({ handleSelectAppointment }) => {
                     <div>No appointment slots available.</div>
                 )}
             </div>
-=======
-        <div>
+
+            {/* <div>
             <h2>Select Appointment</h2>
             {/* Render your appointment slots here */}
-            {appointmentSlots && appointmentSlots.map((slot) => (
+            {/* {appointmentSlots && appointmentSlots.map((slot) => (
                 <div key={slot.id}>
                     <div>Date: {moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                     <div>Time: {moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
                     <button onClick={() => handleSelectTime(moment(slot.startDateTime).format('HH:mm'))}>Select Time</button>
                 </div>
-            ))}
->>>>>>> d8d0192d66fdf3a4b688eb5cd79c76fd05a008c0
+            ))} */}
         </div>
     );
 };
