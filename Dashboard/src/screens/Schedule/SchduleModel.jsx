@@ -27,6 +27,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         }
     }, [appointmentData]);
 
+
     const handleSaveAppointment = () => {
         // Here you can handle saving the appointment
         // You can use startDateTime, endDateTime, and shares state values
