@@ -30,23 +30,23 @@ function PreviewInvoice() {
         reject(error);
         return;
       }
-  
+
       // Generate the PDF
       html2canvas(capture)
         .then((canvas) => {
           // Create a new jsPDF instance
           const doc = new jsPDF('p', 'mm', 'a4');
-          
+
           // Calculate the width and height of the canvas
           const width = canvas.width * 0.264583;
           const height = canvas.height * 0.264583;
-          
+
           // Add image data to the PDF
           doc.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, width, height);
-  
+
           // Generate Blob object from the PDF document
           const pdfBlob = doc.output('blob');
-  
+
           // Resolve the promise with the Blob object
           resolve(pdfBlob);
         })
@@ -56,8 +56,8 @@ function PreviewInvoice() {
         });
     });
   };
-  
-  
+
+
 
   const buttonClass = 'bg-subMain flex-rows gap-3 bg-opacity-5 text-subMain rounded-lg border border-subMain border-dashed px-4 py-3 text-sm';
 
@@ -85,66 +85,66 @@ function PreviewInvoice() {
     try {
       // Convert content to PDF
       const doc = await convertToPDF();
-  
+
       // Convert PDF blob to URL
       const attachmentURL = doc.output('blob');
-  
+
       // Construct the mailto link with pre-filled data
       const gmailURL = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}&attachment=${attachmentURL}`;
-  
+
       // Open mailto link in a new tab
       window.open(gmailURL, '_blank');
     } catch (error) {
       console.error('Error sharing via email:', error);
     }
   };
-  
+
   const shareViaWhatsApp = async (phoneNumber) => {
     try {
       // Convert content to PDF
       const doc = await convertToPDF();
-  
+
       // Check if doc is a Blob object
       if (!(doc instanceof Blob)) {
         throw new Error('PDF conversion failed: Invalid Blob object');
       }
-  
+
       // Generate a message with the PDF file
       const message = 'Here is the invoice';
-  
+
       // Create an object representing the PDF file
       const pdfFile = new File([doc], 'invoice.pdf', { type: 'application/pdf' });
-  
+
       // Construct the WhatsApp message with the PDF file
       const whatsappMessage = `https://wa.me/${1234567890}?text=${encodeURIComponent(message)}`;
-  
+
       // Open WhatsApp with pre-filled message and PDF file
       window.open(whatsappMessage, '_blank');
     } catch (error) {
       console.error('Error sharing via WhatsApp:', error);
     }
   };
-  
-  
-  
-  
-  
+
+
+
+
+
   const printPDF = () => {
     const prtContent = document.querySelector('.actual-receipt').innerHTML;
     const originalBodyContent = document.body.innerHTML;
-  
+
     // Replace the entire body content with the content of .actual-receipt
     document.body.innerHTML = prtContent;
-  
+
     // Trigger the print dialog
     window.print();
-  
+
     // Restore the original body content
     document.body.innerHTML = originalBodyContent;
   };
-  
-  
-  
+
+
+
 
   return (
     <Layout>
@@ -187,13 +187,13 @@ function PreviewInvoice() {
             className={buttonClass}
             onClick={shareViaWhatsApp}
           >
-            WhatsApp 
+            WhatsApp
           </button>
           <button
             className={buttonClass}
             onClick={shareViaEmail}
           >
-            Email 
+            Email
           </button>
           <button
             className={buttonClass}

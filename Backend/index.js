@@ -15,6 +15,7 @@ import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
 import doctorRoutes from './routes/doctor.js'
 import schduleRoutes from './routes/schdule.js'
+import webAppointmentRoutes from './routes/webApoint.js'
 import { authenticate } from './utils/authMiddleware.js';
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
@@ -56,6 +57,7 @@ app.use('/api/services', servicesRoute);
 app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes)
 app.use('/api/medicine', medicineRoute)
+app.use('/api/v1', webAppointmentRoutes);
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();
