@@ -4,7 +4,7 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '../AuthContext';
+import { useAuth } from '../AuthContext'
 
 function Login() {
   const navigate = useNavigate();
@@ -21,13 +21,15 @@ function Login() {
         email,
         password,
       });
+
       if (response.status === 200) {
-        const { token, userId } = response.data; // Assuming your backend sends back both token and userId
-        login(token, userId); // Update authentication state with token and userId
+        const { token, id } = response.data; // Extract token and id from the response data
+        login({ id }); // Update authentication state with the user's ID
         toast.success('Login successful');
         navigate('/');
       } else {
         console.error('Login failed:', response.data);
+        toast.error('Login failed');
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -36,6 +38,9 @@ function Login() {
       setLoading(false);
     }
   };
+
+
+
 
   const handleRegisterClick = () => {
     navigate('/register');

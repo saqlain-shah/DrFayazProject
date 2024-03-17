@@ -100,18 +100,31 @@ export const getAllMedicalRecords = async (req, res) => {
     }
 };
 
-export const getMedicalRecordById = async (req, res) => {
+export const getMedicalRecordsByPatientId = async (req, res) => {
+    const patientId = req.params.patientId;
+
     try {
-        const medicalRecord = await MedicalRecord.findById(req.params.id);
-        if (!medicalRecord) {
-            return res.status(404).json({ message: 'Medical record not found' });
-        }
-        res.status(200).json({ data: medicalRecord });
+        // Fetch medical records for the specified patient ID from the database
+        const medicalRecords = await MedicalRecord.find({ patientId });
+
+        // Respond with the fetched medical records
+        res.json({ success: true, data: medicalRecords });
     } catch (error) {
-        res.status(500).json({ message: 'Failed to fetch medical record', error: error.message });
+        console.error('Error fetching medical records:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch medical records' });
     }
 };
 
+// export const getMedicalRecordsByPatientId = async (req, res) => {
+//     try {
+//         // Fetch medical records based on the patient ID
+//         const medicalRecords = await MedicalRecord.find({ patient: req.params.patientId });
+//         res.json({ success: true, data: medicalRecords });
+//     } catch (error) {
+//         console.error('Error fetching medical records:', error);
+//         res.status(500).json({ success: false, error: 'Internal Server Error' });
+//     }
+// };
 export const updateMedicalRecord = async (req, res) => {
     try {
         const medicalRecord = await MedicalRecord.findByIdAndUpdate(req.params.id, req.body, { new: true });

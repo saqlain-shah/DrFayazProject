@@ -15,24 +15,22 @@ function ChangePassword() {
   const handleChangePassword = async () => {
     if (!user) {
       console.log('User is not logged in');
-      // Handle the case where the user is not logged in
       return;
     }
 
-    // Log user ID to ensure it's correctly retrieved from authentication context
     console.log('User ID:', user.id);
+    console.log('Old Password:', oldPassword);
+    console.log('New Password:', newPassword);
 
     setLoading(true);
     try {
-      // Validate passwords
       if (newPassword !== confirmPassword) {
         throw new Error('New password and confirm password do not match');
       }
 
-      // Get the token from local storage
       const token = localStorage.getItem('token');
+      console.log('Token:', token);
 
-      // Make API request to change password with authorization header
       const response = await axios.put(
         'http://localhost:8800/api/auth/change-password',
         {
@@ -42,13 +40,14 @@ function ChangePassword() {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
+      console.log('Response:', response.data);
+
       toast.success('Password changed successfully');
-      // Clear input fields
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -60,9 +59,9 @@ function ChangePassword() {
     }
   };
 
+
   return (
     <div className="flex-col gap-4">
-      {/* old password */}
       <Input
         label="Old Password"
         color={true}
@@ -70,7 +69,6 @@ function ChangePassword() {
         value={oldPassword}
         onChange={(e) => setOldPassword(e.target.value)}
       />
-      {/* new password */}
       <Input
         label="New Password"
         color={true}
@@ -78,7 +76,6 @@ function ChangePassword() {
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
       />
-      {/* confirm password */}
       <Input
         label="Confirm Password"
         color={true}
@@ -86,7 +83,6 @@ function ChangePassword() {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
-      {/* submit */}
       <Button
         label={'Save Changes'}
         Icon={HiOutlineCheckCircle}
@@ -97,4 +93,3 @@ function ChangePassword() {
 }
 
 export default ChangePassword;
-

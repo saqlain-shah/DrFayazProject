@@ -12,7 +12,6 @@ function Register() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Update the register function to handle the token received from the backend
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -24,10 +23,8 @@ function Register() {
             });
             if (response.status === 201) {
                 const token = response.data.token;
-                // Store the token and user's name in local storage
-                localStorage.setItem('token', token);
-                localStorage.setItem('userName', name); // Store user's name
-                console.log('Username set in local storage:', name); // <-- Add this console log
+                // Store the token in a HTTP-only cookie
+                document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
                 toast.success('Registration successful');
                 navigate('/login');
             } else {

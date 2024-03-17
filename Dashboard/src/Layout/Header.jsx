@@ -7,8 +7,9 @@ import NotificationComp from "../components/NotificationComp";
 import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
-function Header({ fullName, profileImage }) {
+function Header() {
   const navigate = useNavigate();
+  const userData = JSON.parse(localStorage.getItem('userData'));
   const [isOpen, setIsOpen] = React.useState(false);
 
   // toggle drawer
@@ -18,20 +19,22 @@ function Header({ fullName, profileImage }) {
 
   const DropDown1 = [
     {
-      title: "Profile",
+      title: 'Profile',
       icon: TbUser,
       onClick: () => {
-        navigate("/settings");
+        navigate('/settings');
       },
     },
     {
-      title: "Logout",
+      title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
-        navigate("/login");
+        localStorage.removeItem('userData'); // Clear user data on logout
+        navigate('/login');
       },
     },
   ];
+
 
   return (
     <>
@@ -67,15 +70,19 @@ function Header({ fullName, profileImage }) {
             <div className=" items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
                 <div className="flex gap-4 items-center p-4 rounded-lg">
-                  {profileImage && (
+                  {userData && userData.profileImage && (
                     <img
-                      src={`http://localhost:8800/${profileImage}`}
+                      src={`http://localhost:8800/${userData.profileImage}`}
                       alt="profile"
                       className="w-12 border border-border object-cover h-12 rounded-full"
                     />
                   )}
-                  {/* Display doctor's name */}
-                  <p className="text-sm text-textGray font-medium">{fullName}</p>
+                  {/* Display user's name */}
+                  {userData && (
+                    <p className="text-sm text-textGray font-medium">
+                      {userData.fullName}
+                    </p>
+                  )}
                 </div>
               </MenuSelect>
             </div>
