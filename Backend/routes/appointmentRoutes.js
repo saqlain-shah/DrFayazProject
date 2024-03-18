@@ -6,7 +6,7 @@ const router = express.Router();
 router.route('/')
     .post(appointmentController.createAppointment)
     .get(appointmentController.getAllAppointments);
-
+router.get('/patient/:patientId', appointmentController.getAppointmentsByPatientId);
 router.route('/:id')
     .get(appointmentController.getAppointmentById)
     .put(appointmentController.updateAppointment)

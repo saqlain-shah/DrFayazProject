@@ -18,7 +18,7 @@ const doctorsData = memberData.map((item) => {
   };
 });
 
-function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }) {
+function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, patientId }) {
   const [patientName, setPatientName] = useState('');
   const [services, setServices] = useState(servicesData[0]);
   const [startDate, setStartDate] = useState(new Date());
@@ -52,8 +52,9 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
       status: status.name,
       description: datas?.message,
       share: shares,
+      patientId: patientId,// Include the patientId here
     };
-
+    console.log("Sending appointment data:", data);
     const token = localStorage.getItem('token');
 
     axios.post(apiUrl, data, {
@@ -70,6 +71,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment }
         toast.error('Error saving appointment. Please try again later.');
       });
   };
+
 
   return (
     <Modal

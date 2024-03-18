@@ -113,7 +113,7 @@ function PatientProfile() {
       case 1:
         return <MedicalRecord />;
       case 2:
-        return <AppointmentsUsed doctor={false} patientId={id} />;
+        return <AppointmentsUsed doctor={false} patientId={id} token={localStorage.getItem('token')} />;
       case 3:
         return <InvoiceUsed />;
       case 4:

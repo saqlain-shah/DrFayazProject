@@ -555,13 +555,13 @@ export function DoctorsTable({ data, functions, doctor }) {
   );
 }
 
-export function AppointmentTable({ functions, token }) {
+export function AppointmentTable({ functions, token, patientId }) {
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8800/api/appointments', {
+        const response = await fetch(`http://localhost:8800/api/appointments/patient/${patientId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -574,7 +574,8 @@ export function AppointmentTable({ functions, token }) {
     };
 
     fetchData();
-  }, [token]);
+  }, [token, patientId]);
+
 
   const getStatusClass = (status) => {
     if (status === 'Pending') {

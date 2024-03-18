@@ -102,7 +102,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from './components/Home/Home/Home';
-import SignInForm from './components/Login/SignInForm';
+import SignInForm from './components/Login/SignInForm'; // Import SignInForm
 import Contact from './components/Contact/Contact';
 import AppointmentPage from './components/Appointment/AppointmentPage';
 import TrackAppointment from './components/TrackAppointment/TrackAppointment';
@@ -116,7 +116,7 @@ import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
   { path: '/contact', element: <Contact /> },
-  { path: '/login', element: <SignInForm /> },
+  { path: '/login', element: <SignInForm /> }, // Include SignInForm in the router
   { path: '/appointment', element: <AppointmentPage /> },
   { path: '/track-appointment', element: <TrackAppointment /> },
   { path: '/doctors', element: <SearchDoctor /> },
@@ -134,4 +134,5 @@ function App() {
 }
 
 export default App;
+
 
