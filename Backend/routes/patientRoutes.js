@@ -11,7 +11,6 @@ router.route('/:id')
     .get(patientController.getPatientById)
     .put(patientController.updatePatient)
     .delete(patientController.deletePatient);
-
 // Add route for changing patient's password
 router.put('/:userId/change-password', patientController.changePassword);
 

@@ -80,6 +80,7 @@ function App() {
           <Route path="/payments/edit/:id" element={<EditPayment />} />
           <Route path="/payments/preview/:id" element={<PreviewPayment />} />
           {/* patient */}
+
           <Route path="/patients" element={<Patients />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />

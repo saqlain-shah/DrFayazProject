@@ -126,6 +126,7 @@ function NewMedicalRecord() {
       }));
 
     const formData = new FormData();
+    formData.append('patientId', id); // Append the patientId to the FormData object
     formData.append('complaints', complaints);
     formData.append('diagnosis', diagnosis);
     formData.append('vitalSigns', vitalSigns);

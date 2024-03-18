@@ -10,10 +10,9 @@ router.route('/')
 // Make sure this line is correctly pointing to the controller function
 
 router.route('/:id')
-    // .get(MedicalRecordController.getMedicalRecordById)
     .put(MedicalRecordController.updateMedicalRecord)
     .delete(MedicalRecordController.deleteMedicalRecord);
-
+router.route('/preview/:id').get(MedicalRecordController.getMedicalRecordsByPatientId);
 export default router;
 
 

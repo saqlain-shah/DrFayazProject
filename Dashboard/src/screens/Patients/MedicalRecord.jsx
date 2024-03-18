@@ -9,7 +9,7 @@ import EditMedicalRecordModal from './EditMedicalRecordModal'; // Import EditMed
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
+import { fetchMedicalRecords } from './fetch';
 function MedicalRecord() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,25 +20,13 @@ function MedicalRecord() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+
   useEffect(() => {
-    fetchMedicalRecords();
-  }, []);
+    fetchMedicalRecords(id, setMedicalRecords, toast);
+  }, [id]);
 
-  const fetchMedicalRecords = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8800/api/medical-records', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMedicalRecords(response.data.data.map(record => ({
-        ...record,
-        treatment: record.treatment.map(t => t.name)
-      })));
-    } catch (error) {
-      console.error('Error fetching medical records:', error);
-    }
-  };
-
+  // Pass the patient's ID to fetchMedicalRecords when calling it inside handleDelete and handleEdit functions
   const handleDelete = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
@@ -53,7 +41,6 @@ function MedicalRecord() {
     }
   };
 
-  // MedicalRecord.js
   const handleEdit = async (recordId, newData) => {
     try {
       const token = localStorage.getItem('token');
@@ -67,6 +54,7 @@ function MedicalRecord() {
       toast.error('Failed to edit medical record');
     }
   };
+
 
 
   return (
