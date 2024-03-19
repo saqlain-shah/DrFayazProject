@@ -8,8 +8,12 @@ import Header from '../Layout/Header';
 
 function Settings() {
   const [activeTab, setActiveTab] = useState(1);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData')));
 
+  const handleSave = (data) => {
+    setUserData(data);
+    localStorage.setItem('userData', JSON.stringify(data)); // Update localStorage with new user data
+  };
   const tabs = [
     {
       id: 1,
@@ -27,9 +31,7 @@ function Settings() {
     // Implement the logic to close the modal
   };
 
-  const handleSave = (data) => {
-    setUserData(data);
-  };
+
 
   const renderProfilePicture = () => {
     if (userData && userData.profileImage) {

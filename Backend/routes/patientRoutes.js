@@ -7,12 +7,10 @@ const router = express.Router();
 router.route('/')
     .post(upload.single('profilePicture'), patientController.createPatient)
     .get(patientController.getAllPatients);
-
 router.route('/:id')
     .get(patientController.getPatientById)
     .put(patientController.updatePatient)
     .delete(patientController.deletePatient);
-
 // Add route for changing patient's password
 router.put('/:userId/change-password', patientController.changePassword);
 

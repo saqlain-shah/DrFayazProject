@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AppointmentTable } from '../Tables';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
 import { BiPlus } from 'react-icons/bi';
-import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri'; // Add RiEditLine icon
-import { Button } from '../Form';
 import { toast } from 'react-hot-toast';
 
-function AppointmentsUsed({ doctor, token }) {
+function AppointmentsUsed({ token, patientId }) {
   const [open, setOpen] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [newAppointment, setNewAppointment] = useState(null);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchData = async () => {
+    console.log('Fetching appointments for patientId:', patientId);
+    const fetchAppointments = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/api/appointments', {
+        const response = await axios.get(`http://localhost:8800/api/appointments/patient/${patientId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -25,16 +21,18 @@ function AppointmentsUsed({ doctor, token }) {
         setAppointments(response.data);
       } catch (error) {
         console.error('Error fetching appointment data:', error);
+        toast.error('Failed to fetch appointments');
       }
     };
 
-    fetchData();
-  }, [token]);
+
+    fetchAppointments();
+  }, [patientId, token]);
+
 
   const handleNewAppointment = (appointment) => {
     console.log('New appointment created:', appointment);
-    const updatedAppointments = appointments.map(appt => appt.id === appointment.id ? appointment : appt);
-    setAppointments(updatedAppointments);
+    setAppointments(prevAppointments => [...prevAppointments, appointment]);
     setNewAppointment(appointment);
   };
 
@@ -50,34 +48,6 @@ function AppointmentsUsed({ doctor, token }) {
     setNewAppointment(null);
   };
 
-  const handleEdit = (appointment) => {
-    setOpen(true);
-    setNewAppointment(appointment);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        setAppointments(appointments.filter(appointment => appointment._id !== id));
-        toast.success('Appointment deleted successfully!', {
-          position: 'bottom-right',
-        });
-      } else {
-        console.error('Failed to delete appointment');
-        toast.error('Failed to delete appointment');
-      }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      toast.error('Error deleting appointment');
-    }
-  };
-
   return (
     <div className="w-full">
       {open && (
@@ -86,7 +56,7 @@ function AppointmentsUsed({ doctor, token }) {
           isOpen={open}
           closeModal={() => handleClose()}
           handleNewAppointment={handleNewAppointment}
-          isEditing={!!newAppointment}
+          patientId={patientId}
         />
       )}
       <h1 className="text-sm font-medium mb-6">Appointment</h1>
@@ -102,13 +72,12 @@ function AppointmentsUsed({ doctor, token }) {
         </div>
         <AppointmentTable
           data={appointments}
-          doctor={doctor}
           newAppointment={newAppointment}
           functions={{
             preview: handleEventClick,
-            edit: handleEdit, // Pass the edit function as a prop
           }}
           token={token}
+          patientId={patientId}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 import Patient from '../../models/PatientModel/patient.js';
 import mongoose from 'mongoose';
-
+import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createPatient = async (req, res) => {
     try {
@@ -73,16 +73,15 @@ export const getAllPatients = async (req, res, next) => {
         next(err);
     }
 };
-
-
-
-
-
-
-// Other controllers...
-
-
-
+export const getMedicalRecordsByPatientId = async (req, res) => {
+    try {
+        const patientId = req.params.id;
+        const medicalRecords = await MedicalRecord.find({ patientId });
+        res.status(200).json({ data: medicalRecords });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch medical records for the patient', error: error.message });
+    }
+};
 
 // Controller to get a patient by ID
 export const getPatientById = async (req, res, next) => {

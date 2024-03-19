@@ -1,17 +1,17 @@
 import Appointment from '../../models/Appointment/appoinmentModel.js'
 
+
 export const createAppointment = async (req, res, next) => {
     try {
-        // Assuming `req.body` contains the appointment data sent from the client
-        const { patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
+        const { patientId, patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
 
-        // Validate required fields
-        if (!startTime || !endTime) {
-            return res.status(400).json({ error: 'Patient names, purpose of visit, date of visit, start time, and end time are required.' });
+
+        if (!startTime || !endTime || !patientId) {
+            return res.status(400).json({ error: 'Patient ID, start time, and end time are required fields.' });
         }
 
-        // Create a new appointment instance
         const newAppointment = new Appointment({
+            patient: patientId, // Set the patient ID here
             patientName,
             purposeOfVisit,
             dateOfVisit,
@@ -23,19 +23,33 @@ export const createAppointment = async (req, res, next) => {
             share
         });
 
-        // Save the appointment to the database
         const savedAppointment = await newAppointment.save();
 
-        // Respond with the saved appointment
         res.status(201).json({ message: 'Appointment created successfully', appointment: savedAppointment });
     } catch (error) {
-        // Handle errors
         next(error);
     }
 };
-;
 
-// Controller to get all appointments
+
+export const getAppointmentsByPatientId = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        console.log("Fetching appointments for patientId:", patientId);
+        // Find appointments where the patient field matches the provided patientId
+        const appointments = await Appointment.find({ patient: patientId });
+        console.log("Appointments fetched:", appointments);
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error('Error fetching appointments by patient ID:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+
+
+
 export const getAllAppointments = async (req, res, next) => {
     try {
         const appointments = await Appointment.find();
@@ -45,7 +59,6 @@ export const getAllAppointments = async (req, res, next) => {
     }
 };
 
-// Controller to get an appointment by ID
 export const getAppointmentById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -59,7 +72,6 @@ export const getAppointmentById = async (req, res, next) => {
     }
 };
 
-// Controller to update an appointment by ID
 export const updateAppointment = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -74,7 +86,6 @@ export const updateAppointment = async (req, res, next) => {
     }
 };
 
-// Controller to delete an appointment by ID
 export const deleteAppointment = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -87,3 +98,4 @@ export const deleteAppointment = async (req, res, next) => {
         next(error);
     }
 };
+
