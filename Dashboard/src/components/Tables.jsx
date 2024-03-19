@@ -531,7 +531,7 @@ export function DoctorsTable({ data, functions, doctor }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item.profileImage.replace(/\\/g, '/')}`}
+                    src={`http://localhost:8800/${item.profileImage}`}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>

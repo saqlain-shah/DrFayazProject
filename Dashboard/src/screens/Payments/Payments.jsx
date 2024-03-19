@@ -69,16 +69,6 @@ function Payments() {
 
   return (
     <Layout>
-      {/* add button */}
-      <button
-        onClick={() => {
-          toast.error('Exporting is not available yet');
-        }}
-        className="w-16 hover:w-44 group transitions hover:h-14 h-16 border border-border z-50 bg-subMain text-white rounded-full flex-rows gap-4 fixed bottom-8 right-12 button-fb"
-      >
-        <p className="hidden text-sm group-hover:block">Export</p>
-        <MdOutlineCloudDownload className="text-2xl" />
-      </button>
       <h1 className="text-xl font-semibold">Payments</h1>
       {/* boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
@@ -143,14 +133,14 @@ function Payments() {
             bg="bg-dry"
             onChange={(update) => setDateRange(update)}
           />
-          {/* export */}
+          {/* export
           <Button
             label="Filter"
             Icon={MdFilterList}
             onClick={() => {
               toast.error('Filter data is not available yet');
             }}
-          />
+          /> */}
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
           <Transactiontable
