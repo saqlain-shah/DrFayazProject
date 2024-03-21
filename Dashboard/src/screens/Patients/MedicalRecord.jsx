@@ -70,6 +70,7 @@ function MedicalRecord() {
           isOpen={isOpen}
           data={{ ...selectedData, id }}
           token={localStorage.getItem('token')} // Include id in the data object
+          attachments={selectedData.attachments}
         />
       )}
       {isEditOpen && (

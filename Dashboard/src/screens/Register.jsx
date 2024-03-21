@@ -37,7 +37,9 @@ function Register() {
             setLoading(false);
         }
     };
-
+    const handleLoginClick = () => {
+        navigate('/login');
+    };
     return (
         <div className="w-full h-screen flex-colo bg-dry">
             <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
@@ -72,12 +74,21 @@ function Register() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <Button
-                    label={loading ? 'Registering...' : 'Register'}
-                    Icon={BiLogInCircle}
-                    disabled={loading}
-                    type="submit"
-                />
+                <div className="flex justify-between items-center">
+                    <Button
+                        label={loading ? 'Registering...' : 'Register'}
+                        Icon={BiLogInCircle}
+                        disabled={loading}
+                        type="submit"
+                    />
+                    <div style={{ marginLeft: '10px' }}>
+                        <Button
+                            label="Login"
+                            onClick={handleLoginClick}
+                            color="primary"
+                        />
+                    </div>
+                </div>
             </form>
         </div>
     );

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { invoicesData } from '../../components/Datas';
+// import { invoicesData } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
@@ -17,9 +17,48 @@ import jsPDF from 'jspdf';
 
 function PreviewInvoice() {
   const { id } = useParams();
+  console.log("id", id)
   const [isOpen, setIsoOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [loader, setLoader] = useState(false)
+  const [invoice, setInvoice] = useState(null);
+
+  useEffect(() => {
+    console.log("Fetching invoice with ID:", id);
+    if (!id) {
+      console.error("ID parameter is undefined");
+      return;
+    }
+
+    const fetchInvoice = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:8800/api/invoices/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch invoice');
+        }
+
+        const invoiceData = await response.json();
+        console.log("Fetched invoice data:", invoiceData);
+        setInvoice(invoiceData);
+      } catch (error) {
+        console.error('Error fetching invoice:', error);
+        toast.error('Failed to fetch invoice');
+      }
+    };
+
+    fetchInvoice();
+  }, [id]);
+
+
+
+
+
 
   const convertToPDF = () => {
     return new Promise((resolve, reject) => {
@@ -57,11 +96,7 @@ function PreviewInvoice() {
     });
   };
 
-
-
   const buttonClass = 'bg-subMain flex-rows gap-3 bg-opacity-5 text-subMain rounded-lg border border-subMain border-dashed px-4 py-3 text-sm';
-
-  const invoice = invoicesData.find((invoice) => invoice.id.toString() === id);
 
   const downloadPDF = () => {
     const capture = document.querySelector('.actual-receipt');
@@ -125,10 +160,6 @@ function PreviewInvoice() {
     }
   };
 
-
-
-
-
   const printPDF = () => {
     const prtContent = document.querySelector('.actual-receipt').innerHTML;
     const originalBodyContent = document.body.innerHTML;
@@ -142,9 +173,6 @@ function PreviewInvoice() {
     // Restore the original body content
     document.body.innerHTML = originalBodyContent;
   };
-
-
-
 
   return (
     <Layout>
@@ -212,74 +240,77 @@ function PreviewInvoice() {
           >
             Print <AiOutlinePrinter />
           </button>
-          <Link to={`/invoices/edit/${invoice?.id}`} className={buttonClass}>
-            Edit <FiEdit />
+          <Link to={`/invoices/edit/${invoice?._id}`} className={buttonClass}>
+            Editt <FiEdit />
           </Link>
+
         </div>
       </div>
       <div className='actual-receipt'>
-        <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
-          <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
-            <div className="lg:col-span-3">
-              <img
-                src="/images/logo.png"
-                alt="logo"
-                className="w-32 object-contain"
-              />
-            </div>
-            <div className="flex flex-col gap-4 sm:items-end">
-              <h6 className="text-xs font-medium">#{invoice?.id}</h6>
-              <div className="flex gap-4">
-                <p className="text-sm font-extralight">Date:</p>
-                <h6 className="text-xs font-medium">{invoice?.createdDate}</h6>
+        {invoice && (
+          <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
+            <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
+              <div className="lg:col-span-3">
+                <img
+                  src="/images/logo.png"
+                  alt="logo"
+                  className="w-32 object-contain"
+                />
               </div>
-              <div className="flex gap-4">
-                <p className="text-sm font-extralight">Due Date:</p>
-                <h6 className="text-xs font-medium">{invoice?.dueDate}</h6>
+              <div className="flex flex-col gap-4 sm:items-end">
+                <h6 className="text-xs font-medium">#{invoice?.id}</h6>
+                <div className="flex gap-4">
+                  <p className="text-sm font-extralight">Date:</p>
+                  <h6 className="text-xs font-medium">{invoice?.createdDate}</h6>
+                </div>
+                <div className="flex gap-4">
+                  <p className="text-sm font-extralight">Due Date:</p>
+                  <h6 className="text-xs font-medium">{invoice?.dueDate}</h6>
+                </div>
+              </div>
+            </div>
+            {invoice.to && (
+              <SenderReceverComp item={invoice.to} functions={{}} button={false} />
+            )}
+            <div className="grid grid-cols-6 gap-6 mt-8">
+              <div className="lg:col-span-4 col-span-6 p-6 border border-border rounded-xl overflow-hidden">
+                <InvoiceProductsTable data={invoice?.invoiceItems} functions={{}} button={false} />
+
+
+              </div>
+              <div className="col-span-6 lg:col-span-2 flex flex-col gap-6">
+                <div className="flex-btn gap-4">
+                  <p className="text-sm font-extralight">Currency:</p>
+                  <h6 className="text-sm font-medium">USD ($)</h6>
+                </div>
+                <div className="flex-btn gap-4">
+                  <p className="text-sm font-extralight">Sub Total:</p>
+                  <h6 className="text-sm font-medium">$459</h6>
+                </div>
+                <div className="flex-btn gap-4">
+                  <p className="text-sm font-extralight">Discount:</p>
+                  <h6 className="text-sm font-medium">$49</h6>
+                </div>
+                <div className="flex-btn gap-4">
+                  <p className="text-sm font-extralight">Tax:</p>
+                  <h6 className="text-sm font-medium">$4.90</h6>
+                </div>
+                <div className="flex-btn gap-4">
+                  <p className="text-sm font-extralight">Grand Total:</p>
+                  <h6 className="text-sm font-medium text-green-600">$6000</h6>
+                </div>
+                <div className="w-full p-4 border border-border rounded-lg">
+                  <h1 className="text-sm font-medium">Notes</h1>
+                  <p className="text-xs mt-2 font-light leading-5">
+                    Thank you for your business. We hope to work with you again
+                    soon. You can pay your invoice online at
+                    www.example.com/payments
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <SenderReceverComp item={invoice.to} functions={{}} button={false} />
-          <div className="grid grid-cols-6 gap-6 mt-8">
-            <div className="lg:col-span-4 col-span-6 p-6 border border-border rounded-xl overflow-hidden">
-              <InvoiceProductsTable
-                data={invoice?.items}
-                functions={{}}
-                button={false}
-              />
-            </div>
-            <div className="col-span-6 lg:col-span-2 flex flex-col gap-6">
-              <div className="flex-btn gap-4">
-                <p className="text-sm font-extralight">Currency:</p>
-                <h6 className="text-sm font-medium">USD ($)</h6>
-              </div>
-              <div className="flex-btn gap-4">
-                <p className="text-sm font-extralight">Sub Total:</p>
-                <h6 className="text-sm font-medium">$459</h6>
-              </div>
-              <div className="flex-btn gap-4">
-                <p className="text-sm font-extralight">Discount:</p>
-                <h6 className="text-sm font-medium">$49</h6>
-              </div>
-              <div className="flex-btn gap-4">
-                <p className="text-sm font-extralight">Tax:</p>
-                <h6 className="text-sm font-medium">$4.90</h6>
-              </div>
-              <div className="flex-btn gap-4">
-                <p className="text-sm font-extralight">Grand Total:</p>
-                <h6 className="text-sm font-medium text-green-600">$6000</h6>
-              </div>
-              <div className="w-full p-4 border border-border rounded-lg">
-                <h1 className="text-sm font-medium">Notes</h1>
-                <p className="text-xs mt-2 font-light leading-5">
-                  Thank you for your business. We hope to work with you again
-                  soon. You can pay your invoice online at
-                  www.example.com/payments
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </Layout>
   );

@@ -10,8 +10,7 @@ const SignUp = () => {
     const [loading, setLoading] = useState(false);
     const [infoError, setInfoError] = useState('');
     const [user, setUser] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
         password: ''
     });
@@ -45,7 +44,6 @@ const SignUp = () => {
 
     const handleSignUpSuccess = () => {
         console.log('Sign-up successful!');
-        navigate("/login");
     };
 
     const registerUser = async () => {
@@ -54,7 +52,6 @@ const SignUp = () => {
             if (response.data.success) {
                 console.log(response.data);
                 handleSignUpSuccess();
-                navigate("/");
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);
@@ -77,11 +74,7 @@ const SignUp = () => {
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="First Name" name="firstName" type="text" onChange={handleChange} value={user.firstName} />
-            </div>
-            <div className="input-field">
-                <span className="fIcon"><FaUser /></span>
-                <input placeholder="Last Name" name="lastName" type="text" onChange={handleChange} value={user.lastName} />
+                <input placeholder="Full Name" name="name" type="text" onChange={handleChange} value={user.name} />
             </div>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>

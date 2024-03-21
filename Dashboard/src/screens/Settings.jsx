@@ -11,9 +11,10 @@ function Settings() {
   const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('userData')));
 
   const handleSave = (data) => {
-    setUserData(data);
+    setUserData(data); // Update userData state with new user data
     localStorage.setItem('userData', JSON.stringify(data)); // Update localStorage with new user data
   };
+
   const tabs = [
     {
       id: 1,
@@ -31,17 +32,22 @@ function Settings() {
     // Implement the logic to close the modal
   };
 
-
-
   const renderProfilePicture = () => {
     if (userData && userData.profileImage) {
       const profileImageUrl = `http://localhost:8800/${userData.profileImage}`;
       return (
-        <img
-          src={profileImageUrl}
-          alt="Profile"
-          className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
-        />
+        <div className="flex justify-center items-center flex-col"> {/* Updated div for center alignment */}
+          <img
+            src={profileImageUrl}
+            alt="Profile"
+            className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+          />
+          <div className="gap-2 flex-col text-center mt-4"> {/* Center-align name, email, and phone */}
+            <h2 className="text-sm font-semibold">{userData.fullName}</h2>
+            <p className="text-xs text-textGray">{userData.email}</p>
+            <p className="text-xs">{userData.phone}</p>
+          </div>
+        </div>
       );
     }
     return null;
@@ -67,11 +73,6 @@ function Settings() {
           {userData && (
             <>
               {renderProfilePicture()}
-              <div className="gap-2 flex-col">
-                <h2 className="text-sm font-semibold">{userData.fullName}</h2>
-                <p className="text-xs text-textGray">{userData.email}</p>
-                <p className="text-xs">{userData.phone}</p>
-              </div>
             </>
           )}
 

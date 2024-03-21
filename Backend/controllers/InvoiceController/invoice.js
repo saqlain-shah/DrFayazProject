@@ -6,20 +6,20 @@ export const createInvoice = async (req, res) => {
     try {
         const { selectedPatient, selectedService, invoiceItems } = req.body;
 
-        // Extract patient details from selectedPatient object
+        // Check if selectedPatient is defined and has an _id property
+        if (!selectedPatient || !selectedPatient._id) {
+            return res.status(400).json({ error: 'Please provide a valid patient' });
+        }
+
         const { _id: patient } = selectedPatient;
 
-        // Extract service details from selectedService object
         const services = selectedService ? [selectedService._id] : [];
 
-        // Calculate total based on invoiceItems
         const total = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-        // Calculate dueDate (example: due in 30 days from now)
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 30);
 
-        // Create the invoice
         const invoice = new Invoice({
             patient,
             services,
@@ -28,15 +28,12 @@ export const createInvoice = async (req, res) => {
             dueDate,
         });
 
-        // Save the invoice
         await invoice.save();
 
-        // Fetch the newly created invoice with populated fields
         const populatedInvoice = await Invoice.findById(invoice._id)
             .populate('patient', 'fullName email profilePicture')
             .populate('services', 'name');
 
-        // Respond with the populated invoice
         res.status(201).json(populatedInvoice);
     } catch (error) {
         console.error('Error creating invoice:', error);
@@ -59,21 +56,24 @@ export const getAllInvoices = async (req, res) => {
     }
 };
 
-// Get invoice by ID
 export const getInvoiceById = async (req, res) => {
     try {
-        const invoice = await Invoice.findById(req.params.id)
-            .populate('patient', 'fullName email profilePicture') // Populate patient details
-            .populate('services', 'name'); // Populate service names
+        const { id } = req.params; // Extract invoice ID from request parameters
+        const invoice = await Invoice.findById(id)
+            .populate('patient', 'fullName email profilePicture')
+            .populate('services', 'name');
+
         if (!invoice) {
             return res.status(404).json({ error: 'Invoice not found' });
         }
+
         res.status(200).json(invoice);
     } catch (error) {
         console.error('Error fetching invoice by ID:', error);
         res.status(500).json({ error: 'Failed to fetch invoice' });
     }
 };
+
 
 // Update invoice by ID
 export const updateInvoice = async (req, res) => {
@@ -95,6 +95,33 @@ export const updateInvoice = async (req, res) => {
         res.status(500).json({ error: 'Failed to update invoice' });
     }
 };
+// controllers/invoiceController.js
+
+// Get invoices by patient ID
+export const getInvoicesByPatientId = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+        console.log('Patient ID:', patientId); // Add this line
+
+        // Find invoices for the specified patient ID
+        const invoices = await Invoice.find({ patient: patientId })
+            .populate('patient', 'fullName email profilePicture')
+            .populate('services', 'name');
+        console.log('Invoices:', invoices); // Add this line
+
+        if (invoices.length === 0) {
+            return res.status(404).json({ error: 'No invoices found for the specified patient ID' });
+        }
+
+        res.status(200).json(invoices);
+    } catch (error) {
+        console.error('Error fetching invoices by patient ID:', error);
+        res.status(500).json({ error: 'Failed to fetch invoices' });
+    }
+};
+
+
+
 
 export const deleteInvoice = async (req, res) => {
     try {

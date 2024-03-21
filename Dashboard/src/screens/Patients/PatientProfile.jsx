@@ -2,14 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react';
 import Layout from '../../Layout';
 import { patientTab } from '../../components/Datas';
 import { IoArrowBackOutline } from 'react-icons/io5';
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import MedicalRecord from "./MedicalRecord";
 import AppointmentsUsed from "../../components/UsedComp/AppointmentsUsed";
 import InvoiceUsed from "../../components/UsedComp/InvoiceUsed";
 import PaymentsUsed from "../../components/UsedComp/PaymentUsed";
 import PatientImages from "./PatientImages";
 import HealthInfomation from "./HealthInfomation";
-import DentalChart from "./DentalChart";
+import DentalChart from "./DentalChart"; // Import DentalChart component
 import axios from 'axios';
 import { PatientTableArray } from '../../components/Tables';
 import { Dialog, Transition } from '@headlessui/react';
@@ -24,6 +24,7 @@ function PatientProfile() {
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [attachments, setAttachments] = useState([]);
 
+  // Inside PatientProfile component
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -54,8 +55,6 @@ function PatientProfile() {
   }, [id]);
 
 
-  console.log('Attachments:', attachments);
-
   const openDentalModal = () => {
     setIsDentalModalOpen(true);
   };
@@ -68,61 +67,73 @@ function PatientProfile() {
     setOtpCode(event.target.value);
   };
 
-  const verifyOtp = () => {
+  const verifyOtp = async () => {
     console.log('Verifying OTP...');
-    // Here, you would implement logic to verify the OTP code.
-    // For demonstration, I'm just checking if the OTP code is '123456'.
-    if (otpCode === '123456') {
-      console.log('OTP Verified!');
-      setIsOtpValid(true); // Set isOtpValid to true after successful verification
-      closeDentalModal();
-    } else {
-      // Handle invalid OTP here
-      console.log('Invalid OTP code.');
-      alert('Invalid OTP code. Please try again.');
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8800/api/otp/verify-otp',
+        { email: 'davabu1122@gmail.com', otp: otpCode },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+
+      console.log("OTP Verification Response:", response);
+
+      if (response.status === 200) {
+        console.log('OTP Verified!');
+        setIsOtpValid(true);
+        closeDentalModal();
+      } else {
+        console.log('Failed to verify OTP:', response.data.message);
+        alert('Invalid OTP code. Please try again.');
+        setIsOtpValid(false);
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('An error occurred while verifying OTP. Please try again.');
       setIsOtpValid(false);
     }
   };
 
-  const handleMentalHealthTabClick = () => {
-    console.log('Mental Health tab clicked');
-    if (activeTab === 6) {
-      if (isOtpValid) {
-        console.log('DentalChart tab is active and OTP is valid');
-        setActiveTab(6);
-      } else {
-        console.log('Opening OTP verification modal');
-        openDentalModal(); // Open OTP verification modal if OTP is not yet verified
+
+  const handleMentalHealthTabClick = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost:8800/api/otp/send-otp-to-doctor',
+        { email: 'davabu1122@gmail.com' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200) {
+        console.log('OTP sent successfully');
+        openDentalModal();
+        setActiveTab(6); // Set the activeTab to 6 after successful OTP sending
       }
-    } else {
-      if (isOtpValid) {
-        setActiveTab(6);
-      } else {
-        console.log('Opening OTP verification modal');
-        openDentalModal(); // Open OTP verification modal if OTP is not yet verified
-      }
+    } catch (error) {
+      console.error('Error sending OTP to doctor:', error);
     }
   };
 
 
 
-  console.log('Is OTP Valid?', isOtpValid);
-
   const tabPanel = () => {
+    console.log("Active Tab:", activeTab);
+
     switch (activeTab) {
       case 1:
         return <MedicalRecord />;
       case 2:
         return <AppointmentsUsed doctor={false} patientId={id} token={localStorage.getItem('token')} />;
       case 3:
-        return <InvoiceUsed />;
+        return <InvoiceUsed patientId={id} token={localStorage.getItem('token')} />;
       case 4:
         return <PaymentsUsed doctor={false} />;
       case 5:
-        return <PatientImages images={attachments} />;
+        return <PatientImages attachments={attachments} />;
       case 6:
-        console.log('Rendering DentalChart. Is OTP Valid?', isOtpValid);
-        return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is verified
+        console.log("Rendering DentalChart...");
+        return isOtpValid ? <DentalChart /> : null;
       case 7:
         return <PatientTableArray data={formatProfileData(profileData)} />;
       case 8:
@@ -131,7 +142,6 @@ function PatientProfile() {
         return null;
     }
   };
-
 
   const formatProfileData = (data) => {
     return [
@@ -268,3 +278,4 @@ function Modal({ closeModal, isOpen, width, children, title }) {
     </Transition>
   );
 }
+

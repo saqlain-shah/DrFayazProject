@@ -23,60 +23,59 @@ function CreateInvoice() {
   const [itemOpen, setItemOpen] = useState(false);
   const [currency, setCurrency] = useState(sortsDatas.currency[0]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [selectedService, setSelectedService] = useState(null); // Add selectedService to state
+  const [selectedService, setSelectedService] = useState(null);
   const [invoiceItems, setInvoiceItems] = useState([]);
-
-  // date picker
+  const [subtotal, setSubtotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [notes, setNotes] = useState("Thank you for your business. We hope to work with you again soon.");
   const onChangeDates = (update) => {
     setDateRange(update);
   };
 
   const handleAddItemClick = () => {
-    setItemOpen(true); // Open the modal
+    setItemOpen(true);
   };
 
   const handleSelectPatient = (patient) => {
-    console.log('Selected patient:', patient);
     setSelectedPatient(patient);
   };
 
   const handleAddItem = (service, quantity) => {
     const newItem = {
-      _id: service._id, // Use _id instead of id
+      _id: service._id,
       name: service.name,
       price: service.price,
       quantity: parseInt(quantity),
+      subtotal: service.price * parseInt(quantity) // Calculate subtotal for the item
     };
-    setInvoiceItems([...invoiceItems, newItem]); // Add selected service to invoice items
-    setSelectedService(service); // Update selectedService state
+    // Add the new item to the invoice items
+    setInvoiceItems([...invoiceItems, newItem]);
+
+    // Calculate the new subtotal by summing up the subtotal of all items
+    const newSubtotal = invoiceItems.reduce((acc, item) => acc + item.subtotal, 0);
+    setSubtotal(newSubtotal);
+
+    // Update grand total with new subtotal, discount, and tax
+    calculateGrandTotal(newSubtotal, discount, tax);
+
+    setSelectedService(service);
   };
 
+
+
   const handleSaveAndSend = async () => {
-    console.log("Selected patient:", selectedPatient);
-    console.log("Selected service:", selectedService);
-    console.log("Invoice items:", invoiceItems);
-
     try {
-      // Check if selectedPatient is valid
-      if (!selectedPatient || !selectedPatient._id || !selectedPatient.fullName) {
-        console.error("Selected patient object is missing required fields");
-        // Display an error message to the user
-        toast.error("Selected patient is missing required fields");
-        return; // Exit function
+      // Check if selectedPatient is defined
+      if (!selectedPatient || !selectedPatient._id) {
+        toast.error("Please select a patient");
+        return;
       }
 
-      // Check if invoiceItems is empty
-      if (invoiceItems.length === 0) {
-        console.error("Invoice items are required");
-        // Display an error message to the user
-        toast.error("Please add items to the invoice");
-        return; // Exit function
-      }
-
-      // Simulate sending the invoice by making an API call
       const token = localStorage.getItem("token");
       const response = await axios.post('http://localhost:8800/api/invoices', {
-        selectedPatient,
+        selectedPatient: selectedPatient, // Include selectedPatient object
         selectedService,
         invoiceItems
       }, {
@@ -86,23 +85,16 @@ function CreateInvoice() {
       });
 
       console.log('Invoice sent successfully:', response.data);
-
-      // You can perform further actions here based on the response, such as showing a success message
       toast.success('Invoice saved and sent successfully');
     } catch (error) {
       console.error('Error sending invoice:', error);
-      // Handle error, show error message, etc.
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // Display server error message to the user
         toast.error(error.response.data.message);
       } else {
-        // Display generic error message to the user
         toast.error('Error occurred while sending the invoice');
       }
     }
   };
-
 
 
 
@@ -112,7 +104,32 @@ function CreateInvoice() {
     setInvoiceItems(updatedItems);
     toast.success('Item deleted successfully');
   };
+  const handleSubtotalChange = (event) => {
+    const newSubtotal = parseFloat(event.target.value) || 0;
+    setSubtotal(newSubtotal);
+    calculateGrandTotal(newSubtotal, discount, tax);
+  };
 
+  const handleDiscountChange = (event) => {
+    const newDiscount = parseFloat(event.target.value) || 0;
+    setDiscount(newDiscount);
+    calculateGrandTotal(subtotal, newDiscount, tax);
+  };
+
+  const handleTaxChange = (event) => {
+    const newTax = parseFloat(event.target.value) || 0;
+    setTax(newTax);
+    calculateGrandTotal(subtotal, discount, newTax);
+  };
+
+  const handleNotesChange = (event) => {
+    setNotes(event.target.value);
+  };
+
+  const calculateGrandTotal = (subTotal, discount, tax) => {
+    const total = subTotal - discount + tax;
+    setGrandTotal(total);
+  };
 
   return (
     <Layout>
@@ -120,7 +137,7 @@ function CreateInvoice() {
         <AddItemModal
           closeModal={() => setItemOpen(false)}
           isOpen={itemOpen}
-          handleAddItem={handleAddItem} // Pass handleAddItem function
+          handleAddItem={handleAddItem}
         />
       )}
       <div className="flex items-center gap-4">
@@ -132,13 +149,7 @@ function CreateInvoice() {
         </Link>
         <h1 className="text-xl font-semibold">Create Invoice</h1>
       </div>
-      <div
-        data-aos="fade-up"
-        data-aos-duration="1000"
-        data-aos-delay="100"
-        data-aos-offset="200"
-        className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
-      >
+      <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
             <img
@@ -147,7 +158,6 @@ function CreateInvoice() {
               className=" w-32 object-contain"
             />
           </div>
-
           <div className="flex flex-col gap-4">
             <FromToDate
               startDate={startDate}
@@ -168,7 +178,6 @@ function CreateInvoice() {
           selectedPatient={selectedPatient}
           handleSelectPatient={handleSelectPatient}
         />
-
         <div className="grid grid-cols-6 gap-6 mt-8">
           <div className="col-span-6 lg:col-span-4 p-6 border border-border rounded-xl overflow-hidden">
             <InvoiceProductsTable
@@ -176,7 +185,6 @@ function CreateInvoice() {
               functions={{ deleteItem }}
               button={true}
             />
-
             <button
               onClick={handleAddItemClick}
               className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm mt-4"
@@ -200,35 +208,54 @@ function CreateInvoice() {
                 label="Discount"
                 color={true}
                 type="number"
+                value={discount.toString()} // Update value prop to display discount
+                onChange={handleDiscountChange} // Add onChange handler
                 placeholder={'3000'}
               />
               <Input
                 label="Tax(%)"
                 color={true}
                 type="number"
+                value={tax.toString()} // Update value prop to display tax
+                onChange={handleTaxChange} // Add onChange handler
                 placeholder={'3'}
               />
             </div>
             <div className="flex-btn gap-4">
               <p className="text-sm font-extralight">Sub Total:</p>
-              <h6 className="text-sm font-medium">$459</h6>
+              <Input
+                type="number"
+                color={true}
+                value={subtotal.toString()} // Update value prop to display subtotal
+                onChange={handleSubtotalChange} // Add onChange handler
+              />
             </div>
             <div className="flex-btn gap-4">
               <p className="text-sm font-extralight">Discount:</p>
-              <h6 className="text-sm font-medium">$49</h6>
+              <Input
+                type="number"
+                color={true}
+                value={discount.toString()} // Update value prop to display discount
+                onChange={handleDiscountChange} // Add onChange handler
+              />
             </div>
             <div className="flex-btn gap-4">
               <p className="text-sm font-extralight">Tax:</p>
-              <h6 className="text-sm font-medium">$4.90</h6>
+              <Input
+                type="number"
+                color={true}
+                value={tax.toString()} // Update value prop to display tax
+                onChange={handleTaxChange} // Add onChange handler
+              />
             </div>
             <div className="flex-btn gap-4">
               <p className="text-sm font-extralight">Grand Total:</p>
-              <h6 className="text-sm font-medium text-green-600">$6000</h6>
+              <h6 className="text-sm font-medium text-green-600">{grandTotal.toString()}</h6>
             </div>
             <Textarea
               label="Notes"
-              placeholder="Thank you for your business. We hope to work with you again soon!"
-              color={true}
+              value={notes}
+              onChange={handleNotesChange}
               rows={3}
             />
             <Button

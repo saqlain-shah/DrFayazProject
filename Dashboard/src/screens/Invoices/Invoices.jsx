@@ -12,20 +12,15 @@ function Invoices() {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        // Retrieve token from local storage
         const token = localStorage.getItem('token');
-
-        // Make an HTTP GET request to fetch invoice data from the API
         const response = await axios.get('http://localhost:8800/api/invoices', {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in the request headers
+            Authorization: `Bearer ${token}`,
           },
         });
-
         setInvoicesData(response.data);
       } catch (error) {
         console.error('Error fetching invoices:', error);
-        // Handle error, show error message, etc.
         toast.error('Error fetching invoices');
       }
     };
@@ -33,28 +28,29 @@ function Invoices() {
     fetchInvoices();
   }, []);
 
-  // Function to delete an invoice
   const deleteInvoice = async (id) => {
     try {
-      // Make an HTTP DELETE request to delete the invoice
       const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:8800/api/invoices/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // Update state to remove the deleted invoice
       setInvoicesData(invoicesData.filter((invoice) => invoice._id !== id));
-
       toast.success('Invoice deleted successfully');
     } catch (error) {
       console.error('Error deleting invoice:', error);
-      // Handle error, show error message, etc.
       toast.error('Error deleting invoice');
     }
   };
-
+  const updateInvoiceData = (updatedInvoice) => {
+    setInvoicesData(invoicesData.map((invoice) => {
+      if (invoice._id === updatedInvoice._id) {
+        return updatedInvoice;
+      }
+      return invoice;
+    }));
+  };
   return (
     <Layout>
       <Link
@@ -81,7 +77,7 @@ function Invoices() {
           </div>
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
-          <InvoiceTable data={invoicesData} deleteInvoice={deleteInvoice} />
+          <InvoiceTable data={invoicesData} deleteInvoice={deleteInvoice} updateInvoiceData={updateInvoiceData} />
         </div>
       </div>
     </Layout>
