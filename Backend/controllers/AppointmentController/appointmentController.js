@@ -35,10 +35,9 @@ export const createAppointment = async (req, res, next) => {
 export const getAppointmentsByPatientId = async (req, res) => {
     try {
         const { patientId } = req.params;
-        console.log("Fetching appointments for patientId:", patientId);
         // Find appointments where the patient field matches the provided patientId
         const appointments = await Appointment.find({ patient: patientId });
-        console.log("Appointments fetched:", appointments);
+
         res.status(200).json(appointments);
     } catch (error) {
         console.error('Error fetching appointments by patient ID:', error);

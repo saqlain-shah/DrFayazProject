@@ -5,7 +5,6 @@ import { MedicineDosageTable } from '../../components/Tables';
 import axios from 'axios';
 function MedicalRecodModal({ closeModal, isOpen, data, }) {
   const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
-  console.log('Attachments:', attachments);
   const [showMedicineDosages, setShowMedicineDosages] = useState(false);
   const medicineDosages = prescription ? prescription.medicines : [];
 

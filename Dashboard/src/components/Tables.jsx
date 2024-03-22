@@ -570,7 +570,6 @@ export function AppointmentTable({ functions, token, patientId }) {
     fetchData();
   }, [token, patientId]);
 
-
   const getStatusClass = (status) => {
     if (status === 'Pending') {
       return 'bg-yellow-500';
@@ -608,18 +607,12 @@ export function AppointmentTable({ functions, token, patientId }) {
     }
   };
 
-  const handleEdit = (item) => {
-    // Call the edit function passed as a prop
-    functions.edit(item);
-  };
-
   const DropDown1 = [
     {
       title: 'Edit',
       icon: FiEdit,
       onClick: (item) => {
-        // Call the handleEdit function
-        handleEdit(item);
+        functions.edit(item); // Invoke the edit function with the appointment item
       },
     },
     {
@@ -675,6 +668,7 @@ export function AppointmentTable({ functions, token, patientId }) {
     </div>
   );
 }
+
 
 
 

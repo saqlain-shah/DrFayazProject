@@ -12,6 +12,7 @@ router.route('/')
 router.route('/:id')
     .put(MedicalRecordController.updateMedicalRecord)
     .delete(MedicalRecordController.deleteMedicalRecord);
+
 router.route('/preview/:id').get(MedicalRecordController.getMedicalRecordsByPatientId);
 export default router;
 

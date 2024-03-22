@@ -44,6 +44,7 @@ const SignUp = () => {
 
     const handleSignUpSuccess = () => {
         console.log('Sign-up successful!');
+
     };
 
     const registerUser = async () => {

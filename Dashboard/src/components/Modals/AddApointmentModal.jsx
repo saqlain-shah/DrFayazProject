@@ -42,18 +42,25 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
 
   const saveAppointment = () => {
     const apiUrl = 'http://localhost:8800/api/appointments';
+
+    // Format date and time values to strings
+    const formattedStartDate = startDate.toISOString();
+    const formattedStartTime = startTime.toISOString();
+    const formattedEndTime = endTime.toISOString();
+
     const data = {
       patientName: patientName,
       purposeOfVisit: services.name,
-      dateOfVisit: startDate,
-      startTime: startTime,
-      endTime: endTime,
+      dateOfVisit: formattedStartDate,
+      startTime: formattedStartTime,
+      endTime: formattedEndTime,
       doctor: doctors.name,
       status: status.name,
       description: datas?.message,
       share: shares,
-      patientId: patientId,// Include the patientId here
+      patientId: patientId,
     };
+
     console.log("Sending appointment data:", data);
     const token = localStorage.getItem('token');
 

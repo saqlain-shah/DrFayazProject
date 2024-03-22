@@ -50,11 +50,11 @@ function Header() {
           >
             <BiMenu />
           </button>
-          <input
+          {/* <input
             type="text"
             placeholder='Search "Patients"'
             className="md:w-96 w-full h-12 text-sm text-main rounded-md bg-dry border border-border px-4"
-          />
+          /> */}
         </div>
         {/* User information */}
         <div className="md:col-span-1 sm:col-span-1 col-span-2 items-center justify-end pr-4 md:pr-0">

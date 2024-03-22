@@ -22,29 +22,16 @@ function PatientProfile() {
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [isOtpValid, setIsOtpValid] = useState(false);
-  const [attachments, setAttachments] = useState([]);
-
+  const [medicalRecords, setMedicalRecords] = useState([]);
   // Inside PatientProfile component
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
+
         const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-
-        console.log('Response from API:', response.data);
-
-        // Check if 'attachments' data is nested within the response object
-        if ('attachments' in response.data) {
-          console.log('Attachments data found in the response:', response.data.attachments);
-          const fetchedAttachments = response.data.attachments;
-          console.log('Fetched Attachments:', fetchedAttachments);
-          setAttachments(fetchedAttachments);
-        } else {
-          console.warn('Attachments data not found in the response.');
-        }
-
         setProfileData(response.data);
       } catch (error) {
         console.error('Error fetching profile data:', error);
@@ -52,6 +39,29 @@ function PatientProfile() {
     };
 
     fetchProfileData();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchMedicalRecords = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Token in PatientProfile component:', token);
+        console.log('Fetching medical records...');
+        const response = await axios.get(`http://localhost:8800/api/medical-records/preview/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
+          }
+        });
+        console.log('Medical records response:', response.data);
+        setMedicalRecords(response.data);
+      } catch (error) {
+        console.error('Error fetching medical records:', error);
+        setError('Error fetching medical records.');
+      }
+    };
+
+    fetchMedicalRecords();
   }, [id]);
 
 
@@ -130,7 +140,8 @@ function PatientProfile() {
       case 4:
         return <PaymentsUsed doctor={false} />;
       case 5:
-        return <PatientImages attachments={attachments} />;
+        return <PatientImages medicalRecords={medicalRecords} token={localStorage.getItem('token')} />
+
       case 6:
         console.log("Rendering DentalChart...");
         return isOtpValid ? <DentalChart /> : null;
