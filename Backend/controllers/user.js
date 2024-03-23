@@ -55,23 +55,23 @@ export const register = async (req, res, next) => {
 export const getClientById = async (req, res, next) => {
   const { clientId } = req.params;
   try {
-      const client = await User.findById(clientId);
-      if (!client) {
-          return res.status(404).json({ message: 'Client not found' });
-      }
-      return res.status(200).json(client);
+    const client = await User.findById(clientId);
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    return res.status(200).json(client);
   } catch (error) {
-      console.error('Error fetching client:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error fetching client:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 export const updateClientById = async (req, res, next) => {
   const { clientId } = req.params;
-  const { name, email,gender,emergencyContact, address} = req.body; // Assuming you can update name, email, and password
+  const { name, email, gender, bloodgroup, emergencyContact, address } = req.body; // Assuming you can update name, email, and password
 
   try {
-    const updatedClient = await User.findByIdAndUpdate(clientId, { name, email,gender,emergencyContact,address});
+    const updatedClient = await User.findByIdAndUpdate(clientId, { name, email, gender, bloodgroup, emergencyContact, address });
     if (!updatedClient) {
       return res.status(404).json({ message: 'Client not found' });
     }

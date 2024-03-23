@@ -79,39 +79,56 @@ const PatientProfileSetting = () => {
     }, [isLoading, isError, error, isSuccess])
 
     const handleChange = (e) => {
-        setData({...data,[e.target.name]:e.target.value})
-        setSelectValue({ ...selectValue, [e.target.name]: e.target.value })
+        const value = e.target.name === 'emergencyContact' ? parseInt(e.target.value) : e.target.value;
+        setData({ ...data, [e.target.name]: value })
+        setSelectValue({ ...selectValue, [e.target.name]: value })
         if (e.target.name === 'bloodGroup') {
-            setSelectBloodGroup(e.target.value);
+            setSelectBloodGroup(value);
         }
     }
 
-    const onSubmit = async (data) => {
-        const token = localStorage.getItem('token'); // Retrieve token from localStorage
+
+    const onSubmit = async (formData) => {
+        // Create a copy of the current data
+        const oldData = { ...data };
+
+        // Remove unnecessary fields from formData
+        delete formData.name;
+        delete formData.email;
+
+        // Check if any field is updated
+        const isDataChanged = Object.keys(formData).some(key => formData[key] !== oldData[key]);
+
+        // If no changes detected, populate formData with current data
+        if (!isDataChanged) {
+            formData = { ...oldData };
+        }
+
+        // Set the form data back to the input fields
+        setData(formData);
+
+        // Proceed with updating data if changes are detected
+        const token = localStorage.getItem('token');
         const config = {
             headers: {
-                'Authorization': `Bearer ${token}` // Include token in the Authorization header
+                'Authorization': `Bearer ${token}`
             }
         };
-        await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, data, config)
-            .then((response) => {
-                console.log("respone", response)
-            })
-        // const obj = data
-        // const newObj = { ...obj, ...selectValue };
-        // if (value) {
-        //     const newDate = moment(value).format()
-        //     newObj['dateOfBirth'] = newDate;
-        // }
-        // const changedValue = Object.fromEntries(Object.entries(newObj).filter(([key, value]) => value !== ''));
 
-        // const formData = new FormData();
-        // selectedImage && formData.append('file', file);
-        // const changeData = JSON.stringify(changedValue);
-        // formData.append('data', changeData)
-
-        // updatePatient({ data: formData, id: userId })
+        try {
+            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
+            console.log('Response:', response);
+            message.success('Successfully Profile Updated');
+            // Refetch data after successful update
+            fetchData(params);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            message.error(error?.response?.data?.message || 'Failed to update profile');
+        }
     };
+
+
+
 
 
     return (
@@ -138,13 +155,13 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Full Name <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.name} {...register("name")} className="form-control" />
+                            <input defaultValue={data?.name} {...register("name")} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Email <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.email} {...register("email")} className="form-control" />
+                            <input defaultValue={data?.email} {...register("email")} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -158,9 +175,9 @@ const PatientProfileSetting = () => {
                             <label>Gender</label>
                             <select className="form-control select" onChange={handleChange} name='gender'>
                                 <option value={data?.gender}>Select</option>
-                                <option className='text-capitalize'>male</option>
-                                <option className='text-capitalize'>female</option>
-                                <option className='text-capitalize'>shemale</option>
+                                <option className='text-capitalize'>Male</option>
+                                <option className='text-capitalize'>Female</option>
+                                <option className='text-capitalize'>Other</option>
                             </select>
                         </div>
                     </div>

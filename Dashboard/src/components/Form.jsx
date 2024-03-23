@@ -1,5 +1,5 @@
 import { Menu, Switch } from '@headlessui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
 import DatePicker from 'react-datepicker';
 import { FaCheck } from 'react-icons/fa';
@@ -110,6 +110,58 @@ export function Select({ selectedPerson, setSelectedPerson, datas }) {
     </div>
   );
 }
+
+export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
+  const [active, setActive] = useState(null);
+
+  return (
+    <>
+      {Array.isArray(datas) && datas.length > 0 ? (
+        <div className="relative w-full">
+          <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+            {({ open }) => (
+              <>
+                <Listbox.Button className="h-14 text-sm text-black rounded-md bg-white border border-gray-300 px-4 w-full flex justify-between items-center focus:outline-none focus:border-subMain">
+                  {selectedPerson} <BiChevronDown className="text-xl" />
+                </Listbox.Button>
+                {open && (
+                  <Listbox.Options className="absolute z-50 mt-1 w-full bg-gray-200 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none overflow-auto">
+                    {datas.map((doctor, index) => (
+                      <Listbox.Option
+                        key={index}
+                        value={doctor}
+                        className={({ active, selected }) =>
+                          `${active ? 'text-subMain bg-subMain bg-opacity-10' : ''} cursor-pointer select-none relative py-2 pl-4 pr-10 hover:text-subMain ${selected ? 'font-semibold' : ''}`
+                        }
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span className={`${selected ? 'font-semibold' : 'font-normal'}`}>
+                              {doctor}
+                            </span>
+                            {selected && (
+                              <span className={`${active ? 'text-subMain' : 'text-subMain'} absolute inset-y-0 right-0 flex items-center pr-3`}>
+                                ✓
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                )}
+              </>
+            )}
+          </Listbox>
+        </div>
+      ) : (
+        <p>No doctors available</p>
+      )}
+    </>
+  );
+
+}
+
 
 // switch
 

@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
-import { servicesData } from '../Datas';
 import { sortsDatas } from '../Datas';
-// import { memberData } from '../Datas';
-import { Button, Checkbox, DatePickerComp, Input, Select, Textarea, TimePickerComp } from '../Form';
+import { Button, Checkbox, DatePickerComp, Input, Select, Selectt, Textarea, TimePickerComp } from '../Form';
 import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
-// import PatientMedicineServiceModal from './PatientMedicineServiceModal';
-import PatientList from '../../screens/Patients/PatientList'; // Import the PatientList component here
-
-
+import PatientList from '../../screens/Patients/PatientList';
 
 function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, patientId }) {
   const [patientName, setPatientName] = useState('');
-  const [services, setServices] = useState(servicesData[0]);
+  const [services, setServices] = useState('');
   const [startDate, setStartDate] = useState(new Date());
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
@@ -27,20 +22,25 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
     whatsapp: false,
   });
 
-
   useEffect(() => {
-    // Fetch doctors data from the server
     fetchDoctors();
   }, []);
+
   const fetchDoctors = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve token from localStorage
+      const token = localStorage.getItem('token');
       const response = await axios.get('http://localhost:8800/api/doctors', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setDoctors(response.data); // Set the doctors state with the fetched data
+
+      // Check if the response data is an array
+      if (Array.isArray(response.data)) {
+        setDoctors(response.data); // Set the doctors state with the fetched data
+      } else {
+        console.error('Fetch doctors response is not an array:', response.data);
+      }
     } catch (error) {
       console.error('Error fetching doctors:', error);
     }
@@ -56,8 +56,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
   };
 
   const saveAppointment = () => {
-    const apiUrl = 'http://localhost:8800/api/appointments';
-
     // Format date and time values to strings
     const formattedStartDate = startDate.toISOString();
     const formattedStartTime = startTime.toISOString();
@@ -65,11 +63,11 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
 
     const data = {
       patientName: patientName,
-      purposeOfVisit: services.name,
+      purposeOfVisit: services,
       dateOfVisit: formattedStartDate,
       startTime: formattedStartTime,
       endTime: formattedEndTime,
-      doctor: doctors.name,
+      doctor: doctors[0]?.fullName, // Assuming the first doctor is selected by default
       status: status.name,
       description: datas?.message,
       share: shares,
@@ -77,6 +75,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
     };
 
     console.log("Sending appointment data:", data);
+    const apiUrl = 'http://localhost:8800/api/appointments';
     const token = localStorage.getItem('token');
 
     axios.post(apiUrl, data, {
@@ -94,7 +93,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
       });
   };
 
-
   return (
     <Modal
       closeModal={closeModal}
@@ -102,17 +100,9 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
       title={datas?.title ? 'Edit Appointment' : 'New Appointment'}
       width={'max-w-3xl'}
     >
-      {/* <PatientMedicineServiceModal
-        closeModal={() => { }}
-        isOpen={false}
-        patient={true}
-        onSelectPatient={handlePatientSelect}
-        setSearchValue={setPatientName}
-      /> */}
       <div className="flex-colo gap-6">
         <div className="grid sm:grid-cols-12 gap-4 w-full items-center">
           <div className="sm:col-span-10">
-
             <PatientList onSelectPatient={handlePatientSelect} setSearchValue={setPatientName} />
           </div>
         </div>
@@ -123,10 +113,10 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
             <Select
               selectedPerson={services}
               setSelectedPerson={setServices}
-              datas={servicesData}
+              datas={['service1', 'service2']} // Example service data
             >
               <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {services.name} <BiChevronDown className="text-xl" />
+                {services} <BiChevronDown className="text-xl" />
               </div>
             </Select>
           </div>
@@ -153,12 +143,18 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <div className="flex w-full flex-col gap-3">
             <p className="text-black text-sm">Doctor</p>
-            {doctors.length > 0 && (
-              <Select
-                selectedPerson={doctors[0]} // Assuming the first doctor is selected by default
+            {Array.isArray(doctors) && doctors.length > 0 ? (
+              <Selectt
+                selectedPerson={doctors[0]?.fullName} // Assuming the first doctor is selected by default
                 setSelectedPerson={setDoctors}
-                datas={doctors.map(doctor => ({ id: doctor.id, name: doctor.name, value: doctor.name }))}
-              />
+                datas={doctors.map(doctor => doctor.fullName)} // Use map to extract only the fullName
+              >
+                <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+                  {doctors[0]?.fullName} <BiChevronDown className="text-xl" />
+                </div>
+              </Selectt>
+            ) : (
+              <p>No doctors available</p>
             )}
           </div>
 
@@ -230,3 +226,4 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
 }
 
 export default AddAppointmentModal;
+

@@ -5,10 +5,14 @@ const clientSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  gender:{type:String ,default:""},
-  emergencyContact:{type:Number ,default:0},
-  address:{type:String, default:""},
-  image:{type:String, default:""}                                                 
+  bloodGroup: {
+    type: String,
+    required: true
+  },
+  gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+  emergencyContact: { type: Number, default: 0 },
+  address: { type: String, default: "" },
+  image: { type: String, default: "" }
 });
 
 // Hash password before saving to the database

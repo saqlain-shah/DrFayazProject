@@ -1,4 +1,3 @@
-// DoctorInfo.jsx
 import React, { useState } from 'react';
 import { Button, Input } from '../../components/Form';
 import { toast } from 'react-hot-toast';
@@ -11,6 +10,9 @@ function DoctorInfo({ closeModal, onSave }) {
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [profileImage, setProfileImage] = useState(null);
+
+    // Initialize state for updated doctor information
+    const [updatedDoctorInfo, setUpdatedDoctorInfo] = useState(null);
 
     const handleImageUpload = (event) => {
         setProfileImage(event.target.files[0]);
@@ -41,6 +43,10 @@ function DoctorInfo({ closeModal, onSave }) {
             setProfileImage(response.data.profileImage);
 
             toast.success('Doctor information saved successfully');
+
+            // Update state with the updated doctor information
+            setUpdatedDoctorInfo(response.data);
+
             onSave(response.data);
             closeModal(); // Call closeModal function
         } catch (error) {
@@ -55,28 +61,28 @@ function DoctorInfo({ closeModal, onSave }) {
                 label="Full Name"
                 color='true'
                 type="text"
-                value={fullName}
+                value={updatedDoctorInfo ? updatedDoctorInfo.fullName : fullName}
                 onChange={(e) => setFullName(e.target.value)}
             />
             <Input
                 label="Phone Number"
                 type="text"
                 color='true'
-                value={phone}
+                value={updatedDoctorInfo ? updatedDoctorInfo.phone : phone}
                 onChange={(e) => setPhone(e.target.value)}
             />
             <Input
                 label="Email"
                 type="email"
                 color='true'
-                value={email}
+                value={updatedDoctorInfo ? updatedDoctorInfo.email : email}
                 onChange={(e) => setEmail(e.target.value)}
             />
             <Input
                 label="Address"
                 type="text"
                 color='true'
-                value={address}
+                value={updatedDoctorInfo ? updatedDoctorInfo.address : address}
                 onChange={(e) => setAddress(e.target.value)}
             />
             <div>
