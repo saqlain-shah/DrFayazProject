@@ -9,23 +9,35 @@ import { useUserLoginMutation } from '../../redux/api/authApi';
 import { message } from 'antd';
 import './SignInForm.css'
 import axios from 'axios'
+
 const SignIn = ({ handleResponse }) => {
     const [infoError, setInfoError] = useState('');
     const [show, setShow] = useState(true);
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const Navigate = useNavigate();
 
-    setTimeout(() => {
-        setShow(false);
-    }, 10000)
+    useEffect(() => {
+        setTimeout(() => {
+            setShow(false);
+        }, 10000);
+    }, []);
+
     const [userLogin, { isError, isLoading, isSuccess, error }] = useUserLoginMutation();
 
-    const onSubmit = async (event) => {
+    const onSubmit = async (data, params) => {
         try {
-            const response = await axios.post('http://localhost:8800/api/auth/login', event);
-            if (response.data.success) {
-                message.success('Successfully Logged in');
-                navigate("/");
+            const token = localStorage.getItem('token'); // Retrieve token from localStorage
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Include token in the Authorization header
+                }
+            };
+
+            const response = await axios.post('http://localhost:8800/api/userauth/login', data, config);
+            console.log(response.data)
+            if (response.data) {
+                const clientId=response.data._id
+                Navigate(`/dashboard/${clientId}`); // Navigate to home page
             } else {
                 setInfoError(response.data.message);
             }
@@ -33,7 +45,7 @@ const SignIn = ({ handleResponse }) => {
             setInfoError('An error occurred while logging in');
             console.error('Error signing in:', error);
         }
-    }
+    };
 
     useEffect(() => {
         if (isError) {
@@ -41,28 +53,12 @@ const SignIn = ({ handleResponse }) => {
         }
         if (isSuccess) {
             message.success('Successfully Logged in');
-            navigate("/")
+            Navigate('/dashboard')
         }
-    }, [isError, error, isSuccess, navigate])
+    }, [isError, error, isSuccess, Navigate])
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
-            <Toast show={show} onClose={() => setShow(!show)} className="signInToast">
-                <Toast.Header>
-                    <strong className="mr-auto">Demo credential</strong>
-                </Toast.Header>
-                <Toast.Body>Use this account to sign in as a doctor <br />
-                    <hr />
-                    <div className='bg-dark text-white p-2 px-3 rounded'>
-                        email : doctor@gmail.com <br />
-                        password : 123456 <br />
-                    </div>
-                    <hr />
-                    <div className='bg-primary p-2 rounded text-white'>
-                        Please do not abuse the facility
-                    </div>
-                </Toast.Body>
-            </Toast>
             <h2 className="title">Sign in</h2>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>
@@ -80,7 +76,6 @@ const SignIn = ({ handleResponse }) => {
             </button>
             <p className="social-text">Or Sign in with social platformssss</p>
             <SocialSignUp onSignUpSuccess={handleResponse} />
-
         </form>
     );
 };

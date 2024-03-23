@@ -50,13 +50,13 @@ const Header = () => {
         </div >
     );
 
-    const handleMakeAppointment = () => {
-        if (!isLoggedIn) {
-            navigate('/login'); // Navigate to the login page using navigate
-        } else {
-            // Handle appointment logic if user is logged in
-        }
-    }
+    // const handleMakeAppointment = () => {
+    //     if (!isLoggedIn) {
+    //         navigate('/login'); // Navigate to the login page using navigate
+    //     } else {
+    //         // Handle appointment logic if user is logged in
+    //     }
+    // }
 
     return (
         <>
@@ -88,9 +88,7 @@ const Header = () => {
                         {/* Include mobile nav toggle component here */}
                     </nav>
 
-                    <button className="appointment-btn scrollto" onClick={handleMakeAppointment}>
-                        <span className="d-none d-md-inline">Make an</span> Appointment
-                    </button>
+                    <Link to={'/appointment'} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span> Appointment</Link>
                 </div>
             </header>
         </>

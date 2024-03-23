@@ -6,12 +6,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './SignInForm.css';
 
-const SignUp = () => {
+const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess as a prop
     const [loading, setLoading] = useState(false);
     const [infoError, setInfoError] = useState('');
     const [user, setUser] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
         password: ''
     });
@@ -42,29 +41,47 @@ const SignUp = () => {
             });
         }
     };
-
     const handleSignUpSuccess = () => {
-        console.log('Sign-up successful!');
-        navigate("/login");
+        onSignUpSuccess(); // Call onSignUpSuccess function passed as a prop
+        setSignUp(false); // Switch to sign-in mode
     };
+    
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8800/api/auth/register', user);
+            const token = localStorage.getItem('token'); // Retrieve token from localStorage
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Include token in the Authorization header
+                }
+            };
+    
+            const response = await axios.post('http://localhost:8800/api/userauth/register', user, config);
             if (response.data.success) {
-                console.log(response.data);
-                handleSignUpSuccess();
-                navigate("/");
+                handleSignUpSuccess(); // This will log and navigate
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);
             }
         } catch (error) {
             setLoading(false);
-            setInfoError('An error occurred while signing up.');
-            console.error('Error signing up:', error);
+            if (error.response) {
+                // Server responded with a status code outside of 2xx range
+                console.error('Gmail already exist:', error.response.data);
+                setInfoError('Gmail already exist');
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.error('Network error:', error.request);
+                setInfoError('Network error. Please check your connection.');
+            } else {
+                // Something happened in setting up the request that triggered an error
+                console.error('Error:', error.message);
+                setInfoError('An error occurred. Please try again later.');
+            }
         }
     };
+    
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -77,12 +94,12 @@ const SignUp = () => {
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="First Name" name="firstName" type="text" onChange={handleChange} value={user.firstName} />
+                <input placeholder="Full Name" name="name" type="text" onChange={handleChange} value={user.name} />
             </div>
-            <div className="input-field">
+            {/* <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
                 <input placeholder="Last Name" name="lastName" type="text" onChange={handleChange} value={user.lastName} />
-            </div>
+            </div> */}
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>
                 <input placeholder="Email" name="email" type="email" onChange={handleChange} value={user.email} />

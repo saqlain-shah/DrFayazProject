@@ -14,6 +14,7 @@ import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
 import doctorRoutes from './routes/doctor.js'
+import userauth from './routes/userauth.js'
 import schduleRoutes from './routes/schdule.js'
 import webAppointmentRoutes from './routes/webApoint.js'
 import { authenticate } from './utils/authMiddleware.js';
@@ -46,6 +47,7 @@ app.get('/api/auth/google/callback', passport.authenticate('google', { failureRe
 });
 app.use(authenticate);
 app.use('/api/auth', authRoute);
+app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/doctors', doctorRoutes);
