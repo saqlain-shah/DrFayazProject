@@ -22,13 +22,18 @@ export const login = async (req, res, next) => {
     // Generate token upon successful login
     const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '90d' });
 
-    // Send token and id in response
+    // Set token as an HTTP cookie
+    res.cookie('access_token', token, { httpOnly: true, maxAge: 90 * 24 * 60 * 60 * 1000 }); // Expires in 90 days
+
+    // Set token in response body
     res.status(200).json({ message: 'Login successful', token, id: user._id });
+
   } catch (error) {
     console.error('Error logging in:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;

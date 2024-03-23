@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AppointmentTable } from '../Tables';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
+import EditAppointmentModal from '../Modals/EditAppointment';
 import { BiPlus } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
 
 function AppointmentsUsed({ token, patientId }) {
-  const [open, setOpen] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [appointments, setAppointments] = useState([]);
-  const [newAppointment, setNewAppointment] = useState(null);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
   useEffect(() => {
     console.log('Fetching appointments for patientId:', patientId);
     const fetchAppointments = async () => {
@@ -25,45 +28,62 @@ function AppointmentsUsed({ token, patientId }) {
       }
     };
 
-
     fetchAppointments();
   }, [patientId, token]);
 
+  const handleEdit = (appointment) => {
+    setSelectedAppointment(appointment);
+    setOpenEditModal(true);
+  };
 
   const handleNewAppointment = (appointment) => {
     console.log('New appointment created:', appointment);
     setAppointments(prevAppointments => [...prevAppointments, appointment]);
-    setNewAppointment(appointment);
   };
 
-  const handleEventClick = (event) => {
-    console.log('Appointment clicked:', event);
-    setOpen(true);
-    setNewAppointment(event);
+  const handleUpdateAppointment = (updatedAppointment) => {
+    setAppointments(prevAppointments =>
+      prevAppointments.map(appointment =>
+        appointment._id === updatedAppointment._id ? updatedAppointment : appointment
+      )
+    );
+
+    // Add a trigger to update the state again after a short delay
+    setTimeout(() => {
+      setAppointments(prevAppointments => [...prevAppointments]);
+    }, 100); // Adjust the delay time as needed
   };
 
-  const handleClose = () => {
-    console.log('Modal closed');
-    setOpen(false);
-    setNewAppointment(null);
+
+  const handleCloseModals = () => {
+    setOpenAddModal(false);
+    setOpenEditModal(false);
+    setSelectedAppointment(null);
   };
 
   return (
     <div className="w-full">
-      {open && (
+      {openAddModal && (
         <AddAppointmentModal
-          datas={newAppointment}
-          isOpen={open}
-          closeModal={() => handleClose()}
+          isOpen={openAddModal}
+          closeModal={handleCloseModals}
           handleNewAppointment={handleNewAppointment}
           patientId={patientId}
+        />
+      )}
+      {openEditModal && selectedAppointment && (
+        <EditAppointmentModal
+          isOpen={openEditModal}
+          closeModal={() => setOpenEditModal(false)}
+          appointment={selectedAppointment}
+          onUpdateAppointment={handleUpdateAppointment} // Pass the onUpdateAppointment function
         />
       )}
       <h1 className="text-sm font-medium mb-6">Appointment</h1>
       <div className="w-full overflow-x-scroll">
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => setOpen(true)}
+            onClick={() => setOpenAddModal(true)}
             className="bg-main text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-main-dark transition duration-300 flex items-center"
           >
             <BiPlus className="mr-2" />
@@ -71,11 +91,10 @@ function AppointmentsUsed({ token, patientId }) {
           </button>
         </div>
         <AppointmentTable
-          data={appointments}
-          newAppointment={newAppointment}
           functions={{
-            preview: handleEventClick,
+            edit: handleEdit,
           }}
+          onEdit={handleEdit}
           token={token}
           patientId={patientId}
         />

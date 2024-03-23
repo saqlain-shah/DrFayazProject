@@ -42,8 +42,8 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
         }
     };
     const handleSignUpSuccess = () => {
-        onSignUpSuccess(); // Call onSignUpSuccess function passed as a prop
-        setSignUp(false); // Switch to sign-in mode
+        console.log('Sign-up successful!');
+
     };
     
 
@@ -58,7 +58,9 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
     
             const response = await axios.post('http://localhost:8800/api/userauth/register', user, config);
             if (response.data.success) {
-                handleSignUpSuccess(); // This will log and navigate
+                console.log(response.data);
+                handleSignUpSuccess();
+                navigate("/");
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);
@@ -94,12 +96,12 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="Full Name" name="name" type="text" onChange={handleChange} value={user.name} />
+                <input placeholder="First Name" name="firstName" type="text" onChange={handleChange} value={user.firstName} />
             </div>
-            {/* <div className="input-field">
+            <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
                 <input placeholder="Last Name" name="lastName" type="text" onChange={handleChange} value={user.lastName} />
-            </div> */}
+            </div>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>
                 <input placeholder="Email" name="email" type="email" onChange={handleChange} value={user.email} />

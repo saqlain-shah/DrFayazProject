@@ -53,7 +53,7 @@ const SignIn = ({ handleResponse }) => {
         }
         if (isSuccess) {
             message.success('Successfully Logged in');
-            Navigate('/dashboard')
+            navigate("/login")
         }
     }, [isError, error, isSuccess, Navigate])
 

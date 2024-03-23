@@ -99,4 +99,7 @@ export const deleteMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete medical record', error: error.message });
     }
 };
+// MedicalRecordController.js
+
+
 

@@ -1,8 +1,8 @@
+
 import React, { useState } from 'react';
 
-function DentalChart({ isOtpValid, setOtpVerified }) {
-  console.log("isOtpValid", isOtpValid);
-  console.log("setOtpVerified", setOtpVerified);
+function DentalChart() {
+
   const [seriousDisease, setSeriousDisease] = useState('');
   const [dentalConditions, setDentalConditions] = useState({
     cavity: false,
@@ -30,10 +30,7 @@ function DentalChart({ isOtpValid, setOtpVerified }) {
     console.log('Submitting Dental Chart data:', { seriousDisease, dentalConditions, lastCheckup, nextCheckup });
   };
 
-  // Render DentalChart only if OTP is valid
-  if (!isOtpValid) {
-    return null;
-  }
+
 
   return (
     <div className="p-4 border border-gray-200 rounded-md shadow-md">

@@ -49,20 +49,6 @@ function NewMedicalRecord() {
   };
 
 
-
-  // const onChangeMedicine = (name, checked) => {
-  //   const updatedMedicineData = medicineData.map(item => {
-  //     if (item && item.name === name) {
-  //       return {
-  //         ...item,
-  //         checked: checked
-  //       };
-  //     }
-  //     return item;
-  //   });
-  //   setMedicine(updatedMedicineData); // Update the medicineData state
-  // };
-
   useEffect(() => {
     const fetchPatientData = async () => {
       try {

@@ -26,20 +26,22 @@ function MedicalRecord() {
     fetchMedicalRecords(id, setMedicalRecords, toast);
   }, [id]);
 
-  // Pass the patient's ID to fetchMedicalRecords when calling it inside handleDelete and handleEdit functions
   const handleDelete = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(`http://localhost:8800/api/medical-records/${recordId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchMedicalRecords(); // Update medical records after deletion
+      // Update medical records after deletion by passing the patient's id
+      fetchMedicalRecords(id, setMedicalRecords, toast); // Pass id and setMedicalRecords function
       toast.success('Medical record deleted successfully');
     } catch (error) {
       console.error('Error deleting medical record:', error);
       toast.error('Failed to delete medical record');
     }
   };
+
+
 
   const handleEdit = async (recordId, newData) => {
     try {

@@ -23,7 +23,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
-
+import otpRoutes from './routes/Opt.js'
 const app = express();
 app.use(express.json());
 dotenv.config();
@@ -60,6 +60,7 @@ app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes)
 app.use('/api/medicine', medicineRoute)
 app.use('/api/v1', webAppointmentRoutes);
+app.use('/api/otp', otpRoutes);
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

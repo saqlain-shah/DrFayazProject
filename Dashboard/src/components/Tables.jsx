@@ -108,26 +108,32 @@ export function Transactiontable({ data, action, functions }) {
 
 
 
-export function InvoiceTable({ data, deleteInvoice }) {
+export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
   const navigate = useNavigate();
   const [idCounter, setIdCounter] = useState(2623); // Initialize the ID counter
-
+  const handleEditInvoice = (editedInvoice) => {
+    updateInvoiceData(editedInvoice);
+  };
   const DropDown1 = [
     {
       title: 'Edit',
       icon: FiEdit,
       onClick: (item) => {
-        navigate(`/invoices/edit/${item.id}`);
+        // Check if 'id' property is accessible in 'item'
+        console.log(item); // Check the console for the structure of 'item'
+        navigate(`/invoices/edit/${item._id}`); // Navigate using '_id'
       },
     },
+
     {
       title: 'View',
       icon: FiEye,
       onClick: (item) => {
-        navigate(`/invoices/preview/${item.id}`);
+        navigate(`/invoices/preview/${item._id}`); // Use '_id'
       },
-
     },
+
+
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
@@ -430,8 +436,9 @@ export function PatientTable({ data, functions, onEdit }) {
     </div>
   );
 }
-export function PatientTableArray({ data, onEdit }) {
 
+
+export function PatientTableArray({ data, onEdit }) {
   if (!Array.isArray(data)) {
     console.error('Data is not an array:', data);
     return <div>Error: Data is not an array</div>;
@@ -442,50 +449,37 @@ export function PatientTableArray({ data, onEdit }) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="table-auto">
-        <thead className="bg-dry rounded-md overflow-hidden">
+      <table className="table-auto w-full">
+        <thead className="bg-gray-200 rounded-md overflow-hidden">
           <tr>
             <th className={thClass} style={{ width: '2%' }}>#</th>
-            <th className={thClass} style={{ width: '10%' }}>Image</th>
-            <th className={thClass} style={{ width: '15%' }}>Full Name</th>
-            <th className={thClass} style={{ width: '10%' }}>Gender</th>
-            <th className={thClass} style={{ width: '5%' }}>Blood Group</th>
-            <th className={thClass} style={{ width: '20%' }}>Address</th>
-            <th className={thClass} style={{ width: '15%' }}>Email</th>
-            <th className={thClass} style={{ width: '15%' }}>Emergency Contact</th>
-            <th className={thClass} style={{ width: '10%' }}>Created At</th>
+            <th className={thClass} style={{ width: '30%' }}>Field</th>
+            <th className={thClass} style={{ width: '68%' }}>Value</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={item._id || index} className="border-b border-border hover:bg-greyed transitions">
-              {/* Table cells */}
-              <td className={tdClass}>{index + 1}</td>
-              <td className={tdClass}>
-                {item.profilePicture && (
-                  <img
-                    src={`http://localhost:8800/${item.profilePicture}`}
-                    alt={item.fullName}
-                    className="w-full h-11 rounded-full object-cover border border-border"
-                  />
-                )}
-              </td>
-              <td className={tdClass}>{item.fullName}</td>
-              <td className={tdClass}>{item.gender}</td>
-              <td className={tdClass}>{item.bloodGroup}</td>
-              <td className={tdClass}>{item.address}</td>
-              <td className={tdClass}>{item.email}</td>
-              <td className={tdClass}>{item.emergencyContact}</td>
-              <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
-
-            </tr>
+            Object.entries(item).map(([key, value]) => (
+              key !== 'profilePicture' && key !== 'id' && // Exclude profile picture and id fields
+              <tr key={key} className="border-b border-gray-300 hover:bg-gray-100 transition-colors">
+                {/* Table cells */}
+                <td className={tdClass}>{index + 1}</td>
+                <td className={tdClass}>{key}</td>
+                <td className={tdClass}>{value || '-'}</td>
+              </tr>
+            ))
           ))}
-
         </tbody>
       </table>
     </div>
   );
 }
+
+
+
+
+
+
 
 
 
@@ -576,7 +570,6 @@ export function AppointmentTable({ functions, token, patientId }) {
     fetchData();
   }, [token, patientId]);
 
-
   const getStatusClass = (status) => {
     if (status === 'Pending') {
       return 'bg-yellow-500';
@@ -614,18 +607,12 @@ export function AppointmentTable({ functions, token, patientId }) {
     }
   };
 
-  const handleEdit = (item) => {
-    // Call the edit function passed as a prop
-    functions.edit(item);
-  };
-
   const DropDown1 = [
     {
       title: 'Edit',
       icon: FiEdit,
       onClick: (item) => {
-        // Call the handleEdit function
-        handleEdit(item);
+        functions.edit(item); // Invoke the edit function with the appointment item
       },
     },
     {
@@ -681,6 +668,7 @@ export function AppointmentTable({ functions, token, patientId }) {
     </div>
   );
 }
+
 
 
 
@@ -749,8 +737,14 @@ export function PaymentTable({ data, functions, doctor }) {
   );
 }
 
-// invoice used table
 export function InvoiceUsedTable({ data, functions }) {
+  const [idCounter, setIdCounter] = useState(2623); // Initialize the ID counter
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // Format: DD/MM/YYYY
+  };
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
@@ -763,19 +757,17 @@ export function InvoiceUsedTable({ data, functions }) {
         </tr>
       </thead>
       <tbody>
-        {data.map((item) => (
+        {data.map((item, index) => (
           <tr
-            key={item.id}
+            key={uuidv4()} // Generate a UUID as a key
             className="border-b border-border hover:bg-greyed transitions"
           >
+            <td className={tdclass}>#{idCounter + index}</td> {/* Generate the ID using idCounter */}
             <td className={tdclass}>
-              <p className="text-xs">#{item.id}</p>
+              <p className="text-xs">{formatDate(item.createdDate)}</p> {/* Format the created date */}
             </td>
             <td className={tdclass}>
-              <p className="text-xs">{item.createdDate}</p>
-            </td>
-            <td className={tdclass}>
-              <p className="text-xs">{item.dueDate}</p>
+              <p className="text-xs">{formatDate(item.dueDate)}</p> {/* Format the due date */}
             </td>
 
             <td className={tdclass}>
@@ -784,7 +776,7 @@ export function InvoiceUsedTable({ data, functions }) {
 
             <td className={tdclass}>
               <button
-                onClick={() => functions.preview(item.id)}
+                onClick={() => functions.preview(item._id)}
                 className="text-sm flex-colo bg-white text-subMain border rounded-md w-10 h-10"
               >
                 <FiEye />
@@ -797,13 +789,16 @@ export function InvoiceUsedTable({ data, functions }) {
   );
 }
 
-// invoice table
 export function InvoiceProductsTable({ data, functions, button }) {
+  console.log("InvoiceProductsTable", data); // For debugging purposes
+
+  // CSS classes for table header and table data cells
   const thclass = "p-3 text-left font-medium text-gray-700 border-b border-gray-200";
   const tdclass = "p-3 text-left text-gray-700 border-b border-gray-200";
 
   return (
     <table className="table-auto w-full">
+      {/* Table header */}
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
           <th className={thclass}>Item</th>
@@ -816,15 +811,16 @@ export function InvoiceProductsTable({ data, functions, button }) {
             Amount
             <span className="text-xs font-light ml-1">(Tsh)</span>
           </th>
-          {button && <th className={thclass}>Actions</th>}
+          {button && <th className={thclass}>Actions</th>} {/* Conditionally render Actions column if button prop is true */}
         </tr>
       </thead>
+      {/* Table body */}
       <tbody>
         {/* Check if data is not empty and map over it */}
         {data?.map((item) => (
           <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-            <td className={`${tdclass}  font-medium`}>{item.name}</td>
-            <td className={`${tdclass} text-xs`}>{item.price}</td>
+            <td className={`${tdclass}  font-medium`}>{item.name}</td> {/* Display item name */}
+            <td className={`${tdclass} text-xs`}>{item.price}</td> {/* Display item price */}
             <td className={tdclass}>{item.quantity}</td> {/* Display quantity */}
             <td className={tdclass}>{item.price * item.quantity}</td> {/* Calculate and display amount */}
             {button && (
@@ -839,6 +835,7 @@ export function InvoiceProductsTable({ data, functions, button }) {
             )}
           </tr>
         ))}
+
       </tbody>
     </table>
   );
