@@ -37,6 +37,10 @@ function CreateInvoice() {
   const handleAddItemClick = () => {
     setItemOpen(true);
   };
+  const exchangeRates = {
+    USD: 1, // 1 USD = 1 USD
+    PKR: 177.5, // 1 USD = 177.5 PKR (for example)
+  };
 
   const handleSelectPatient = (patient) => {
     setSelectedPatient(patient);
@@ -104,14 +108,61 @@ function CreateInvoice() {
     }
   };
 
+  const handleCurrencyChange = (selectedCurrency) => {
+    if (!selectedCurrency || !selectedCurrency.name) {
+      console.error("Invalid currency object:", selectedCurrency);
+      return;
+    }
+
+    const currencyCode = selectedCurrency.code || selectedCurrency.id;
+    console.log(`Currency changed to: ${selectedCurrency.name} (${currencyCode})`);
+
+    // Retrieve the exchange rate for the selected currency
+    const newExchangeRate = exchangeRates[currencyCode];
+
+    if (!newExchangeRate) {
+      console.error("Exchange rate not found for currency:", currencyCode);
+      return;
+    }
+
+    // Calculate new amounts based on selected currency
+    const newSubtotal = subtotal / exchangeRates[currency.code] * newExchangeRate;
+    const newDiscount = discount / exchangeRates[currency.code] * newExchangeRate;
+    const newTax = tax / exchangeRates[currency.code] * newExchangeRate;
+    const newGrandTotal = newSubtotal - newDiscount + newTax; // Recalculate grand total
+
+    // Check for NaN or undefined values
+    if (isNaN(newSubtotal) || isNaN(newDiscount) || isNaN(newTax) || isNaN(newGrandTotal)) {
+      console.error("Invalid calculation result. Check exchange rates and input values.");
+      return;
+    }
+
+    // Update currency and amounts
+    setCurrency(selectedCurrency);
+    setSubtotal(newSubtotal);
+    setDiscount(newDiscount);
+    setTax(newTax);
+    setGrandTotal(newGrandTotal);
+  };
+
 
 
 
   const deleteItem = (itemId) => {
+    // Filter out the deleted item
     const updatedItems = invoiceItems.filter((item) => item._id !== itemId);
     setInvoiceItems(updatedItems);
+
+    // Calculate the new subtotal after removing the deleted item
+    const newSubtotal = updatedItems.reduce((acc, item) => acc + item.subtotal, 0);
+    setSubtotal(newSubtotal);
+
+    // Recalculate the grand total with the new subtotal, discount, and tax
+    calculateGrandTotal(newSubtotal, discount, tax);
+
     toast.success('Item deleted successfully');
   };
+
   const handleSubtotalChange = (event) => {
     const newSubtotal = parseFloat(event.target.value) || 0;
     setSubtotal(newSubtotal);
@@ -203,14 +254,16 @@ function CreateInvoice() {
           <div className="lg:col-span-2 col-span-6 flex flex-col gap-6">
             <Select
               selectedPerson={currency}
-              setSelectedPerson={setCurrency}
+              setSelectedPerson={handleCurrencyChange}
               datas={sortsDatas?.currency}
             >
+
               <div className="h-14 w-full text-xs text-main rounded-md border border-border px-4 flex items-center justify-between">
                 <p>{currency?.name}</p>
                 <BiChevronDown className="text-xl" />
               </div>
             </Select>
+
             <div className="grid sm:grid-cols-2 gap-6">
               <Input
                 label="Discount"
@@ -274,7 +327,7 @@ function CreateInvoice() {
           </div>
         </div>
       </div>
-    </Layout>
+    </Layout >
   );
 }
 
