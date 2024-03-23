@@ -3,7 +3,7 @@ import axios from 'axios';
 import Modal from './Modal';
 import { servicesData } from '../Datas';
 import { sortsDatas } from '../Datas';
-import { memberData } from '../Datas';
+// import { memberData } from '../Datas';
 import { Button, Checkbox, DatePickerComp, Input, Select, Textarea, TimePickerComp } from '../Form';
 import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
@@ -11,12 +11,7 @@ import { toast } from 'react-hot-toast';
 // import PatientMedicineServiceModal from './PatientMedicineServiceModal';
 import PatientList from '../../screens/Patients/PatientList'; // Import the PatientList component here
 
-const doctorsData = memberData.map((item) => {
-  return {
-    id: item.id,
-    name: item.title,
-  };
-});
+
 
 function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, patientId }) {
   const [patientName, setPatientName] = useState('');
@@ -25,12 +20,32 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
   const [startTime, setStartTime] = useState(new Date());
   const [endTime, setEndTime] = useState(new Date());
   const [status, setStatus] = useState(sortsDatas.status[0]);
-  const [doctors, setDoctors] = useState(doctorsData[0]);
+  const [doctors, setDoctors] = useState([]);
   const [shares, setShares] = useState({
     email: false,
     sms: false,
     whatsapp: false,
   });
+
+
+  useEffect(() => {
+    // Fetch doctors data from the server
+    fetchDoctors();
+  }, []);
+  const fetchDoctors = async () => {
+    try {
+      const token = localStorage.getItem('token'); // Retrieve token from localStorage
+      const response = await axios.get('http://localhost:8800/api/doctors', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setDoctors(response.data); // Set the doctors state with the fetched data
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+    }
+  };
+
 
   const onChangeShare = (e) => {
     setShares({ ...shares, [e.target.name]: e.target.checked });
@@ -138,16 +153,15 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <div className="flex w-full flex-col gap-3">
             <p className="text-black text-sm">Doctor</p>
-            <Select
-              selectedPerson={doctors}
-              setSelectedPerson={setDoctors}
-              datas={doctorsData}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {doctors.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
+            {doctors.length > 0 && (
+              <Select
+                selectedPerson={doctors[0]} // Assuming the first doctor is selected by default
+                setSelectedPerson={setDoctors}
+                datas={doctors.map(doctor => ({ id: doctor.id, name: doctor.name, value: doctor.name }))}
+              />
+            )}
           </div>
+
           <div className="flex w-full flex-col gap-3">
             <p className="text-black text-sm">Status</p>
             <Select

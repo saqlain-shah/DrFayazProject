@@ -40,6 +40,7 @@ function PatientImages({ medicalRecords }) {
                       src={imageUrl}
                       alt={attachment.originalname}
                       className="rounded-lg shadow-md"
+                      style={{ width: "100px", height: "100px", maxWidth: "100%" }}
                       onLoad={() => {
                         axios.get(imageUrl, {
                           headers: { Authorization: `Bearer ${token}` }

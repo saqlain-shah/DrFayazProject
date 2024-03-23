@@ -50,11 +50,13 @@ function CreateInvoice() {
       quantity: parseInt(quantity),
       subtotal: service.price * parseInt(quantity) // Calculate subtotal for the item
     };
+
     // Add the new item to the invoice items
-    setInvoiceItems([...invoiceItems, newItem]);
+    const updatedInvoiceItems = [...invoiceItems, newItem];
+    setInvoiceItems(updatedInvoiceItems);
 
     // Calculate the new subtotal by summing up the subtotal of all items
-    const newSubtotal = invoiceItems.reduce((acc, item) => acc + item.subtotal, 0);
+    const newSubtotal = updatedInvoiceItems.reduce((acc, item) => acc + item.subtotal, 0);
     setSubtotal(newSubtotal);
 
     // Update grand total with new subtotal, discount, and tax
@@ -62,8 +64,6 @@ function CreateInvoice() {
 
     setSelectedService(service);
   };
-
-
 
   const handleSaveAndSend = async () => {
     try {
@@ -83,6 +83,14 @@ function CreateInvoice() {
           Authorization: `Bearer ${token}`
         }
       });
+      setSelectedPatient(null);
+      setSelectedService(null);
+      setInvoiceItems([]);
+      setSubtotal(0);
+      setDiscount(0);
+      setTax(0);
+      setGrandTotal(0);
+      setNotes("Thank you for your business. We hope to work with you again soon.");
 
       console.log('Invoice sent successfully:', response.data);
       toast.success('Invoice saved and sent successfully');
