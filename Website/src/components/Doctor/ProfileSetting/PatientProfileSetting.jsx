@@ -4,7 +4,6 @@ import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
-import { bloodGrupOptions } from '../../../constant/global';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 import { message } from 'antd';
@@ -79,42 +78,34 @@ const PatientProfileSetting = () => {
     }, [isLoading, isError, error, isSuccess])
 
     const handleChange = (e) => {
-        const value = e.target.name === 'emergencyContact' ? parseInt(e.target.value) : e.target.value;
-        setData({ ...data, [e.target.name]: value })
-        setSelectValue({ ...selectValue, [e.target.name]: value })
-        if (e.target.name === 'bloodGroup') {
-            setSelectBloodGroup(value);
+        const { name, value } = e.target;
+    
+        // Update the data state with the new value
+        setData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    
+        // For blood group and gender, also update the corresponding state
+        if (name === 'bloodGroup' || name === 'gender') {
+            setSelectValue(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
         }
-    }
+    };
+    
+
 
 
     const onSubmit = async (formData) => {
-        // Create a copy of the current data
-        const oldData = { ...data };
-
-        // Remove unnecessary fields from formData
-        delete formData.name;
-        delete formData.email;
-
-        // Check if any field is updated
-        const isDataChanged = Object.keys(formData).some(key => formData[key] !== oldData[key]);
-
-        // If no changes detected, populate formData with current data
-        if (!isDataChanged) {
-            formData = { ...oldData };
-        }
-
-        // Set the form data back to the input fields
-        setData(formData);
-
-        // Proceed with updating data if changes are detected
         const token = localStorage.getItem('token');
         const config = {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         };
-
+    
         try {
             const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
             console.log('Response:', response);
@@ -126,7 +117,7 @@ const PatientProfileSetting = () => {
             message.error(error?.response?.data?.message || 'Failed to update profile');
         }
     };
-
+    
 
 
 
@@ -173,28 +164,38 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2">
                             <label>Gender</label>
-                            <select className="form-control select" onChange={handleChange} name='gender'>
-                                <option value={data?.gender}>Select</option>
-                                <option className='text-capitalize'>Male</option>
-                                <option className='text-capitalize'>Female</option>
-                                <option className='text-capitalize'>Other</option>
+                            <select
+                                className="form-control select"
+                                onChange={handleChange}
+                                name='gender'
+                                value={data?.gender}
+                            >
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="col-md-6">
-                        <div className="form-group mb-2">
-                            <label className='form-label'>Blood Group</label>
-                            <select className="form-control select"
+                        <div className="form-group mb-2 card-label">
+                            <label>Blood Group</label>
+                            <select
+                                className="form-control select"
                                 onChange={handleChange}
                                 name='bloodGroup'
-                                value={data?.bloodGroup}
+                                defaultValue={data?.bloodGroup}
                             >
-                                {
-                                    bloodGrupOptions.map((option, index) => (
-                                        <option key={index} value={option.value} className='text-capitalize'>{option.label}</option>
-                                    ))
-                                }
+                               <option value="">Select</option>
+                                <option value="AB+ve">AB+ve</option>
+                                <option value="AB-ve">AB-ve</option>
+                                <option value="A+ve">A+ve</option>
+                                <option value="A-ve">A-ve</option>
+                                <option value="B+ve">B+ve</option>
+                                <option value="B-ve">B-ve</option>
+                                <option value="O+ve">O+ve</option>
+                                <option value="O-ve">O-ve</option>
                             </select>
                         </div>
                     </div>

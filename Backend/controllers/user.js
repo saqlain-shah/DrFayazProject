@@ -68,14 +68,13 @@ export const getClientById = async (req, res, next) => {
 
 export const updateClientById = async (req, res, next) => {
   const { clientId } = req.params;
-  const { name, email, gender, bloodgroup, emergencyContact, address } = req.body; // Assuming you can update name, email, and password
+  const { name, email, gender, bloodGroup, emergencyContact, address } = req.body;
 
   try {
-    const updatedClient = await User.findByIdAndUpdate(clientId, { name, email, gender, bloodgroup, emergencyContact, address });
+    const updatedClient = await User.findByIdAndUpdate(clientId, { name, email, gender, bloodGroup, emergencyContact, address });
     if (!updatedClient) {
       return res.status(404).json({ message: 'Client not found' });
     }
-    // Optionally, you may want to omit sending the password hash in the response
     const { password: omit, ...clientData } = updatedClient._doc;
     return res.status(200).json(clientData);
   } catch (error) {
