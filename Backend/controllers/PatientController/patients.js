@@ -103,7 +103,15 @@ export const getPatientById = async (req, res, next) => {
         next(err);
     }
 };
-
+export const getTotalPatientCount = async (req, res) => {
+    try {
+        const totalCount = await Patient.countDocuments();
+        res.json({ totalCount });
+    } catch (err) {
+        console.error('Error getting total patient count:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 // Controller to update a patient by ID
 export const updatePatient = async (req, res, next) => {
