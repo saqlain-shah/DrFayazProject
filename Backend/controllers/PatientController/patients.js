@@ -112,7 +112,15 @@ export const getTotalPatientCount = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
-
+export const fetchRecentPatients = async (req, res) => {
+    try {
+        // Fetch patients sorted by creation timestamp in descending order (most recent first)
+        const recentPatients = await Patient.find().sort({ createdAt: -1 }).limit(5); // Adjust limit according to your requirement
+        res.status(200).json(recentPatients);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch recent patients', error: error.message });
+    }
+};
 // Controller to update a patient by ID
 export const updatePatient = async (req, res, next) => {
     try {

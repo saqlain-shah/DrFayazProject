@@ -1,40 +1,35 @@
 // controllers/invoiceController.js
 import Invoice from '../../models/Invoice/invoiceModel.js';
 
-// Create a new invoice
 export const createInvoice = async (req, res) => {
     try {
-        const { selectedPatient, selectedService, invoiceItems } = req.body;
+        const { selectedPatient, selectedService, invoiceItems, tax, discount } = req.body;
 
-        // Check if selectedPatient is defined and has an _id property
-        if (!selectedPatient || !selectedPatient._id) {
-            return res.status(400).json({ error: 'Please provide a valid patient' });
-        }
+        // Calculate subtotal
+        const subtotal = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-        const { _id: patient } = selectedPatient;
+        // Calculate total including tax and discount
+        const grandTotal = subtotal - (discount || 0) + (tax || 0);
 
-        const services = selectedService ? [selectedService._id] : [];
-
-        const total = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 30);
-
+        // Create new invoice instance
         const invoice = new Invoice({
-            patient,
-            services,
+            patient: selectedPatient._id,
+            services: selectedService ? [selectedService._id] : [],
             invoiceItems,
-            total,
-            dueDate,
+            total: grandTotal,
+            dueDate: new Date(new Date().setDate(new Date().getDate() + 30))
         });
 
+        // Save the invoice to the database
         await invoice.save();
 
+        // Populate patient and service details in the invoice
         const populatedInvoice = await Invoice.findById(invoice._id)
             .populate('patient', 'fullName email profilePicture')
             .populate('services', 'name');
 
-        res.status(201).json(populatedInvoice);
+        // Return the created invoice along with the grand total
+        res.status(201).json({ invoice: populatedInvoice, grandTotal });
     } catch (error) {
         console.error('Error creating invoice:', error);
         res.status(500).json({ error: 'Failed to create invoice' });
@@ -75,26 +70,30 @@ export const getInvoiceById = async (req, res) => {
 };
 
 
-// Update invoice by ID
 export const updateInvoice = async (req, res) => {
     try {
-        const { patient, services, invoiceItems, total, dueDate } = req.body;
+        const { tax, discount } = req.body;
+
+        // Find the invoice by ID and update it with new data
         const updatedInvoice = await Invoice.findByIdAndUpdate(req.params.id, {
-            patient,
-            services,
-            invoiceItems,
-            total,
-            dueDate
+            ...req.body,
+            grandTotal: (req.body.total || 0) - (discount || 0) + (tax || 0)
         }, { new: true });
+
+        // If the invoice doesn't exist, return 404 error
         if (!updatedInvoice) {
             return res.status(404).json({ error: 'Invoice not found' });
         }
-        res.status(200).json(updatedInvoice);
+
+        // Return the updated invoice along with the total
+        res.status(200).json({ invoice: updatedInvoice, total: updatedInvoice.total });
     } catch (error) {
         console.error('Error updating invoice:', error);
         res.status(500).json({ error: 'Failed to update invoice' });
     }
 };
+
+
 // controllers/invoiceController.js
 
 // Get invoices by patient ID
