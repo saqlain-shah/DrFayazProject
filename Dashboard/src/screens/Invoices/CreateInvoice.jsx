@@ -61,7 +61,7 @@ function CreateInvoice() {
 
     // Calculate the new subtotal by summing up the subtotal of all items
     const newSubtotal = updatedInvoiceItems.reduce((acc, item) => acc + item.subtotal, 0);
-    setSubtotal(newSubtotal);
+    setSubtotal(newSubtotal); // Update the subtotal for the entire invoice
 
     // Update grand total with new subtotal, discount, and tax
     calculateGrandTotal(newSubtotal, discount, tax);
@@ -69,8 +69,12 @@ function CreateInvoice() {
     setSelectedService(service);
   };
 
+  // components/CreateInvoice.js
+
   const handleSaveAndSend = async () => {
     try {
+      const grandTotal = subtotal - discount + tax;
+
       // Check if selectedPatient is defined
       if (!selectedPatient || !selectedPatient._id) {
         toast.error("Please select a patient");
@@ -79,14 +83,19 @@ function CreateInvoice() {
 
       const token = localStorage.getItem("token");
       const response = await axios.post('http://localhost:8800/api/invoices', {
-        selectedPatient: selectedPatient, // Include selectedPatient object
+        selectedPatient,
         selectedService,
-        invoiceItems
+        invoiceItems,
+        tax,
+        discount,
+        grandTotal: grandTotal
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
+      // Reset states after successful submission
       setSelectedPatient(null);
       setSelectedService(null);
       setInvoiceItems([]);
@@ -107,6 +116,8 @@ function CreateInvoice() {
       }
     }
   };
+
+
 
   const handleCurrencyChange = (selectedCurrency) => {
     if (!selectedCurrency || !selectedCurrency.name) {
@@ -172,13 +183,13 @@ function CreateInvoice() {
   const handleDiscountChange = (event) => {
     const newDiscount = parseFloat(event.target.value) || 0;
     setDiscount(newDiscount);
-    calculateGrandTotal(subtotal, newDiscount, tax);
+    calculateGrandTotal(subtotal, newDiscount, tax); // Update grand total with new discount
   };
 
   const handleTaxChange = (event) => {
     const newTax = parseFloat(event.target.value) || 0;
     setTax(newTax);
-    calculateGrandTotal(subtotal, discount, newTax);
+    calculateGrandTotal(subtotal, discount, newTax); // Update grand total with new tax
   };
 
   const handleNotesChange = (event) => {

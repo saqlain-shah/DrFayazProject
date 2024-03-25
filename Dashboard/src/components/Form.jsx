@@ -95,7 +95,7 @@ export function Select({ selectedPerson, setSelectedPerson, datas }) {
             {filteredDatas.map((person) => (
               <Listbox.Option
                 className={({ active, selected }) =>
-                  `${active ? 'text-subMain bg-subMain bg-opacity-10' : ''} cursor-pointer text-xs px-4 py-2 hover:text-subMain hover:bg-subMain hover:bg-opacity-10 ${selected ? 'font-bold' : ''}`
+                  `cursor-pointer px-4 py-2 hover:text-subMain hover:bg-subMain hover:bg-opacity-10 ${selected ? 'font-bold' : ''}`
                 }
                 key={person.id}
                 value={person}
@@ -114,6 +114,9 @@ export function Select({ selectedPerson, setSelectedPerson, datas }) {
 export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
   const [active, setActive] = useState(null);
 
+  console.log("Selected Person:", selectedPerson);
+  console.log("Datas:", datas);
+
   return (
     <>
       {Array.isArray(datas) && datas.length > 0 ? (
@@ -121,17 +124,18 @@ export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
           <Listbox value={selectedPerson} onChange={setSelectedPerson}>
             {({ open }) => (
               <>
-                <Listbox.Button className="h-14 text-sm text-black rounded-md bg-white border border-gray-300 px-4 w-full flex justify-between items-center focus:outline-none focus:border-subMain">
-                  {selectedPerson} <BiChevronDown className="text-xl" />
+                <Listbox.Button className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4 w-full flex justify-between items-center focus:outline-none focus:border-subMain">
+                  <span>{selectedPerson}</span>
+                  <BiChevronDown className={`text-xl ${open ? 'transform rotate-180' : ''}`} />
                 </Listbox.Button>
                 {open && (
-                  <Listbox.Options className="absolute z-50 mt-1 w-full bg-gray-200 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 focus:outline-none overflow-auto">
+                  <Listbox.Options className="flex flex-col gap-2 top-14 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-1 ring-1 ring-border focus:outline-none">
                     {datas.map((doctor, index) => (
                       <Listbox.Option
                         key={index}
                         value={doctor}
                         className={({ active, selected }) =>
-                          `${active ? 'text-subMain bg-subMain bg-opacity-10' : ''} cursor-pointer select-none relative py-2 pl-4 pr-10 hover:text-subMain ${selected ? 'font-semibold' : ''}`
+                          `cursor-pointer px-4 py-2 hover:text-subMain hover:bg-subMain hover:bg-opacity-10 ${selected ? 'font-bold' : ''}`
                         }
                       >
                         {({ selected }) => (
@@ -159,8 +163,8 @@ export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
       )}
     </>
   );
-
 }
+
 
 
 // switch

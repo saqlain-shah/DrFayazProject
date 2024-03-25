@@ -5,9 +5,10 @@ import moment from 'moment';
 import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
-import AppointmentDetailsModal from '../components/Modals/fetchModel';
+import AddAppointmentModal from '../components/Modals/AddApointmentModal';
 import axios from 'axios'; // Import Axios
 import { toast } from 'react-hot-toast';
+
 const CustomToolbar = (toolbar) => {
   // today button handler
   const goToBack = () => {
@@ -141,14 +142,12 @@ function Appointments() {
       }
     };
 
-
     fetchData(); // Call the fetchData function
   }, []); // Empty dependency array to run the effect only once on component mount
 
   const handleClose = () => {
     setOpen(!open);
   };
-
 
   const handleDeleteAppointment = async (id) => {
     try {
@@ -164,7 +163,7 @@ function Appointments() {
       const data = await response.json();
       if (response.ok) {
         // Filter out the deleted event from the events state
-        const updatedEvents = events.filter(event => event.id !== id);
+        const updatedEvents = events.filter((event) => event.id !== id);
         setEvents(updatedEvents); // Update the events state
         toast.success(data.message);
       } else {
@@ -176,28 +175,40 @@ function Appointments() {
     }
   };
 
-
-
-
   const handleEventClick = (event) => {
     setSelectedEvent(event); // Set the selected event
     setOpen(true); // Open the modal
   };
 
+  const handleNewAppointment = (newAppointment) => {
+    // Ensure that the required fields are present
+    if (newAppointment && newAppointment.start && newAppointment.end) {
+      // Update the events state to include the new appointment
+      setEvents([...events, newAppointment]);
+    } else {
+      console.error('Missing required fields in the appointment data.');
+      toast.error('Failed to create appointment. Missing required fields.');
+    }
+  };
+
+
+
   return (
     <Layout>
       {open && (
-        <AppointmentDetailsModal
+        <AddAppointmentModal
+          closeModal={() => setOpen(false)} // Close modal function
           isOpen={open}
-          closeModal={() => handleClose()}
-          event={selectedEvent} // Pass the selected event to the modal
-          onDelete={handleDeleteAppointment} // Pass the onDelete function
+          datas={selectedEvent} // Pass selected event data if needed
+          handleNewAppointment={handleNewAppointment} // Function to handle new appointments
+          patientId={selectedEvent ? selectedEvent.id : null} // Pass patient ID if needed
         />
 
       )}
+
       {/* Calendar */}
       <button
-        onClick={handleClose}
+        onClick={() => setOpen(true)} // Open the modal
         className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
       >
         <BiPlus className="text-2xl" />
@@ -254,3 +265,4 @@ function Appointments() {
 }
 
 export default Appointments;
+

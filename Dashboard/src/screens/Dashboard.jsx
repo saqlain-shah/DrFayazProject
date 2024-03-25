@@ -29,10 +29,15 @@ import {
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
-import { fetchTotalPatientCount } from '../Api/api.js';
+import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments } from '../Api/api.js'; // Import all necessary functions
+
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
   const [totalPatientsPercentage, setTotalPatientsPercentage] = useState(0);
+  const [totalAppointments, setTotalAppointments] = useState(0);
+  const [totalAppointmentsPercentage, setTotalAppointmentsPercentage] = useState(0);
+  const [recentPatients, setRecentPatients] = useState([]);
+  const [todayAppointments, setTodayAppointments] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -40,13 +45,33 @@ function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const { totalCount, percentage } = await fetchTotalPatientCount(); // Destructure the returned values
-      setTotalPatients(totalCount);
-      setTotalPatientsPercentage(percentage);
+      const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
+      const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
+      const recentPatientsData = await fetchRecentPatients();
+      const todayAppointmentsData = await fetchTodayAppointments(); // Fetch today's appointment data
+      setTotalPatients(patientCount);
+      setTotalPatientsPercentage(patientPercentage);
+      setTotalAppointments(appointmentCount);
+      setTotalAppointmentsPercentage(appointmentPercentage);
+      setRecentPatients(recentPatientsData);
+      setTodayAppointments(todayAppointmentsData); // Set today's appointment data in state
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+  const formatTime = (timeString) => {
+    const date = new Date(timeString);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours < 12 ? 'AM' : 'PM'; // Determine if it's AM or PM
+    const formattedHours = hours % 12 || 12; // Convert 0 to 12 for AM/PM format
+    return `${formattedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
+  };
+
+
+
+
   const dashboardCards = [
     {
       id: 1,
@@ -59,12 +84,12 @@ function Dashboard() {
     },
     {
       id: 2,
-      title: "Appointments",
+      title: "Total Appointments",
       icon: TbCalendar,
-      value: 130,
-      percent: 25.06,
+      value: totalAppointments,
+      percent: totalAppointmentsPercentage,
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
-      datas: [20, 50, 75, 15, 108, 97, 70, 41, 50, 20, 90, 60],
+      datas: [totalAppointments],
     },
     {
       id: 3,
@@ -176,61 +201,47 @@ function Dashboard() {
           {/* recent patients */}
           <div className="bg-white rounded-xl border-[1px] border-border p-5">
             <h2 className="text-sm font-medium">Recent Patients</h2>
-            {memberData.slice(3, 8).map((member, index) => (
+            {recentPatients.map((patient, index) => (
               <Link
-                to={`/patients/preview/${member.id}`}
+                to={`/patients/preview/${patient._id}`} // Assuming _id is the unique identifier
                 key={index}
                 className="flex-btn gap-4 mt-6 border-b pb-4 border-border"
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={member.image}
-                    alt="member"
+                    src={`http://localhost:8800/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
+                    alt="patient"
                     className="w-10 h-10 rounded-md object-cover"
                   />
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-xs font-medium">{member.title}</h3>
-                    <p className="text-xs text-gray-400">{member.phone}</p>
+                    <h3 className="text-xs font-medium">{patient.fullName}</h3>
+                    <p className="text-xs text-gray-400">{patient.email}</p>
                   </div>
                 </div>
-                <p className="text-xs text-textGray">2:00 PM</p>
+                <p className="text-[12px] font-light text-textGray">
+                  {formatTime(patient.createdAt)} - {formatTime(patient.updatedAt)}
+                </p>
+
               </Link>
             ))}
           </div>
           {/* today apointments */}
           <div className="bg-white rounded-xl border-[1px] border-border p-5 xl:mt-6">
             <h2 className="text-sm mb-4 font-medium">Today Appointments</h2>
-            {appointmentsData.map((appointment, index) => (
-              <div
-                key={appointment.id}
-                className="grid grid-cols-12 gap-2 items-center"
-              >
+            {todayAppointments.map((appointment, index) => (
+              <div key={index} className="grid grid-cols-12 gap-2 items-center">
                 <p className="text-textGray text-[12px] col-span-3 font-light">
-                  {appointment.time}
+                  {formatTime(appointment.time)}
                 </p>
                 <div className="flex-colo relative col-span-2">
                   <hr className="w-[2px] h-20 bg-border" />
-                  <div
-                    className={`w-7 h-7 flex-colo text-sm bg-opacity-10
-                   ${appointment.status === 'Pending' &&
-                      'bg-orange-500 text-orange-500'
-                      }
-                  ${appointment.status === 'Cancel' && 'bg-red-500 text-red-500'
-                      }
-                  ${appointment.status === 'Approved' &&
-                      'bg-green-500 text-green-500'
-                      }
-                   rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-                  >
+                  <div className={`w-7 h-7 flex-colo text-sm bg-opacity-10 ${appointment.status === 'Pending' && 'bg-orange-500 text-orange-500'} ${appointment.status === 'Cancel' && 'bg-red-500 text-red-500'} ${appointment.status === 'Approved' && 'bg-green-500 text-green-500'} rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                     {appointment.status === 'Pending' && <BsClockFill />}
                     {appointment.status === 'Cancel' && <BsXCircleFill />}
                     {appointment.status === 'Approved' && <BsCheckCircleFill />}
                   </div>
                 </div>
-                <Link
-                  to="/appointments"
-                  className="flex flex-col gap-1 col-span-6"
-                >
+                <Link to="/appointments" className="flex flex-col gap-1 col-span-6">
                   <h2 className="text-xs font-medium">
                     {appointment.user?.title}
                   </h2>

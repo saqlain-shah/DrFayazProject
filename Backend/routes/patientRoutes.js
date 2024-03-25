@@ -8,6 +8,7 @@ router.route('/')
     .post(upload.single('profilePicture'), patientController.createPatient)
     .get(patientController.getAllPatients);
 router.get('/total-count', patientController.getTotalPatientCount);
+router.get('/recent', patientController.fetchRecentPatients);
 router.route('/:id')
     .get(patientController.getPatientById)
     .put(patientController.updatePatient)
