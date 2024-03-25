@@ -6,8 +6,9 @@ const clientSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  bloodGroup: { type: String, enum: ['AB+ve','AB-ve','A+ve','A-ve','B+ve','B-ve','O+ve','O-ve'], required: true },
-  gender: { type: String, enum: ['male', 'female', 'other'], required: true },
+  bloodGroup: {
+    type: String, enum: ['AB+ve', 'AB-ve', 'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve'] },
+  gender: { type: String, enum: ['male', 'female', 'other'] },
   emergencyContact: { type: Number, default: 0 },
   address: { type: String, default: "" },
   image: { type: String, default: "" }

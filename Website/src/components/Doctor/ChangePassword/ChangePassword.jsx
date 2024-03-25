@@ -17,7 +17,7 @@ const ChangePassword = () => {
             }
         };
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/change-password/${params.clientId}`, { oldPassword, newPassword },config);
+            const response = await axios.put(`http://localhost:8800/api/userauth/change-password/${params.clientId}`, { oldPassword, newPassword }, config);
             message.success(response.data.message);
             setOldPassword('');
             setNewPassword('');
@@ -26,7 +26,6 @@ const ChangePassword = () => {
             message.error('Failed to change password');
         }
     };
-    
 
     return (
         <DashboardLayout>

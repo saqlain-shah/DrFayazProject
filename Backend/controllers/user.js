@@ -88,7 +88,7 @@ export const changePassword = async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
   try {
-      console.log('Request body:', req.body); // Log the request body to verify userId, oldPassword, and newPassword
+      console.log('Request body:', req.body);
 
       if (!clientId) {
           return res.status(400).json({ message: 'User ID is missing' });
@@ -106,13 +106,29 @@ export const changePassword = async (req, res, next) => {
           return res.status(400).json({ message: 'Invalid old password' });
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
+      const hash = await bcrypt.hash(newPassword, 10);
+      user.password = hash;
+      console.log('hash',hash,user.password);
       await user.save();
+      
 
       return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
       console.error('Error changing password:', error);
       return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+export const logout = async (req, res, next) => {
+  try {
+    // Clear the token from local storage
+    localStorage.removeItem('token');
+
+    // Respond with a success message
+    return res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

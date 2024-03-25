@@ -15,7 +15,7 @@ const PatientProfileSetting = () => {
     const params = useParams();
     // const { data } = useAuthCheck();
     const [data, setData] = useState();
-    const { register, handleSubmit } = useForm({});
+    // const { register, handleSubmit } = useForm({});
     const [userId, setUserId] = useState('');
     const [selectBloodGroup, setSelectBloodGroup] = useState('');
     const [selectValue, setSelectValue] = useState({})
@@ -85,25 +85,17 @@ const PatientProfileSetting = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        // Update the data state with the new value
         setData(prevData => ({
             ...prevData,
             [name]: value
         }));
-
-        // For blood group and gender, also update the corresponding state
-        if (name === 'bloodGroup' || name === 'gender') {
-            setSelectValue(prevState => ({
-                ...prevState,
-                [name]: value
-            }));
-        }
     };
 
 
 
 
-    const onSubmit = async (formData) => {
+    const handleSubmit = async () => {
+        console.log("dATA", data)
         const token = localStorage.getItem('token');
         const config = {
             headers: {
@@ -112,7 +104,7 @@ const PatientProfileSetting = () => {
         };
 
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
+            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, data, config);
             console.log('Response:', response);
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
@@ -131,7 +123,7 @@ const PatientProfileSetting = () => {
         <div style={{ marginBottom: '10rem' }}>
             <div className="w-100 rounded mb-5 p-2" style={{ background: '#f8f9fa' }}>
                 <h5 className="text-title mb-2 mt-3">Update Your Information</h5>
-                <form className="row form-row" onSubmit={handleSubmit(onSubmit)}>
+                <div className="row form-row" >
                     <div className="col-md-12">
                         <div className="form-group">
                             <div className='change-avatar d-flex gap-2 align-items-center'>
@@ -151,19 +143,26 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Full Name <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.name} {...register("name")} className="form-control" disabled />
+                            <input defaultValue={data?.name} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Email <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.email} {...register("email")} className="form-control" disabled />
+                            <input defaultValue={data?.email} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Emergency Contact</label>
-                            <input defaultValue={data?.emergencyContact} {...register("emergencyContact")} className="form-control" />
+                            <input defaultValue={data?.emergencyContact}
+                                type='number'
+                                name='emergencyContact'
+                                value={data?.emergencyContact}
+                                onChange={handleChange}
+                                // {...register("emergencyContact")} 
+                                className="form-control" />
+
                         </div>
                     </div>
                     <div className="col-md-6">
@@ -173,7 +172,7 @@ const PatientProfileSetting = () => {
                                 className="form-control select"
                                 onChange={handleChange}
                                 name='gender'
-                                value={selectValue.gender} // Update value to reflect selectValue state
+                                value={data?.gender} // Update value to reflect selectValue state
                             >
                                 <option value="">Select</option>
                                 <option value="male">Male</option>
@@ -190,7 +189,7 @@ const PatientProfileSetting = () => {
                                 className="form-control select"
                                 onChange={handleChange}
                                 name='bloodGroup'
-                                value={selectValue.bloodGroup} // Update value to reflect selectValue state
+                                value={data?.bloodGroup} // Update value to reflect selectValue state
                             >
                                 <option value="">Select</option>
                                 <option value="AB+ve">AB+ve</option>
@@ -208,13 +207,18 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Address</label>
-                            <input defaultValue={data?.address} {...register("address")} className="form-control" />
+                            <input defaultValue={data?.address}
+                                name='address'
+                                value={data?.address}
+                                onChange={handleChange}
+                                //  {...register("address")}
+                                className="form-control" />
                         </div>
                     </div>
                     <div className='text-center'>
-                        <button type="submit" className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
+                        <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )
