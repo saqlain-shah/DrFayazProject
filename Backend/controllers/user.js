@@ -84,34 +84,35 @@ export const updateClientById = async (req, res, next) => {
 };
 
 export const changePassword = async (req, res, next) => {
-  const { userId, oldPassword, newPassword } = req.body;
+  const { clientId } = req.params;
+  const { oldPassword, newPassword } = req.body;
 
   try {
-    console.log('Request body:', req.body); // Log the request body to verify userId, oldPassword, and newPassword
+      console.log('Request body:', req.body); // Log the request body to verify userId, oldPassword, and newPassword
 
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is missing' });
-    }
+      if (!clientId) {
+          return res.status(400).json({ message: 'User ID is missing' });
+      }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+      const user = await User.findById(clientId);
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
 
-    console.log('User found:', user);
+      console.log('User found:', user);
 
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: 'Invalid old password' });
-    }
+      const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+      if (!isPasswordValid) {
+          return res.status(400).json({ message: 'Invalid old password' });
+      }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
 
-    return res.status(200).json({ message: 'Password changed successfully' });
+      return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
-    console.error('Error changing password:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+      console.error('Error changing password:', error);
+      return res.status(500).json({ message: 'Internal server error' });
   }
 };

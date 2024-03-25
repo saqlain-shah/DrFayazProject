@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { MenuSelect } from "../components/Form";
 import { TbUser } from "react-icons/tb";
 import { AiOutlinePoweroff } from "react-icons/ai";
@@ -7,6 +7,7 @@ import NotificationComp from "../components/NotificationComp";
 import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
+
 function Header() {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem('userData'));
@@ -35,7 +36,6 @@ function Header() {
     },
   ];
 
-
   return (
     <>
       {/* Header content */}
@@ -50,14 +50,7 @@ function Header() {
           >
             <BiMenu />
           </button>
-          < HEAD
-          {/* <input
-            type="text"
-            placeholder='Search "Patients"'
-            className="md:w-96 w-full h-12 text-sm text-main rounded-md bg-dry border border-border px-4"
-          /> */}
-
-  
+        </div>
         {/* User information */}
         <div className="md:col-span-1 sm:col-span-1 col-span-2 items-center justify-end pr-4 md:pr-0">
           <div className="float-right flex gap-4 items-center justify-center">
@@ -94,11 +87,10 @@ function Header() {
               onClick={() => setShowDrawer(!showDrawer)}
             >
               {/* You can add an icon for the menu drawer toggle */}
-
             </button>
           </div>
-       
-    
+        </div>
+      </div>
     </>
   );
 }

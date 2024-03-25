@@ -973,10 +973,10 @@ export const dashboardCards = [
     id: 1,
     title: "Total Patients",
     icon: TbUsers,
-    value: 1600,
+    value: 0, // Placeholder value, will be replaced with dynamic data
     percent: 45.06,
     color: ["bg-subMain", "text-subMain", "#66B5A3"],
-    datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
+    datas: [0], // Placeholder value, will be replaced with dynamic data
   },
   {
     id: 2,
@@ -1041,7 +1041,7 @@ export const notificationsData = [
 //     title: "Email",
 //     description: "Send to patient email address",
 //   },
- 
+
 //   {
 //     id: 3,
 //     icon: FaWhatsapp,

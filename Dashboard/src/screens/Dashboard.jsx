@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import {
   BsArrowDownLeft,
@@ -8,17 +8,83 @@ import {
   BsClockFill,
   BsXCircleFill,
 } from 'react-icons/bs';
+
+import {
+  TbCalendar,
+  TbFile,
+} from "react-icons/tb";
+
+import {
+
+  MdOutlineAttachMoney,
+
+} from "react-icons/md";
+
+
 import { DashboardBigChart, DashboardSmallChart } from '../components/Charts';
 import {
   appointmentsData,
-  dashboardCards,
   memberData,
   transactionData,
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
-
+import { fetchTotalPatientCount } from '../Api/api.js';
 function Dashboard() {
+  const [totalPatients, setTotalPatients] = useState(0);
+  const [totalPatientsPercentage, setTotalPatientsPercentage] = useState(0);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const { totalCount, percentage } = await fetchTotalPatientCount(); // Destructure the returned values
+      setTotalPatients(totalCount);
+      setTotalPatientsPercentage(percentage);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  const dashboardCards = [
+    {
+      id: 1,
+      title: "Total Patients",
+      icon: BsCheckCircleFill,
+      value: totalPatients,
+      percent: totalPatientsPercentage,
+      color: ["bg-subMain", "text-subMain", "#66B5A3"],
+      datas: [totalPatients],
+    },
+    {
+      id: 2,
+      title: "Appointments",
+      icon: TbCalendar,
+      value: 130,
+      percent: 25.06,
+      color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
+      datas: [20, 50, 75, 15, 108, 97, 70, 41, 50, 20, 90, 60],
+    },
+    {
+      id: 3,
+      title: "Prescriptions",
+      icon: TbFile,
+      value: 4160,
+      percent: 65.06,
+      color: ["bg-green-500", "text-green-500", "#34C759"],
+      datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
+    },
+    {
+      id: 4,
+      title: "Total Earnings",
+      icon: MdOutlineAttachMoney,
+      value: 4590,
+      percent: 45.06,
+      color: ["bg-red-500", "text-red-500", "#FF3B30"],
+      datas: [20, 50, 75, 15, 108, 97, 70, 41, 50, 20, 90, 60],
+    },
+  ];
   return (
     <Layout>
       {/* boxes */}
@@ -146,17 +212,14 @@ function Dashboard() {
                   <hr className="w-[2px] h-20 bg-border" />
                   <div
                     className={`w-7 h-7 flex-colo text-sm bg-opacity-10
-                   ${
-                     appointment.status === 'Pending' &&
-                     'bg-orange-500 text-orange-500'
-                   }
-                  ${
-                    appointment.status === 'Cancel' && 'bg-red-500 text-red-500'
-                  }
-                  ${
-                    appointment.status === 'Approved' &&
-                    'bg-green-500 text-green-500'
-                  }
+                   ${appointment.status === 'Pending' &&
+                      'bg-orange-500 text-orange-500'
+                      }
+                  ${appointment.status === 'Cancel' && 'bg-red-500 text-red-500'
+                      }
+                  ${appointment.status === 'Approved' &&
+                      'bg-green-500 text-green-500'
+                      }
                    rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                   >
                     {appointment.status === 'Pending' && <BsClockFill />}

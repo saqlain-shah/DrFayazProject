@@ -57,10 +57,15 @@ const PatientProfileSetting = () => {
     }
 
     useEffect(() => {
-        fetchData(params)
+        fetchData(params);
         if (data) {
-            setUserId(data.id)
-            setSelectBloodGroup(data?.bloodGroup)
+            setUserId(data.id);
+            setSelectBloodGroup(data?.bloodGroup);
+            // Set selectValue for bloodGroup and gender based on fetched data
+            setSelectValue({
+                bloodGroup: data?.bloodGroup || '', // Ensure it's set to empty string if data not available
+                gender: data?.gender || '' // Ensure it's set to empty string if data not available
+            });
         }
         document.addEventListener('click', handleClickOutside);
         return () => {
@@ -79,13 +84,13 @@ const PatientProfileSetting = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
+
         // Update the data state with the new value
         setData(prevData => ({
             ...prevData,
             [name]: value
         }));
-    
+
         // For blood group and gender, also update the corresponding state
         if (name === 'bloodGroup' || name === 'gender') {
             setSelectValue(prevState => ({
@@ -94,7 +99,7 @@ const PatientProfileSetting = () => {
             }));
         }
     };
-    
+
 
 
 
@@ -105,7 +110,7 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
-    
+
         try {
             const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
             console.log('Response:', response);
@@ -117,7 +122,7 @@ const PatientProfileSetting = () => {
             message.error(error?.response?.data?.message || 'Failed to update profile');
         }
     };
-    
+
 
 
 
@@ -168,7 +173,7 @@ const PatientProfileSetting = () => {
                                 className="form-control select"
                                 onChange={handleChange}
                                 name='gender'
-                                value={data?.gender}
+                                value={selectValue.gender} // Update value to reflect selectValue state
                             >
                                 <option value="">Select</option>
                                 <option value="male">Male</option>
@@ -185,9 +190,9 @@ const PatientProfileSetting = () => {
                                 className="form-control select"
                                 onChange={handleChange}
                                 name='bloodGroup'
-                                defaultValue={data?.bloodGroup}
+                                value={selectValue.bloodGroup} // Update value to reflect selectValue state
                             >
-                               <option value="">Select</option>
+                                <option value="">Select</option>
                                 <option value="AB+ve">AB+ve</option>
                                 <option value="AB-ve">AB-ve</option>
                                 <option value="A+ve">A+ve</option>
