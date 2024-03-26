@@ -3,13 +3,17 @@ import Invoice from '../../models/Invoice/invoiceModel.js';
 
 export const createInvoice = async (req, res) => {
     try {
-        const { selectedPatient, selectedService, invoiceItems, tax, discount } = req.body;
+        console.log('Request body:', req.body); // Add this line to log the request body
+
+        const { selectedPatient, selectedService, invoiceItems, tax, discount, currency } = req.body;
 
         // Calculate subtotal
         const subtotal = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
-        // Calculate total including tax and discount
-        const grandTotal = subtotal - (discount || 0) + (tax || 0);
+        // Use the grandTotal from the request body
+        const grandTotal = req.body.grandTotal;
+
+        console.log('Grand total:', grandTotal); // Add this line to log the calculated grand total
 
         // Create new invoice instance
         const invoice = new Invoice({
@@ -17,7 +21,8 @@ export const createInvoice = async (req, res) => {
             services: selectedService ? [selectedService._id] : [],
             invoiceItems,
             total: grandTotal,
-            dueDate: new Date(new Date().setDate(new Date().getDate() + 30))
+            dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+            currency: currency // Add the currency to the invoice object
         });
 
         // Save the invoice to the database
@@ -28,13 +33,14 @@ export const createInvoice = async (req, res) => {
             .populate('patient', 'fullName email profilePicture')
             .populate('services', 'name');
 
-        // Return the created invoice along with the grand total
+        // Return the created invoice along with the grand total from the request body
         res.status(201).json({ invoice: populatedInvoice, grandTotal });
     } catch (error) {
         console.error('Error creating invoice:', error);
         res.status(500).json({ error: 'Failed to create invoice' });
     }
 };
+
 
 
 

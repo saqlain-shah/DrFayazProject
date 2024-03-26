@@ -266,6 +266,10 @@ export const sortsDatas = {
       id: 3,
       name: "PKR (Rupee)",
     },
+    {
+      id: 4,
+      name: "EUR (Euro)",
+    },
   ],
   instractions: [
     {

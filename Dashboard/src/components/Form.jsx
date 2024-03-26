@@ -77,6 +77,7 @@ export function MenuSelect({ children, datas, item: data }) {
 }
 
 export function Select({ selectedPerson, setSelectedPerson, datas }) {
+  console.log("Datas structure:", datas.map(item => ({ value: item.value, name: item.name })));
   // Ensure selectedPerson is not undefined
   const defaultSelectedPerson = selectedPerson || datas[0]; // Use the first item as default if selectedPerson is undefined
 
@@ -94,11 +95,8 @@ export function Select({ selectedPerson, setSelectedPerson, datas }) {
           <Listbox.Options className="flex flex-col gap-2 top-14 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-1 ring-1 ring-border focus:outline-none">
             {filteredDatas.map((person) => (
               <Listbox.Option
-                className={({ active, selected }) =>
-                  `cursor-pointer px-4 py-2 hover:text-subMain hover:bg-subMain hover:bg-opacity-10 ${selected ? 'font-bold' : ''}`
-                }
-                key={person.id}
-                value={person}
+                key={person.value} // Use a unique key for each option
+                value={person} // Pass the entire object as the value
                 disabled={person.unavailable}
               >
                 {person.name}

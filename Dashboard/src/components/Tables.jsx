@@ -789,12 +789,47 @@ export function InvoiceUsedTable({ data, functions }) {
   );
 }
 
-export function InvoiceProductsTable({ data, functions, button }) {
-  console.log("InvoiceProductsTable", data); // For debugging purposes
+export function InvoiceProductsTable({ data, functions, button, selectedCurrency, discount, tax }) {
+  console.log("selectedCurrency", selectedCurrency); // For debugging purposes
 
   // CSS classes for table header and table data cells
   const thclass = "p-3 text-left font-medium text-gray-700 border-b border-gray-200";
   const tdclass = "p-3 text-left text-gray-700 border-b border-gray-200";
+
+  const calculateAmount = (price, quantity, discount, tax) => {
+    // Check if price or quantity is not a number
+    if (isNaN(price) || isNaN(quantity)) {
+      return 0; // Return 0 if either price or quantity is not a number
+    }
+
+    let amount = price * quantity;
+
+    // Apply discount
+    amount -= (amount * discount) / 100;
+
+    // Apply tax
+    amount += (amount * tax) / 100;
+
+    // Extract currency code from selectedCurrency name
+    const currencyCode = selectedCurrency.name.split(' ')[0];
+
+    // Define exchange rates for different currencies
+    const exchangeRates = {
+      USD: 1,   // Assuming 1 USD = 1 USD
+      EUR: 0.66,   // Assuming 1 EUR = 0.66 USD
+      PKR: 278.96   // Assuming 1 PKR = 278.96 USD
+      // Add more currencies and their conversion rates as needed
+    };
+
+    // Convert amount based on selected currency
+    if (currencyCode !== 'USD') {
+      amount *= exchangeRates[currencyCode];
+    }
+
+    return amount;
+  };
+
+
 
   return (
     <table className="table-auto w-full">
@@ -822,7 +857,10 @@ export function InvoiceProductsTable({ data, functions, button }) {
             <td className={`${tdclass}  font-medium`}>{item.name}</td> {/* Display item name */}
             <td className={`${tdclass} text-xs`}>{item.price}</td> {/* Display item price */}
             <td className={tdclass}>{item.quantity}</td> {/* Display quantity */}
-            <td className={tdclass}>{item.price * item.quantity}</td> {/* Calculate and display amount */}
+            <td className={tdclass}>
+              {calculateAmount(item.price, item.quantity, discount, tax)}
+            </td>
+
             {button && (
               <td className={tdclass}>
                 <button
@@ -840,6 +878,8 @@ export function InvoiceProductsTable({ data, functions, button }) {
     </table>
   );
 }
+
+
 
 
 // medicine Dosage table
