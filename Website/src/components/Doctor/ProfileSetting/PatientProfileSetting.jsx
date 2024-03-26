@@ -4,7 +4,6 @@ import 'react-calendar/dist/Calendar.css';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
-import { bloodGrupOptions } from '../../../constant/global';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 import { message } from 'antd';
@@ -16,7 +15,7 @@ const PatientProfileSetting = () => {
     const params = useParams();
     // const { data } = useAuthCheck();
     const [data, setData] = useState();
-    const { register, handleSubmit } = useForm({});
+    // const { register, handleSubmit } = useForm({});
     const [userId, setUserId] = useState('');
     const [selectBloodGroup, setSelectBloodGroup] = useState('');
     const [selectValue, setSelectValue] = useState({})
@@ -58,10 +57,15 @@ const PatientProfileSetting = () => {
     }
 
     useEffect(() => {
-        fetchData(params)
+        fetchData(params);
         if (data) {
-            setUserId(data.id)
-            setSelectBloodGroup(data?.bloodGroup)
+            setUserId(data.id);
+            setSelectBloodGroup(data?.bloodGroup);
+            // Set selectValue for bloodGroup and gender based on fetched data
+            setSelectValue({
+                bloodGroup: data?.bloodGroup || '', // Ensure it's set to empty string if data not available
+                gender: data?.gender || '' // Ensure it's set to empty string if data not available
+            });
         }
         document.addEventListener('click', handleClickOutside);
         return () => {
@@ -79,35 +83,19 @@ const PatientProfileSetting = () => {
     }, [isLoading, isError, error, isSuccess])
 
     const handleChange = (e) => {
-        const value = e.target.name === 'emergencyContact' ? parseInt(e.target.value) : e.target.value;
-        setData({ ...data, [e.target.name]: value })
-        setSelectValue({ ...selectValue, [e.target.name]: value })
-        if (e.target.name === 'bloodGroup') {
-            setSelectBloodGroup(value);
-        }
-    }
+        const { name, value } = e.target;
+
+        setData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
 
 
-    const onSubmit = async (formData) => {
-        // Create a copy of the current data
-        const oldData = { ...data };
 
-        // Remove unnecessary fields from formData
-        delete formData.name;
-        delete formData.email;
 
-        // Check if any field is updated
-        const isDataChanged = Object.keys(formData).some(key => formData[key] !== oldData[key]);
-
-        // If no changes detected, populate formData with current data
-        if (!isDataChanged) {
-            formData = { ...oldData };
-        }
-
-        // Set the form data back to the input fields
-        setData(formData);
-
-        // Proceed with updating data if changes are detected
+    const handleSubmit = async () => {
+        console.log("dATA", data)
         const token = localStorage.getItem('token');
         const config = {
             headers: {
@@ -116,7 +104,7 @@ const PatientProfileSetting = () => {
         };
 
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
+            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, data, config);
             console.log('Response:', response);
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
@@ -135,7 +123,7 @@ const PatientProfileSetting = () => {
         <div style={{ marginBottom: '10rem' }}>
             <div className="w-100 rounded mb-5 p-2" style={{ background: '#f8f9fa' }}>
                 <h5 className="text-title mb-2 mt-3">Update Your Information</h5>
-                <form className="row form-row" onSubmit={handleSubmit(onSubmit)}>
+                <div className="row form-row" >
                     <div className="col-md-12">
                         <div className="form-group">
                             <div className='change-avatar d-flex gap-2 align-items-center'>
@@ -155,46 +143,63 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Full Name <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.name} {...register("name")} className="form-control" disabled />
+                            <input defaultValue={data?.name} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Email <span className="text-danger">*</span></label>
-                            <input defaultValue={data?.email} {...register("email")} className="form-control" disabled />
+                            <input defaultValue={data?.email} className="form-control" disabled />
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Emergency Contact</label>
-                            <input defaultValue={data?.emergencyContact} {...register("emergencyContact")} className="form-control" />
+                            <input defaultValue={data?.emergencyContact}
+                                type='number'
+                                name='emergencyContact'
+                                value={data?.emergencyContact}
+                                onChange={handleChange}
+                                // {...register("emergencyContact")} 
+                                className="form-control" />
+
                         </div>
                     </div>
                     <div className="col-md-6">
                         <div className="form-group mb-2">
                             <label>Gender</label>
-                            <select className="form-control select" onChange={handleChange} name='gender'>
-                                <option value={data?.gender}>Select</option>
-                                <option className='text-capitalize'>Male</option>
-                                <option className='text-capitalize'>Female</option>
-                                <option className='text-capitalize'>Other</option>
+                            <select
+                                className="form-control select"
+                                onChange={handleChange}
+                                name='gender'
+                                value={data?.gender} // Update value to reflect selectValue state
+                            >
+                                <option value="">Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="col-md-6">
-                        <div className="form-group mb-2">
-                            <label className='form-label'>Blood Group</label>
-                            <select className="form-control select"
+                        <div className="form-group mb-2 card-label">
+                            <label>Blood Group</label>
+                            <select
+                                className="form-control select"
                                 onChange={handleChange}
                                 name='bloodGroup'
-                                value={data?.bloodGroup}
+                                value={data?.bloodGroup} // Update value to reflect selectValue state
                             >
-                                {
-                                    bloodGrupOptions.map((option, index) => (
-                                        <option key={index} value={option.value} className='text-capitalize'>{option.label}</option>
-                                    ))
-                                }
+                                <option value="">Select</option>
+                                <option value="AB+ve">AB+ve</option>
+                                <option value="AB-ve">AB-ve</option>
+                                <option value="A+ve">A+ve</option>
+                                <option value="A-ve">A-ve</option>
+                                <option value="B+ve">B+ve</option>
+                                <option value="B-ve">B-ve</option>
+                                <option value="O+ve">O+ve</option>
+                                <option value="O-ve">O-ve</option>
                             </select>
                         </div>
                     </div>
@@ -202,13 +207,18 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Address</label>
-                            <input defaultValue={data?.address} {...register("address")} className="form-control" />
+                            <input defaultValue={data?.address}
+                                name='address'
+                                value={data?.address}
+                                onChange={handleChange}
+                                //  {...register("address")}
+                                className="form-control" />
                         </div>
                     </div>
                     <div className='text-center'>
-                        <button type="submit" className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
+                        <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )

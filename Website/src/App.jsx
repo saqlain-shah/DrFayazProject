@@ -121,9 +121,9 @@ const router = createBrowserRouter([
   { path: '/track-appointment', element: <TrackAppointment /> },
   { path: '/doctors', element: <SearchDoctor /> },
   { path: '/dashboard/:clientId', element: <Dashboard /> },
-  { path: '/dashboard/prescription', element: <Prescription /> },
+  { path: '/dashboard/prescription/:clientId', element: <Prescription /> },
   { path: '/dashboard/prescription/:id', element: <PrescriptionView /> },
-  { path: '/dashboard/change-password', element: <ChangePassword /> },
+  { path: '/dashboard/change-password/:clientId', element: <ChangePassword /> },
   { path: '/dashboard/profile-setting/:clientId', element: <ProfileSetting /> },
 ]);
 

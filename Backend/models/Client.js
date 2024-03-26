@@ -1,3 +1,4 @@
+// models/Client.js
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
@@ -6,10 +7,8 @@ const clientSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   bloodGroup: {
-    type: String,
-    required: true
-  },
-  gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    type: String, enum: ['AB+ve', 'AB-ve', 'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve'] },
+  gender: { type: String, enum: ['male', 'female', 'other'] },
   emergencyContact: { type: Number, default: 0 },
   address: { type: String, default: "" },
   image: { type: String, default: "" }

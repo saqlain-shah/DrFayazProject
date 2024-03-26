@@ -54,9 +54,9 @@ const DashboardSidebar = () => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to={role === 'patient' ? '/dashboard/favourite' : '/dashboard/prescription'} activeClassName="active">
+                        <NavLink to={`/dashboard/prescription/${clientId}`} activeClassName="active">
                             <FaHouseUser className="icon" />
-                            <span>{role === 'patient' ? 'Favourites' : 'Booking History'}</span>
+                            <span>Booking History</span>
                         </NavLink>
                     </li>
                     <li>
@@ -66,7 +66,7 @@ const DashboardSidebar = () => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to={'/dashboard/change-password'} activeClassName="active">
+                        <NavLink to={`/dashboard/change-password/${clientId}`} activeClassName="active">
                             <FaLock className="icon" />
                             <span>Change Password</span>
                         </NavLink>
