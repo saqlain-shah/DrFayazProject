@@ -64,6 +64,8 @@ const AppointmentPage = () => {
       setSelectedDate(selectedSlot.startDateTime);
       setSelectTime(selectedSlot.endDateTime);
     }
+    // Directly move to the next step/page
+    next(); // This will move to the next step/page
   };
 
   const next = () => {

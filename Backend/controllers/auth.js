@@ -55,6 +55,23 @@ export const register = async (req, res, next) => {
   }
 };
 
+export const updateDoctorById = async (req, res, next) => {
+  const { doctorId } = req.params;
+  const { fullName, email, phone, address, profileImage } = req.body;
+
+  try {
+      const updatedDoctor = await User.findByIdAndUpdate(doctorId, { fullName, email, phone, address, profileImage }, { new: true });
+      if (!updatedDoctor) {
+          return res.status(404).json({ message: 'Doctor not found' });
+      }
+      return res.status(200).json(updatedDoctor);
+  } catch (error) {
+      console.error('Error updating doctor:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 export const changePassword = async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;
 
