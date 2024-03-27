@@ -18,12 +18,11 @@ import { addInvoice } from '../../redux/feature/invoiceSlice';
 
 // Define the initial form values
 const initialValue = {
-  paymentMethod: 'paypal',
-  paymentType: 'creditCard',
-  firstName: '',
-  lastName: '',
+  // paymentMethod: 'paypal',
+  // paymentType: 'creditCard',
+  name: '',
   email: '',
-  phone: '',
+  emergencyContact: 0,
   reasonForVisit: '',
   description: '',
   address: '',
@@ -47,7 +46,8 @@ const AppointmentPage = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
-  const [serviceDetails, setServiceDetails] = useState(null); // State to store service details
+  const [serviceDetails, setServiceDetails] = useState([]); // State to store service details
+  const [selectedService, setSelectedService] = useState({}); // State to store service details
   const [totalAmount, setTotalAmount] = useState(0); // State to store total amount
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -93,10 +93,13 @@ const AppointmentPage = () => {
     };
 
     try {
-      const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config);
-      console.log('Response:', response); // Log the entire response
-      setUserId(response.data.id); // Update state with the fetched user ID
-      console.log("User data fetched successfully:", response.data); // Log user data
+      const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
+      if (response) {
+        console.log('Response:', response);
+        // Log the entire response
+        setUserId(response.data._id); // Update state with the fetched user ID
+        setSelectValue(response.data)
+      }
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -112,18 +115,18 @@ const AppointmentPage = () => {
 
   const next = () => {
     setCurrent(current + 1);
+    console.log(current)
   };
 
   const prev = () => {
     setCurrent(current - 1);
+    console.log(current)
   };
 
   useEffect(() => {
-    const { firstName, reasonForVisit, startDate, endTime, nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv } = selectValue;
-    const isInputEmpty = !firstName || !reasonForVisit || !startDate || !endTime || !reasonForVisit;
-    const isConfirmInputEmpty = !nameOnCard || !cardNumber || !expiredMonth || !cardExpiredYear || !cvv || !isCheck || !selectTime; // Include selectTime in the condition
+    const { name, reasonForVisit, startDate, endTime, nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv } = selectValue;
+    const isInputEmpty = !name || !reasonForVisit;
     setIsDisable(isInputEmpty);
-    setIsConfirmDisable(isConfirmInputEmpty);
   }, [selectValue, isCheck, selectTime]); // Include selectTime in the dependency array
 
 
@@ -149,9 +152,17 @@ const AppointmentPage = () => {
 
   // Fetch service details from the backend API
   const fetchServiceDetails = async () => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
     try {
-      const response = await axios.get('http://localhost:8800/api/services');
+      const response = await axios.get('http://localhost:8800/api/services', config);
       setServiceDetails(response.data);
+      console.log("serviceDetails", response.data)
+      console.log("serviceDetails", serviceDetails)
     } catch (error) {
       console.error('Error fetching service details:', error);
     }
@@ -176,23 +187,22 @@ const AppointmentPage = () => {
     setShowAppointmentDetails(true);
     const obj = {
       patientInfo: {
-        firstName: selectValue.firstName,
-        lastName: selectValue.lastName,
+        name: selectValue.name,
         email: selectValue.email,
-        phone: selectValue.phone,
-        patientId: role !== '' ? data.id : undefined,
+        emergencyContact: selectValue.emergencyContact,
+        // patientId: role !== '' ? data.id : undefined,
         scheduleDate: selectedDate,
         scheduleTime: selectTime,
       },
-      payment: {
-        paymentType: selectValue.paymentType,
-        paymentMethod: selectValue.paymentMethod,
-        cardNumber: selectValue.cardNumber,
-        cardExpiredYear: selectValue.cardExpiredYear,
-        cvv: selectValue.cvv,
-        expiredMonth: selectValue.expiredMonth,
-        nameOnCard: selectValue.nameOnCard,
-      },
+      // payment: {
+      //   paymentType: selectValue.paymentType,
+      //   paymentMethod: selectValue.paymentMethod,
+      //   cardNumber: selectValue.cardNumber,
+      //   cardExpiredYear: selectValue.cardExpiredYear,
+      //   cvv: selectValue.cvv,
+      //   expiredMonth: selectValue.expiredMonth,
+      //   nameOnCard: selectValue.nameOnCard,
+      // },
     };
 
     // Configure Axios to include the token in the Authorization header
@@ -233,9 +243,9 @@ const AppointmentPage = () => {
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
 
-  console.log("data:", data); // Log the value of data
-  const patientId = data && data.id; // Check if data exists before accessing its id property
-  console.log("patientId:", patientId);
+  // console.log("data:", data); // Log the value of data
+  // const patientId = data && data.id; // Check if data exists before accessing its id property
+  // console.log("patientId:", patientId);
 
   const steps = [
     {
@@ -256,18 +266,27 @@ const AppointmentPage = () => {
 
     },
     {
-      title: 'Payment',
-      content: <CheckoutPage
-        handleChange={handleChange}
-        selectValue={selectValue}
-        isCheck={isCheck}
-        setIsChecked={setIsChecked}
-        data={false}
-        selectedDate={selectedDate}
-        selectTime={selectTime}
-        setIsConfirmDisable={setIsConfirmDisable}
-        setIsDisable={setIsDisable}
-      />,
+      title: 'Services',
+      content:
+        <>
+          {serviceDetails
+            && (
+              <div>
+                {serviceDetails.map((service, index) => (
+                  <div key={index} onClick={() => {
+                    setSelectedService({ name: service.name, price: service.price });
+                    console.log(selectedService);
+                    setIsConfirmDisable(false);
+                  }} className="bg-gray-200 hover:bg-gray-300 p-4 cursor-pointer rounded-md">
+                    <h4 className="text-lg font-semibold">Service Name: {service.name}</h4>
+                    <p className="text-base">Service Price: {service.price}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+        </>
+
     },
   ];
 
@@ -285,18 +304,26 @@ const AppointmentPage = () => {
           <div className="mb-5 mt-3 mx-3">{steps[current].content}</div>
           <div className="text-end mx-3">
             {current < steps.length - 1 && (
-              <Button
-                type="primary"
-                size="large"
-                disabled={
-                  current === 0
-                    ? !(selectedDate && selectTime)
-                    : isDisable || !selectedDate || !selectTime
-                }
-                onClick={next}
-              >
-                Next
-              </Button>
+              <>
+                <Button
+                  type="primary"
+                  size="large"
+                  disabled={
+                    current === 0
+                      ? !(selectedDate && selectTime)
+                      : isDisable
+                  }
+                  onClick={next}
+                >
+                  Next
+                </Button>
+                <Button
+                  size="large"
+                  onClick={() => prev()}
+                >
+                  Previous
+                </Button>
+              </>
             )}
             {current === steps.length - 1 && (
               <>
@@ -324,18 +351,19 @@ const AppointmentPage = () => {
       </div>
       <Modal
         title="Appointment Details"
-        visible={showModal} // Control modal visibility
+        open={showModal} // Control modal visibility
         onCancel={handleCloseModal} // Handle close event
         footer={[
           <Button key="back" onClick={handleCloseModal}>
-            Close
+            Checkout
           </Button>
         ]}
       >
-        <p>Patient Name: {selectValue.firstName} {selectValue.lastName}</p>
-        <p>Service: {serviceDetails ? serviceDetails.serviceName : 'Loading...'}</p>
-        <p>Service Charge: {serviceDetails ? serviceDetails.serviceCharge : 'Loading...'} USD</p>
-        <p>Total Amount: {totalAmount} USD</p>
+        <p>Patient Name: {selectValue.name} </p>
+        <p>Service: {selectedService ? selectedService.name : 'Loading...'}</p>
+        <p>Service Charge: {selectedService ? selectedService.price : 'Loading...'} USD</p>
+        <p>Service Tax: 5 USD</p>
+        <p>Total Amount: {selectedService.price + 5} USD</p>
       </Modal>
       <Footer />
     </>

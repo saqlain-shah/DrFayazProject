@@ -2,16 +2,15 @@ import React, { useEffect } from 'react';
 import { Button } from 'antd';
 
 const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, selectedSlot }) => {
-    const { firstName, dateOfVisit, reasonForVisit, bloodGroup, gender } = selectValue;
+    const { name, reasonForVisit, bloodGroup, gender, emergencyContact, email } = selectValue;
 
     useEffect(() => {
         if (selectedSlot) {
             // Extract user data from the selected slot
-            const { patientName, dateOfVisit, reasonForVisit } = selectedSlot;
-            console.log('Populating User Data:', { patientName, dateOfVisit, reasonForVisit }); // Log user data
+            const { patientName, reasonForVisit, patientGender, patientBloodGroup, patientEmail, patientContact } = selectedSlot;
+            console.log('Populating User Data:', { patientName, reasonForVisit }); // Log user data
             // Set the user data in the state
-            handleChange({ target: { name: 'firstName', value: patientName } });
-            handleChange({ target: { name: 'dateOfVisit', value: dateOfVisit } });
+            // handleChange({ target: { name: 'name', value: patientName } });
             handleChange({ target: { name: 'reasonForVisit', value: reasonForVisit } });
         }
     }, [selectedSlot]);
@@ -32,25 +31,31 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
                 <div className="col-md-6 col-sm-12">
                     <div className="form-group card-label mb-3">
                         <label>Full Name</label>
-                        <input onChange={(e) => handleChange(e)} name='firstName' value={firstName || ''} className="form-control" type="text" />
+                        <input disabled name='name' value={name || ''} className="form-control" type="text" />
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-12">
                     <div className="form-group card-label mb-3">
-                        <label>Date of Visit</label>
-                        <input onChange={(e) => handleChange(e)} name='dateOfVisit' value={dateOfVisit || ''} className="form-control" type="date" />
+                        <label>Email</label>
+                        <input disabled name='email' value={email || ''} className="form-control" type="text" />
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-12">
                     <div className="form-group card-label mb-3">
                         <label>Blood Group</label>
-                        <input onChange={(e) => handleChange(e)} name='bloodGroup' value={bloodGroup || ''} className="form-control" type="text" />
+                        <input disabled name='bloodGroup' value={bloodGroup || ''} className="form-control" type="text" />
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-12">
                     <div className="form-group card-label mb-3">
                         <label>Gender</label>
-                        <input onChange={(e) => handleChange(e)} name='gender' value={gender || ''} className="form-control" type="text" />
+                        <input disabled name='gender' value={gender || ''} className="form-control" type="text" />
+                    </div>
+                </div>
+                <div className="col-md-6 col-sm-12">
+                    <div className="form-group card-label mb-3">
+                        <label>Contact</label>
+                        <input disabled name='emergencyContact' value={emergencyContact || ''} className="form-control" type="text" />
                     </div>
                 </div>
                 <div className="col-md-12 col-sm-12">
@@ -60,13 +65,13 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
                     </div>
                 </div>
             </div>
-            <div className="text-end">
+            {/* <div className="text-end">
                 <Button
                     type="primary"
                     size="large"
                     style={{ marginRight: '8px' }}
                     onClick={handleNext}
-                    disabled={!firstName || !dateOfVisit || !bloodGroup || !gender || !reasonForVisit}
+                    disabled={!name || !emergencyContact || !email || !bloodGroup || !gender || !reasonForVisit}
                 >
                     Next
                 </Button>
@@ -76,7 +81,7 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
                 >
                     Previous
                 </Button>
-            </div>
+            </div> */}
         </form>
     );
 };
