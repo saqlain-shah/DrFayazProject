@@ -797,37 +797,35 @@ export function InvoiceProductsTable({ data, functions, button, selectedCurrency
   const tdclass = "p-3 text-left text-gray-700 border-b border-gray-200";
 
   const calculateAmount = (price, quantity, discount, tax) => {
-    // Check if price or quantity is not a number
+    // Check if price and quantity are valid numbers
     if (isNaN(price) || isNaN(quantity)) {
-      return 0; // Return 0 if either price or quantity is not a number
+      console.error("Invalid price or quantity:", price, quantity);
+      return 0; // Return 0 if price or quantity is not a valid number
     }
 
+    // Initialize amount without discount and tax
     let amount = price * quantity;
 
-    // Apply discount
-    amount -= (amount * discount) / 100;
+    // Apply discount if it's a valid number
+    if (!isNaN(discount)) {
+      console.log("Discount provided:", discount);
+      amount -= (amount * discount) / 100;
+    } else {
+      console.warn("Discount not provided or invalid:", discount);
+    }
 
-    // Apply tax
-    amount += (amount * tax) / 100;
-
-    // Extract currency code from selectedCurrency name
-    const currencyCode = selectedCurrency.name.split(' ')[0];
-
-    // Define exchange rates for different currencies
-    const exchangeRates = {
-      USD: 1,   // Assuming 1 USD = 1 USD
-      EUR: 0.66,   // Assuming 1 EUR = 0.66 USD
-      PKR: 278.96   // Assuming 1 PKR = 278.96 USD
-      // Add more currencies and their conversion rates as needed
-    };
-
-    // Convert amount based on selected currency
-    if (currencyCode !== 'USD') {
-      amount *= exchangeRates[currencyCode];
+    // Apply tax if it's a valid number
+    if (!isNaN(tax)) {
+      console.log("Tax provided:", tax);
+      amount += (amount * tax) / 100;
+    } else {
+      console.warn("Tax not provided or invalid:", tax);
     }
 
     return amount;
   };
+
+
 
 
 

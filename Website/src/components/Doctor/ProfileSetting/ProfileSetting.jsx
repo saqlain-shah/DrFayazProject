@@ -8,7 +8,7 @@ const ProfileSetting = () => {
     const { role } = useAuthCheck();
     return (
         <DashboardLayout>
-            {role === 'doctor' ? <DoctorProfileSetting />: <PatientProfileSetting/>}
+            {role === 'doctor' ? <DoctorProfileSetting /> : <PatientProfileSetting />}
         </DashboardLayout>
     )
 }

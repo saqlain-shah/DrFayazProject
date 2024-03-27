@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'; // Import useState
+import React, { useState, useEffect } from 'react'; // Import useState
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
 
-const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime, setIsDisable, handleConfirmSchedule }) => {
+const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, selectedDate, selectTime, setIsDisable }) => {
     const { nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv, paymentType, paymentMethod } = selectValue;
-    const [isConfirmDisable, setIsConfirmDisable] = useState(true); // Define isConfirmDisable state
 
     const handleCheck = () => {
         setIsChecked(!isCheck)
@@ -15,21 +14,19 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
     const vat = (15 / 100) * (Number(price));
 
     useEffect(() => {
-        const { firstName, lastName, email, phone, reasonForVisit } = selectValue;
-        const isInputEmpty = !firstName || !lastName || !email || !phone || !reasonForVisit;
+        const { firstName, startDate, endTime, dateOfVisit, reasonForVisit } = selectValue;
+        const isInputEmpty = !firstName || !startDate || !endTime || !phone || !reasonForVisit;
         const isPaymentFieldsFilled = nameOnCard && cardNumber && expiredMonth && cardExpiredYear && cvv && paymentType && paymentMethod;
 
         // Check if selectTime is not empty or null
         setIsDisable(isInputEmpty || !selectTime || selectTime === '' || !isPaymentFieldsFilled); // Include isPaymentFieldsFilled in the condition
     }, [selectValue, selectTime]); // Remove IsDisable from the dependency array
 
-
     return (
         <div className="container mt-5">
             <div className="row">
                 <div className="col-md-7" >
                     <div className="rounded p-3" style={{ background: "#f8f9fa" }}>
-
                         <div className='row'>
                             <div className="col-md-6 mb-2">
                                 <label className="payment-radio credit-card-option">
@@ -55,12 +52,12 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                                     Cash
                                 </label>
                             </div>
-                            <di mb-3v className="col-md-6">
+                            <div mb-3v className="col-md-6">
                                 <div className="form-group card-label mb-3">
                                     <label htmlFor="card_name">Name on Card</label>
                                     <input className="form-control" id="card_name" value={nameOnCard && nameOnCard} type="text" onChange={(e) => handleChange(e)} name='nameOnCard' />
                                 </div>
-                            </di>
+                            </div>
                             <div className="col-md-6">
                                 <div className="form-group card-label mb-3">
                                     <label htmlFor="card_number">Card Number</label>
@@ -121,55 +118,9 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
                         </div>
                     </div>
                 </div>
-
-                <div className="col-md-5 col-sm-12">
-                    {/* <div className="rounded p-3" style={{ background: "#f8f9fa" }}>
-                        {data && <Link to={`/doctors/profile/${data?.id}`} className="booking-doc-img d-flex justify-content-center mb-2">
-                            <img src={img} alt="" />
-                        </Link>}
-                        {data && <div className='doc-title-info mt-3 mb-3'>
-                            <h5 className='mt-3 text-center' style={{
-                                fontSize: "22px", fontWeight: 700,
-                            }}>Dr. {data?.firstName + ' ' + data?.lastName}</h5>
-                            <div className='text-center'>
-                                <p className='form-text mb-0'>{data?.designation}</p>
-                                <p className='form-text mb-0'>{data?.clinicAddress}</p>
-                            </div>
-                        </div>}
-
-                        <div className="booking-item-wrap">
-                            <ul className="booking-date">
-                                <li>Date <span>{moment(selectedDate).format('LL')}</span></li>
-                                <li>Time <span>{formattedSelectedTime}</span></li>
-                            </ul>
-                            <ul className="booking-fee">
-                                <li>Consulting Fee <span>${price}</span></li>
-                                <li>Booking Fee <span>$10</span></li>
-                                <li>Vat (Including 15%) <span>$ {vat}</span></li>
-                            </ul>
-
-                            <ul className="booking-total">
-                                <li className='d-flex justify-content-between'>
-                                    <span className='fw-bold'>Total</span>
-                                    <span className="total-cost" style={{ color: '#1977cc' }}>${(Number(price) + 10 + vat)}</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div> */}
-                    <div className="col-md-5 col-sm-12">
-                        <div className="text-end">
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => handleConfirmSchedule()}
-                                disabled={isConfirmDisable} // Use isConfirmDisable to determine the disabled state
-                            >
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     )
 }
+
 export default CheckoutPage;

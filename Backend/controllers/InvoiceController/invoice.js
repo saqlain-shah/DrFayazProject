@@ -34,7 +34,9 @@ export const createInvoice = async (req, res) => {
             .populate('services', 'name');
 
         // Return the created invoice along with the grand total from the request body
-        res.status(201).json({ invoice: populatedInvoice, grandTotal });
+        // Return the created invoice along with the grand total from the request body
+        res.status(201).json({ invoice: populatedInvoice, grandTotal, tax, discount, currency });
+
     } catch (error) {
         console.error('Error creating invoice:', error);
         res.status(500).json({ error: 'Failed to create invoice' });
