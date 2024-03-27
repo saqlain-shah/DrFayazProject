@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import moment from 'moment';
 import axios from 'axios';
+import { Link, useParams } from 'react-router-dom'; // Import useParams
 import axiosBaseQuery from './axiosBaseQuery';
-import { Button, Steps, message } from 'antd';
+import { Button, Steps, message, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../Shared/Footer/Footer';
 import Header from '../Shared/Header/Header';
@@ -35,8 +36,10 @@ const initialValue = {
 
 const AppointmentPage = () => {
   const dispatch = useDispatch();
+  const [userId, setUserId] = useState(null);
   const { data, role } = useAuthCheck();
   const [current, setCurrent] = useState(0);
+  const params = useParams();
   const [selectedDate, setSelectedDate] = useState('');
   const [selectTime, setSelectTime] = useState('');
   const [isCheck, setIsChecked] = useState(false);
@@ -44,6 +47,10 @@ const AppointmentPage = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
+  const [serviceDetails, setServiceDetails] = useState(null); // State to store service details
+  const [totalAmount, setTotalAmount] = useState(0); // State to store total amount
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const navigation = useNavigate();
 
   const [createAppointmentByUnauthenticateUser, { data: appointmentData, isError, isSuccess, isLoading, error }] = useCreateAppointmentByUnauthenticateUserMutation();
@@ -51,8 +58,10 @@ const AppointmentPage = () => {
   const handleChange = (e) => {
     setSelectValue({ ...selectValue, [e.target.name]: e.target.value });
   };
+  const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
-  const handleSelectAppointment = (slots) => {
+
+  const handleSelectAppointment = (slots, patientId, profileSettingId) => {
     if (!slots || slots.length === 0) {
       console.error('No appointment slots available');
       return;
@@ -62,11 +71,44 @@ const AppointmentPage = () => {
     const selectedSlot = slots.find(slot => slot._id === selectedSlotId);
     if (selectedSlot) {
       setSelectedDate(selectedSlot.startDateTime);
-      setSelectTime(selectedSlot.endDateTime);
+      setSelectTime(selectedSlot.endDateTime); // Update selectTime with the endDateTime of the selected slot
+    }
+
+    console.log('Selected Slot:', selectedSlot); // Log selected slot
+    // Here you can fetch the profile setting ID using the profileSettingId parameter
+    setSelectedSlot(selectedSlot); // Set the selected slot
+  };
+
+
+
+  // Before fetching user data
+  console.log("Fetching user data...");
+
+  const fetchData = async (params) => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    try {
+      const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config);
+      console.log('Response:', response); // Log the entire response
+      setUserId(response.data.id); // Update state with the fetched user ID
+      console.log("User data fetched successfully:", response.data); // Log user data
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
     // Directly move to the next step/page
     next(); // This will move to the next step/page
   };
+
+  useEffect(() => {
+    fetchData(params);
+  }, []);
+
+
 
   const next = () => {
     setCurrent(current + 1);
@@ -77,26 +119,61 @@ const AppointmentPage = () => {
   };
 
   useEffect(() => {
-    const { firstName, lastName, email, phone, nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv, reasonForVisit } = selectValue;
-    const isInputEmpty = !firstName || !lastName || !email || !phone || !reasonForVisit;
-    const isConfirmInputEmpty = !nameOnCard || !cardNumber || !expiredMonth || !cardExpiredYear || !cvv || !isCheck;
+    const { firstName, reasonForVisit, startDate, endTime, nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv } = selectValue;
+    const isInputEmpty = !firstName || !reasonForVisit || !startDate || !endTime || !reasonForVisit;
+    const isConfirmInputEmpty = !nameOnCard || !cardNumber || !expiredMonth || !cardExpiredYear || !cvv || !isCheck || !selectTime; // Include selectTime in the condition
     setIsDisable(isInputEmpty);
     setIsConfirmDisable(isConfirmInputEmpty);
-  }, [selectValue, isCheck]);
+  }, [selectValue, isCheck, selectTime]); // Include selectTime in the dependency array
 
 
 
-  const handleConfirmSchedule = () => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem('token');
 
-    // Check if the token exists
-    if (!token) {
-      console.error('No token found in localStorage');
-      // Handle the case where no token is found, e.g., redirect to login page
-      return;
+  const handleCloseModal = () => {
+    console.log("Closing modal...");
+    setShowModal(false);
+  };
+
+
+  useEffect(() => {
+    if (isSuccess) {
+      message.success('Successfully Appointment Scheduled');
+      setSelectValue(initialValue);
+      dispatch(addInvoice({ ...appointmentData }));
+      navigation(`/booking/success/${appointmentData?.id}`);
     }
+    if (isError) {
+      message.error(error?.data?.message);
+    }
+  }, [isSuccess, isError, isLoading, appointmentData]);
 
+  // Fetch service details from the backend API
+  const fetchServiceDetails = async () => {
+    try {
+      const response = await axios.get('http://localhost:8800/api/services');
+      setServiceDetails(response.data);
+    } catch (error) {
+      console.error('Error fetching service details:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchServiceDetails();
+  }, []);
+
+  useEffect(() => {
+    if (serviceDetails) {
+      const { serviceAmount, serviceCharge } = serviceDetails;
+      const total = serviceAmount + serviceCharge;
+      setTotalAmount(total);
+    }
+  }, [serviceDetails]);
+
+
+  const handleConfirmAppointment = () => {
+    console.log("Confirming appointment...");
+    setShowModal(true); // Show the modal after confirming the appointment
+    setShowAppointmentDetails(true);
     const obj = {
       patientInfo: {
         firstName: selectValue.firstName,
@@ -156,18 +233,26 @@ const AppointmentPage = () => {
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
 
+  console.log("data:", data); // Log the value of data
+  const patientId = data && data.id; // Check if data exists before accessing its id property
+  console.log("patientId:", patientId);
+
   const steps = [
     {
       title: 'Select Appointment Date & Time',
-      content: <SelectAppointment handleSelectAppointment={handleSelectAppointment} appointmentSlots={appointmentSlots} />,
+      content: <SelectAppointment handleSelectAppointment={handleSelectAppointment} appointmentSlots={appointmentSlots} patientId={userId} />,
     },
     {
       title: 'Patient Information',
       content: <PersonalInformation
         handleChange={handleChange}
         selectValue={selectValue}
-        handleConfirmSchedule={handleConfirmSchedule} // Pass the function here
+        handleConfirmAppointment={handleConfirmAppointment} // Pass the function here
+        onNext={next}
+        onPrev={prev}
+        selectedSlot={selectedSlot} // Pass the selected slot information
       />
+
 
     },
     {
@@ -221,7 +306,7 @@ const AppointmentPage = () => {
                   size="large"
                   style={{ marginRight: '8px' }}
                   disabled={isConfirmDisable}
-                  onClick={() => handleConfirmSchedule()}
+                  onClick={() => handleConfirmAppointment()}
                 >
                   Confirm
                 </Button>
@@ -235,9 +320,23 @@ const AppointmentPage = () => {
               </>
             )}
           </div>
-
         </div>
       </div>
+      <Modal
+        title="Appointment Details"
+        visible={showModal} // Control modal visibility
+        onCancel={handleCloseModal} // Handle close event
+        footer={[
+          <Button key="back" onClick={handleCloseModal}>
+            Close
+          </Button>
+        ]}
+      >
+        <p>Patient Name: {selectValue.firstName} {selectValue.lastName}</p>
+        <p>Service: {serviceDetails ? serviceDetails.serviceName : 'Loading...'}</p>
+        <p>Service Charge: {serviceDetails ? serviceDetails.serviceCharge : 'Loading...'} USD</p>
+        <p>Total Amount: {totalAmount} USD</p>
+      </Modal>
       <Footer />
     </>
   );

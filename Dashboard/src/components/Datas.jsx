@@ -82,11 +82,11 @@ export const MenuDatas = [
     path: "/medicine",
     icon: RiMedicineBottleLine,
   },
-  {
-    title: "Receptions",
-    path: "/receptions",
-    icon: HiOutlineUsers,
-  },
+  // {
+  //   title: "Receptions",
+  //   path: "/receptions",
+  //   icon: HiOutlineUsers,
+  // },
   {
     title: "Doctors",
     path: "/doctors",
@@ -265,6 +265,10 @@ export const sortsDatas = {
     {
       id: 3,
       name: "PKR (Rupee)",
+    },
+    {
+      id: 4,
+      name: "EUR (Euro)",
     },
   ],
   instractions: [

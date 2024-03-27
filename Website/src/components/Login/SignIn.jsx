@@ -36,7 +36,7 @@ const SignIn = ({ handleResponse }) => {
             const response = await axios.post('http://localhost:8800/api/userauth/login', data, config);
             console.log(response.data)
             if (response.data) {
-                const clientId=response.data._id
+                const clientId = response.data._id
                 Navigate(`/dashboard/${clientId}`); // Navigate to home page
             } else {
                 setInfoError(response.data.message);
@@ -53,7 +53,7 @@ const SignIn = ({ handleResponse }) => {
         }
         if (isSuccess) {
             message.success('Successfully Logged in');
-            navigate("/login")
+            navigate("/dashboard/:clientId")
         }
     }, [isError, error, isSuccess, Navigate])
 

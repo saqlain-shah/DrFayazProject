@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
 
-const SelectAppointment = ({ handleSelectAppointment }) => {
+const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
     useEffect(() => {
         const fetchSchedule = async () => {
@@ -26,44 +27,41 @@ const SelectAppointment = ({ handleSelectAppointment }) => {
     }, []);
 
     const handleSlotSelection = (slotId) => {
-        console.log("Appointment slot with ID", slotId, "selected");
-        handleSelectAppointment(appointmentSlots.filter(slot => slot._id === slotId)); // Pass the slot object or slot array to the parent component
+        const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);
+        if (selectedSlot) {
+            setSelectedSlot(selectedSlot);
+            handleSelectAppointment([selectedSlot], patientId); // Pass patientId
+        }
     };
 
-
-
     return (
-
-        <div className="container mx-auto py-8">
-            <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
-            <div className="flex flex-nowrap overflow-x-auto" style={{ maxWidth: '100%' }}>
+        <div className="container mx-auto" >
+            <h2 text-2xl font-bold mb-4>Select Appointment</h2>
+            <div
+                style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '10px', padding: '10px' }}>
                 {appointmentSlots && appointmentSlots.length > 0 ? (
                     appointmentSlots.map((slot, index) => (
-                        <div key={slot._id} className="border border-gray-300 rounded-md p-2 flex flex-col justify-between m-2" style={{ flex: '0 0 auto', width: 'calc(33.33% - 10px)' }}>
-                            <div className="text-sm font-semibold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
-                            <div className="text-xs mt-1">{moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
-                            <button onClick={() => handleSlotSelection(slot._id)} className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded" style={{ backgroundColor: '#3B82F6', fontSize: '10px' }}>
-                                Select
-                            </button>
+                        <div key={slot._id} className="p-4 border rounded-md" style={{ margin: '10px' }}>
+                            <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
+                            <div>{moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
+                            <label htmlFor={`slot-${index}`} className="flex items-center mt-2">
+                                <input
+                                    type="radio"
+                                    id={`slot-${index}`}
+                                    name="appointmentSlot"
+                                    value={slot._id}
+                                    checked={selectedSlot && selectedSlot._id === slot._id}
+                                    onChange={() => handleSlotSelection(slot._id)}
+                                    className="mr-2"
+                                />
+                                <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
+                            </label>
                         </div>
                     ))
                 ) : (
                     <div>No appointment slots available.</div>
                 )}
             </div>
-
-
-
-            {/* <div>
-            <h2>Select Appointment</h2>
-            {/* Render your appointment slots here */}
-            {/* {appointmentSlots && appointmentSlots.map((slot) => (
-                <div key={slot.id}>
-                    <div>Date: {moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
-                    <div>Time: {moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
-                    <button onClick={() => handleSelectTime(moment(slot.startDateTime).format('HH:mm'))}>Select Time</button>
-                </div>
-            ))} */}
         </div>
     );
 };

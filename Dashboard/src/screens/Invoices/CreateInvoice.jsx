@@ -18,10 +18,11 @@ function CreateInvoice() {
     new Date(),
     new Date(new Date().setDate(new Date().getDate() + 7)),
   ]);
+  const [currency, setCurrency] = useState(sortsDatas.currency[0]);
   const [startDate, endDate] = dateRange;
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
-  const [currency, setCurrency] = useState(sortsDatas.currency[0]);
+  const [selectedCurrency, setSelectedCurrency] = useState(sortsDatas.currency[0]);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [invoiceItems, setInvoiceItems] = useState([]);
@@ -37,10 +38,7 @@ function CreateInvoice() {
   const handleAddItemClick = () => {
     setItemOpen(true);
   };
-  const exchangeRates = {
-    USD: 1, // 1 USD = 1 USD
-    PKR: 177.5, // 1 USD = 177.5 PKR (for example)
-  };
+
 
   const handleSelectPatient = (patient) => {
     setSelectedPatient(patient);
@@ -52,7 +50,7 @@ function CreateInvoice() {
       name: service.name,
       price: service.price,
       quantity: parseInt(quantity),
-      subtotal: service.price * parseInt(quantity) // Calculate subtotal for the item
+      subtotal: calculateSubtotal(service.price, quantity) // Calculate subtotal in selected currency basis
     };
 
     // Add the new item to the invoice items
@@ -69,11 +67,24 @@ function CreateInvoice() {
     setSelectedService(service);
   };
 
+  // Function to calculate subtotal in selected currency basis
+  const calculateSubtotal = (price, quantity) => {
+    // Assuming currency conversion logic is implemented here based on selectedCurrency
+    // Return the subtotal calculated in the selected currency
+    return price * quantity; // Modify this based on your currency conversion logic
+  };
+
+
   // components/CreateInvoice.js
 
   const handleSaveAndSend = async () => {
     try {
-      const grandTotal = subtotal - discount + tax;
+      // Calculate grand total based on selected currency
+      let selectedCurrency = currency.name.split(' ')[0]; // Extract currency code (USD, PKR, EUR, etc.)
+      let grandTotalInSelectedCurrency = grandTotal;
+      if (selectedCurrency !== "USD") {
+        grandTotalInSelectedCurrency = grandTotal * 1.17; // Assuming conversion rate of 1 USD = 0.85 EUR
+      }
 
       // Check if selectedPatient is defined
       if (!selectedPatient || !selectedPatient._id) {
@@ -84,11 +95,11 @@ function CreateInvoice() {
       const token = localStorage.getItem("token");
       const response = await axios.post('http://localhost:8800/api/invoices', {
         selectedPatient,
-        selectedService,
         invoiceItems,
         tax,
         discount,
-        grandTotal: grandTotal
+        grandTotal: grandTotalInSelectedCurrency,
+        currency: selectedCurrency
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -97,7 +108,6 @@ function CreateInvoice() {
 
       // Reset states after successful submission
       setSelectedPatient(null);
-      setSelectedService(null);
       setInvoiceItems([]);
       setSubtotal(0);
       setDiscount(0);
@@ -117,44 +127,43 @@ function CreateInvoice() {
     }
   };
 
-
-
   const handleCurrencyChange = (selectedCurrency) => {
-    if (!selectedCurrency || !selectedCurrency.name) {
-      console.error("Invalid currency object:", selectedCurrency);
-      return;
-    }
-
-    const currencyCode = selectedCurrency.code || selectedCurrency.id;
-    console.log(`Currency changed to: ${selectedCurrency.name} (${currencyCode})`);
-
-    // Retrieve the exchange rate for the selected currency
-    const newExchangeRate = exchangeRates[currencyCode];
-
-    if (!newExchangeRate) {
-      console.error("Exchange rate not found for currency:", currencyCode);
-      return;
-    }
-
-    // Calculate new amounts based on selected currency
-    const newSubtotal = subtotal / exchangeRates[currency.code] * newExchangeRate;
-    const newDiscount = discount / exchangeRates[currency.code] * newExchangeRate;
-    const newTax = tax / exchangeRates[currency.code] * newExchangeRate;
-    const newGrandTotal = newSubtotal - newDiscount + newTax; // Recalculate grand total
-
-    // Check for NaN or undefined values
-    if (isNaN(newSubtotal) || isNaN(newDiscount) || isNaN(newTax) || isNaN(newGrandTotal)) {
-      console.error("Invalid calculation result. Check exchange rates and input values.");
-      return;
-    }
-
-    // Update currency and amounts
     setCurrency(selectedCurrency);
+    setSelectedCurrency(selectedCurrency);
+
+    const exchangeRates = {
+      USD: 1,   // Assuming 1 USD = 1 USD
+      EUR: 0.66,   // Assuming 1 EUR = 0.66 USD
+      PKR: 278.96   // Assuming 1 PKR = 278.96 USD
+      // Add more currencies and their conversion rates as needed
+    };
+
+    // Calculate subtotal and update invoice items with the new currency
+    const updatedItems = invoiceItems.map(item => {
+      const price = typeof item.price === 'number' ? item.price : 0;
+      const convertedPrice = price * exchangeRates[selectedCurrency.name.split(' ')[0]]; // Multiply by the exchange rate
+      const subtotal = convertedPrice * item.quantity; // Calculate subtotal based on converted price
+      return {
+        ...item,
+        subtotal: subtotal
+      };
+    });
+
+    // Update invoice items with the new subtotal
+    setInvoiceItems(updatedItems);
+
+    // Calculate new subtotal
+    const newSubtotal = updatedItems.reduce((acc, item) => acc + item.subtotal, 0);
     setSubtotal(newSubtotal);
-    setDiscount(newDiscount);
-    setTax(newTax);
-    setGrandTotal(newGrandTotal);
+
+    // Recalculate grand total with new subtotal, tax, and discount
+    calculateGrandTotal(newSubtotal, discount, tax);
   };
+
+
+
+
+
 
 
 
@@ -254,7 +263,11 @@ function CreateInvoice() {
               data={invoiceItems}
               functions={{ deleteItem }}
               button={true}
+              selectedCurrency={selectedCurrency}
+              discount={discount}
+              tax={tax}
             />
+
             <button
               onClick={handleAddItemClick}
               className=" text-subMain flex-rows gap-2 rounded-lg border border-subMain border-dashed py-4 w-full text-sm mt-4"

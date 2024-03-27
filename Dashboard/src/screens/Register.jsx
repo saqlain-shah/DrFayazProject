@@ -23,7 +23,9 @@ function Register() {
             });
             if (response.status === 201) {
                 const token = response.data.token;
-                // Store the token in a HTTP-only cookie
+
+                // Store the token in local storage
+                localStorage.setItem('token', token);
                 document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
                 toast.success('Registration successful');
                 navigate('/login');

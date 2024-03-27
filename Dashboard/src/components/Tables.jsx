@@ -789,12 +789,45 @@ export function InvoiceUsedTable({ data, functions }) {
   );
 }
 
-export function InvoiceProductsTable({ data, functions, button }) {
-  console.log("InvoiceProductsTable", data); // For debugging purposes
+export function InvoiceProductsTable({ data, functions, button, selectedCurrency, discount, tax }) {
+  console.log("selectedCurrency", selectedCurrency); // For debugging purposes
 
   // CSS classes for table header and table data cells
   const thclass = "p-3 text-left font-medium text-gray-700 border-b border-gray-200";
   const tdclass = "p-3 text-left text-gray-700 border-b border-gray-200";
+
+  const calculateAmount = (price, quantity, discount, tax) => {
+    // Check if price and quantity are valid numbers
+    if (isNaN(price) || isNaN(quantity)) {
+      console.error("Invalid price or quantity:", price, quantity);
+      return 0; // Return 0 if price or quantity is not a valid number
+    }
+
+    // Initialize amount without discount and tax
+    let amount = price * quantity;
+
+    // Apply discount if it's a valid number
+    if (!isNaN(discount)) {
+      console.log("Discount provided:", discount);
+      amount -= (amount * discount) / 100;
+    } else {
+      console.warn("Discount not provided or invalid:", discount);
+    }
+
+    // Apply tax if it's a valid number
+    if (!isNaN(tax)) {
+      console.log("Tax provided:", tax);
+      amount += (amount * tax) / 100;
+    } else {
+      console.warn("Tax not provided or invalid:", tax);
+    }
+
+    return amount;
+  };
+
+
+
+
 
   return (
     <table className="table-auto w-full">
@@ -822,7 +855,10 @@ export function InvoiceProductsTable({ data, functions, button }) {
             <td className={`${tdclass}  font-medium`}>{item.name}</td> {/* Display item name */}
             <td className={`${tdclass} text-xs`}>{item.price}</td> {/* Display item price */}
             <td className={tdclass}>{item.quantity}</td> {/* Display quantity */}
-            <td className={tdclass}>{item.price * item.quantity}</td> {/* Calculate and display amount */}
+            <td className={tdclass}>
+              {calculateAmount(item.price, item.quantity, discount, tax)}
+            </td>
+
             {button && (
               <td className={tdclass}>
                 <button
@@ -840,6 +876,8 @@ export function InvoiceProductsTable({ data, functions, button }) {
     </table>
   );
 }
+
+
 
 
 // medicine Dosage table

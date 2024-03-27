@@ -55,8 +55,29 @@ function PreviewInvoice() {
     fetchInvoice();
   }, [id]);
 
+  const calculateSubtotal = (items) => {
+    let subtotal = 0;
+    items.forEach((item) => {
+      subtotal += item.price * item.quantity;
+    });
+    return subtotal;
+  };
+  const calculateGrandTotal = (subtotal, discount, tax) => {
+    const discountedAmount = subtotal - (subtotal * discount) / 100;
+    const totalWithTax = discountedAmount + (discountedAmount * tax) / 100;
+    return totalWithTax;
+  };
 
+  // Inside the PreviewInvoice component
+  console.log("Invoice data:", invoice);
+  console.log("Discount:", invoice?.discount);
+  console.log("Tax:", invoice?.tax);
 
+  const subtotal = calculateSubtotal(invoice?.invoiceItems || []);
+  const grandTotal = calculateGrandTotal(subtotal, invoice?.discount || 0, invoice?.tax || 0);
+
+  console.log("Subtotal:", subtotal);
+  console.log("Grand Total:", grandTotal);
 
 
 
@@ -174,6 +195,8 @@ function PreviewInvoice() {
     document.body.innerHTML = originalBodyContent;
   };
 
+
+
   return (
     <Layout>
       {isOpen && (
@@ -274,9 +297,12 @@ function PreviewInvoice() {
             )}
             <div className="grid grid-cols-6 gap-6 mt-8">
               <div className="lg:col-span-4 col-span-6 p-6 border border-border rounded-xl overflow-hidden">
-                <InvoiceProductsTable data={invoice?.invoiceItems} functions={{}} button={false} />
-
-
+                <InvoiceProductsTable
+                  data={invoice?.invoiceItems}
+                  discount={invoice?.discount || 0} // Provide a default value if discount is not provided
+                  tax={invoice?.tax || 0}
+                  total={invoice?.total}
+                />
               </div>
               <div className="col-span-6 lg:col-span-2 flex flex-col gap-6">
                 <div className="flex-btn gap-4">
@@ -285,29 +311,29 @@ function PreviewInvoice() {
                 </div>
                 <div className="flex-btn gap-4">
                   <p className="text-sm font-extralight">Sub Total:</p>
-                  <h6 className="text-sm font-medium">$459</h6>
+                  <h6 className="text-sm font-medium">${subtotal}</h6>
                 </div>
                 <div className="flex-btn gap-4">
                   <p className="text-sm font-extralight">Discount:</p>
-                  <h6 className="text-sm font-medium">$49</h6>
+                  <h6 className="text-sm font-medium">${invoice?.discount || 0}</h6>
                 </div>
                 <div className="flex-btn gap-4">
                   <p className="text-sm font-extralight">Tax:</p>
-                  <h6 className="text-sm font-medium">$4.90</h6>
+                  <h6 className="text-sm font-medium">${invoice?.tax || 0}</h6>
                 </div>
                 <div className="flex-btn gap-4">
                   <p className="text-sm font-extralight">Grand Total:</p>
-                  <h6 className="text-sm font-medium text-green-600">$6000</h6>
+                  <h6 className="text-sm font-medium text-green-600">${grandTotal}</h6>
                 </div>
                 <div className="w-full p-4 border border-border rounded-lg">
                   <h1 className="text-sm font-medium">Notes</h1>
                   <p className="text-xs mt-2 font-light leading-5">
-                    Thank you for your business. We hope to work with you again
-                    soon. You can pay your invoice online at
+                    Thank you for your business. We hope to work with you again soon. You can pay your invoice online at
                     www.example.com/payments
                   </p>
                 </div>
               </div>
+
             </div>
           </div>
         )}

@@ -30,7 +30,10 @@ function Header() {
       title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
-        localStorage.removeItem('userData'); // Clear user data on logout
+        localStorage.removeItem('token'); // Clear user data on logout
+        window.history.pushState({}, '', '/login')
+        const isTokenRemoved = !localStorage.getItem('token'); // Check if token is removed
+        console.log('Token removed:', isTokenRemoved); // Log the result
         navigate('/login');
       },
     },
