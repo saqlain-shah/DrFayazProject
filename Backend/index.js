@@ -24,6 +24,7 @@ import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js'
+import helmet from 'helmet';
 const app = express();
 app.use(express.json());
 dotenv.config();
@@ -33,7 +34,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(cors());
-
+app.use(helmet())
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
   res.json({ imageUrl: '/uploads/' + file.filename });

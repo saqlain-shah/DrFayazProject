@@ -15,3 +15,5 @@ function PrivateRoute({ element: Element, ...rest }) {
 }
 
 export default PrivateRoute;
+
+
