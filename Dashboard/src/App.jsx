@@ -1,15 +1,3 @@
-// ********* Delight - Dentist Website is created by Zpunet ******************
-// ********* If you get an error please contact us ******
-// ******** Email:info@codemarketi.com *********
-// ********* Website:www.codemarketi.com *********
-// ********* Phone:+255 762 352 746 *********
-// ********* Youtub Channel: https://www.youtube.com/channel/UCOYwYO-LEsrjqBs6xXSfq1w *********
-
-// ******** Support my work with *********
-// ********* https://www.patreon.com/zpunet *********
-// ********* https://www.buymeacoffee.com/zpunet *********
-
-// ********* This is the main component of the website *********
 import 'tailwindcss/tailwind.css';
 import './App.css';
 import React from 'react';
@@ -43,7 +31,6 @@ import Schedule from './screens/Schedule/Schedule';
 import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
 
-
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
 
@@ -51,6 +38,7 @@ function PrivateRoute({ element, ...props }) {
 }
 
 function App() {
+  const { user } = useAuth();
   Aos.init();
 
   return (
@@ -60,7 +48,10 @@ function App() {
       {/* Routes */}
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          {/* Redirect to dashboard if user is already logged in */}
+          {user && <Route path="/login" element={<Navigate to="/" replace />} />}
+          {/* Render login route only if user is not logged in */}
+          {!user && <Route path="/login" element={<Login />} />}
           <Route path="/register" element={<Register />} /> {/* Add registration route */}
           <Route
             path="/"
@@ -80,17 +71,15 @@ function App() {
           <Route path="/payments/edit/:id" element={<EditPayment />} />
           <Route path="/payments/preview/:id" element={<PreviewPayment />} />
           {/* patient */}
-
           <Route path="/patients" element={<Patients />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
-
           {/* doctors */}
           <Route path="/doctors" element={<Doctors />} />
           <Route path="/doctors/preview/:id" element={<DoctorProfile />} />
           {/* {Schedule} */}
-          <Route path='/schedule' element={<Schedule />} />
+          <Route path="/schedule" element={<Schedule />} />
           {/* reception */}
           <Route path="/receptions" element={<Receptions />} />
           {/* others */}

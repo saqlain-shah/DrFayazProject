@@ -7,9 +7,11 @@ import NotificationComp from "../components/NotificationComp";
 import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
+import { useAuth } from "../AuthContext"; // Import the useAuth hook
 
 function Header() {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Get the logout function from useAuth
   const userData = JSON.parse(localStorage.getItem('userData'));
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -30,10 +32,7 @@ function Header() {
       title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
-        localStorage.removeItem('token'); // Clear user data on logout
-        window.history.pushState({}, '', '/login')
-        const isTokenRemoved = !localStorage.getItem('token'); // Check if token is removed
-        console.log('Token removed:', isTokenRemoved); // Log the result
+        logout(); // Call the logout function from useAuth
         navigate('/login');
       },
     },

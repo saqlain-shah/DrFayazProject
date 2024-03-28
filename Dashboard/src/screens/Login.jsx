@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input } from '../components/Form';
 import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '../AuthContext'
+import { useAuth } from '../AuthContext';
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Redirect to dashboard if user is already logged in
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,13 +48,12 @@ function Login() {
     } finally {
       setLoading(false);
     }
-  }
-
-
+  };
 
   const handleRegisterClick = () => {
     navigate('/register');
   };
+
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
@@ -89,7 +95,6 @@ function Login() {
             />
           </div>
         </div>
-
       </form>
     </div>
   );

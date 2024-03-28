@@ -25,6 +25,7 @@ import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js'
 import helmet from 'helmet';
+
 const app = express();
 app.use(express.json());
 dotenv.config();
@@ -33,8 +34,15 @@ setupMiddleware();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Middleware to disable caching
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
+
 app.use(cors());
 app.use(helmet())
+
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
   res.json({ imageUrl: '/uploads/' + file.filename });
@@ -46,6 +54,7 @@ app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile',
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   res.redirect('http://localhost:5173/');
 });
+
 app.use(authenticate);
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
@@ -62,6 +71,7 @@ app.use('/api/sandgrid', sandGridRoutes)
 app.use('/api/medicine', medicineRoute)
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
+
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

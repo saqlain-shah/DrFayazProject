@@ -19,9 +19,12 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
   };
 
-
   const logout = () => {
-    // Perform your logout logic here, such as clearing user data from state
+    // Clear any authentication tokens or states from local storage or cookies
+    localStorage.removeItem('token');
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+    // Clear user data from state
     setUser(null);
   };
 
@@ -31,4 +34,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
