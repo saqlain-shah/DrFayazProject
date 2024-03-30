@@ -41,11 +41,10 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
             });
         }
     };
-    const handleSignUpSuccess = () => {
+    const handleSignUpSuccess = (token) => {
         console.log('Sign-up successful!');
-
+        localStorage.setItem('token', token); // Save token to local storage
     };
-
 
     const registerUser = async () => {
         try {
@@ -57,10 +56,10 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
             };
 
             const response = await axios.post('http://localhost:8800/api/userauth/register', user, config);
-            if (response.data.success) {
+            if (response.data.token) {
                 console.log(response.data);
-                handleSignUpSuccess();
-                navigate("/");
+                handleSignUpSuccess(response.data.token); // Pass token to handleSignUpSuccess
+                navigate("/login");
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);
@@ -82,6 +81,8 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
             }
         }
     };
+
+
 
 
 

@@ -5,8 +5,9 @@ import User from '../models/Client.js'; // Import your User model
 import mongoose from 'mongoose';
 
 export const login = async (req, res, next) => {
-
   try {
+    console.log('Request Body:', req.body); // Log request body
+
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
@@ -26,10 +27,11 @@ export const login = async (req, res, next) => {
     // Send token and id in response
     res.status(200).json({ message: 'Login successful', token, ...details });
   } catch (error) {
-    console.error('Error logging in:', error);
+    console.error('Error logging in:', error); // Log any errors
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
