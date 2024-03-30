@@ -1,3 +1,4 @@
+// DoctorProfile.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, Link, useParams } from 'react-router-dom';
@@ -19,7 +20,7 @@ function DoctorProfile() {
       setDoctorData(location.state.doctorData);
     }
   }, [location.state]);
-  console.log('Profile doctorData:', doctorData);
+
   useEffect(() => {
     const fetchDoctorData = async () => {
       try {
@@ -49,7 +50,7 @@ function DoctorProfile() {
       case 2:
         return <PatientsUsed />;
       case 3:
-        return <AppointmentsUsed />;
+        return <AppointmentsUsed token={localStorage.getItem('token')} />; // Pass token to AppointmentsUsed
       case 4:
         return <PaymentsUsed />;
       case 5:
@@ -73,7 +74,7 @@ function DoctorProfile() {
         <h1 className="text-xl font-semibold">{doctorData ? `Dr. ${doctorData.fullName}` : 'Doctor Profile'}</h1>
       </div>
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
-        <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
+        <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex items-center justify-center flex-col">
           <img
             src={`http://localhost:8800/${doctorData ? doctorData.profileImage : '/images/user1.png'}`}
             alt="Doctor"

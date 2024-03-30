@@ -8,11 +8,14 @@ import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
 import { useAuth } from "../AuthContext"; // Import the useAuth hook
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
 
 function Header() {
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get the logout function from useAuth
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const name = localStorage.getItem('name');
+  const profileImagePath = localStorage.getItem('profileImage'); // Retrieve profile image from local storage
   const [isOpen, setIsOpen] = React.useState(false);
 
   // toggle drawer
@@ -37,7 +40,7 @@ function Header() {
       },
     },
   ];
-
+  const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
   return (
     <>
       {/* Header content */}
@@ -64,25 +67,33 @@ function Header() {
                 </span>
               </div>
             </NotificationComp>
+
             <div className=" items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
-                <div className="flex gap-4 items-center p-4 rounded-lg">
-                  {userData && userData.profileImage && (
-                    <img
-                      src={`http://localhost:8800/${userData.profileImage}`}
-                      alt="profile"
-                      className="w-12 border border-border object-cover h-12 rounded-full"
-                    />
-                  )}
-                  {/* Display user's name */}
-                  {userData && (
-                    <p className="text-sm text-textGray font-medium">
-                      {userData.fullName}
-                    </p>
-                  )}
+                <div className=" items-center md:flex hidden">
+                  <MenuSelect datas={DropDown1}>
+                    <div className="flex gap-4 items-center p-4 rounded-lg">
+                      {/* Profile Image */}
+                      {profileImageURL ? (
+                        <img
+                          src={profileImageURL} // Use complete image URL
+                          alt="profile"
+                          className="w-12 border border-border object-cover h-12 rounded-full"
+                        />
+                      ) : (
+                        <FontAwesomeIcon icon={faUser} className="w-6 h-6" />
+                      )}
+
+                      {/* Display user's name */}
+                      <p className="text-sm text-textGray font-medium">
+                        {name} {/* Display user's full name */}
+                      </p>
+                    </div>
+                  </MenuSelect>
                 </div>
               </MenuSelect>
             </div>
+
             {/* Toggle menu drawer button */}
             <button
               className="md:hidden block"
@@ -98,3 +109,4 @@ function Header() {
 }
 
 export default Header;
+

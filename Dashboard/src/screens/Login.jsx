@@ -30,10 +30,10 @@ function Login() {
       });
 
       if (response.status === 200) {
-        const { token, id } = response.data; // Extract token and id from the response data
-        login({ id }); // Update authentication state with the user's ID
+        const { token, id, name } = response.data; // Extract token, id, and name from the response data
+        login({ id, name }); // Update authentication state with the user's ID and name
 
-        // Store the token in local storage
+        // Store the token and name in local storage
         localStorage.setItem('token', token);
         document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
         toast.success('Login successful');

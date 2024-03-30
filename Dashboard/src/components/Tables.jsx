@@ -438,7 +438,10 @@ export function PatientTable({ data, functions, onEdit }) {
 }
 
 
+
+
 export function PatientTableArray({ data, onEdit }) {
+  console.log("data", data)
   if (!Array.isArray(data)) {
     console.error('Data is not an array:', data);
     return <div>Error: Data is not an array</div>;
@@ -453,27 +456,42 @@ export function PatientTableArray({ data, onEdit }) {
         <thead className="bg-gray-200 rounded-md overflow-hidden">
           <tr>
             <th className={thClass} style={{ width: '2%' }}>#</th>
-            <th className={thClass} style={{ width: '30%' }}>Field</th>
-            <th className={thClass} style={{ width: '68%' }}>Value</th>
+            <th className={thClass} style={{ width: '20%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '10%' }}>Gender</th>
+            <th className={thClass} style={{ width: '15%' }}>Email</th>
+            <th className={thClass} style={{ width: '10%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '20%' }}>Emergency Contact</th>
+            <th className={thClass} style={{ width: '15%' }}>Profile Picture</th>
+            <th className={thClass} style={{ width: '8%' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => (
-            Object.entries(item).map(([key, value]) => (
-              key !== 'profilePicture' && key !== 'id' && // Exclude profile picture and id fields
-              <tr key={key} className="border-b border-gray-300 hover:bg-gray-100 transition-colors">
-                {/* Table cells */}
-                <td className={tdClass}>{index + 1}</td>
-                <td className={tdClass}>{key}</td>
-                <td className={tdClass}>{value || '-'}</td>
-              </tr>
-            ))
+          {data.map((patient, index) => (
+            <tr key={patient._id} className="border-b border-gray-300 hover:bg-gray-100 transition-colors">
+              <td className={tdClass}>{index + 1}</td>
+              <td className={tdClass}>{patient.fullName}</td>
+              <td className={tdClass}>{patient.gender}</td>
+              <td className={tdClass}>{patient.email}</td>
+              <td className={tdClass}>{patient.bloodGroup}</td>
+              <td className={tdClass}>{patient.emergencyContact}</td>
+              <td className={tdClass}>
+                <img
+                  src={`http://localhost:8800/${patient.profilePicture}`}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
+                />
+              </td>
+              <td className={tdClass}>
+                <button onClick={() => onEdit(patient._id)}>Edit</button> {/* Assuming onEdit is the function to edit a patient */}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
 }
+
 
 
 
