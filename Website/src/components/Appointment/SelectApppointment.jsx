@@ -38,7 +38,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         <div className="container mx-auto" >
             <h2 text-2xl font-bold mb-4>Select Appointment</h2>
             <div
-                style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '10px', padding: '10px' }}>
+                style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
                 {appointmentSlots && appointmentSlots.length > 0 ? (
                     appointmentSlots.map((slot, index) => (
                         <div key={slot._id} className="p-4 border rounded-md" style={{ margin: '10px' }}>

@@ -107,14 +107,18 @@ const AppointmentPage = () => {
     next(); // This will move to the next step/page
   };
 
-  useEffect(() => {
-    fetchData(params);
-  }, []);
+  // useEffect(() => {
+  //   // fetchData(params);
+  // }, []);
 
 
 
-  const next = () => {
+  const next = (e) => {
+    e.preventDefault()
     setCurrent(current + 1);
+    if (current !== 2) {
+      fetchData(params)
+    }
     console.log(current)
   };
 
@@ -317,12 +321,12 @@ const AppointmentPage = () => {
                 >
                   Next
                 </Button>
-                <Button
+                {current !== 0 && <Button
                   size="large"
                   onClick={() => prev()}
                 >
                   Previous
-                </Button>
+                </Button>}
               </>
             )}
             {current === steps.length - 1 && (
