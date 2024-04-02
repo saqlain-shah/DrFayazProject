@@ -1136,11 +1136,11 @@ export const patientTab = [
     title: "Medical Records",
     icon: TbChartHistogram,
   },
-  {
-    id: 2,
-    title: "Appointments",
-    icon: BiCalendar,
-  },
+  // {
+  //   id: 2,
+  //   title: "Appointments",
+  //   icon: BiCalendar,
+  // },
   {
     id: 3,
     title: "Invoices",
