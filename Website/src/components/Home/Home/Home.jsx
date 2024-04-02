@@ -15,6 +15,7 @@ import OurDoctors from '../OurDoctor/OurDoctors';
 const Home = () => {
     return (
         <>
+
             <Header />
             <HeroSection />
             <InfoPage />

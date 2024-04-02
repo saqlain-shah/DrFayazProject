@@ -74,7 +74,7 @@ export const fetchRecentPatients = async () => {
 export const fetchTodayAppointments = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/appointments/today', {
+        const response = await fetch('http://localhost:8800/api/v1', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

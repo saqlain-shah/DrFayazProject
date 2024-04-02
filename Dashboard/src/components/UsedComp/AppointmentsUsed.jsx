@@ -1,35 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { AppointmentTable } from '../Tables';
+import { useNavigate } from 'react-router-dom';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
 import EditAppointmentModal from '../Modals/EditAppointment';
 import { BiPlus } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
 
-function AppointmentsUsed({ token, patientId }) {
+function AppointmentsUsed({ token }) {
+  const navigate = useNavigate();
   const [openAddModal, setOpenAddModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
-  useEffect(() => {
-    console.log('Fetching appointments for patientId:', patientId);
-    const fetchAppointments = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8800/api/appointments/patient/${patientId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setAppointments(response.data);
-      } catch (error) {
-        console.error('Error fetching appointment data:', error);
-        toast.error('Failed to fetch appointments');
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:8800/api/appointments', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch appointments');
       }
-    };
+      const data = await response.json();
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      toast.error('Failed to fetch appointments');
+    }
+  };
 
-    fetchAppointments();
-  }, [patientId, token]);
+  useEffect(() => {
+    fetchData();
+  }, [token]);
 
   const handleEdit = (appointment) => {
     setSelectedAppointment(appointment);
@@ -37,7 +41,6 @@ function AppointmentsUsed({ token, patientId }) {
   };
 
   const handleNewAppointment = (appointment) => {
-    console.log('New appointment created:', appointment);
     setAppointments(prevAppointments => [...prevAppointments, appointment]);
   };
 
@@ -48,17 +51,23 @@ function AppointmentsUsed({ token, patientId }) {
       )
     );
 
-    // Add a trigger to update the state again after a short delay
     setTimeout(() => {
       setAppointments(prevAppointments => [...prevAppointments]);
-    }, 100); // Adjust the delay time as needed
+    }, 100);
   };
-
 
   const handleCloseModals = () => {
     setOpenAddModal(false);
     setOpenEditModal(false);
     setSelectedAppointment(null);
+  };
+
+  const handleAddModalOpen = () => {
+    setOpenAddModal(true);
+  };
+
+  const handleEditModalClose = () => {
+    setOpenEditModal(false);
   };
 
   return (
@@ -68,22 +77,21 @@ function AppointmentsUsed({ token, patientId }) {
           isOpen={openAddModal}
           closeModal={handleCloseModals}
           handleNewAppointment={handleNewAppointment}
-          patientId={patientId}
         />
       )}
       {openEditModal && selectedAppointment && (
         <EditAppointmentModal
           isOpen={openEditModal}
-          closeModal={() => setOpenEditModal(false)}
+          closeModal={handleEditModalClose}
           appointment={selectedAppointment}
-          onUpdateAppointment={handleUpdateAppointment} // Pass the onUpdateAppointment function
+          onUpdateAppointment={handleUpdateAppointment}
         />
       )}
-      <h1 className="text-sm font-medium mb-6">Appointment</h1>
+      <h1 className="text-sm font-medium mb-6">Appointments</h1>
       <div className="w-full overflow-x-scroll">
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => setOpenAddModal(true)}
+            onClick={handleAddModalOpen}
             className="bg-main text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-main-dark transition duration-300 flex items-center"
           >
             <BiPlus className="mr-2" />
@@ -94,9 +102,8 @@ function AppointmentsUsed({ token, patientId }) {
           functions={{
             edit: handleEdit,
           }}
-          onEdit={handleEdit}
           token={token}
-          patientId={patientId}
+          appointments={appointments}
         />
       </div>
     </div>

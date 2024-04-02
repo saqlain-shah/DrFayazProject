@@ -8,12 +8,14 @@ import img from '../../../images/logo.png';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 import { loggedOut } from '../../../service/auth.service';
-
+import { toast } from 'react-hot-toast';
 const Header = () => {
     const { authChecked, data } = useAuthCheck();
+    console.log("data in header", data)
     const [isLoggedIn, setIsLogged] = useState(false);
     const [show, setShow] = useState(true);
     const navigate = useNavigate(); // Initialize useNavigate
+
 
     const handleScroll = () => {
         const currentScroll = window.scrollY;
@@ -50,13 +52,30 @@ const Header = () => {
         </div >
     );
 
-    // const handleMakeAppointment = () => {
-    //     if (!isLoggedIn) {
-    //         navigate('/login'); // Navigate to the login page using navigate
-    //     } else {
-    //         // Handle appointment logic if user is logged in
-    //     }
-    // }
+    const handleMakeAppointment = () => {
+        const token = localStorage.getItem('token');
+        console.log("Token in header", token) // Check if token exists in local storage
+
+        if (token) {
+            const clientId = data?._id; // Assuming _id is the client ID
+            if (clientId) {
+                navigate(`/dashboard/${clientId}`);
+            } else {
+                // Handle the case where the client ID is not available
+                console.error("Client ID is not available");
+                // Optionally, you can navigate to a default dashboard or display an error message
+            }
+        } else {
+            toast.error("You need to login to make an appointment", {
+                position: 'bottom-right'
+            });
+            navigate('/login'); // Navigate to login page if token doesn't exist
+        }
+    }
+
+
+
+
 
     return (
         <>
@@ -88,7 +107,7 @@ const Header = () => {
                         {/* Include mobile nav toggle component here */}
                     </nav>
 
-                    {/* <Link to={'/appointment'} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span> Appointment</Link> */}
+                    <button onClick={handleMakeAppointment} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span>Make Appointment</button>
                 </div>
             </header>
         </>

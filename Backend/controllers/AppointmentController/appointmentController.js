@@ -1,4 +1,5 @@
 import Appointment from '../../models/Appointment/appoinmentModel.js'
+import mongoose from 'mongoose';
 
 
 export const createAppointment = async (req, res, next) => {
@@ -63,6 +64,17 @@ export const getAppointmentsForToday = async (req, res) => {
 export const getAppointmentsByPatientId = async (req, res) => {
     try {
         const { patientId } = req.params;
+
+        // Check if patientId is null or undefined
+        if (!patientId) {
+            return res.status(400).json({ message: 'Patient ID is required' });
+        }
+
+        // Check if patientId is a valid ObjectId
+        if (!mongoose.isValidObjectId(patientId)) {
+            return res.status(400).json({ message: 'Invalid Patient ID' });
+        }
+
         // Find appointments where the patient field matches the provided patientId
         const appointments = await Appointment.find({ patient: patientId });
 
@@ -72,6 +84,9 @@ export const getAppointmentsByPatientId = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+
+
 
 
 

@@ -49,16 +49,21 @@ function Dashboard() {
       const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
       const recentPatientsData = await fetchRecentPatients();
       const todayAppointmentsData = await fetchTodayAppointments(); // Fetch today's appointment data
+
+      console.log('Today Appointments Data:', todayAppointmentsData); // Add this line for debugging
+
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
       setTotalAppointments(appointmentCount);
       setTotalAppointmentsPercentage(appointmentPercentage);
       setRecentPatients(recentPatientsData);
-      setTodayAppointments(todayAppointmentsData); // Set today's appointment data in state
+      setTodayAppointments(todayAppointmentsData.data); // Set today's appointment data in state
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
+
+
 
   const formatTime = (timeString) => {
     const date = new Date(timeString);
@@ -68,9 +73,6 @@ function Dashboard() {
     const formattedHours = hours % 12 || 12; // Convert 0 to 12 for AM/PM format
     return `${formattedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
   };
-
-
-
 
   const dashboardCards = [
     {
@@ -231,7 +233,7 @@ function Dashboard() {
             {todayAppointments.map((appointment, index) => (
               <div key={index} className="grid grid-cols-12 gap-2 items-center">
                 <p className="text-textGray text-[12px] col-span-3 font-light">
-                  {formatTime(appointment.time)}
+                  {formatTime(appointment.patientInfo.scheduleTime)}
                 </p>
                 <div className="flex-colo relative col-span-2">
                   <hr className="w-[2px] h-20 bg-border" />
@@ -243,14 +245,17 @@ function Dashboard() {
                 </div>
                 <Link to="/appointments" className="flex flex-col gap-1 col-span-6">
                   <h2 className="text-xs font-medium">
-                    {appointment.user?.title}
+                    {appointment.patientInfo.firstName} {appointment.patientInfo.lastName}
                   </h2>
                   <p className="text-[12px] font-light text-textGray">
-                    {appointment.from} - {appointment.to}
+                    {/* Assuming 'from' and 'to' are properties of appointment */}
+                    {formatTime(appointment.patientInfo.scheduleTime)} - {formatTime(appointment.patientInfo.scheduleTime)}
                   </p>
                 </Link>
               </div>
             ))}
+
+
           </div>
         </div>
       </div>
