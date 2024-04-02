@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from 'antd';
 
 const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, selectedSlot }) => {
-    const { name, reasonForVisit, bloodGroup, gender, emergencyContact, email } = selectValue;
+    const { name, reasonForVisit, bloodGroup, gender, emergencyContact, email ,address} = selectValue;
 
     useEffect(() => {
         if (selectedSlot) {
@@ -56,6 +56,12 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
                     <div className="form-group card-label mb-3">
                         <label>Contact</label>
                         <input disabled name='emergencyContact' value={emergencyContact || ''} className="form-control" type="text" />
+                    </div>
+                </div>
+                <div className="col-md-6 col-sm-12">
+                    <div className="form-group card-label mb-3">
+                        <label>Address</label>
+                        <input disabled name='emergencyContact' value={address || ''} className="form-control" type="text" />
                     </div>
                 </div>
                 <div className="col-md-12 col-sm-12">
