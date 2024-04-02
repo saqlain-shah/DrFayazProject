@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './SignInForm.css';
 
-const SignUp = () => { // Receive onSignUpSuccess as a prop
+const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess as a prop
     const [loading, setLoading] = useState(false);
     const [infoError, setInfoError] = useState('');
     const [user, setUser] = useState({
@@ -41,10 +41,11 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
             });
         }
     };
-    const handleSignUpSuccess = (token) => {
+    const handleSignUpSuccess = () => {
         console.log('Sign-up successful!');
-        localStorage.setItem('token', token); // Save token to local storage
+
     };
+    
 
     const registerUser = async () => {
         try {
@@ -54,12 +55,12 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
                     'Authorization': `Bearer ${token}` // Include token in the Authorization header
                 }
             };
-
+    
             const response = await axios.post('http://localhost:8800/api/userauth/register', user, config);
-            if (response.data.token) {
+            if (response.data.success) {
                 console.log(response.data);
-                handleSignUpSuccess(response.data.token); // Pass token to handleSignUpSuccess
-                navigate("/login");
+                handleSignUpSuccess();
+                navigate("/");
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);
@@ -81,10 +82,8 @@ const SignUp = () => { // Receive onSignUpSuccess as a prop
             }
         }
     };
-
-
-
-
+    
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();

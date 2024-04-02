@@ -24,7 +24,7 @@ import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js'
-import helmet from 'helmet';
+//import helmet from 'helmet';
 
 const app = express();
 app.use(express.json());
@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
-app.use(helmet())
+//app.use(helmet())
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;

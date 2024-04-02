@@ -5,14 +5,14 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
     const { name, reasonForVisit, bloodGroup, gender, emergencyContact, email ,address} = selectValue;
 
     useEffect(() => {
-        if (selectedSlot) {
-            // Extract user data from the selected slot
-            const { patientName, reasonForVisit, patientGender, patientBloodGroup, patientEmail, patientContact } = selectedSlot;
-            console.log('Populating User Data:', { patientName, reasonForVisit }); // Log user data
-            // Set the user data in the state
-            // handleChange({ target: { name: 'name', value: patientName } });
-            handleChange({ target: { name: 'reasonForVisit', value: reasonForVisit } });
-        }
+        // if (selectedSlot) {
+        //     // Extract user data from the selected slot
+        //     const { patientName, reasonForVisit, patientGender, patientBloodGroup, patientEmail, patientContact } = selectedSlot;
+        //     console.log('Populating User Data:', { patientName, reasonForVisit }); // Log user data
+        //     // Set the user data in the state
+        //     // handleChange({ target: { name: 'name', value: patientName } });
+        //     handleChange({ target: { name: 'reasonForVisit', value: reasonForVisit } });
+        // }
     }, [selectedSlot]);
 
     const handleNext = () => {

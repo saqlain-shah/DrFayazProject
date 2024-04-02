@@ -14,7 +14,7 @@ const SignIn = ({ handleResponse }) => {
     const [infoError, setInfoError] = useState('');
     const [show, setShow] = useState(true);
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const navigate = useNavigate();
+    const Navigate = useNavigate();
 
     useEffect(() => {
         setTimeout(() => {
@@ -34,13 +34,10 @@ const SignIn = ({ handleResponse }) => {
             };
 
             const response = await axios.post('http://localhost:8800/api/userauth/login', data, config);
-            console.log(response.data);
+            console.log(response.data)
             if (response.data) {
-                const { token, _id: clientId } = response.data;
-                localStorage.setItem('token', token);
-                console.log('Token stored in localStorage:', token);
-                console.log('Client ID:', clientId);
-                navigate(`/dashboard/${clientId}`);
+                const clientId = response.data._id
+                Navigate(`/dashboard/${clientId}`); // Navigate to home page
             } else {
                 setInfoError(response.data.message);
             }
@@ -50,7 +47,6 @@ const SignIn = ({ handleResponse }) => {
         }
     };
 
-
     useEffect(() => {
         if (isError) {
             setInfoError(error?.data?.message)
@@ -59,7 +55,7 @@ const SignIn = ({ handleResponse }) => {
             message.success('Successfully Logged in');
             navigate("/dashboard/:clientId")
         }
-    }, [isError, error, isSuccess, navigate])
+    }, [isError, error, isSuccess, Navigate])
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
