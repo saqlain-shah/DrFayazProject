@@ -24,7 +24,7 @@ const PatientProfileSetting = () => {
     const buttonRef = useRef(null);
     const [updatePatient, { isSuccess, isError, error, isLoading }] = useUpdatePatientMutation();
 
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState('');
     const [file, setFile] = useState(null);
 
     const handleDateChange = (date) => {
@@ -48,6 +48,8 @@ const PatientProfileSetting = () => {
         await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
             .then(response => {
                 console.log(response)
+                const imagePath = `http://localhost:8800/${response.data.image}`
+                response.data.image = imagePath;
                 setData(response.data);
             })
             .catch(error => {
@@ -91,20 +93,42 @@ const PatientProfileSetting = () => {
         }));
     };
 
-
+    const handleFileChange = (e) => {
+        console.log('File input changed');
+        console.log('Event object:', e);
+        const selectedFile = e.target.files[0];
+        console.log('Selected File:', selectedFile); // Log the selected file
+        setSelectedImage(URL.createObjectURL(selectedFile)); // Update the preview of the selected image
+        setFile(selectedFile); // Set the file state with the selected file
+    };
 
 
     const handleSubmit = async () => {
-        console.log("dATA", data)
         const token = localStorage.getItem('token');
         const config = {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                // Do not set content type here, let FormData handle it automatically
             }
         };
 
+        const formData = new FormData();
+
+        // Append the image file to FormData only if it exists
+        if (file) {
+            formData.append('image', file);
+        }
+
+        // Append other data fields to FormData
+        for (const key in data) {
+            formData.append(key, data[key]);
+        }
+
+        console.log('FormData:', formData);
+
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, data, config);
+            // Send PUT request with FormData
+            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
             console.log('Response:', response);
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
@@ -128,12 +152,12 @@ const PatientProfileSetting = () => {
                         <div className="form-group">
                             <div className='change-avatar d-flex gap-2 align-items-center'>
                                 <img
-                                    src={selectedImage ? selectedImage : (data?.img || pImage)}
+                                    src={selectedImage ? selectedImage : (data?.image || pImage)}
                                     alt=""
-                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%' }} // Set width, height, and styling
+                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%' }}
                                 />
                                 <div>
-                                    <ImageUpload setSelectedImage={setSelectedImage} setFile={setFile} />
+                                    <input type="file" onChange={handleFileChange} />
                                 </div>
                             </div>
                         </div>

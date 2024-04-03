@@ -71,9 +71,10 @@ export const getClientById = async (req, res, next) => {
 export const updateClientById = async (req, res, next) => {
   const { clientId } = req.params;
   const { name, email, gender, bloodGroup, emergencyContact, address } = req.body;
+  const image = req.file.path;
 
   try {
-    const updatedClient = await User.findByIdAndUpdate(clientId, { name, email, gender, bloodGroup, emergencyContact, address });
+    const updatedClient = await User.findByIdAndUpdate(clientId, { name, image, email, gender, bloodGroup, emergencyContact, address });
     if (!updatedClient) {
       return res.status(404).json({ message: 'Client not found' });
     }

@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
-    const [appointmentSlots, setAppointmentSlots] = useState([]);
+    const [appointmentSlots, setAppointmentSlots] = useState({});
     const [selectedSlot, setSelectedSlot] = useState(null);
 
     useEffect(() => {
@@ -30,7 +30,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);
         if (selectedSlot) {
             setSelectedSlot(selectedSlot);
-            handleSelectAppointment([selectedSlot], patientId); // Pass patientId
+            handleSelectAppointment(selectedSlot, patientId); // Pass patientId
         }
     };
 

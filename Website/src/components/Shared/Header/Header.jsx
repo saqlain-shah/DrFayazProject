@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
+import { useNavigate, useParams } from 'react-router-dom';
 import './index.css';
 import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 import TopHeader from '../TopHeader/TopHeader';
@@ -10,11 +10,14 @@ import { Button, Popover, message } from 'antd';
 import { loggedOut } from '../../../service/auth.service';
 
 const Header = () => {
+    const params = useParams();
     const { authChecked, data } = useAuthCheck();
+    console.log("useAuthCheck", authChecked, data)
     const [isLoggedIn, setIsLogged] = useState(false);
     const [show, setShow] = useState(true);
-    const navigate = useNavigate(); // Initialize useNavigate
-
+    const Navigate = useNavigate();
+    console.log("Param", params.clientId)
+    const clientId = params.clientId;
     const handleScroll = () => {
         const currentScroll = window.scrollY;
         if (currentScroll > 50) {
@@ -26,10 +29,14 @@ const Header = () => {
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
-        return (() => window.removeEventListener('scroll', handleScroll));
-    }, [])
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
-    useEffect(() => { authChecked && setIsLogged(true) }, [authChecked]);
+    useEffect(() => {
+        if (authChecked) setIsLogged(true);
+    }, [authChecked]);
 
     const hanldeSignOut = () => {
         loggedOut();
@@ -37,26 +44,13 @@ const Header = () => {
         setIsLogged(false)
     }
 
-    const content = (
-        <div className='nav-popover'>
-            <div className='my-2'>
-                <h5 className='text-capitalize'>{data?.firstName + ' ' + data?.lastName}</h5>
-                <p className='my-0'>{data?.email}</p>
-                <Link to="/dashboard">Dashboard</Link>
-            </div>
-            <Button variant="outline-danger" className='w-100' size="sm" onClick={hanldeSignOut}>
-                Logged Out
-            </Button>
-        </div >
-    );
-
-    // const handleMakeAppointment = () => {
-    //     if (!isLoggedIn) {
-    //         navigate('/login'); // Navigate to the login page using navigate
-    //     } else {
-    //         // Handle appointment logic if user is logged in
-    //     }
-    // }
+    const handleMakeAppointment = () => {
+        if (isLoggedIn) {
+            Navigate('/login');
+        } else {
+            Navigate(`/dashboard/${clientId}`);
+        }
+    }
 
     return (
         <>
@@ -74,21 +68,22 @@ const Header = () => {
                         <ul>
                             <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""} >Home</NavLink></li>
                             <li><NavLink to={'/contact'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Contact</NavLink></li>
-                            {!isLoggedIn && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
+                            {!authChecked && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
                         </ul>
-                        {isLoggedIn &&
+                        {authChecked &&
                             <div>
-                                <Popover content={content}>
+                                <Popover >
                                     <div className='profileImage'>
                                         <img src={data?.img ? data?.img : avatar} alt="" className="profileImage shadow img-fluid" />
                                     </div>
                                 </Popover>
                             </div>
                         }
-                        {/* Include mobile nav toggle component here */}
                     </nav>
 
-                    {/* <Link to={'/appointment'} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span> Appointment</Link> */}
+                    <button className="appointment-btn scrollto" onClick={handleMakeAppointment}>
+                        <span className="d-none d-md-inline">Make an</span> Appointment
+                    </button>
                 </div>
             </header>
         </>

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from 'antd';
 
 const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, selectedSlot }) => {
-    const { name, reasonForVisit, bloodGroup, gender, emergencyContact, email ,address} = selectValue;
+    const { name, reasonForVisit, bloodGroup,image, gender, emergencyContact, email ,address} = selectValue;
 
     useEffect(() => {
         // if (selectedSlot) {
