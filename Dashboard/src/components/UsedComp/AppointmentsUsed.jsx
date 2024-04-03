@@ -1,99 +1,97 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AppointmentTable } from '../Tables';
+import { useNavigate } from 'react-router-dom';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
+import EditAppointmentModal from '../Modals/EditAppointment';
 import { BiPlus } from 'react-icons/bi';
-import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri'; // Add RiEditLine icon
-import { Button } from '../Form';
 import { toast } from 'react-hot-toast';
 
-function AppointmentsUsed({ doctor, token }) {
-  const [open, setOpen] = useState(false);
-  const [appointments, setAppointments] = useState([]);
-  const [newAppointment, setNewAppointment] = useState(null);
+function AppointmentsUsed({ token }) {
   const navigate = useNavigate();
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:8800/api/appointments', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch appointments');
+      }
+      const data = await response.json();
+      setAppointments(data);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      toast.error('Failed to fetch appointments');
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8800/api/appointments', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setAppointments(response.data);
-      } catch (error) {
-        console.error('Error fetching appointment data:', error);
-      }
-    };
-
     fetchData();
   }, [token]);
 
-  const handleNewAppointment = (appointment) => {
-    console.log('New appointment created:', appointment);
-    const updatedAppointments = appointments.map(appt => appt.id === appointment.id ? appointment : appt);
-    setAppointments(updatedAppointments);
-    setNewAppointment(appointment);
-  };
-
-  const handleEventClick = (event) => {
-    console.log('Appointment clicked:', event);
-    setOpen(true);
-    setNewAppointment(event);
-  };
-
-  const handleClose = () => {
-    console.log('Modal closed');
-    setOpen(false);
-    setNewAppointment(null);
-  };
-
   const handleEdit = (appointment) => {
-    setOpen(true);
-    setNewAppointment(appointment);
+    setSelectedAppointment(appointment);
+    setOpenEditModal(true);
   };
 
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        setAppointments(appointments.filter(appointment => appointment._id !== id));
-        toast.success('Appointment deleted successfully!', {
-          position: 'bottom-right',
-        });
-      } else {
-        console.error('Failed to delete appointment');
-        toast.error('Failed to delete appointment');
-      }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      toast.error('Error deleting appointment');
-    }
+  const handleNewAppointment = (appointment) => {
+    setAppointments(prevAppointments => [...prevAppointments, appointment]);
+  };
+
+  const handleUpdateAppointment = (updatedAppointment) => {
+    setAppointments(prevAppointments =>
+      prevAppointments.map(appointment =>
+        appointment._id === updatedAppointment._id ? updatedAppointment : appointment
+      )
+    );
+
+    setTimeout(() => {
+      setAppointments(prevAppointments => [...prevAppointments]);
+    }, 100);
+  };
+
+  const handleCloseModals = () => {
+    setOpenAddModal(false);
+    setOpenEditModal(false);
+    setSelectedAppointment(null);
+  };
+
+  const handleAddModalOpen = () => {
+    setOpenAddModal(true);
+  };
+
+  const handleEditModalClose = () => {
+    setOpenEditModal(false);
   };
 
   return (
     <div className="w-full">
-      {open && (
+      {openAddModal && (
         <AddAppointmentModal
-          datas={newAppointment}
-          isOpen={open}
-          closeModal={() => handleClose()}
+          isOpen={openAddModal}
+          closeModal={handleCloseModals}
           handleNewAppointment={handleNewAppointment}
-          isEditing={!!newAppointment}
         />
       )}
-      <h1 className="text-sm font-medium mb-6">Appointment</h1>
+      {openEditModal && selectedAppointment && (
+        <EditAppointmentModal
+          isOpen={openEditModal}
+          closeModal={handleEditModalClose}
+          appointment={selectedAppointment}
+          onUpdateAppointment={handleUpdateAppointment}
+        />
+      )}
+      <h1 className="text-sm font-medium mb-6">Appointments</h1>
       <div className="w-full overflow-x-scroll">
         <div className="flex justify-end mb-4">
           <button
-            onClick={() => setOpen(true)}
+            onClick={handleAddModalOpen}
             className="bg-main text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-main-dark transition duration-300 flex items-center"
           >
             <BiPlus className="mr-2" />
@@ -101,14 +99,11 @@ function AppointmentsUsed({ doctor, token }) {
           </button>
         </div>
         <AppointmentTable
-          data={appointments}
-          doctor={doctor}
-          newAppointment={newAppointment}
           functions={{
-            preview: handleEventClick,
-            edit: handleEdit, // Pass the edit function as a prop
+            edit: handleEdit,
           }}
           token={token}
+          appointments={appointments}
         />
       </div>
     </div>

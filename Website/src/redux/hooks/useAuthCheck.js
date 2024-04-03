@@ -34,6 +34,7 @@ export default function useAuthCheck() {
 
     return {
         authChecked,
+        setAuthChecked, 
         data,
         role
     };

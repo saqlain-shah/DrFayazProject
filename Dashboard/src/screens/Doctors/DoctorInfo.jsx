@@ -1,5 +1,4 @@
-// DoctorInfo.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input } from '../../components/Form';
 import { toast } from 'react-hot-toast';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
@@ -11,6 +10,20 @@ function DoctorInfo({ closeModal, onSave }) {
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
     const [profileImage, setProfileImage] = useState(null);
+    const [updatedDoctorInfo, setUpdatedDoctorInfo] = useState(null);
+
+    useEffect(() => {
+        // Check if values are present in local storage and set state accordingly
+        const storedFullName = localStorage.getItem('name');
+        const storedEmail = localStorage.getItem('email');
+        const storedPhone = localStorage.getItem('phone');
+        const storedAddress = localStorage.getItem('address');
+
+        if (storedFullName) setFullName(storedFullName);
+        if (storedEmail) setEmail(storedEmail);
+        if (storedPhone) setPhone(storedPhone);
+        if (storedAddress) setAddress(storedAddress);
+    }, []);
 
     const handleImageUpload = (event) => {
         setProfileImage(event.target.files[0]);
@@ -37,26 +50,38 @@ function DoctorInfo({ closeModal, onSave }) {
                 }
             );
 
-            // Set the profile image received in the response
             setProfileImage(response.data.profileImage);
 
+            // Save profile image URL to local storage
+            localStorage.setItem('profileImage', response.data.profileImage);
+
+            // Save other values to local storage
+            localStorage.setItem('name', fullName);
+            localStorage.setItem('email', email);
+            localStorage.setItem('phone', phone);
+            localStorage.setItem('address', address);
+
             toast.success('Doctor information saved successfully');
+
+            setUpdatedDoctorInfo(response.data);
+
             onSave(response.data);
-            closeModal(); // Call closeModal function
+            closeModal();
         } catch (error) {
             console.error('Error saving doctor information:', error);
             toast.error('Failed to save doctor information');
         }
     };
 
+
     return (
         <div className="flex-col gap-4">
             <Input
                 label="Full Name"
-                color='true'
                 type="text"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                color='true'
+                disabled
             />
             <Input
                 label="Phone Number"
@@ -68,15 +93,15 @@ function DoctorInfo({ closeModal, onSave }) {
             <Input
                 label="Email"
                 type="email"
-                color='true'
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                disabled
+                color='true'
             />
             <Input
                 label="Address"
                 type="text"
-                color='true'
                 value={address}
+                color='true'
                 onChange={(e) => setAddress(e.target.value)}
             />
             <div>

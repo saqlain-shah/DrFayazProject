@@ -40,21 +40,21 @@ function PatientList({ onSelectPatient, setSearchValue }) {
         patient !== selectedPatient
     );
 
-
     return (
-        <div className="border border-gray-300 rounded p-4 max-h-48 overflow-y-auto">
-            <h2 className="text-lg font-semibold mb-2">Select Patient:</h2>
+        <div className="border border-gray-300 rounded p-4 max-h-64 overflow-y-auto">
+            <h2 className="text-xl font-semibold mb-4">Select Patient</h2>
             <input
                 type="text"
-                placeholder="Search"
+                placeholder="Search by patient name"
                 value={searchValueInput}
                 onChange={handleSearchChange}
-                className="w-full border border-gray-300 rounded p-2 mb-2"
+                className="w-full border border-gray-300 rounded p-2 mb-4 focus:outline-none"
             />
-            <ul>
+            <ul className="divide-y divide-gray-200">
                 {filteredPatients.map(patient => (
-                    <li key={patient.id} onClick={() => handlePatientSelect(patient)} className="cursor-pointer py-1 px-2 hover:bg-gray-100">
-                        {patient.fullName}
+                    <li key={patient.id} onClick={() => handlePatientSelect(patient)} className="cursor-pointer py-2 px-4 hover:bg-gray-100 transition-colors">
+                        <span className="block">{patient.fullName}</span>
+                        <span className="block text-sm text-gray-500">{patient.email}</span>
                     </li>
                 ))}
             </ul>

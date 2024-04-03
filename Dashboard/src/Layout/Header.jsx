@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { MenuSelect } from "../components/Form";
 import { TbUser } from "react-icons/tb";
 import { AiOutlinePoweroff } from "react-icons/ai";
@@ -7,8 +7,15 @@ import NotificationComp from "../components/NotificationComp";
 import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
-function Header({ fullName, profileImage }) {
+import { useAuth } from "../AuthContext"; // Import the useAuth hook
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faUser } from '@fortawesome/free-solid-svg-icons'
+
+function Header() {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // Get the logout function from useAuth
+  const name = localStorage.getItem('name');
+  const profileImagePath = localStorage.getItem('profileImage'); // Retrieve profile image from local storage
   const [isOpen, setIsOpen] = React.useState(false);
 
   // toggle drawer
@@ -18,21 +25,22 @@ function Header({ fullName, profileImage }) {
 
   const DropDown1 = [
     {
-      title: "Profile",
+      title: 'Profile',
       icon: TbUser,
       onClick: () => {
-        navigate("/settings");
+        navigate('/settings');
       },
     },
     {
-      title: "Logout",
+      title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
-        navigate("/login");
+        logout(); // Call the logout function from useAuth
+        navigate('/login');
       },
     },
   ];
-
+  const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
   return (
     <>
       {/* Header content */}
@@ -47,11 +55,6 @@ function Header({ fullName, profileImage }) {
           >
             <BiMenu />
           </button>
-          <input
-            type="text"
-            placeholder='Search "Patients"'
-            className="md:w-96 w-full h-12 text-sm text-main rounded-md bg-dry border border-border px-4"
-          />
         </div>
         {/* User information */}
         <div className="md:col-span-1 sm:col-span-1 col-span-2 items-center justify-end pr-4 md:pr-0">
@@ -64,28 +67,39 @@ function Header({ fullName, profileImage }) {
                 </span>
               </div>
             </NotificationComp>
+
             <div className=" items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
-                <div className="flex gap-4 items-center p-4 rounded-lg">
-                  {profileImage && (
-                    <img
-                      src={`http://localhost:8800/${profileImage}`}
-                      alt="profile"
-                      className="w-12 border border-border object-cover h-12 rounded-full"
-                    />
-                  )}
-                  {/* Display doctor's name */}
-                  <p className="text-sm text-textGray font-medium">{fullName}</p>
+                <div className=" items-center md:flex hidden">
+                  <MenuSelect datas={DropDown1}>
+                    <div className="flex gap-4 items-center p-4 rounded-lg">
+                      {/* Profile Image */}
+                      {profileImageURL ? (
+                        <img
+                          src={profileImageURL} // Use complete image URL
+                          alt="profile"
+                          className="w-12 border border-border object-cover h-12 rounded-full"
+                        />
+                      ) : (
+                        <FontAwesomeIcon icon={faUser} className="w-6 h-6" />
+                      )}
+
+                      {/* Display user's name */}
+                      <p className="text-sm text-textGray font-medium">
+                        {name} {/* Display user's full name */}
+                      </p>
+                    </div>
+                  </MenuSelect>
                 </div>
               </MenuSelect>
             </div>
+
             {/* Toggle menu drawer button */}
             <button
               className="md:hidden block"
               onClick={() => setShowDrawer(!showDrawer)}
             >
               {/* You can add an icon for the menu drawer toggle */}
-
             </button>
           </div>
         </div>
@@ -95,3 +109,4 @@ function Header({ fullName, profileImage }) {
 }
 
 export default Header;
+

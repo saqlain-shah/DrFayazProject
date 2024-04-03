@@ -1,35 +1,65 @@
-import React from 'react';
-import { FaTimes } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
+import React, { useEffect } from 'react';
+import axios from 'axios';
 
-function PatientImages({ images }) {
-  console.log('Images prop:', images);
+function PatientImages({ medicalRecords }) {
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        medicalRecords && medicalRecords.data && medicalRecords.data.forEach(record => {
+          record.attachments && record.attachments.forEach(attachment => {
+            const imageUrl = `http://localhost:8800/${attachment.filename}`;
+            axios.get(imageUrl)
+              .then(response => {
+                console.log('Image loaded successfully:', response);
+              })
+              .catch(error => {
+                console.error('Error fetching image:', error);
+              });
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
 
-  if (!images || images.length === 0) {
-    console.log('No images found');
-    return <h1>No image found</h1>; // or return some placeholder UI indicating that no images are available
-  }
+    fetchImages();
+  }, [medicalRecords]);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-      {images.map((image, index) => {
-        console.log('Image URL:', URL.createObjectURL(image));
-        return (
-          <div key={index} className="relative w-full">
-            <img
-              src={URL.createObjectURL(image)} // Use createObjectURL to display uploaded images
-              alt={`patient-${index}`}
-              className="w-full h-72 rounded-lg object-cover"
-            />
-            <button
-              onClick={() => toast.error('This feature is not available yet.')}
-              className="bg-white rounded-full w-8 h-8 flex-colo absolute -top-1 -right-1"
-            >
-              <FaTimes className="text-red-500" />
-            </button>
+    <div className="flex flex-wrap justify-center gap-4">
+      {medicalRecords && medicalRecords.data && medicalRecords.data.map((record, index) => (
+        <div key={index} className="p-4 border border-gray-200 rounded-md max-w-xs">
+          <h3 className="text-lg font-semibold mb-2">{record.fullName}</h3>
+          <div className="flex flex-wrap justify-center gap-2">
+            {record.attachments && record.attachments.map((attachment, attachmentIndex) => {
+              const imageUrl = `http://localhost:8800/uploads/${attachment.filename}`;
+              return (
+                <div key={attachmentIndex}>
+                  {attachment.filename && (
+                    <img
+                      src={imageUrl}
+                      alt={attachment.originalname}
+                      className="rounded-lg shadow-md"
+                      style={{ width: "100px", height: "100px", maxWidth: "100%" }}
+                      onLoad={() => {
+                        axios.get(imageUrl, {
+                          headers: { Authorization: `Bearer ${token}` }
+                        }).then(response => {
+                          console.log('Image loaded successfully:', response);
+                        }).catch(error => {
+                          console.error('Error fetching attachment image:', error);
+                        });
+                      }}
+                    />
+                  )}
+                  {/* Log the constructed image URL */}
+                  {console.log(`Image URL ${attachmentIndex}: ${imageUrl}`)}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }

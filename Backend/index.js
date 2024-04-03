@@ -14,13 +14,17 @@ import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
 import doctorRoutes from './routes/doctor.js'
+import userauth from './routes/userauth.js'
 import schduleRoutes from './routes/schdule.js'
+import webAppointmentRoutes from './routes/webApoint.js'
 import { authenticate } from './utils/authMiddleware.js';
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
+import otpRoutes from './routes/Opt.js'
+//import helmet from 'helmet';
 
 const app = express();
 app.use(express.json());
@@ -30,7 +34,14 @@ setupMiddleware();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Middleware to disable caching
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
+
 app.use(cors());
+//app.use(helmet())
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
@@ -43,8 +54,10 @@ app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile',
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   res.redirect('http://localhost:5173/');
 });
+
 app.use(authenticate);
 app.use('/api/auth', authRoute);
+app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/doctors', doctorRoutes);
@@ -56,6 +69,9 @@ app.use('/api/services', servicesRoute);
 app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes)
 app.use('/api/medicine', medicineRoute)
+app.use('/api/v1', webAppointmentRoutes);
+app.use('/api/otp', otpRoutes);
+
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { BiChevronLeft, BiChevronRight, BiPlus, BiTime } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import AddAppointmentModal from '../components/Modals/AddApointmentModal';
-import { servicesData } from '../components/Datas';
+import axios from 'axios'; // Import Axios
+import { toast } from 'react-hot-toast';
 
-// custom toolbar
 const CustomToolbar = (toolbar) => {
   // today button handler
   const goToBack = () => {
@@ -40,7 +40,6 @@ const CustomToolbar = (toolbar) => {
   // day button handler
   const goToDay = () => {
     toolbar.onView('day');
-
   };
 
   // view button group
@@ -96,7 +95,7 @@ const CustomToolbar = (toolbar) => {
               ) : item.view === 'week' ? (
                 <HiOutlineCalendarDays />
               ) : (
-                <BiTime />
+                <BiPlus />
               )}
             </button>
           ))}
@@ -108,81 +107,108 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [open, setOpen] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  useEffect(() => {
+    // Make API call to fetch appointment data
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const response = await axios.get('http://localhost:8800/api/v1', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+        });
+        const eventData = response.data.data;
+        const formattedEvents = eventData.map((event) => ({
+          id: event._id,
+          start: new Date(event.patientInfo.scheduleDate),
+          end: new Date(event.patientInfo.scheduleTime),
+          title: `${event.patientInfo.firstName} ${event.patientInfo.lastName}`,
+          email: event.patientInfo.email, // Include email from response
+          phone: event.patientInfo.phone, // Include phone from response
+          paymentType: event.payment.paymentType, // Include paymentType from response
+          paymentMethod: event.payment.paymentMethod, // Include paymentMethod from response
+          // cardNumber: event.payment.cardNumber, // Include cardNumber from response
+          // cardExpiredYear: event.payment.cardExpiredYear, // Include cardExpiredYear from response
+          // cvv: event.payment.cvv, // Include cvv from response
+          // expiredMonth: event.payment.expiredMonth, // Include expiredMonth from response
+          // nameOnCard: event.payment.nameOnCard, // Include nameOnCard from response
+        }));
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.error('Error fetching appointment data:', error);
+      }
+    };
 
-  // handle modal close
+    fetchData(); // Call the fetchData function
+  }, []); // Empty dependency array to run the effect only once on component mount
+
   const handleClose = () => {
     setOpen(!open);
-    setData({});
   };
 
-  const events = [
-    {
-      id: 0,
-      start: moment({ hours: 7 }).toDate(),
-      end: moment({ hours: 9 }).toDate(),
-      color: '#FB923C',
-      title: 'Saqlain Shah',
-      message: 'He is not sure about the time',
-      service: servicesData[1],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: '#FC8181',
-      title: 'Anees Ibrahim',
-      message: 'She is coming for checkup',
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
+  const handleDeleteAppointment = async (id) => {
+    try {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: '#FFC107',
-      title: 'Ali Naqi',
-      message: 'She is coming for checkup. but she is not sure about the time',
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
-  ];
+      const response = await fetch(`http://localhost:8800/api/v1/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      });
 
-  // onClick event handler
+      const data = await response.json();
+      if (response.ok) {
+        // Filter out the deleted event from the events state
+        const updatedEvents = events.filter((event) => event.id !== id);
+        setEvents(updatedEvents); // Update the events state
+        toast.success(data.message);
+      } else {
+        toast.error(data.error);
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      toast.error('Failed to delete appointment');
+    }
+  };
+
   const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+    setSelectedEvent(event); // Set the selected event
+    setOpen(true); // Open the modal
   };
+
+  const handleNewAppointment = (newAppointment) => {
+    // Ensure that the required fields are present
+    if (newAppointment && newAppointment.start && newAppointment.end) {
+      // Update the events state to include the new appointment
+      setEvents([...events, newAppointment]);
+    } else {
+      console.error('Missing required fields in the appointment data.');
+      toast.error('Failed to create appointment. Missing required fields.');
+    }
+  };
+
+
 
   return (
     <Layout>
       {open && (
         <AddAppointmentModal
-          datas={data}
+          closeModal={() => setOpen(false)} // Close modal function
           isOpen={open}
-          closeModal={() => {
-            handleClose();
-          }}
+          datas={selectedEvent} // Pass selected event data if needed
+          handleNewAppointment={handleNewAppointment} // Function to handle new appointments
+          patientId={selectedEvent ? selectedEvent.id : null} // Pass patient ID if needed
         />
+
       )}
-      {/* calender */}
+
+      {/* Calendar */}
       <button
-        onClick={handleClose}
+        onClick={() => setOpen(true)} // Open the modal
         className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
       >
         <BiPlus className="text-2xl" />
@@ -204,11 +230,10 @@ function Appointments() {
         resizable
         step={60}
         selectable={true}
-        // custom event style
+        // Custom event style
         eventPropGetter={(event) => {
           const style = {
-            backgroundColor: '#66B5A3',
-
+            backgroundColor: event.color || '#66B5A3',
             borderRadius: '10px',
             color: 'white',
             border: '1px',
@@ -220,7 +245,7 @@ function Appointments() {
             style,
           };
         }}
-        // custom date style
+        // Custom date style
         dayPropGetter={(date) => {
           const backgroundColor = 'white';
           const style = {
@@ -230,9 +255,9 @@ function Appointments() {
             style,
           };
         }}
-        // remove agenda view
+        // Remove agenda view
         views={['month', 'day', 'week']}
-        // toolbar={false}
+        // Toolbar={false}
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>
@@ -240,3 +265,4 @@ function Appointments() {
 }
 
 export default Appointments;
+

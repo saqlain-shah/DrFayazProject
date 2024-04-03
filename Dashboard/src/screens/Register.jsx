@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input } from '../components/Form';
 import { BiLogInCircle } from 'react-icons/bi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -11,8 +11,15 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Update the register function to handle the token received from the backend
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        }
+    }, []);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -24,10 +31,13 @@ function Register() {
             });
             if (response.status === 201) {
                 const token = response.data.token;
-                // Store the token and user's name in local storage
+
+                // Store the token, name, and email in local storage
                 localStorage.setItem('token', token);
-                localStorage.setItem('userName', name); // Store user's name
-                console.log('Username set in local storage:', name); // <-- Add this console log
+                localStorage.setItem('name', name);
+                localStorage.setItem('email', email);
+
+                document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
                 toast.success('Registration successful');
                 navigate('/login');
             } else {
@@ -40,6 +50,14 @@ function Register() {
             setLoading(false);
         }
     };
+
+    const handleLoginClick = () => {
+        navigate('/login');
+    };
+
+    if (isLoggedIn) {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="w-full h-screen flex-colo bg-dry">
@@ -75,12 +93,21 @@ function Register() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <Button
-                    label={loading ? 'Registering...' : 'Register'}
-                    Icon={BiLogInCircle}
-                    disabled={loading}
-                    type="submit"
-                />
+                <div className="flex justify-between items-center">
+                    <Button
+                        label={loading ? 'Registering...' : 'Register'}
+                        Icon={BiLogInCircle}
+                        disabled={loading}
+                        type="submit"
+                    />
+                    <div style={{ marginLeft: '10px' }}>
+                        <Button
+                            label="Login"
+                            onClick={handleLoginClick}
+                            color="primary"
+                        />
+                    </div>
+                </div>
             </form>
         </div>
     );

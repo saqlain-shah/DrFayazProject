@@ -1,64 +1,86 @@
 import React, { useState } from 'react';
+import axios from 'axios'; 
 import Modal from './Modal';
-import { shareData } from '../Datas';
-import { RadioGroup } from '@headlessui/react';
 import { Button } from '../Form';
 import { toast } from 'react-hot-toast';
+import { HiOutlineMail } from 'react-icons/hi';
+import { FaWhatsapp } from 'react-icons/fa';
 
-function ShareModal({ closeModal, isOpen }) {
-  const [selected, setSelected] = useState();
+export const shareData = [
+  {
+    id: 1,
+    icon: HiOutlineMail,
+    title: "Email",
+    description: "Send to patient email address",
+  },
+  {
+    id: 2,
+    icon: FaWhatsapp,
+    title: "WhatsApp",
+    description: "Send to patient WhatsApp account",
+  },
+];
+
+function ShareModal({ closeModal, isOpen, dataToShare }) {
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleShare = async () => {
+    if (!selectedOption) {
+      toast.error('Please select a sharing option');
+      return;
+    }
+  
+    setLoading(true);
+  
+    try {
+      // Make API request to share data
+      const response = await axios.post('http://localhost:8800/api/files/share/whatsapp', {
+        method: selectedOption === 1 ? 'email' : 'whatsapp', // Determine sharing method
+        data: dataToShare, // Data to be shared (file path or other relevant data)
+      });
+  
+      toast.success(response.data.message); // Display success message from server
+      closeModal();
+      setLoading(false);
+    } catch (error) {
+      console.error('Share failed:', error);
+      toast.error('Failed to share');
+      setLoading(false);
+    }
+  };
+
   return (
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title="Share with patient via"
+      title="Share Data"
       width={'max-w-xl'}
     >
-      <div className="flex-colo gap-6">
-        {/* data */}
+      <div className="flex-col gap-6">
+        {/* Render sharing options */}
         <div className="w-full">
-          <RadioGroup value={selected} onChange={setSelected}>
-            <div className="space-y-2">
-              {shareData.map((user) => (
-                <RadioGroup.Option
-                  key={user.id}
-                  value={user}
-                  className={({ active, checked }) =>
-                    `
-                    ${active ? 'border-subMain bg-subMain text-white' : ''}
-                    rounded-xl border-[1px] border-border p-4 group hover:bg-subMain hover:text-white`
-                  }
-                >
-                  {({ active, checked }) => (
-                    <div className="flex  gap-6 items-center">
-                      <div className="w-12 h-12 bg-text rounded-full flex-colo">
-                        <user.icon className="text-subMain text-xl" />
-                      </div>
-                      <div>
-                        <h6 className="text-sm">{user.title}</h6>
-                        <p
-                          className={`${
-                            active && 'text-white'
-                          } text-xs group-hover:text-white text-textGray mt-1`}
-                        >
-                          {user.description}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </RadioGroup.Option>
-              ))}
+          {shareData.map(option => (
+            <div key={option.id} className="flex items-center gap-4">
+              <input
+                type="radio"
+                id={option.id}
+                value={option.id}
+                checked={selectedOption === option.id}
+                onChange={() => setSelectedOption(option.id)}
+              />
+              <label htmlFor={option.id}>
+                <option.icon className="text-xl" /> {option.title}
+              </label>
             </div>
-          </RadioGroup>
+          ))}
         </div>
-        {/* button */}
 
+        {/* Share button */}
         <Button
-          onClick={() => {
-            toast.error('This feature is not available yet');
-            closeModal();
-          }}
-          label="Send"
+          onClick={handleShare}
+          label={loading ? 'Sharing...' : 'Share'}
+          disabled={loading}
         />
       </div>
     </Modal>

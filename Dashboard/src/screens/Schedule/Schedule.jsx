@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../../Layout';
+import { BiTime } from 'react-icons/bi';
+import Layout from '../../Layout'
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { BiChevronLeft, BiChevronRight, BiPlus, BiTime } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
+import AppointmentDetailsModal from '../../components/Modals/fetchModel';
+import { toast } from 'react-hot-toast';
 import AddAppointmentModal from './SchduleModel';
-import { servicesData } from '../../components/Datas';
 
-// custom toolbar
 const CustomToolbar = (toolbar) => {
-  // today button handler
   const goToBack = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() - 1);
     toolbar.onNavigate('prev');
@@ -49,9 +49,10 @@ const CustomToolbar = (toolbar) => {
     { view: 'day', label: 'Day' },
   ];
 
+
   return (
     <div className="flex flex-col gap-8 mb-8">
-      <h1 className="text-xl font-semibold">Appointments</h1>
+      <h1 className="text-xl font-semibold">Schedule</h1>
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
         <div className="md:col-span-1 flex sm:justify-start justify-center items-center">
           <button
@@ -74,7 +75,7 @@ const CustomToolbar = (toolbar) => {
           </button>
         </div>
         {/* filter */}
-        <div className="md:col-span-2 grid grid-cols-3 rounded-md  border border-subMain">
+        <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -95,7 +96,7 @@ const CustomToolbar = (toolbar) => {
               ) : item.view === 'week' ? (
                 <HiOutlineCalendarDays />
               ) : (
-                <BiTime />
+                <BiPlus />
               )}
             </button>
           ))}
@@ -105,37 +106,41 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
-// import React, { useState } from 'react';
-// import Layout from '../../Layout';
-// import { Calendar, momentLocalizer } from 'react-big-calendar';
-// import moment from 'moment';
-// import { BiPlus } from 'react-icons/bi';
-// import AddAppointmentModal from './AddAppointmentModal';
-// import { servicesData } from '../../components/Datas';
-// import { fetchAppointmentData } from '../../api'; // import fetchAppointmentData function
-
-function Schedule() {
+const Schedule = () => {
   const localizer = momentLocalizer(moment);
   const [open, setOpen] = useState(false);
   const [appointmentData, setAppointmentData] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  // Fetch appointment data when component mounts
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Fetch appointment data function
   const fetchData = async () => {
     try {
-      const data = await fetchAppointmentData(); // Assuming you have a function to fetch appointment data
+      const token = localStorage.getItem('token');
+      // Simulating API call to fetch schedule data
+      // Replace this with your actual fetch logic
+      const data = [
+        {
+          id: 1,
+          title: 'Appointment 1',
+          start: new Date(),
+          end: new Date(),
+        },
+        {
+          id: 2,
+          title: 'Appointment 2',
+          start: new Date(),
+          end: new Date(),
+        },
+      ];
       setAppointmentData(data);
     } catch (error) {
       console.error('Error fetching appointment data:', error);
     }
   };
 
-  // onClick event handler
   const handleEventClick = (event) => {
     setSelectedEvent(event);
     setOpen(true);
@@ -144,10 +149,10 @@ function Schedule() {
   return (
     <Layout>
       {open && (
-        <AddAppointmentModal
-          appointmentData={selectedEvent} // Pass selected event data as appointmentData prop
+        <AppointmentDetailsModal
           isOpen={open}
           closeModal={() => setOpen(false)}
+          event={selectedEvent}
         />
       )}
       <button
@@ -156,14 +161,21 @@ function Schedule() {
       >
         <BiPlus className="text-2xl" />
       </button>
+      <div className="flex justify-end mt-4 mr-4">
+        <HiOutlineCalendarDays className="text-xl cursor-pointer mx-2" title="View Day" />
+        <HiOutlineViewGrid className="text-xl cursor-pointer mx-2" title="View Week" />
+        <BiTime className="text-xl cursor-pointer mx-2" title="View Time" />
+      </div>
       <Calendar
         localizer={localizer}
-        events={appointmentData} // Pass appointment data to the Calendar component
-        // Your other Calendar props
-        onSelectEvent={handleEventClick} // Handle event click
+        events={appointmentData}
+        onSelectEvent={handleEventClick}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
       />
     </Layout>
   );
-}
+};
 
 export default Schedule;

@@ -82,11 +82,11 @@ export const MenuDatas = [
     path: "/medicine",
     icon: RiMedicineBottleLine,
   },
-  {
-    title: "Receptions",
-    path: "/receptions",
-    icon: HiOutlineUsers,
-  },
+  // {
+  //   title: "Receptions",
+  //   path: "/receptions",
+  //   icon: HiOutlineUsers,
+  // },
   {
     title: "Doctors",
     path: "/doctors",
@@ -265,6 +265,10 @@ export const sortsDatas = {
     {
       id: 3,
       name: "PKR (Rupee)",
+    },
+    {
+      id: 4,
+      name: "EUR (Euro)",
     },
   ],
   instractions: [
@@ -973,10 +977,10 @@ export const dashboardCards = [
     id: 1,
     title: "Total Patients",
     icon: TbUsers,
-    value: 1600,
+    value: 0, // Placeholder value, will be replaced with dynamic data
     percent: 45.06,
     color: ["bg-subMain", "text-subMain", "#66B5A3"],
-    datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
+    datas: [0], // Placeholder value, will be replaced with dynamic data
   },
   {
     id: 2,
@@ -1034,32 +1038,22 @@ export const notificationsData = [
   },
 ];
 
-export const shareData = [
-  {
-    id: 1,
-    icon: HiOutlineMail,
-    title: "Email",
-    description: "Send to patient email address",
-  },
-  {
-    id: 2,
-    icon: MdOutlineTextsms,
-    title: "SMS",
-    description: "Send to patient phone number",
-  },
-  {
-    id: 3,
-    icon: FaWhatsapp,
-    title: "WhatsApp",
-    description: "Send to patient WhatsApp account",
-  },
-  {
-    id: 4,
-    icon: FaTelegramPlane,
-    title: "Telegram",
-    description: "Send to patient Telegram account",
-  },
-];
+// export const shareData = [
+//   {
+//     id: 1,
+//     icon: HiOutlineMail,
+//     title: "Email",
+//     description: "Send to patient email address",
+//   },
+
+//   {
+//     id: 3,
+//     icon: FaWhatsapp,
+//     title: "WhatsApp",
+//     description: "Send to patient WhatsApp account",
+//   },
+
+// ];
 
 export const medicineData = [
   {
@@ -1142,11 +1136,11 @@ export const patientTab = [
     title: "Medical Records",
     icon: TbChartHistogram,
   },
-  {
-    id: 2,
-    title: "Appointments",
-    icon: BiCalendar,
-  },
+  // {
+  //   id: 2,
+  //   title: "Appointments",
+  //   icon: BiCalendar,
+  // },
   {
     id: 3,
     title: "Invoices",

@@ -5,10 +5,12 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import DoctorInfo from './Doctors/DoctorInfo';
 import ChangePassword from '../components/UsedComp/ChangePassword';
 import Header from '../Layout/Header';
-
+import { useLocation } from 'react-router-dom';
 function Settings() {
   const [activeTab, setActiveTab] = useState(1);
-  const [userData, setUserData] = useState(null);
+  const location = useLocation(); // Use useLocation hook to access location object
+  const handleSave = (data) => {
+  };
 
   const tabs = [
     {
@@ -27,28 +29,37 @@ function Settings() {
     // Implement the logic to close the modal
   };
 
-  const handleSave = (data) => {
-    setUserData(data);
+  const userData = {
+    fullName: localStorage.getItem('name'),
+    email: localStorage.getItem('email'),
+    phone: localStorage.getItem('phone'),
+    profileImage: localStorage.getItem('profileImage')
   };
 
+  // Inside the renderProfilePicture function, remove the condition to check userData.profileImage
   const renderProfilePicture = () => {
-    if (userData && userData.profileImage) {
-      const profileImageUrl = `http://localhost:8800/${userData.profileImage}`;
-      return (
+    const profileImageUrl = `http://localhost:8800/${userData.profileImage}`;
+    return (
+      <div className="flex justify-center items-center flex-col"> {/* Updated div for center alignment */}
         <img
           src={profileImageUrl}
           alt="Profile"
           className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
         />
-      );
-    }
-    return null;
+        <div className="gap-2 flex-col text-center mt-4"> {/* Center-align name, email, and phone */}
+          <h2 className="text-sm font-semibold">{userData.fullName}</h2>
+          <p className="text-xs text-textGray">{userData.email}</p>
+          <p className="text-xs">{userData.phone}</p>
+        </div>
+      </div>
+    );
   };
+
 
   const tabPanel = () => {
     switch (activeTab) {
       case 1:
-        return <DoctorInfo onSave={handleSave} closeModal={closeModal} />;
+        return <DoctorInfo userData={userData} onSave={handleSave} closeModal={closeModal} />;
       case 2:
         return <ChangePassword />;
       default:
@@ -65,11 +76,6 @@ function Settings() {
           {userData && (
             <>
               {renderProfilePicture()}
-              <div className="gap-2 flex-col">
-                <h2 className="text-sm font-semibold">{userData.fullName}</h2>
-                <p className="text-xs text-textGray">{userData.email}</p>
-                <p className="text-xs">{userData.phone}</p>
-              </div>
             </>
           )}
 

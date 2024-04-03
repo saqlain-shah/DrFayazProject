@@ -9,7 +9,7 @@ import EditMedicalRecordModal from './EditMedicalRecordModal'; // Import EditMed
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
+import { fetchMedicalRecords } from './fetch';
 function MedicalRecord() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -20,24 +20,11 @@ function MedicalRecord() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  useEffect(() => {
-    fetchMedicalRecords();
-  }, []);
 
-  const fetchMedicalRecords = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8800/api/medical-records', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMedicalRecords(response.data.data.map(record => ({
-        ...record,
-        treatment: record.treatment.map(t => t.name)
-      })));
-    } catch (error) {
-      console.error('Error fetching medical records:', error);
-    }
-  };
+
+  useEffect(() => {
+    fetchMedicalRecords(id, setMedicalRecords, toast);
+  }, [id]);
 
   const handleDelete = async (recordId) => {
     try {
@@ -45,7 +32,8 @@ function MedicalRecord() {
       await axios.delete(`http://localhost:8800/api/medical-records/${recordId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchMedicalRecords(); // Update medical records after deletion
+      // Update medical records after deletion by passing the patient's id
+      fetchMedicalRecords(id, setMedicalRecords, toast); // Pass id and setMedicalRecords function
       toast.success('Medical record deleted successfully');
     } catch (error) {
       console.error('Error deleting medical record:', error);
@@ -53,7 +41,8 @@ function MedicalRecord() {
     }
   };
 
-  // MedicalRecord.js
+
+
   const handleEdit = async (recordId, newData) => {
     try {
       const token = localStorage.getItem('token');
@@ -67,6 +56,7 @@ function MedicalRecord() {
       toast.error('Failed to edit medical record');
     }
   };
+
 
 
   return (

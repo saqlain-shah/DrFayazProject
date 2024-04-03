@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from '../Layout';
 import { Button, MenuSelect } from '../components/Form';
 import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
@@ -10,41 +10,93 @@ import { campaignData } from '../components/Datas';
 import { TbBrandWhatsapp, TbMessage } from 'react-icons/tb';
 import CampaignModal from '../components/Modals/AddCampagnModal';
 import { FiEye } from 'react-icons/fi';
+import axios from 'axios';
+import ContactSelectionDialog from './ContactSelectionDialog';
 
 function Campaings() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [data, setData] = React.useState({});
   const [showShareOptions, setShowShareOptions] = React.useState(false);
+  const [contacts, setContacts] = useState([
+    {
+      name: '',
+      phoneNumber: 0,
+      email: ""
+    }
+  ])
+  const [message, setMessage] = useState(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [selectedContact, setSelectedContact] = useState(null);
+
+  // Function to open the dialog
+  const openDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  // Function to close the dialog and handle selected contact
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setContacts([
+      {
+        name: '',
+        phoneNumber: 0,
+        email: ""
+      }
+    ])
+    setShowShareOptions(false);
+
+  };
 
   const closeModal = () => {
     setIsOpen(!isOpen);
     setData({});
   };
 
-  const shareViaWhatsApp = (item) => {
-    const message = `Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`;
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    setShowShareOptions(false);
+  const shareViaWhatsApp = async (item) => {
+    setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('http://localhost:8800/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+    )
+      .then((res) => {
+        console.log("patients", res.data)
+        res.data.map((patient) => {
+          if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
+            // If the phone number doesn't exist, add the contact to the contacts array
+            setContacts((prevContacts) => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
+          }
+          console.log("contact", contacts)
+          setIsDialogOpen(true)
+          handleCloseDialog
+          
+        })
+      })
+
   };
 
-  const shareViaEmail = (item) => {
-    const subject = encodeURIComponent("Check out this campaign");
-    const body = encodeURIComponent(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`);
-    const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=&su=${subject}&body=${body}`;
-    
-    window.open(gmailUrl, '_blank');
-    setShowShareOptions(false);
-};
+  const shareViaEmail = async (item) => {
+    setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('http://localhost:8800/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+    )
+      .then((res) => {
+        console.log("patients", res.data)
+        res.data.map((patient) => {
+          if (!contacts.some(contact => contact.email === patient.email)) {
+            // If the phone number doesn't exist, add the contact to the contacts array
+            setContacts((prevContacts) => [...prevContacts, { name: patient.fullName, email: patient.email }]);
+          }
+          console.log("contact", contacts)
+          setIsDialogOpen(true)
+          setShowShareOptions(false);
+          handleCloseDialog
 
-
-
-
-  
-  
-  
-  
-  
+        })
+      })
+  };
 
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
@@ -148,9 +200,18 @@ function Campaings() {
                 <Button label="Share via Email" onClick={() => shareViaEmail(item)} />
               </div>
             )}
+
+
           </div>
         ))}
       </div>
+      <ContactSelectionDialog
+        contacts={contacts} // Pass your contacts array here
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        message={message}
+      />
+
     </Layout>
   );
 }

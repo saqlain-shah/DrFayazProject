@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Input } from '../components/Form';
 import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
@@ -8,10 +8,17 @@ import { useAuth } from '../AuthContext';
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Redirect to dashboard if user is already logged in
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,13 +28,19 @@ function Login() {
         email,
         password,
       });
+
       if (response.status === 200) {
-        const { token, userId } = response.data; // Assuming your backend sends back both token and userId
-        login(token, userId); // Update authentication state with token and userId
+        const { token, id, name } = response.data; // Extract token, id, and name from the response data
+        login({ id, name }); // Update authentication state with the user's ID and name
+
+        // Store the token and name in local storage
+        localStorage.setItem('token', token);
+        document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
         toast.success('Login successful');
         navigate('/');
       } else {
         console.error('Login failed:', response.data);
+        toast.error('Login failed');
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -40,6 +53,7 @@ function Login() {
   const handleRegisterClick = () => {
     navigate('/register');
   };
+
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
@@ -81,7 +95,6 @@ function Login() {
             />
           </div>
         </div>
-
       </form>
     </div>
   );

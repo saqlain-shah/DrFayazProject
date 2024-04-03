@@ -98,9 +98,8 @@
 // }
 // export default App;
 
-
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './components/Home/Home/Home';
 import SignInForm from './components/Login/SignInForm';
 import Contact from './components/Contact/Contact';
@@ -113,6 +112,7 @@ import PrescriptionView from './components/Doctor/Prescription/PrescriptionView'
 import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
 import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
 
+
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
   { path: '/contact', element: <Contact /> },
@@ -120,18 +120,17 @@ const router = createBrowserRouter([
   { path: '/appointment', element: <AppointmentPage /> },
   { path: '/track-appointment', element: <TrackAppointment /> },
   { path: '/doctors', element: <SearchDoctor /> },
-  { path: '/dashboard', element: <Dashboard /> },
-  { path: '/dashboard/prescription', element: <Prescription /> },
+  { path: '/dashboard/:clientId', element: <Dashboard /> },
+  { path: '/dashboard/prescription/:clientId', element: <Prescription /> },
   { path: '/dashboard/prescription/:id', element: <PrescriptionView /> },
-  { path: '/dashboard/change-password', element: <ChangePassword /> },
-  { path: '/dashboard/profile-setting', element: <ProfileSetting /> },
-])
+  { path: '/dashboard/change-password/:clientId', element: <ChangePassword /> },
+  { path: '/dashboard/profile-setting/:clientId', element: <ProfileSetting /> },
+]);
 
-function App() {
+const AppRoutes = () => {
   return (
     <RouterProvider router={router} />
   );
 }
 
-export default App;
-
+export default AppRoutes;

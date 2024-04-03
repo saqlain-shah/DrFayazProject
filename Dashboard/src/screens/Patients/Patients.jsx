@@ -98,8 +98,8 @@ function Patients() {
       </Link>
       <h1 className="text-xl font-semibold">Patients</h1>
       <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex-grow mb-4 md:mb-0">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+          <div className="flex-grow md:w-auto w-full">
             <input
               type="text"
               placeholder='Search "Patients"'
@@ -108,18 +108,7 @@ function Patients() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="flex-grow mb-4 md:mb-0">
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={startDate}
-              placeholderText="Select start date"
-              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-6 w-full"
-            />
-          </div>
-          <div className="flex-grow">
+          <div className="flex-grow md:w-auto w-full">
             <select
               value={genderFilter}
               onChange={handleGenderFilterChange}
@@ -129,6 +118,17 @@ function Patients() {
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
+          </div>
+          <div className="flex-grow w-full md:w-auto">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={startDate}
+              placeholderText="Select start date"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-6 w-full"
+            />
           </div>
         </div>
 
@@ -140,6 +140,8 @@ function Patients() {
           />
         </div>
       </div>
+
+
 
 
       <AddEditPatientModal
