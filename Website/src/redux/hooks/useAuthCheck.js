@@ -1,3 +1,4 @@
+// useAuthCheck.js
 import { useEffect, useState } from "react";
 import { useGetDoctorQuery } from "../api/doctorApi";
 import { useGetPatientQuery } from "../api/patientApi";
@@ -34,7 +35,6 @@ export default function useAuthCheck() {
 
     return {
         authChecked,
-        setAuthChecked, 
         data,
         role
     };
