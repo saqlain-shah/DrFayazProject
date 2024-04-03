@@ -67,7 +67,7 @@ function MedicalRecord() {
           closeModal={() => {
             setIsOpen(false);
             setSelectedData(record);
-            medicineDosage = { medicineDosage }
+            setMedicineDosage({ medicineDosage });
           }}
           isOpen={isOpen}
           data={{ ...selectedData, id }}
