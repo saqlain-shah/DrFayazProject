@@ -1,13 +1,14 @@
 // controllers/OTP/otp.js
-
-// Import nodemailer for sending emails (you need to install it using npm or yarn)
+import fs from 'fs';
+import ejs from 'ejs';
 import nodemailer from 'nodemailer';
+
+// Map to store generated OTPs
 let otpMap = new Map();
 
 // Function to generate OTP
 const generateOTP = () => {
-    // Generate and return OTP logic
-    // For demonstration, I'm generating a random 6-digit OTP
+    // Generate and return a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
@@ -31,6 +32,18 @@ export const sendOTP = async (req, res) => {
     // Store the OTP temporarily (you can replace this with database storage)
     otpMap.set(email, generatedOTP);
 
+    // Load email template
+    let emailTemplate;
+    try {
+        emailTemplate = fs.readFileSync('templates/otp_template.ejs', 'utf-8');
+    } catch (error) {
+        console.error('Error loading email template:', error);
+        return res.status(500).json({ success: false, message: "Failed to load email template" });
+    }
+
+    // Render email template with OTP data
+    const renderedTemplate = ejs.render(emailTemplate, { generatedOTP });
+
     // Send OTP to the provided email
     try {
         // Create a nodemailer transporter using SMTP transport
@@ -38,7 +51,7 @@ export const sendOTP = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: 'davbabu1122@gmail.com', // Replace with your Gmail email address
-                pass: 'xyzluigclluvrpgt' // Replace with your Gmail password
+                pass: 'irgkjyfkjorzlupa' // Replace with your Gmail App Password
             }
         });
 
@@ -47,7 +60,7 @@ export const sendOTP = async (req, res) => {
             from: 'davbabu1122@gmail.com', // Replace with your Gmail email address
             to: email,
             subject: 'OTP for Verification',
-            text: `Your OTP for verification is: ${generatedOTP}`
+            html: renderedTemplate
         };
 
         // Send email
@@ -63,6 +76,7 @@ export const sendOTP = async (req, res) => {
     }
 };
 
+// Function to verify OTP
 export const verifyOTP = async (req, res) => {
     const { email, otp } = req.body;
 
@@ -71,14 +85,18 @@ export const verifyOTP = async (req, res) => {
         return res.status(400).json({ success: false, message: "Email and OTP are required" });
     }
 
-    // Here, implement logic to verify the OTP against the provided email
+    // Retrieve the stored OTP for the email
+    const storedOTP = otpMap.get(email);
 
-    try {
+    // Check if OTP is valid
+    if (storedOTP === otp) {
+        // OTP is valid, remove it from the map
+        otpMap.delete(email);
         // Your OTP verification logic here
         // If OTP is valid, send success response
         return res.json({ success: true, message: "OTP verified successfully" });
-    } catch (error) {
-        console.error('Error verifying OTP:', error);
-        return res.status(500).json({ success: false, message: "An error occurred while verifying OTP" });
+    } else {
+        // Invalid OTP
+        return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
 };
