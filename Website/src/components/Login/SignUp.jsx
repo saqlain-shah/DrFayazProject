@@ -21,7 +21,7 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
         numeric: false
     });
     const [emailError, setEmailError] = useState(false);
-    const navigate = useNavigate();
+    const Navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -60,7 +60,7 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
             if (response.data.success) {
                 console.log(response.data);
                 handleSignUpSuccess();
-                navigate("/");
+                Navigate("/");
             } else {
                 setLoading(false);
                 setInfoError(response.data.message);

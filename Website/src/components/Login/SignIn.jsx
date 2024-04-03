@@ -9,8 +9,10 @@ import { useUserLoginMutation } from '../../redux/api/authApi';
 import { message } from 'antd';
 import './SignInForm.css'
 import axios from 'axios'
+import useAuthCheck from '../../redux/hooks/useAuthCheck';
 
 const SignIn = ({ handleResponse }) => {
+    const { setAuthChecked, data } = useAuthCheck();
     const [infoError, setInfoError] = useState('');
     const [show, setShow] = useState(true);
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -38,6 +40,7 @@ const SignIn = ({ handleResponse }) => {
             if (response.data) {
                 const clientId = response.data._id
                 Navigate(`/dashboard/${clientId}`); // Navigate to home page
+                setAuthChecked(true)
             } else {
                 setInfoError(response.data.message);
             }
@@ -53,7 +56,7 @@ const SignIn = ({ handleResponse }) => {
         }
         if (isSuccess) {
             message.success('Successfully Logged in');
-            navigate("/dashboard/:clientId")
+            Navigate("/dashboard/:clientId")
         }
     }, [isError, error, isSuccess, Navigate])
 

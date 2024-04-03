@@ -9,7 +9,7 @@ import './DashboardSidebar.css';
 const DashboardSidebar = () => {
     const { data, role } = useAuthCheck()
     const params = useParams()
-    const [userData, setUserData] = useState(null);
+    const [userData, setUserData] = useState({});
     const clientId = params.clientId
     console.log("id", clientId);
     // console.log("data", data)
@@ -23,8 +23,11 @@ const DashboardSidebar = () => {
         };
         axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
             .then(response => {
-                console.log(response)
+                console.log("dashboard", response.data)
+                const imagePath = `http://localhost:8800/${response.data.image}`
+                response.data.image = imagePath;
                 setUserData(response.data);
+                console.log("updted image path", userData);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
@@ -56,7 +59,7 @@ const DashboardSidebar = () => {
                     <li>
                         <NavLink to={`/dashboard/prescription/${clientId}`} activeClassName="active">
                             <FaHouseUser className="icon" />
-                            <span>Booking History</span>
+                            <span>Appointments History</span>
                         </NavLink>
                     </li>
                     <li>

@@ -22,6 +22,7 @@ const initialValue = {
   // paymentType: 'creditCard',
   name: '',
   email: '',
+  image:'',
   emergencyContact: 0,
   reasonForVisit: '',
   description: '',
@@ -36,11 +37,11 @@ const initialValue = {
 const AppointmentPage = () => {
   const dispatch = useDispatch();
   const [userId, setUserId] = useState(null);
-  const { data, role } = useAuthCheck();
+  // const { data, role } = useAuthCheck();
   const [current, setCurrent] = useState(0);
   const params = useParams();
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectTime, setSelectTime] = useState('');
+  const [selectedStartDate, setSelectedStartDate] = useState('');
+  const [selectedEndDate, setSelectedEndDate] = useState('');
   const [isCheck, setIsChecked] = useState(false);
   const [selectValue, setSelectValue] = useState(initialValue);
   const [isDisable, setIsDisable] = useState(true);
@@ -62,21 +63,22 @@ const AppointmentPage = () => {
 
 
   const handleSelectAppointment = (slots, patientId, profileSettingId) => {
+    console.log("aponitment details", slots)
     if (!slots || slots.length === 0) {
       console.error('No appointment slots available');
       return;
     }
-    const selectedSlotId = slots[0]._id;
-    setSelectValue({ ...selectValue, slotId: selectedSlotId });
-    const selectedSlot = slots.find(slot => slot._id === selectedSlotId);
-    if (selectedSlot) {
-      setSelectedDate(selectedSlot.startDateTime);
-      setSelectTime(selectedSlot.endDateTime); // Update selectTime with the endDateTime of the selected slot
+    // const selectedSlotId = slots._id;
+    setSelectValue({ ...selectValue, slotId: slots._id });
+    // const selectedSlot = slots.find(slot => slot._id === selectedSlotId);
+    if (slots) {
+      setSelectedStartDate(slots.startDateTime);
+      setSelectedEndDate(slots.endDateTime); // Update SelectedEndDate with the endDateTime of the selected slot
     }
 
-    console.log('Selected Slot:', selectedSlot); // Log selected slot
+    console.log('Selected Slot:', slots); // Log selected slot
     // Here you can fetch the profile setting ID using the profileSettingId parameter
-    setSelectedSlot(selectedSlot); // Set the selected slot
+    setSelectedSlot(slots); // Set the selected slot
   };
 
 
@@ -131,7 +133,7 @@ const AppointmentPage = () => {
     const { name, reasonForVisit, startDate, endTime, nameOnCard, cardNumber, expiredMonth, cardExpiredYear, cvv } = selectValue;
     const isInputEmpty = !name || !reasonForVisit;
     setIsDisable(isInputEmpty);
-  }, [selectValue, isCheck, selectTime]); // Include selectTime in the dependency array
+  }, [selectValue, isCheck, selectedEndDate]); // Include selectedEndDate in the dependency array
 
 
 
@@ -195,8 +197,8 @@ const AppointmentPage = () => {
         email: selectValue.email,
         emergencyContact: selectValue.emergencyContact,
         // patientId: role !== '' ? data.id : undefined,
-        scheduleDate: selectedDate,
-        scheduleTime: selectTime,
+        scheduleDate: selectedStartDate,
+        scheduleTime: selectedEndDate,
       },
       // payment: {
       //   paymentType: selectValue.paymentType,
@@ -314,7 +316,7 @@ const AppointmentPage = () => {
                   size="large"
                   disabled={
                     current === 0
-                      ? !(selectedDate && selectTime)
+                      ? !(selectedStartDate && selectedEndDate)
                       : isDisable
                   }
                   onClick={next}
