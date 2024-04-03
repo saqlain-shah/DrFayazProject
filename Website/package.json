@@ -41,9 +41,6 @@
     "start": "vite",
     "build": "vite build"
   },
-  "engines": {
-    "node": "20.x"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
