@@ -21,10 +21,10 @@ const DashboardSidebar = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
+        axios.get(`https://drfayazproject.onrender.com/api/userauth/${params.clientId}`, config)
             .then(response => {
                 console.log("dashboard", response.data)
-                const imagePath = `http://localhost:8800/${response.data.image}`
+                const imagePath = `https://drfayazproject.onrender.com/${response.data.image}`
                 response.data.image = imagePath;
                 setUserData(response.data);
                 console.log("updted image path", userData);

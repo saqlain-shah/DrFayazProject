@@ -56,7 +56,7 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
                 }
             };
     
-            const response = await axios.post('http://localhost:8800/api/userauth/register', user, config);
+            const response = await axios.post('https://drfayazproject.onrender.com/api/userauth/register', user, config);
             if (response.data.success) {
                 console.log(response.data);
                 handleSignUpSuccess();

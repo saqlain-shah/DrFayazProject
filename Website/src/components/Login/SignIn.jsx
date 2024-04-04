@@ -35,7 +35,7 @@ const SignIn = ({ handleResponse }) => {
                 }
             };
 
-            const response = await axios.post('http://localhost:8800/api/userauth/login', data, config);
+            const response = await axios.post('https://drfayazproject.onrender.com/api/userauth/login', data, config);
             console.log(response.data)
             if (response.data) {
                 const clientId = response.data._id
