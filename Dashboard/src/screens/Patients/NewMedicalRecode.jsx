@@ -53,7 +53,7 @@ function NewMedicalRecord() {
     const fetchPatientData = async () => {
       try {
         const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
-        const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
+        const response = await axios.get(`https://drfayazproject.onrender.com/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
         });
         setPatientData(response.data);
@@ -134,7 +134,7 @@ function NewMedicalRecord() {
 
     const token = localStorage.getItem('token');
     axios
-      .post('http://localhost:8800/api/medical-records', formData, {
+      .post('https://drfayazproject.onrender.com/api/medical-records', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -194,7 +194,7 @@ function NewMedicalRecord() {
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 flex-colo gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
           <img
-            src={`http://localhost:8800/${patientData.profilePicture}`}
+            src={`https://drfayazproject.onrender.com/${patientData.profilePicture}`}
             alt="profile"
             className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
           />

@@ -25,7 +25,7 @@ function Doctors() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/doctors/${id}`, {
+      await axios.delete(`https://drfayazproject.onrender.com/api/doctors/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +42,7 @@ function Doctors() {
   const fetchDoctorInfo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8800/api/doctors', {
+      const response = await axios.get('https://drfayazproject.onrender.com/api/doctors', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

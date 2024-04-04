@@ -29,7 +29,7 @@ function MedicalRecord() {
   const handleDelete = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/medical-records/${recordId}`, {
+      await axios.delete(`https://drfayazproject.onrender.com/api/medical-records/${recordId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Update medical records after deletion by passing the patient's id
@@ -46,7 +46,7 @@ function MedicalRecord() {
   const handleEdit = async (recordId, newData) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:8800/api/medical-records/${recordId}`, newData, {
+      await axios.put(`https://drfayazproject.onrender.com/api/medical-records/${recordId}`, newData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchMedicalRecords(); // Update medical records after editing

@@ -115,7 +115,7 @@ function Appointments() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-        const response = await axios.get('http://localhost:8800/api/v1', {
+        const response = await axios.get('https://drfayazproject.onrender.com/api/v1', {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
@@ -153,7 +153,7 @@ function Appointments() {
     try {
       const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-      const response = await fetch(`http://localhost:8800/api/v1/${id}`, {
+      const response = await fetch(`https://drfayazproject.onrender.com/api/v1/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header

@@ -168,7 +168,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`https://drfayazproject.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -292,8 +292,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('http://localhost:8800/api/services');
+      await axios.put(`https://drfayazproject.onrender.com/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('https://drfayazproject.onrender.com/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -402,7 +402,7 @@ export function PatientTable({ data, functions, onEdit }) {
               <td className={tdClass}>
                 {item.profilePicture && (
                   <img
-                    src={`http://localhost:8800/${item.profilePicture}`}
+                    src={`https://drfayazproject.onrender.com/${item.profilePicture}`}
                     alt={item.fullName}
                     className="w-full h-11 rounded-full object-cover border border-border"
                   />
@@ -476,7 +476,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               <td className={tdClass}>
                 <img
-                  src={`http://localhost:8800/${patient.profilePicture}`}
+                  src={`https://drfayazproject.onrender.com/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
@@ -543,7 +543,7 @@ export function DoctorsTable({ data, functions, doctor }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item.profileImage}`}
+                    src={`https://drfayazproject.onrender.com/${item.profileImage}`}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>
@@ -573,7 +573,7 @@ export function AppointmentTable({ functions, token, patientId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8800/api/appointments/patient/${patientId}`, {
+        const response = await fetch(`https://drfayazproject.onrender.com/api/appointments/patient/${patientId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -600,7 +600,7 @@ export function AppointmentTable({ functions, token, patientId }) {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
+      const response = await fetch(`https://drfayazproject.onrender.com/api/appointments/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

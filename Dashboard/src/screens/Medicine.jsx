@@ -22,7 +22,7 @@ function Medicine() {
       // Fetch token from wherever you store it (e.g., localStorage)
       const token = localStorage.getItem('token');
 
-      let response = await fetch('http://localhost:8800/api/medicine', {
+      let response = await fetch('https://drfayazproject.onrender.com/api/medicine', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -64,7 +64,7 @@ function Medicine() {
 
   const onDelete = async (item) => {
     try {
-      const response = await fetch(`http://localhost:8800/api/medicine/${item._id}`, {
+      const response = await fetch(`https://drfayazproject.onrender.com/api/medicine/${item._id}`, {
         method: 'DELETE',
       });
 

@@ -38,7 +38,7 @@ function Settings() {
 
   // Inside the renderProfilePicture function, remove the condition to check userData.profileImage
   const renderProfilePicture = () => {
-    const profileImageUrl = `http://localhost:8800/${userData.profileImage}`;
+    const profileImageUrl = `https://drfayazproject.onrender.com/${userData.profileImage}`;
     return (
       <div className="flex justify-center items-center flex-col"> {/* Updated div for center alignment */}
         <img
