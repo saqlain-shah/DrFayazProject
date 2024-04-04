@@ -23,7 +23,8 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
-import otpRoutes from './routes/Opt.js'
+import otpRoutes from './routes/Opt.js';
+import stripe from './routes/stripe.js';
 //import helmet from 'helmet';
 
 const app = express();
@@ -71,6 +72,7 @@ app.use('/api/sandgrid', sandGridRoutes)
 app.use('/api/medicine', medicineRoute)
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
+app.use('/api/stripe', stripe);
 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import moment from 'moment';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom'; // Import useParams
+import { Link, json, useParams } from 'react-router-dom'; // Import useParams
 import axiosBaseQuery from './axiosBaseQuery';
 import { Button, Steps, message, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +15,9 @@ import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { useCreateAppointmentByUnauthenticateUserMutation } from '../../redux/api/appointmentApi';
 import { useDispatch } from 'react-redux';
 import { addInvoice } from '../../redux/feature/invoiceSlice';
+import {loadStripe} from '@stripe/stripe-js';
+
+
 
 // Define the initial form values
 const initialValue = {
@@ -27,11 +30,6 @@ const initialValue = {
   reasonForVisit: '',
   description: '',
   address: '',
-  nameOnCard: '',
-  cardNumber: '',
-  expiredMonth: '',
-  cardExpiredYear: '',
-  cvv: '',
 };
 
 const AppointmentPage = () => {
@@ -138,9 +136,29 @@ const AppointmentPage = () => {
 
 
 
-  const handleCloseModal = () => {
-    console.log("Closing modal...");
-    setShowModal(false);
+  const makePayment = async () => {
+    const stripe = await loadStripe("pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz");
+    const body = {
+      products: [{ selectedService }] 
+  };
+    const token = localStorage.getItem('token');
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    }
+    const response = await fetch('http://localhost:8800/api/stripe/create-checkout-session', {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(body) // Fix typo here
+    });
+    const session = await response.json();
+  
+    const result = stripe.redirectToCheckout({
+      sessionId: session.id
+    })
+    if (result.error) {
+      console.log("feild", result.error)
+    }
   };
 
 
@@ -358,9 +376,9 @@ const AppointmentPage = () => {
       <Modal
         title="Appointment Details"
         open={showModal} // Control modal visibility
-        onCancel={handleCloseModal} // Handle close event
+      // Handle close event
         footer={[
-          <Button key="back" onClick={handleCloseModal}>
+          <Button key="back" onClick={makePayment}>
             Checkout
           </Button>
         ]}
@@ -368,8 +386,8 @@ const AppointmentPage = () => {
         <p>Patient Name: {selectValue.name} </p>
         <p>Service: {selectedService ? selectedService.name : 'Loading...'}</p>
         <p>Service Charge: {selectedService ? selectedService.price : 'Loading...'} USD</p>
-        <p>Service Tax: 5 USD</p>
-        <p>Total Amount: {selectedService.price + 5} USD</p>
+        {/* <p>Service Tax: 5 USD</p> */}
+        <p>Total Amount: {selectedService.price } USD</p>
       </Modal>
       <Footer />
     </>
