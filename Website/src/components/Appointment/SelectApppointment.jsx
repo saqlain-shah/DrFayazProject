@@ -10,7 +10,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         const fetchSchedule = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8800/api/schedule', {
+                const response = await axios.get('https://drfayazproject.onrender.com/api/schedule', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

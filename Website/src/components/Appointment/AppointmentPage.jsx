@@ -93,7 +93,7 @@ const AppointmentPage = () => {
     };
 
     try {
-      const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
+      const response = await axios.get(`https://drfayazproject.onrender.com/api/userauth/${params.clientId}`, config)
       if (response) {
         console.log('Response:', response);
         // Log the entire response
@@ -146,7 +146,7 @@ const AppointmentPage = () => {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`
     }
-    const response = await fetch('http://localhost:8800/api/stripe/create-checkout-session', {
+    const response = await fetch('https://drfayazproject.onrender.com/api/stripe/create-checkout-session', {
       method: "POST",
       headers: headers,
       body: JSON.stringify(body) // Fix typo here
@@ -183,7 +183,7 @@ const AppointmentPage = () => {
       }
     };
     try {
-      const response = await axios.get('http://localhost:8800/api/services', config);
+      const response = await axios.get('https://drfayazproject.onrender.com/api/services', config);
       setServiceDetails(response.data);
       console.log("serviceDetails", response.data)
       console.log("serviceDetails", serviceDetails)
@@ -236,7 +236,7 @@ const AppointmentPage = () => {
       }
     };
 
-    axiosBaseQuery.post('http://localhost:8800/api/v1', obj, config)
+    axiosBaseQuery.post('https://drfayazproject.onrender.com/api/v1', obj, config)
       .then(response => {
         console.log('Appointment created successfully:', response.data);
         // Display a success toast message after appointment creation

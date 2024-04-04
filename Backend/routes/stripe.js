@@ -1,12 +1,12 @@
 import express from 'express';
 import stripePackage from 'stripe';
-
+import dotenv from 'dotenv';
 const router = express.Router();
-const stripe = stripePackage('your_stripe_secret_key');
-
+const stripe = stripePackage(process.env.STRIPE_SECRET);
+dotenv.config();
 router.post("/create-checkout-session",async(req,res)=>{
     const {products} = req.body;
-
+      console.log(req.body)
 
     const lineItems = products.map((product)=>({
         price_data:{
@@ -22,8 +22,8 @@ router.post("/create-checkout-session",async(req,res)=>{
         payment_method_types:["products"],
         line_items:lineItems,
         mode:"payment",
-        success_url:"http://localhost:3000/sucess",
-        cancel_url:"http://localhost:3000/cancel",
+        success_url:"http://localhost:5173/sucess",
+        cancel_url:"http://localhost:5173/cancel",
     });
 
     res.json({id:session.id})
