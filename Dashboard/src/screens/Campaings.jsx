@@ -55,7 +55,7 @@ function Campaings() {
   const shareViaWhatsApp = async (item) => {
     setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
+    await axios.get('https://drfayazproject.onrender.com/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }
     )
@@ -78,7 +78,7 @@ function Campaings() {
   const shareViaEmail = async (item) => {
     setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
+    await axios.get('https://drfayazproject.onrender.com/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }
     )

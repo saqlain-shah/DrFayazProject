@@ -42,7 +42,13 @@ app.use((req, res, next) => {
 
 app.use(cors());
 //app.use(helmet())
-
+app.use(cors(
+  {
+    origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
+    // methods: ["POST", "GET", "DELETE", "PUT"],
+    credentials: true
+  }
+));
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
   res.json({ imageUrl: '/uploads/' + file.filename });
