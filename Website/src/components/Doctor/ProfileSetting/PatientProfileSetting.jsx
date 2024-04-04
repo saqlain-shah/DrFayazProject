@@ -157,7 +157,7 @@ const PatientProfileSetting = () => {
                                     style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%' }}
                                 />
                                 <div>
-                                    <input type="file" onChange={handleFileChange} />
+                                    <input type="file"  onChange={handleFileChange} />
                                 </div>
                             </div>
                         </div>

@@ -46,9 +46,9 @@ const Header = () => {
 
     const handleMakeAppointment = () => {
         if (isLoggedIn) {
-            Navigate('/login');
-        } else {
             Navigate(`/dashboard/${clientId}`);
+        } else {
+            Navigate('/login');
         }
     }
 
@@ -68,9 +68,9 @@ const Header = () => {
                         <ul>
                             <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""} >Home</NavLink></li>
                             <li><NavLink to={'/contact'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Contact</NavLink></li>
-                            {!authChecked && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
+                            {!isLoggedIn && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
                         </ul>
-                        {authChecked &&
+                        {isLoggedIn &&
                             <div>
                                 <Popover >
                                     <div className='profileImage'>

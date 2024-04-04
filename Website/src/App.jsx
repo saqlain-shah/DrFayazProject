@@ -106,7 +106,7 @@ import Contact from './components/Contact/Contact';
 import AppointmentPage from './components/Appointment/AppointmentPage';
 import TrackAppointment from './components/TrackAppointment/TrackAppointment';
 import SearchDoctor from './components/Doctor/SearchDoctor/SearchDoctor';
-import Dashboard from './components/Doctor/Dashboard/dashboard';
+import Dashboard from './components/Doctor/Dashboard/Dashboard';
 import Prescription from './components/Doctor/Prescription/Prescription';
 import PrescriptionView from './components/Doctor/Prescription/PrescriptionView';
 import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
