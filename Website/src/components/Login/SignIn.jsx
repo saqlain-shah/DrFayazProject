@@ -1,64 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaEnvelope, FaLock } from 'react-icons/fa';
-import SocialSignUp from './SocialSignUp';
 import { useForm } from "react-hook-form";
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
-import { Toast } from 'react-bootstrap';
-import { useUserLoginMutation } from '../../redux/api/authApi';
 import { message } from 'antd';
-import './SignInForm.css'
-import axios from 'axios'
-import useAuthCheck from '../../redux/hooks/useAuthCheck';
+import axios from 'axios';
 
 const SignIn = ({ handleResponse }) => {
-    const { setAuthChecked, data } = useAuthCheck();
-    const [infoError, setInfoError] = useState('');
-    const [show, setShow] = useState(true);
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const Navigate = useNavigate();
+    const [infoError, setInfoError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        setTimeout(() => {
-            setShow(false);
-        }, 10000);
-    }, []);
-
-    const [userLogin, { isError, isLoading, isSuccess, error }] = useUserLoginMutation();
-
-    const onSubmit = async (data, params) => {
+    const onSubmit = async (data) => {
         try {
-            const token = localStorage.getItem('token'); // Retrieve token from localStorage
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${token}` // Include token in the Authorization header
-                }
-            };
-
-            const response = await axios.post('https://drfayazproject.onrender.com/api/userauth/login', data, config);
-            console.log(response.data)
-            if (response.data) {
-                const clientId = response.data._id
-                Navigate(`/dashboard/${clientId}`); // Navigate to home page
-                setAuthChecked(true)
+            setLoading(true);
+            const response = await axios.post('http://localhost:8800/api/userauth/login', data);
+            const { token, _id } = response.data; // Assuming token and _id are returned from the API
+            if (token && _id) {
+                localStorage.setItem('token', token); // Store token in local storage
+                localStorage.setItem('clientId', _id); // Store clientId in local storage
+                navigate(`/dashboard/${_id}`);
+                message.success('Successfully Logged in');
             } else {
-                setInfoError(response.data.message);
+                throw new Error('Token or ClientId not found in response data');
             }
         } catch (error) {
             setInfoError('An error occurred while logging in');
             console.error('Error signing in:', error);
+        } finally {
+            setLoading(false);
         }
     };
-
-    useEffect(() => {
-        if (isError) {
-            setInfoError(error?.data?.message)
-        }
-        if (isSuccess) {
-            message.success('Successfully Logged in');
-            Navigate("/dashboard/:clientId")
-        }
-    }, [isError, error, isSuccess, Navigate])
+    
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
@@ -74,11 +48,11 @@ const SignIn = ({ handleResponse }) => {
             </div>
             {errors.password && <span className="text-danger">This field is required</span>}
             {infoError && <p className="text-danger">{infoError}</p>}
-            <button className="iBtn" type="submit" value="sign In" >
-                {isLoading ? <Spinner animation="border" variant="info" /> : "Sign In"}
+            <button className="iBtn" type="submit" value="sign In" disabled={loading}>
+                {loading ? <Spinner animation="border" variant="info" /> : "Sign In"}
             </button>
-            <p className="social-text">Or Sign in with social platformssss</p>
-            <SocialSignUp onSignUpSuccess={handleResponse} />
+            <p className="social-text">Or Sign in with social platforms</p>
+            <div onClick={handleResponse} className="socialBtn">Sign Up</div>
         </form>
     );
 };

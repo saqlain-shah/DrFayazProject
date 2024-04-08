@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { FaCheck, FaEnvelope, FaLock, FaTimes, FaUser } from 'react-icons/fa';
+import { FaCheck, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import SocialSignUp from './SocialSignUp';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import './SignInForm.css';
 
-const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess as a prop
+const SignUp = ({ onSignUpSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [infoError, setInfoError] = useState('');
     const [user, setUser] = useState({
@@ -21,7 +23,7 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
         numeric: false
     });
     const [emailError, setEmailError] = useState(false);
-    const Navigate = useNavigate();
+   
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,49 +43,38 @@ const SignUp = ({ setSignUp, onSignUpSuccess }) => { // Receive onSignUpSuccess 
             });
         }
     };
-    const handleSignUpSuccess = () => {
-        console.log('Sign-up successful!');
 
+    const handleSignUpSuccess = () => {
+        console.log('Sign-up successful!yyyy');
+        toast.success('Registration successful'); 
+        onSignUpSuccess();  // Invoke the callback function passed as prop
     };
-    
 
     const registerUser = async () => {
         try {
-            const token = localStorage.getItem('token'); // Retrieve token from localStorage
-            const config = {
-                headers: {
-                    'Authorization': `Bearer ${token}` // Include token in the Authorization header
-                }
-            };
-    
-            const response = await axios.post('https://drfayazproject.onrender.com/api/userauth/register', user, config);
-            if (response.data.success) {
-                console.log(response.data);
+            const response = await axios.post('http://localhost:8800/api/userauth/register', user);
+            if (response.data.message === 'Registration successful') {
                 handleSignUpSuccess();
-                Navigate("/");
+              // Redirect to home page after successful sign-up
             } else {
                 setLoading(false);
-                setInfoError(response.data.message);
+                // setInfoError(response.data.message);
             }
+            
         } catch (error) {
             setLoading(false);
             if (error.response) {
                 // Server responded with a status code outside of 2xx range
                 console.error('Gmail already exist:', error.response.data);
-                setInfoError('Gmail already exist');
+                setInfoError('Email already exists');
             } else if (error.request) {
                 // The request was made but no response was received
                 console.error('Network error:', error.request);
                 setInfoError('Network error. Please check your connection.');
-            } else {
-                // Something happened in setting up the request that triggered an error
-                console.error('Error:', error.message);
-                setInfoError('An error occurred. Please try again later.');
-            }
+            } 
+            
         }
     };
-    
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();

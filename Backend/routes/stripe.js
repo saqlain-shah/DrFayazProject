@@ -2,7 +2,7 @@ import express from 'express';
 import stripePackage from 'stripe';
 import dotenv from 'dotenv';
 const router = express.Router();
-const stripe = stripePackage(process.env.STRIPE_SECRET);
+const stripe = stripePackage(process.env.STRIPE_SECRET_KEY);
 dotenv.config();
 router.post("/create-checkout-session",async(req,res)=>{
     const {products} = req.body;
@@ -10,7 +10,7 @@ router.post("/create-checkout-session",async(req,res)=>{
 
     const lineItems = products.map((product)=>({
         price_data:{
-            currency:"$",
+            currency:'usd',
             product_data:{
                 name:product.selectedService,
             },

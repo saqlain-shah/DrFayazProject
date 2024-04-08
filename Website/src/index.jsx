@@ -6,10 +6,10 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 
 ReactDOM.render(
-  <React.Fragment>
+  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.Fragment>,
+  </React.StrictMode>,
   document.getElementById('root')
 );

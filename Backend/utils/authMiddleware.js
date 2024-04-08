@@ -1,6 +1,11 @@
 export const authenticate = (req, res, next) => {
     // Check if user is trying to access login or register routes
-    if (req.path === '/api/auth/login' || req.path === '/api/auth/register') {
+    if (
+        req.path === '/api/auth/login' ||
+        req.path === '/api/auth/register' ||
+        req.path === '/api/userauth/login' || // Corrected path
+        req.path === '/api/userauth/register' // Corrected path
+    ) {
         return next(); // Bypass authentication middleware for login and register routes
     }
 
