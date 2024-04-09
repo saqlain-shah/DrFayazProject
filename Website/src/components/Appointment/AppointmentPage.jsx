@@ -137,29 +137,37 @@ const AppointmentPage = () => {
 
 
   const makePayment = async () => {
-    const stripe = await loadStripe('pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz');
-    const body = {
-      products: [{ selectedService }]
-    };
-    const token = localStorage.getItem('token');
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    }
-    const response = await fetch('http://localhost:8800/api/stripe/create-checkout-session', {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body) // Fix typo here
-    });
-    const session = await response.json();
+    try {
+        const stripe = await loadStripe('pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz');
+        const body = {
+            products: [{ ...selectedService }] // Assuming selectedService contains name and price properties
+        };
+        const token = localStorage.getItem('token');
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        };
+        const response = await fetch('http://localhost:8800/api/stripe/checkout', {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(body)
+        });
+        const session = await response.json();
 
-    const result = stripe.redirectToCheckout({
-      sessionId: session.id
-    })
-    if (result.error) {
-      console.log("feild", result.error)
+        const result = await stripe.redirectToCheckout({
+            sessionId: session.id
+        });
+        
+        if (result.error) {
+            console.error("Error redirecting to checkout:", result.error);
+            // Handle error, e.g., show an error message to the user
+        }
+    } catch (error) {
+        console.error("Error making payment:", error);
+        // Handle error, e.g., show an error message to the user
     }
-  };
+};
+
 
 
   useEffect(() => {
