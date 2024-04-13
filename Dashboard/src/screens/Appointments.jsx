@@ -5,9 +5,9 @@ import moment from 'moment';
 import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
-import AddAppointmentModal from '../components/Modals/AddApointmentModal';
 import axios from 'axios'; // Import Axios
 import { toast } from 'react-hot-toast';
+import AppointmentDetailsModal from './appointmentDetailModel';
 
 const CustomToolbar = (toolbar) => {
   // today button handler
@@ -108,81 +108,71 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments({ events }) {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = useState(false);
+  const [appointments, setAppointments] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleClose = () => {
-    setOpen(!open);
-  };
 
-  const handleDeleteAppointment = async (id) => {
-    // Implement delete appointment logic here
-  };
-
-  const handleEventClick = (event) => {
-    setSelectedEvent(event); // Set the selected event
-    setOpen(true); // Open the modal
-  };
-
-  const handleNewAppointment = (newAppointment) => {
-    // Implement new appointment logic here
-  };
-
-  const handleFetchAppointment = async ( token) => {
-    try {
-      const response = await axios.get(`http://localhost:8800/api/web/appointments`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8800/api/web/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
   
-      console.log('Appointment fetched successfully:', response.data);
-      // Further processing of the fetched appointment data
-    } catch (error) {
-      console.error('Error fetching appointment:', error);
-      // Handle error, e.g., show an error message to the user
-      toast.error('Failed to fetch appointment. Please try again.');
-    }
-  };
+        // Map the fetched appointments to the format expected by the Calendar component
+        const formattedAppointments = response.data.map(appointment => ({
+          id: appointment._id, // Assign unique ID to each appointment
+          title: appointment.selectedService.name, // Use service name as title
+          start: new Date(appointment.selectedSlot.startDateTime),
+          end: new Date(appointment.selectedSlot.endDateTime),
+          // Additional appointment details
+          selectedService: appointment.selectedService, // Include selectedService
+          patientInfo: appointment.patientInfo // Include patientInfo
+          // You can include other details here if needed
+        }));
   
+        setAppointments(formattedAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+        toast.error('Failed to fetch appointments. Please try again.');
+      }
+    };
+  
+    fetchAppointments();
+  }, []);
+  
+
+  const handleEventSelect = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
 
   return (
     <Layout>
-      {open && (
-        <AddAppointmentModal
-          closeModal={() => setOpen(false)} // Close modal function
-          isOpen={open}
-          datas={selectedEvent} // Pass selected event data if needed
-          handleNewAppointment={handleNewAppointment} // Function to handle new appointments
-          patientId={selectedEvent ? selectedEvent.id : null} // Pass patient ID if needed
-        />
-      )}
-
-      {/* Calendar */}
-      <button
-        onClick={() => setOpen(true)} // Open the modal
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
-
+    <AppointmentDetailsModal
+  isOpen={isModalOpen} // Use isOpen instead of isModalOpen
+  closeModal={() => setIsModalOpen(false)}
+  event={selectedEvent}
+/>
       <Calendar
         localizer={localizer}
-        events={events}
+        events={appointments}
         startAccessor="start"
         endAccessor="end"
         style={{
-          // height fix screen
           height: 900,
           marginBottom: 50,
         }}
-        onSelectEvent={(event) => handleEventClick(event)}
+        onSelectEvent={handleEventSelect}
         defaultDate={new Date()}
         timeslots={1}
         resizable
         step={60}
         selectable={true}
-        // Custom event style
         eventPropGetter={(event) => {
           const style = {
             backgroundColor: event.color || '#66B5A3',
@@ -197,7 +187,6 @@ function Appointments({ events }) {
             style,
           };
         }}
-        // Custom date style
         dayPropGetter={(date) => {
           const backgroundColor = 'white';
           const style = {
@@ -207,9 +196,7 @@ function Appointments({ events }) {
             style,
           };
         }}
-        // Remove agenda view
         views={['month', 'day', 'week']}
-        // Toolbar={false}
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>

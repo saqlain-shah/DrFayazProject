@@ -95,7 +95,7 @@ const AppointmentPage = () => {
     try {
       const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
       if (response) {
-        console.log('Response:', response);
+        console.log('Responsesss:', response);
         // Log the entire response
         setUserId(response.data._id); // Update state with the fetched user ID
         setSelectValue(response.data)
@@ -214,40 +214,39 @@ const AppointmentPage = () => {
 
 
   const handleConfirmAppointment = () => {
-    console.log("Confirming appointment...");
-    setShowModal(true); // Show the modal after confirming the appointment
-    setShowAppointmentDetails(true);
-    
     // Combine appointment data
     const appointmentData = {
       patientInfo: selectValue, // Personal information
       selectedSlot: selectedSlot, // Selected appointment slot
       selectedService: selectedService // Selected service
     };
-  
+
+    console.log("Appointment Data:", appointmentData); // Log appointment data before making the request
+
     // Retrieve token from localStorage
     const token = localStorage.getItem('token');
-  
-    // Include ID in the appointment data
-    appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
-  
+
     // Make a POST request to store the appointment data with token included in headers
     axios.post('http://localhost:8800/api/web/', appointmentData, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-      .then(response => {
-        console.log('Appointment created successfully:', response.data);
-        // Display a success toast message after appointment creation
-        toast.success('Appointment scheduled successfully!');
-        // Navigate to the success page or do any further actions
-      })
-      .catch(error => {
-        console.error('Error creating appointment:', error);
-        // Handle error, e.g., show an error message to the user
-      });
+    .then(response => {
+      console.log('Appointment created successfully:', response.data);
+      // Display a success message or take further actions
+      toast.success('Appointment scheduled successfully!');
+      // Navigate to the success page or do any further actions
+      navigation(`/booking/success/${response.data.id}`);
+    })
+    .catch(error => {
+      console.error('Error creating appointment:', error);
+      // Handle error, e.g., show an error message to the user
+      message.error('Error creating appointment. Please try again.');
+    });
   };
+
+  
   
   
   

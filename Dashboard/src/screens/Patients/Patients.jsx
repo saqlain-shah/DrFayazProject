@@ -18,7 +18,6 @@ function Patients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
-
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -27,12 +26,37 @@ function Patients() {
         params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
         headers: { Authorization: `Bearer ${token}` }
       });
-      setPatients(response.data);
+  
+      console.log('Fetched patients:', response.data);
+  
+      // Iterate over patients to fetch appointment details
+      const patientsWithAppointments = await Promise.all(response.data.map(async (patient) => {
+        const appointments = await Promise.all(patient.appointments.map(async (id) => {
+          console.log(`Fetching appointment details for appointment ID: ${id}`);
+          const appointmentResponse = await axios.get(`http://localhost:8800/api/web/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          console.log(`Fetched appointment details for appointment ID: ${id}`, appointmentResponse.data);
+          return appointmentResponse.data;
+        }));
+        return { ...patient, appointments };
+      }));
+  
+      console.log('Patients with appointments:', patientsWithAppointments);
+      setPatients(patientsWithAppointments);
     } catch (error) {
       console.error('Error fetching patients:', error);
       toast.error('Failed to fetch patients');
     }
   };
+  
+  useEffect(() => {
+    fetchPatients();
+  }, [searchQuery, startDate, genderFilter]);
+  
+  
+  
+  
 
   useEffect(() => {
     fetchPatients();
