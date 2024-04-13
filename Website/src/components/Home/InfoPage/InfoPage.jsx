@@ -37,15 +37,15 @@ const InfoPage = () => {
                                         <FaHouseUser className="icon" />
                                         <h4>Appointment</h4>
                                         <small className='text-secondary'>24 Hours Service</small>
-                                        <p>Consequuntur sunt aut quasi enim aliquam quae harum pariatur laboris nisi ut aliquip</p>
+                                        <p>Available round the clock, we're here whenever you need us. Our services are accessible 24/7, ensuring assistance is always at your fingertips.</p>
                                     </div>
                                 </div>
                                 <div className="col-xl-4 d-flex align-items-stretch">
                                     <div className="icon-box mt-4 mt-xl-0">
                                         <FaHeadset className="icon" />
                                         <h4>Emegency Cases</h4>
-                                        <h6 className='text-secondary'>+88 01751 040425</h6>
-                                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui facilis perferendis quia maxime. Laborum excepturi pariatur laboriosam nihil, dolor molestias.</p>
+                                        <h6 className='text-secondary'>+44 7579 389649</h6>
+                                        <p>Reach out to our reliable emergency contact for immediate assistance and reassurance.</p>
                                     </div>
                                 </div>
                                 <div className="col-xl-4 d-flex align-items-stretch">

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './index.css';
 import TopHeader from '../TopHeader/TopHeader';
 import { Link, NavLink } from 'react-router-dom';
-import img from '../../../images/dr.jpg';
+import img from '../../../images/dr1.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 
@@ -36,8 +36,9 @@ const Header = ({ clientId }) => {
             <header id="header" className={`fixed-top ${!show && "stickyHeader"}`}>
                 <div className="container d-flex align-items-center">
                     <Link to={'/'} className="logo me-auto">
-                        <img src={img} alt="" className="img-fluid" />
+                        <img src={img} alt="" className="img-fluid w-32 h-20" />
                     </Link>
+
                     <nav id="navbar" className="navbar order-last order-lg-0">
                         <ul>
                             <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Home</NavLink></li>
@@ -48,7 +49,7 @@ const Header = ({ clientId }) => {
                             <div>
                                 <Popover>
                                     <div className='profileImage'>
-                                     
+
                                     </div>
                                 </Popover>
                             </div>

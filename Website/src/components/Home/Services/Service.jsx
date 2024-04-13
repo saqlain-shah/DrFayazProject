@@ -29,7 +29,7 @@ const Service = () => {
                         <div className="service-content ps-4 mt-4 mt-lg-0">
                             <h2>Personal care <br />healthy living</h2>
                             <p className="mt-4 mb-5 text-secondary form-text">We provide best leading medicle service Nulla perferendis veniam deleniti ipsum officia dolores repellat laudantium obcaecati neque.</p>
-                            <Link to={'/service'} className="btn-get-started scrollto">Services</Link>
+                           
                         </div>
                     </div>
                 </div>
