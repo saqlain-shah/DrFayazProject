@@ -1,39 +1,32 @@
-import { setUserInfo } from "../../utils/local-storage";
-import { baseApi } from "./baseApi"
+import { useMutation } from 'react-query'; // Assuming you're using React Query for data fetching
 
-const AUTH_URL = '/auth'
+const useUserLoginMutation = () => {
+    // Define your login mutation function here
+    const loginUser = async (formData) => {
+        try {
+            const response = await fetch('http://localhost:8800/api/userauth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-export const authApi = baseApi.injectEndpoints({
-    endpoints: (build) => ({
-        userLogin: build.mutation({
-            query: (loginData) => ({
-                url: `${AUTH_URL}/login`,
-                method: 'POST',
-                data: loginData,
-            }),
-            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-                try {
-                    const result = (await queryFulfilled).data;
-                    setUserInfo({ accessToken: result.accessToken });
-                } catch (error) {
-                }
-            },
-        }),
-        patientSignUp: build.mutation({
-            query: (data) => ({
-                url: `/patient`,
-                method: 'POST',
-                data,
-            }),
-        }),
-        doctorSignUp: build.mutation({
-            query: (data) => ({
-                url: `/doctor`,
-                method: 'POST',
-                data,
-            }),
-        }),
-    })
-})
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to login');
+            }
 
-export const { useUserLoginMutation, useDoctorSignUpMutation, usePatientSignUpMutation } = authApi
+            return await response.json();
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // Use React Query's useMutation hook to handle the mutation
+    const { mutate, isError, isLoading, isSuccess, error } = useMutation(loginUser);
+
+    return [mutate, { isError, isLoading, isSuccess, error }];
+};
+
+export default useUserLoginMutation;

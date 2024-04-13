@@ -9,13 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '../Shared/Footer/Footer';
 import Header from '../Shared/Header/Header';
 import SelectAppointment from './SelectApppointment';
-import PersonalInformation from "../Booking/PersonalInformation";
+import PersonalInformation from "../Booking/PersonalInformation"; // Import PersonalInformation component
 import CheckoutPage from "../Booking/BookingCheckout/CheckoutPage";
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { useCreateAppointmentByUnauthenticateUserMutation } from '../../redux/api/appointmentApi';
 import { useDispatch } from 'react-redux';
 import { addInvoice } from '../../redux/feature/invoiceSlice';
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 
 
@@ -25,7 +25,7 @@ const initialValue = {
   // paymentType: 'creditCard',
   name: '',
   email: '',
-  image:'',
+  image: '',
   emergencyContact: 0,
   reasonForVisit: '',
   description: '',
@@ -93,7 +93,7 @@ const AppointmentPage = () => {
     };
 
     try {
-      const response = await axios.get(`https://drfayazproject.onrender.com/api/userauth/${params.clientId}`, config)
+      const response = await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
       if (response) {
         console.log('Response:', response);
         // Log the entire response
@@ -137,29 +137,37 @@ const AppointmentPage = () => {
 
 
   const makePayment = async () => {
-    const stripe = await loadStripe("pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz");
-    const body = {
-      products: [{ selectedService }] 
-  };
-    const token = localStorage.getItem('token');
-    const headers = {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+    try {
+        const stripe = await loadStripe('pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz');
+        const body = {
+            products: [{ ...selectedService }] // Assuming selectedService contains name and price properties
+        };
+        const token = localStorage.getItem('token');
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        };
+        const response = await fetch('http://localhost:8800/api/stripe/checkout', {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(body)
+        });
+        const session = await response.json();
+
+        const result = await stripe.redirectToCheckout({
+            sessionId: session.id
+        });
+        
+        if (result.error) {
+            console.error("Error redirecting to checkout:", result.error);
+            // Handle error, e.g., show an error message to the user
+        }
+    } catch (error) {
+        console.error("Error making payment:", error);
+        // Handle error, e.g., show an error message to the user
     }
-    const response = await fetch('https://drfayazproject.onrender.com/api/stripe/create-checkout-session', {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(body) // Fix typo here
-    });
-    const session = await response.json();
-  
-    const result = stripe.redirectToCheckout({
-      sessionId: session.id
-    })
-    if (result.error) {
-      console.log("feild", result.error)
-    }
-  };
+};
+
 
 
   useEffect(() => {
@@ -183,7 +191,7 @@ const AppointmentPage = () => {
       }
     };
     try {
-      const response = await axios.get('https://drfayazproject.onrender.com/api/services', config);
+      const response = await axios.get('http://localhost:8800/api/services', config);
       setServiceDetails(response.data);
       console.log("serviceDetails", response.data)
       console.log("serviceDetails", serviceDetails)
@@ -209,51 +217,40 @@ const AppointmentPage = () => {
     console.log("Confirming appointment...");
     setShowModal(true); // Show the modal after confirming the appointment
     setShowAppointmentDetails(true);
-    const obj = {
-      patientInfo: {
-        name: selectValue.name,
-        email: selectValue.email,
-        emergencyContact: selectValue.emergencyContact,
-        // patientId: role !== '' ? data.id : undefined,
-        scheduleDate: selectedStartDate,
-        scheduleTime: selectedEndDate,
-      },
-      // payment: {
-      //   paymentType: selectValue.paymentType,
-      //   paymentMethod: selectValue.paymentMethod,
-      //   cardNumber: selectValue.cardNumber,
-      //   cardExpiredYear: selectValue.cardExpiredYear,
-      //   cvv: selectValue.cvv,
-      //   expiredMonth: selectValue.expiredMonth,
-      //   nameOnCard: selectValue.nameOnCard,
-      // },
+    
+    // Combine appointment data
+    const appointmentData = {
+      patientInfo: selectValue, // Personal information
+      selectedSlot: selectedSlot, // Selected appointment slot
+      selectedService: selectedService // Selected service
     };
-
-    // Configure Axios to include the token in the Authorization header
-    const config = {
+  
+    // Retrieve token from localStorage
+    const token = localStorage.getItem('token');
+  
+    // Include ID in the appointment data
+    appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
+  
+    // Make a POST request to store the appointment data with token included in headers
+    axios.post('http://localhost:8800/api/web/', appointmentData, {
       headers: {
         Authorization: `Bearer ${token}`
       }
-    };
-
-    axiosBaseQuery.post('https://drfayazproject.onrender.com/api/v1', obj, config)
+    })
       .then(response => {
         console.log('Appointment created successfully:', response.data);
         // Display a success toast message after appointment creation
-        // Inside your handleConfirmSchedule function or wherever you want to display a toast message
         toast.success('Appointment scheduled successfully!');
-
-        // Navigate to the first page after confirming
-        navigation('/'); // Assuming the first page URL is '/'
-
-        // Handle success, e.g., show a success message to the user
+        // Navigate to the success page or do any further actions
       })
       .catch(error => {
         console.error('Error creating appointment:', error);
         // Handle error, e.g., show an error message to the user
       });
-
   };
+  
+  
+  
 
   useEffect(() => {
     if (isSuccess) {
@@ -387,7 +384,7 @@ const AppointmentPage = () => {
         <p>Service: {selectedService ? selectedService.name : 'Loading...'}</p>
         <p>Service Charge: {selectedService ? selectedService.price : 'Loading...'} USD</p>
         {/* <p>Service Tax: 5 USD</p> */}
-        <p>Total Amount: {selectedService.price } USD</p>
+        <p>Total Amount: {selectedService.price} USD</p>
       </Modal>
       <Footer />
     </>

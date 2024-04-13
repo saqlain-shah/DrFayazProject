@@ -1,38 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt } from "react-icons/fa";
 import img from '../../images/doc/doc4.jpg';
 import './DashboardSidebar.css';
 
 const DashboardSidebar = () => {
-    const { data, role } = useAuthCheck()
-    const params = useParams()
+    const { data, role } = useAuthCheck();
     const [userData, setUserData] = useState({});
-    const clientId = params.clientId
-    console.log("id", clientId);
-    // console.log("data", data)
+    const clientId = localStorage.getItem('clientId'); // Retrieve clientId from local storage
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Retrieve token from localStorage
+        const token = localStorage.getItem('token');
         const config = {
             headers: {
-                'Authorization': `Bearer ${token}` // Include token in the Authorization header
+                'Authorization': `Bearer ${token}`
             }
         };
-        axios.get(`https://drfayazproject.onrender.com/api/userauth/${params.clientId}`, config)
+        axios.get(`http://localhost:8800/api/userauth/${clientId}`, config)
             .then(response => {
-                console.log("dashboard", response.data)
-                const imagePath = `https://drfayazproject.onrender.com/${response.data.image}`
+                const imagePath = `http://localhost:8800/${response.data.image}`
                 response.data.image = imagePath;
                 setUserData(response.data);
-                console.log("updted image path", userData);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-    }, []);
+    }, [clientId]);
+
+    const handleLogout = () => {
+        // Clear client ID and token from local storage
+        localStorage.removeItem('clientId');
+        localStorage.removeItem('token');
+        // Navigate to '/'
+        navigate('/');
+    };
 
     return (
         <div className="profile-sidebar p-3 rounded">
@@ -75,7 +80,7 @@ const DashboardSidebar = () => {
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink to={'/'}>
+                        <NavLink to={'/'} onClick={handleLogout}>
                             <FaSignOutAlt className="icon" />
                             <span>Logout</span>
                         </NavLink>

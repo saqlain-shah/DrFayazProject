@@ -82,13 +82,14 @@ const CustomToolbar = (toolbar) => {
                 item.view === 'month'
                   ? goToMonth
                   : item.view === 'week'
-                    ? goToWeek
-                    : goToDay
+                  ? goToWeek
+                  : goToDay
               }
-              className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
-                ? 'bg-subMain text-white'
-                : 'text-subMain'
-                }`}
+              className={`border-l text-xl py-2 flex-colo border-subMain ${
+                toolbar.view === item.view
+                  ? 'bg-subMain text-white'
+                  : 'text-subMain'
+              }`}
             >
               {item.view === 'month' ? (
                 <HiOutlineViewGrid />
@@ -105,74 +106,17 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
-function Appointments() {
+function Appointments({ events }) {
   const localizer = momentLocalizer(moment);
   const [open, setOpen] = useState(false);
-  const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  useEffect(() => {
-    // Make API call to fetch appointment data
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-        const response = await axios.get('https://drfayazproject.onrender.com/api/v1', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-          },
-        });
-        const eventData = response.data.data;
-        const formattedEvents = eventData.map((event) => ({
-          id: event._id,
-          start: new Date(event.patientInfo.scheduleDate),
-          end: new Date(event.patientInfo.scheduleTime),
-          title: `${event.patientInfo.firstName} ${event.patientInfo.lastName}`,
-          email: event.patientInfo.email, // Include email from response
-          phone: event.patientInfo.phone, // Include phone from response
-          paymentType: event.payment.paymentType, // Include paymentType from response
-          paymentMethod: event.payment.paymentMethod, // Include paymentMethod from response
-          // cardNumber: event.payment.cardNumber, // Include cardNumber from response
-          // cardExpiredYear: event.payment.cardExpiredYear, // Include cardExpiredYear from response
-          // cvv: event.payment.cvv, // Include cvv from response
-          // expiredMonth: event.payment.expiredMonth, // Include expiredMonth from response
-          // nameOnCard: event.payment.nameOnCard, // Include nameOnCard from response
-        }));
-        setEvents(formattedEvents);
-      } catch (error) {
-        console.error('Error fetching appointment data:', error);
-      }
-    };
-
-    fetchData(); // Call the fetchData function
-  }, []); // Empty dependency array to run the effect only once on component mount
 
   const handleClose = () => {
     setOpen(!open);
   };
 
   const handleDeleteAppointment = async (id) => {
-    try {
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-      const response = await fetch(`https://drfayazproject.onrender.com/api/v1/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-        },
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        // Filter out the deleted event from the events state
-        const updatedEvents = events.filter((event) => event.id !== id);
-        setEvents(updatedEvents); // Update the events state
-        toast.success(data.message);
-      } else {
-        toast.error(data.error);
-      }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      toast.error('Failed to delete appointment');
-    }
+    // Implement delete appointment logic here
   };
 
   const handleEventClick = (event) => {
@@ -181,17 +125,26 @@ function Appointments() {
   };
 
   const handleNewAppointment = (newAppointment) => {
-    // Ensure that the required fields are present
-    if (newAppointment && newAppointment.start && newAppointment.end) {
-      // Update the events state to include the new appointment
-      setEvents([...events, newAppointment]);
-    } else {
-      console.error('Missing required fields in the appointment data.');
-      toast.error('Failed to create appointment. Missing required fields.');
-    }
+    // Implement new appointment logic here
   };
 
-
+  const handleFetchAppointment = async ( token) => {
+    try {
+      const response = await axios.get(`http://localhost:8800/api/web/appointments`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      console.log('Appointment fetched successfully:', response.data);
+      // Further processing of the fetched appointment data
+    } catch (error) {
+      console.error('Error fetching appointment:', error);
+      // Handle error, e.g., show an error message to the user
+      toast.error('Failed to fetch appointment. Please try again.');
+    }
+  };
+  
 
   return (
     <Layout>
@@ -203,7 +156,6 @@ function Appointments() {
           handleNewAppointment={handleNewAppointment} // Function to handle new appointments
           patientId={selectedEvent ? selectedEvent.id : null} // Pass patient ID if needed
         />
-
       )}
 
       {/* Calendar */}
@@ -265,4 +217,3 @@ function Appointments() {
 }
 
 export default Appointments;
-

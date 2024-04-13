@@ -25,6 +25,7 @@ import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
+import webRoutes from './routes/webRoutes.js'
 //import helmet from 'helmet';
 
 const app = express();
@@ -67,6 +68,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/web', webRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);

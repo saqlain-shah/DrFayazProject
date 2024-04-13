@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import log from '../../images/doc/info.svg';
 import register from '../../images/doc/register.svg';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
-
+import { useNavigate } from 'react-router-dom';
 const SignInForm = () => {
     const [isSignUp, setSignUp] = useState(false);
+    const Navigate = useNavigate();
+    const handleSignUpSuccess = () => {
+        console.log('Switching to Sign In mode...');
+        setSignUp(false); // Change the mode to sign-in
+        Navigate(`/dashboard/${clientId}`);
+    };
+
+    const handleSignInMode = () => {
+        console.log('Switching to Sign Up mode...');
+        setSignUp(true); // Change the mode to sign-up
+    };
+    useEffect(() => {
+        console.log('Component rendered with sign-in mode:', isSignUp);
+    }, [isSignUp]);
 
     return (
         <div className={`${isSignUp ? "signin-signup-container sign-up-mode" : "signin-signup-container"}`}>
@@ -16,8 +30,8 @@ const SignInForm = () => {
             </Link>
             <div className="forms-container">
                 <div className="signIn-singUp">
-                    <SignIn setSignUp={setSignUp} /> {/* Pass setSignUp function as a prop */}
-                    <SignUp setSignUp={setSignUp} />
+                    <SignIn handleResponse={handleSignInMode} />
+                    <SignUp onSignUpSuccess={handleSignUpSuccess} />
                 </div>
             </div>
 

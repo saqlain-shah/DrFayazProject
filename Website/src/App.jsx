@@ -1,7 +1,6 @@
-
-
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Import Navigate from react-router-dom
+import { AuthProvider, useAuth } from './AuthContext';
 import Home from './components/Home/Home/Home';
 import SignInForm from './components/Login/SignInForm';
 import Contact from './components/Contact/Contact';
@@ -13,27 +12,37 @@ import Prescription from './components/Doctor/Prescription/Prescription';
 import PrescriptionView from './components/Doctor/Prescription/PrescriptionView';
 import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
 import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
+import PrivateRoute from './Private';
+import { ToastContainer } from 'react-toastify';
 
+function AppRoutes() {
+  const { user } = useAuth();
 
-const router = createBrowserRouter([
-  { path: '/', element: <Home /> },
-  { path: '/contact', element: <Contact /> },
-  { path: '/login', element: <SignInForm /> },
-  { path: '/appointment', element: <AppointmentPage /> },
-  { path: '/track-appointment', element: <TrackAppointment /> },
-  { path: '/doctors', element: <SearchDoctor /> },
-  { path: '/dashboard/:clientId', element: <Dashboard /> },
-  { path: '/dashboard/prescription/:clientId', element: <Prescription /> },
-  { path: '/dashboard/prescription/:id', element: <PrescriptionView /> },
-  { path: '/dashboard/change-password/:clientId', element: <ChangePassword /> },
-  { path: '/dashboard/profile-setting/:clientId', element: <ProfileSetting /> },
-]);
-
-const AppRoutes = () => {
-  
   return (
-    <RouterProvider router={router} />
+    <Routes>
+       <Route path="/login" element={<SignInForm />}  />
+      
+      <Route path="/" element={<Home />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/appointment" element={<AppointmentPage />} />
+      <Route path="/track-appointment" element={<TrackAppointment />} />
+      <Route path="/doctors" element={<SearchDoctor />} />
+      <Route path="/dashboard/:clientId" element={<Dashboard />} />
+      <Route path="/dashboard/prescription/:clientId"  element={<Prescription />}  />
+      <Route path="/dashboard/prescription/:id" element={<PrescriptionView />}  />
+      <Route path="/dashboard/profile-setting/:clientId" element={<ProfileSetting />} />
+      <Route path="/dashboard/change-password/:clientId"  element={<ChangePassword />}  />
+    </Routes>
   );
 }
 
-export default AppRoutes;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ToastContainer />
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

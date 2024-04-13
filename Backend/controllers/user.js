@@ -24,8 +24,11 @@ export const login = async (req, res, next) => {
 
     const { password, ...details } = user._doc;
 
+    // Set token in cookie
+    res.cookie('access_token', token, { httpOnly: true });
+
     // Send token and id in response
-    res.status(200).json({ message: 'Login successful', token, ...details });
+    return res.status(200).json({ message: 'Login successful', token, ...details });
   } catch (error) {
     console.error('Error logging in:', error); // Log any errors
     return res.status(500).json({ message: 'Internal server error' });
