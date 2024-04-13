@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './index.css';
 import TopHeader from '../TopHeader/TopHeader';
 import { Link, NavLink } from 'react-router-dom';
-import img from '../../../images/logo.png';
+import img from '../../../images/dr.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 
