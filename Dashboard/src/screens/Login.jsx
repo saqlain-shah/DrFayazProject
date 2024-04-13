@@ -14,7 +14,6 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Redirect to dashboard if user is already logged in
     if (user) {
       navigate('/');
     }
@@ -30,10 +29,8 @@ function Login() {
       });
 
       if (response.status === 200) {
-        const { token, id, name } = response.data; // Extract token, id, and name from the response data
-        login({ id, name }); // Update authentication state with the user's ID and name
-
-        // Store the token and name in local storage
+        const { token, id, name } = response.data;
+        login({ id, name });
         localStorage.setItem('token', token);
         document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
         toast.success('Login successful');
@@ -53,6 +50,9 @@ function Login() {
   const handleRegisterClick = () => {
     navigate('/register');
   };
+
+  // Ensure user object exists before accessing its properties
+  const userName = user ? user.name : '';
 
   return (
     <div className="w-full h-screen flex-colo bg-dry">
@@ -88,6 +88,8 @@ function Login() {
             type="submit"
           />
           <div style={{ marginLeft: '10px' }}>
+            {/* Display user's name if available */}
+            
             <Button
               label="Register"
               onClick={handleRegisterClick}

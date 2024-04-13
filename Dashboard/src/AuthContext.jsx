@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -7,7 +7,20 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Initially, the user is not logged in
+  const [user, setUser] = useState(() => {
+    // Retrieve user data from local storage if available
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  useEffect(() => {
+    // Save user data to local storage whenever it changes
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   const login = (userData) => {
     // Ensure that the userData object contains the id property
@@ -21,8 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     // Clear any authentication tokens or states from local storage or cookies
-    localStorage.removeItem('token');
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    localStorage.removeItem('user');
 
     // Clear user data from state
     setUser(null);
