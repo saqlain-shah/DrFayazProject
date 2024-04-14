@@ -10,7 +10,8 @@ const Service = () => {
         <section className="container" style={{marginTop: 200, marginBottom:200}}>
             <div className='mb-5 section-title text-center'>
                 <h2>Services</h2>
-                <p className='m-0'>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                <p className='m-0'>24 Hours Service
+Available round the clock, we're here whenever you need us. Our services are accessible 24/7, ensuring assistance is always at your fingertips..</p>
             </div>
             <div className="container">
                 <div className="row align-items-center">
@@ -28,7 +29,7 @@ const Service = () => {
                     <div className="col-lg-4">
                         <div className="service-content ps-4 mt-4 mt-lg-0">
                             <h2>Personal care <br />healthy living</h2>
-                            <p className="mt-4 mb-5 text-secondary form-text">We provide best leading medicle service Nulla perferendis veniam deleniti ipsum officia dolores repellat laudantium obcaecati neque.</p>
+                            <p className="mt-4 mb-5 text-secondary form-text">Providing top-tier healthcare services tailored to meet your needs, ensuring your well-being and peace of mind .</p>
                            
                         </div>
                     </div>
