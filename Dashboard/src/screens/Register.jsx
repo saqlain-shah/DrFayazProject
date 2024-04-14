@@ -4,7 +4,7 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-
+import pic from '../build/images/logo.jpg'
 function Register() {
     const navigate = useNavigate();
     const [name, setName] = useState('');
@@ -63,7 +63,7 @@ function Register() {
         <div className="w-full h-screen flex-colo bg-dry">
             <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
                 <img
-                    src="/images/logo.png"
+                    src={pic}
                     alt="logo"
                     className="w-48 h-16 object-contain"
                 />

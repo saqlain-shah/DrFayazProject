@@ -9,6 +9,9 @@ export const createAppointment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Inside webcontroller.js
+
+
 export const getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find();
@@ -44,3 +47,5 @@ export const getAppointmentById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+

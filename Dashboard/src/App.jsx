@@ -34,6 +34,7 @@ import Register from './screens/Register'; // Import the Register component
 import Schedule from './screens/Schedule/Schedule';
 import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
+import Webpatinet from './screens/Patients/Webpatinet';
 
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
@@ -69,6 +70,7 @@ function App() {
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
+          <Route path="/appointments/preview/:id" element={<PrivateRoute element={<Webpatinet />} />} />
           <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
           <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />
           {/* doctors */}

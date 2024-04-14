@@ -29,7 +29,7 @@ import {
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
-import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments } from '../Api/api.js'; // Import all necessary functions
+import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments,fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
@@ -38,26 +38,31 @@ function Dashboard() {
   const [totalAppointmentsPercentage, setTotalAppointmentsPercentage] = useState(0);
   const [recentPatients, setRecentPatients] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
-
+  const [websitePatients, setWebsitePatients] = useState([]);
   useEffect(() => {
     fetchData();
   }, []);
+
+ 
+
 
   const fetchData = async () => {
     try {
       const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
       const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
       const recentPatientsData = await fetchRecentPatients();
-      const todayAppointmentsData = await fetchTodayAppointments(); // Fetch today's appointment data
+      const todayAppointmentsData = await fetchTodayAppointments();
+      const websitePatientsData = await fetchwebsitePatient(); // Fetch website patients data
 
-      console.log('Today Appointments Data:', todayAppointmentsData); // Add this line for debugging
+      console.log('Website Patients Data:', websitePatientsData); // Add this line for debugging
 
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
       setTotalAppointments(appointmentCount);
       setTotalAppointmentsPercentage(appointmentPercentage);
       setRecentPatients(recentPatientsData);
-      setTodayAppointments(todayAppointmentsData.data); // Set today's appointment data in state
+      setTodayAppointments(todayAppointmentsData.data);
+      setWebsitePatients(websitePatientsData); // Set website patients data in state
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -185,10 +190,7 @@ function Dashboard() {
             </div>
             {/* table */}
             <div className="mt-4 overflow-x-scroll">
-              <Transactiontable
-                data={transactionData.slice(0, 5)}
-                action={false}
-              />
+            <Transactiontable data={websitePatients} />
             </div>
           </div>
         </div>

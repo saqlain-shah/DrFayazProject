@@ -10,7 +10,7 @@ import axios from 'axios';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddEditPatientModal from './EditPatient';
-
+import { useParams } from 'react-router-dom';
 function Patients() {
   const [isOpen, setIsOpen] = useState(false);
   const [patients, setPatients] = useState([]);
@@ -18,6 +18,7 @@ function Patients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
+  const { patientId } = useParams();
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -29,17 +30,42 @@ function Patients() {
   
       console.log('Fetched patients:', response.data);
   
-      // Iterate over patients to fetch appointment details
+      // Iterate over patients to fetch appointment details from the new API endpoint
       const patientsWithAppointments = await Promise.all(response.data.map(async (patient) => {
-        const appointments = await Promise.all(patient.appointments.map(async (id) => {
-          console.log(`Fetching appointment details for appointment ID: ${id}`);
-          const appointmentResponse = await axios.get(`http://localhost:8800/api/web/${id}`, {
+        try {
+          const appointmentResponse = await axios.get(`http://localhost:8800/api/web/`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          console.log(`Fetched appointment details for appointment ID: ${id}`, appointmentResponse.data);
-          return appointmentResponse.data;
-        }));
-        return { ...patient, appointments };
+          console.log(`Fetched appointments for patient ID: ${patient._id}`, appointmentResponse.data);
+          // Extract only personal information of patients and combine with appointments
+          return {
+            _id: patient._id,
+            fullName: patient.fullName,
+            profilePicture: patient.profilePicture,
+            gender: patient.gender,
+            bloodGroup: patient.bloodGroup,
+            address: patient.address,
+            email: patient.email,
+            emergencyContact: patient.emergencyContact,
+            createdAt: patient.createdAt,
+            appointments: appointmentResponse.data
+          };
+        } catch (error) {
+          console.error(`Error fetching appointments for patient ID: ${patient._id}`, error);
+          // If there's an error fetching appointments, return patient data without appointments
+          return {
+            _id: patient._id,
+            fullName: patient.fullName,
+            profilePicture: patient.profilePicture,
+            gender: patient.gender,
+            bloodGroup: patient.bloodGroup,
+            address: patient.address,
+            email: patient.email,
+            emergencyContact: patient.emergencyContact,
+            createdAt: patient.createdAt,
+            appointments: []
+          };
+        }
       }));
   
       console.log('Patients with appointments:', patientsWithAppointments);
@@ -50,12 +76,15 @@ function Patients() {
     }
   };
   
+  
+  
+  
   useEffect(() => {
     fetchPatients();
   }, [searchQuery, startDate, genderFilter]);
   
   
-  
+ 
   
 
   useEffect(() => {
@@ -127,7 +156,7 @@ function Patients() {
             <input
               type="text"
               placeholder='Search "Patients"'
-              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-10 w-full"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -136,7 +165,7 @@ function Patients() {
             <select
               value={genderFilter}
               onChange={handleGenderFilterChange}
-              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4 w-full"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
             >
               <option value="all">All</option>
               <option value="male">Male</option>
@@ -151,7 +180,7 @@ function Patients() {
               startDate={startDate}
               endDate={startDate}
               placeholderText="Select start date"
-              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-6 w-full"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
             />
           </div>
         </div>

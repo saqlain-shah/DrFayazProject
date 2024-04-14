@@ -23,6 +23,25 @@ export const fetchTotalPatientCount = async () => {
     }
 };
 
+export const fetchwebsitePatient = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8800/api/web/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch recent transactions');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw new Error('Error fetching recent transactions:', error);
+    }
+};
+
+
 // Fetch total appointment count
 export const fetchTotalAppointmentCount = async () => {
     try {

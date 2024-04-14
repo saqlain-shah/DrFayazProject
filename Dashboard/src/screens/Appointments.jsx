@@ -145,6 +145,12 @@ function Appointments({ events }) {
     fetchAppointments();
   }, []);
   
+  const onDelete = (eventId) => {
+    // Implement the logic to delete the appointment with the given eventId
+    console.log('Deleting event with ID:', eventId);
+    // Here you can make an API call to delete the event or update your state accordingly
+  };
+
 
   const handleEventSelect = (event) => {
     setSelectedEvent(event);

@@ -7,5 +7,4 @@ const router = express.Router();
 router.post('/', createAppointment);
 router.get('/:id', getAppointmentById);
 router.get('/', getAllAppointments);
-
 export default router;

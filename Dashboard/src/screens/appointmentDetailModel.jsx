@@ -1,12 +1,17 @@
 import React from 'react';
 import Modals from './Modals';
 
-const AppointmentDetailsModal = ({ isOpen, closeModal, event }) => {
+const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
     // If the modal is not open or event data is not available, return null to not render anything
     if (!isOpen || !event) return null;
 
+    const handleDelete = () => {
+        // Call the onDelete function and pass the event ID
+        onDelete(event.id);
+    };
+
     return (
-        <Modals isOpen={isOpen} onClose={closeModal} >
+        <Modals isOpen={isOpen} onClose={closeModal}>
             {/* Modal container */}
             <div className="bg-white rounded-lg overflow-hidden shadow-xl">
                 {/* Modal header */}
@@ -54,6 +59,13 @@ const AppointmentDetailsModal = ({ isOpen, closeModal, event }) => {
                             <p><strong>Blood Group:</strong> {event.patientInfo?.bloodGroup}</p>
                             <p><strong>Gender:</strong> {event.patientInfo?.gender}</p>
                             {/* You can add more appointment details here */}
+                            {/* Delete button */}
+                            {/* <button
+                                className="bg-red-500 text-white px-4 py-2 rounded-md mt-4"
+                                onClick={handleDelete}
+                            >
+                                Delete
+                            </button> */}
                         </div>
                     </div>
                 </div>

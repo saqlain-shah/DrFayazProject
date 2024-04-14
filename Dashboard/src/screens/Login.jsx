@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../AuthContext';
-
+import pic from '../build/images/logo.jpg'
 function Login() {
   const navigate = useNavigate();
   const { user, login } = useAuth();
@@ -58,7 +58,7 @@ function Login() {
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
         <img
-          src="/images/logo.png"
+          src={pic}
           alt="logo"
           className="w-48 h-16 object-contain mb-4"
         />

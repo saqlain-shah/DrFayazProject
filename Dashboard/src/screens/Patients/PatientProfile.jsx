@@ -28,18 +28,28 @@ function PatientProfile() {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-
-        const response = await axios.get(`https://drfayazproject.onrender.com/api/patients/${id}`, {
+  
+        // Fetch patient's profile data
+        const profileResponse = await axios.get(`https://drfayazproject.onrender.com/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setProfileData(response.data);
+        
+        // Fetch appointments for the patient
+        const appointmentResponse = await axios.get(`http://localhost:8800/api/web/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+  
+        // Set profile data and appointments in state
+        setProfileData(profileResponse.data);
+        setAppointments(appointmentResponse.data);
       } catch (error) {
         console.error('Error fetching profile data:', error);
       }
     };
-
+  
     fetchProfileData();
   }, [id]);
+  
 
   useEffect(() => {
     const fetchMedicalRecords = async () => {
