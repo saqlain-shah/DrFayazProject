@@ -20,10 +20,10 @@ const Home = ({ clientId }) => {
             <InfoPage />
             <Service />
             <ClinicAndSpecialities />
-            <BookDoctor />
+            {/* <BookDoctor /> */}
             {/* <Blog /> */}
             <Availabe />
-            <OurDoctors />
+            {/* <OurDoctors /> */}
             {/* <Testimonial /> */}
             <Gallery />
             <Footer />

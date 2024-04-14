@@ -18,7 +18,11 @@ function Patients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
+<<<<<<< HEAD
   const { patientId } = useParams();
+=======
+
+>>>>>>> b6406127db62382bdbd7256f7f49a2125659bad1
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -27,6 +31,7 @@ function Patients() {
         params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
         headers: { Authorization: `Bearer ${token}` }
       });
+<<<<<<< HEAD
   
       console.log('Fetched patients:', response.data);
   
@@ -70,11 +75,15 @@ function Patients() {
   
       console.log('Patients with appointments:', patientsWithAppointments);
       setPatients(patientsWithAppointments);
+=======
+      setPatients(response.data);
+>>>>>>> b6406127db62382bdbd7256f7f49a2125659bad1
     } catch (error) {
       console.error('Error fetching patients:', error);
       toast.error('Failed to fetch patients');
     }
   };
+<<<<<<< HEAD
   
   
   
@@ -86,6 +95,8 @@ function Patients() {
   
  
   
+=======
+>>>>>>> b6406127db62382bdbd7256f7f49a2125659bad1
 
   useEffect(() => {
     fetchPatients();

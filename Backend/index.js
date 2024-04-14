@@ -56,6 +56,8 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
   res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
+
+
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
