@@ -79,6 +79,10 @@ const DashboardSidebar = () => {
                             <span>Change Password</span>
                         </NavLink>
                     </li>
+
+
+
+                    
                     <li>
                         <NavLink to={'/'} onClick={handleLogout}>
                             <FaSignOutAlt className="icon" />
