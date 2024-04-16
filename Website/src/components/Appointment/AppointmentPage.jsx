@@ -169,7 +169,7 @@ const AppointmentPage = () => {
       const result = await stripe.redirectToCheckout({
         sessionId: session.id,
       });
-      
+
       if (result.error) {
         console.error("Error redirecting to checkout:", result.error);
         // Handle error, e.g., show an error message to the user
@@ -227,7 +227,7 @@ const AppointmentPage = () => {
   }, [serviceDetails]);
 
 
-  
+
 
   const handleConfirmAppointment = () => {
     console.log("Confirming appointment...");
@@ -313,7 +313,7 @@ const AppointmentPage = () => {
           {serviceDetails && (
             <div>
               {serviceDetails.map((service, index) => (
-                <div  key={index} onClick={() => {
+                <div key={index} onClick={() => {
                   setSelectedService({
                     name: service.name,
                     price: service.price,
@@ -322,7 +322,7 @@ const AppointmentPage = () => {
                   setIsConfirmDisable(false);
                 }} className={` hover:bg-blue-500 p-4 cursor-pointer rounded-md ${selectedService.name === service.name && 'selected-service'}`}>
                   <p className="  border bg-gray-800  text-base">
-                    Service Name: {service.name}<br/>
+                    Service Name: {service.name}<br />
                     Service Price: {service.price}
                   </p>
                 </div>
@@ -398,10 +398,10 @@ const AppointmentPage = () => {
         // Handle close event
         footer={[
           <div>
-          {loading && <div className="loading-circle"></div>},
-          <Button key="back" onClick={makePayment}>
-          {loading ? 'Processing...' : 'Checkout'}
-          </Button>,
+            {loading && <div className="loading-circle"></div>},
+            <Button key="back" onClick={makePayment}>
+              {loading ? 'Processing...' : 'Checkout'}
+            </Button>,
           </div>
         ]}
       >

@@ -49,7 +49,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                             onClick={() => handleSlotSelection(slot._id)} // Add onClick event handler for slot selection
                         >
                             <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
-                            <div>{moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
+                            <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
                             <label htmlFor={`slot-${index}`} className="flex items-center mt-2">
                                 <input
                                     type="radio"
