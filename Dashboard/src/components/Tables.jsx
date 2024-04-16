@@ -103,13 +103,12 @@ export function Transactiontable({ data, action, functions }) {
               <select
                 value={item.selectedStatus}
                 onChange={(e) => handleStatusChange(e, item)}
-                className={`py-1 px-2 ${tdclass} ${
-                  item.status === 'Paid'
-                    ? 'bg-subMain text-subMain'
-                    : item.status === 'Pending'
+                className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
+                  ? 'bg-subMain text-subMain'
+                  : item.status === 'Pending'
                     ? 'bg-orange-500 text-orange-500'
                     : item.status === 'Cancel' && 'bg-red-600 text-red-600'
-                } bg-opacity-10 text-xs rounded-xl`}
+                  } bg-opacity-10 text-xs rounded-xl`}
               >
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
@@ -205,7 +204,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://drfayazproject.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -329,8 +328,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://drfayazproject.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://drfayazproject.onrender.com/api/services');
+      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('http://localhost:8800/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -394,7 +393,6 @@ export function PatientTable({ data, functions, onEdit }) {
     console.log("View Appointment Data:", appointment);
     navigate(`/patients/profile/${appointment.patientInfo._id}`, { state: { appointmentData: appointment } });
   };
-  
 
   const appointmentMenuOptions = [
     {
@@ -463,7 +461,7 @@ export function PatientTable({ data, functions, onEdit }) {
                 <td className={tdClass}>
                   {item.profilePicture && (
                     <img
-                      src={`https://drfayazproject.onrender.com/${item.profilePicture}`}
+                      src={`http://localhost:8800/${item.profilePicture}`}
                       alt={item.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -493,12 +491,12 @@ export function PatientTable({ data, functions, onEdit }) {
               </tr>
               {item.appointments && item.appointments.map((_appointment, appIndex) => (
                 <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
-                  <td className={tdClass}>{index + 1}</td>
+                  <td className={tdClass}></td>
                   <td className={tdClass}>
-                    {_appointment.patientInfo.image && (
+                    {item.profilePicture && (
                       <img
                         src={`http://localhost:8800/${_appointment.patientInfo.image}`}
-                        alt={_appointment.patientInfo.name}
+                        alt={item.fullName}
                         className="w-full h-11 rounded-full object-cover border border-border"
                       />
                     )}
@@ -569,7 +567,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               <td className={tdClass}>
                 <img
-                  src={`https://drfayazproject.onrender.com/${patient.profilePicture}`}
+                  src={`http://localhost:8800/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
@@ -636,7 +634,7 @@ export function DoctorsTable({ data, functions, doctor }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://drfayazproject.onrender.com/${item.profileImage}`}
+                    src={`http://localhost:8800/${item.profileImage}`}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>
@@ -666,7 +664,7 @@ export function AppointmentTable({ functions, token, patientId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://drfayazproject.onrender.com/api/appointments/patient/${patientId}`, {
+        const response = await fetch(`http://localhost:8800/api/appointments/patient/${patientId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -693,7 +691,7 @@ export function AppointmentTable({ functions, token, patientId }) {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://drfayazproject.onrender.com/api/appointments/${id}`, {
+      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,66 +1,57 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaLocationArrow, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
+import axios from 'axios';
 import Header from "../Shared/Header/Header";
 import SubHeader from "../Shared/SubHeader";
 
 const Contact = () => {
-  const { handleSubmit, errors } = useForm();
+  const { handleSubmit, register, formState: { errors } } = useForm(); // Update destructuring to include formState
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
 
-  const firstNameRef = useRef();
-  const lastNameRef = useRef();
-  const emailRef = useRef();
-  const subjectRef = useRef();
-  const messageRef = useRef();
-
-  const sendEmail = async (emailData) => {
+  const onSubmit = async (data) => {
     setIsSending(true);
     try {
-      // Replace this with your logic to send emails
-      console.log("Email data:", emailData);
-      // Simulating a successful email send
-      setSendSuccess(true);
+      const token = localStorage.getItem('token');
+
+      const response = await axios.post("http://localhost:8800/api/userauth/send-email", {
+        email: data.email,
+        subject: "New Contact Form Submission",
+        body: `
+          First Name: ${data.firstName}
+          Last Name: ${data.lastName}
+          Email: ${data.email}
+          Subject: ${data.subject}
+          Message: ${data.message}
+        `,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        setSendSuccess(true);
+      } else {
+        setSendError(response.data.error || "Error sending email");
+      }
     } catch (error) {
-      setSendError(error.message);
+      setSendError("Error sending email");
     } finally {
       setIsSending(false);
     }
   };
 
-  const onSubmit = async (data) => {
-    // Check if the expected properties exist in the data object
-    if (
-      data &&
-      data.firstName &&
-      data.lastName &&
-      data.email &&
-      data.subject &&
-      data.message
-    ) {
-      const { firstName, lastName, email, subject, message } = data;
-      const emailData = `
-                From: "${firstName} ${lastName}" <${email}>
-                To: "Fayaz Sarwar" <fayazsarwar@gmail.com>
-                Subject: ${subject}
-                
-                ${message}
-            `;
 
-      await sendEmail(emailData);
-    } else {
-      console.error("Invalid form data:", data);
-    }
-  };
 
   return (
     <>
       <Header />
       <SubHeader
         title="Contact us"
-        subtitle="In Any Emergencey case contact us."
+        subtitle="In Any Emergency case, contact us."
       />
       <section id="contact" className="contact mt-5 mb-5">
         <div className="container">
@@ -112,10 +103,10 @@ const Contact = () => {
                         name="firstName"
                         placeholder="First Name"
                         className="form-control mb-3"
-                        ref={firstNameRef}
+                        {...register("firstName", { required: "First name is required" })} // Update to use {...register()}
                       />
-                      {errors && errors.firstName && (
-                        <p className="text-danger">First name is required</p>
+                      {errors.firstName && (
+                        <p className="text-danger">{errors.firstName.message}</p>
                       )}
                     </div>
                   </div>
@@ -127,10 +118,10 @@ const Contact = () => {
                         name="lastName"
                         placeholder="Last Name"
                         className="form-control mb-3"
-                        ref={lastNameRef}
+                        {...register("lastName", { required: "Last name is required" })} // Update to use {...register()}
                       />
-                      {errors && errors.lastName && (
-                        <p className="text-danger">Last name is required</p>
+                      {errors.lastName && (
+                        <p className="text-danger">{errors.lastName.message}</p>
                       )}
                     </div>
                   </div>
@@ -142,10 +133,10 @@ const Contact = () => {
                         name="email"
                         placeholder="Email"
                         className="form-control mb-3"
-                        ref={emailRef}
+                        {...register("email", { required: "Email is required" })} // Update to use {...register()}
                       />
-                      {errors && errors.email && (
-                        <p className="text-danger">Email is required</p>
+                      {errors.email && (
+                        <p className="text-danger">{errors.email.message}</p>
                       )}
                     </div>
                   </div>
@@ -157,10 +148,10 @@ const Contact = () => {
                         name="subject"
                         placeholder="Enter your subject"
                         className="form-control mb-3"
-                        ref={subjectRef}
+                        {...register("subject", { required: "Subject is required" })} // Update to use {...register()}
                       />
-                      {errors && errors.subject && (
-                        <p className="text-danger">Subject is required</p>
+                      {errors.subject && (
+                        <p className="text-danger">{errors.subject.message}</p>
                       )}
                     </div>
                   </div>
@@ -173,10 +164,10 @@ const Contact = () => {
                         rows="10"
                         placeholder="Enter your message"
                         className="form-control mb-3"
-                        ref={messageRef}
+                        {...register("message", { required: "Message is required" })} // Update to use {...register()}
                       />
-                      {errors && errors.message && (
-                        <p className="text-danger">Message is required</p>
+                      {errors.message && (
+                        <p className="text-danger">{errors.message.message}</p>
                       )}
                     </div>
                   </div>

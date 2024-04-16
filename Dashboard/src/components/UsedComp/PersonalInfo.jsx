@@ -19,7 +19,7 @@ function PersonalInfo({ titles, onSave }) {
   const [email, setEmail] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
   const [address, setAddress] = useState('');
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const saveChanges = async () => {
     try {
       const token = localStorage.getItem('token'); // Retrieve token from local storage
@@ -36,7 +36,7 @@ const navigate = useNavigate();
 
       console.log('Data to be sent:', data);
 
-      await axios.post('https://drfayazproject.onrender.com/api/patients', data, {
+      await axios.post('http://localhost:8800/api/patients', data, {
 
         headers: {
           'Content-Type': 'multipart/form-data',
