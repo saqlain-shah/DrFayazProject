@@ -1,101 +1,40 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Tag, message } from 'antd';
 import { FaRegEye, FaEdit, FaRegTimesCircle } from "react-icons/fa";
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import DashboardLayout from '../DashboardLayout/DashboardLayout';
 import CustomTable from '../../UI/component/CustomTable';
-import { useDeletePrescriptionMutation, useGetAllPrescriptionsQuery } from '../../../redux/api/prescriptionApi';
-// Dummy data for demonstration
-const dummyData = [
-    {
-        id: 1,
-        appointment: { trackingId: "ABC123" },
-        disease: "Fever",
-        followUpdate: "2024-02-09T12:00:00Z",
-        isArchived: false,
-        createdAt: "2024-02-08T12:00:00Z"
-    },
-    {
-        id: 2,
-        appointment: { trackingId: "ABC123" },
-        disease: "Fever",
-        followUpdate: "2024-02-09T12:00:00Z",
-        isArchived: false,
-        createdAt: "2024-02-08T12:00:00Z"
-    },
-    // Add more dummy data as needed
-];
+import { useDeletePrescriptionMutation } from '../../../redux/api/prescriptionApi';
 
 const Prescription = () => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [deleteBlog] = useDeletePrescriptionMutation();
-    const columns = [
-        {
-            title: 'Appointment Id',
-            dataIndex: "appointment",
-            key: 1,
-            render: ({ trackingId }) => {
-                return (
-                    <Tag color="#f50">{trackingId}</Tag>
-                )
-            }
-        },
-        {
-            title: 'Disease',
-            sorter: true,
-            dataIndex: "disease",
-            key: 3,
-        },
-        {
-            title: 'Follow-Update',
-            dataIndex: "followUpdate",
-            key: 4,
-            render: function (data) {
-                return <Tag color="#87d068">{dayjs(data).format('MMM D, YYYY hh:mm A')}</Tag>;
-            }
-        },
-        {
-            title: 'Archived',
-            dataIndex: "isArchived",
-            key: 4,
-            render: function ({ isArchived }) {
-                return <Tag color={isArchived ? "#f50" : "#108ee9"}>{isArchived ? "Yes" : "Under Treatment"}</Tag>;
-            }
-        },
-        {
-            title: 'createdAt',
-            dataIndex: 'createdAt',
-            key: 5,
-            sorter: true,
-            render: function (data) {
-                return data && dayjs(data).format('MMM D, YYYY hh:mm A');
-            }
-        },
-        {
-            title: 'Action',
-            key: 4,
-            render: function (data) {
-                return (
-                    <div className='d-flex'>
-                        <Link to={`/dashboard/prescription/${data.id}`}>
-                            <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
-                                <FaRegEye />
-                            </Button>
-                        </Link>
-                        <Link to={`/dashboard/appointment/treatment/edit/${data.id}`}>
-                            <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
-                                <FaEdit />
-                            </Button>
-                        </Link>
-                        <Button onClick={() => deleteHandler(data.id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
-                            <FaRegTimesCircle />
-                        </Button>
-                    </div>
-                )
-            }
-        },
-    ];
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("token");
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await axios.get("http://localhost:8800/api/web/", config);
+            setData(response.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            // Handle error, e.g., show an error message to the user
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const deleteHandler = async (id) => {
         message.loading("Deleting ...");
@@ -103,25 +42,54 @@ const Prescription = () => {
             const res = await deleteBlog(id);
             if (res) {
                 message.success("Successfully Deleted !!");
+                fetchData(); // Fetch data again after deletion
             }
         } catch (error) {
             message.error(error.message);
         }
-    }
+    };
+
+    const columns = [
+        {
+            title: 'Patient Name',
+            dataIndex: 'patientInfo',
+            key: 'patientName',
+            render: patientInfo => patientInfo.name
+        },
+        {
+            title: 'Service Name',
+            dataIndex: 'selectedService',
+            key: 'selectedService',
+            render: selectedService => selectedService.name
+        },
+        {
+            title: 'Patient Price',
+            dataIndex: 'selectedService',
+            key: 'selectedService',
+            render: selectedService => selectedService.price
+        },
+        {
+            title: 'Date',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: createdAt => dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')
+        }
+    ];
 
     return (
         <DashboardLayout>
             <div className="w-100 mb-3 rounded" style={{ background: '#f8f9fa' }}>
                 <CustomTable
                     columns={columns}
-                    dataSource={dummyData}
+                    dataSource={data}
+                    loading={loading}
                     showPagination={true}
                     pageSize={20}
                     showSizeChanger={true}
                 />
             </div>
         </DashboardLayout>
-    )
-}
+    );
+};
 
 export default Prescription;

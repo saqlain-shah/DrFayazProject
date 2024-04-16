@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { Table } from 'antd';
 
 const CustomTable = ({
@@ -20,6 +20,7 @@ const CustomTable = ({
         onChange: onPaginationChange,
         showPagination: true
     } : false;
+
     return (
         <Table
             loading={loading}
@@ -28,10 +29,10 @@ const CustomTable = ({
             onChange={onTableChange}
             pagination={paginationConfig}
             scroll={{
-                y:420
+                y: 420
             }}
         />
     )
 }
 
-export default CustomTable
+export default CustomTable;
