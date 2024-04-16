@@ -40,7 +40,7 @@ function Header() {
       },
     },
   ];
-  const profileImageURL = profileImagePath ? `https://drfayazproject.onrender.com/${profileImagePath}` : null;
+  const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
   return (
     <>
       {/* Header content */}

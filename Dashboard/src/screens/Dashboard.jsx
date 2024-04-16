@@ -29,7 +29,7 @@ import {
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
-import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments,fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
+import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments, fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
@@ -43,7 +43,7 @@ function Dashboard() {
     fetchData();
   }, []);
 
- 
+
 
 
   const fetchData = async () => {
@@ -190,7 +190,7 @@ function Dashboard() {
             </div>
             {/* table */}
             <div className="mt-4 overflow-x-scroll">
-            <Transactiontable data={websitePatients} />
+              <Transactiontable data={websitePatients} />
             </div>
           </div>
         </div>
@@ -213,7 +213,7 @@ function Dashboard() {
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={`https://drfayazproject.onrender.com/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
+                    src={`http://localhost:8800/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
                     alt="patient"
                     className="w-10 h-10 rounded-md object-cover"
                   />

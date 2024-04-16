@@ -489,7 +489,7 @@ export function PatientTable({ data, functions, onEdit }) {
                   </MenuSelect>
                 </td>
               </tr>
-              {item.appointments && item.appointments.map((_appointment, appIndex) => (
+              {/* {item.appointments && item.appointments.map((_appointment, appIndex) => (
                 <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
                   <td className={tdClass}></td>
                   <td className={tdClass}>
@@ -516,7 +516,7 @@ export function PatientTable({ data, functions, onEdit }) {
                     </MenuSelect>
                   </td>
                 </tr>
-              ))}
+              ))} */}
             </React.Fragment>
           ))}
         </tbody>

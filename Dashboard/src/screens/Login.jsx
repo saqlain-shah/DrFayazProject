@@ -23,7 +23,7 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('https://drfayazproject.onrender.com/api/auth/login', {
+      const response = await axios.post('http://localhost:8800/api/auth/login', {
         email,
         password,
       });
@@ -89,7 +89,7 @@ function Login() {
           />
           <div style={{ marginLeft: '10px' }}>
             {/* Display user's name if available */}
-            
+
             <Button
               label="Register"
               onClick={handleRegisterClick}
