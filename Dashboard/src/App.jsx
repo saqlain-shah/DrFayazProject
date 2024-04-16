@@ -70,6 +70,7 @@ function App() {
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
+          <Route path="/patients/profile/:id" element={<PrivateRoute element={<PatientProfile />} />} />
           <Route path="/appointments/preview/:id" element={<PrivateRoute element={<Webpatinet />} />} />
           <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
           <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />

@@ -1,11 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaLocationArrow, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
+import axios from 'axios';
 import Header from "../Shared/Header/Header";
 import SubHeader from "../Shared/SubHeader";
 
 const Contact = () => {
-  const { handleSubmit, errors } = useForm();
+  const { handleSubmit, register, formState: { errors } } = useForm(); // Update destructuring to include formState
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
@@ -22,7 +23,7 @@ const Contact = () => {
       <Header />
       <SubHeader
         title="Contact us"
-        subtitle="In Any Emergencey case contact us."
+        subtitle="In Any Emergency case, contact us."
       />
       <section id="contact" className="contact mt-5 mb-5">
         <div className="container">
@@ -76,8 +77,8 @@ const Contact = () => {
                         className="form-control mb-3"
                       
                       />
-                      {errors && errors.firstName && (
-                        <p className="text-danger">First name is required</p>
+                      {errors.firstName && (
+                        <p className="text-danger">{errors.firstName.message}</p>
                       )}
                     </div>
                   </div>
@@ -91,8 +92,8 @@ const Contact = () => {
                         className="form-control mb-3"
                        
                       />
-                      {errors && errors.lastName && (
-                        <p className="text-danger">Last name is required</p>
+                      {errors.lastName && (
+                        <p className="text-danger">{errors.lastName.message}</p>
                       )}
                     </div>
                   </div>
@@ -106,8 +107,8 @@ const Contact = () => {
                         className="form-control mb-3"
                        
                       />
-                      {errors && errors.email && (
-                        <p className="text-danger">Email is required</p>
+                      {errors.email && (
+                        <p className="text-danger">{errors.email.message}</p>
                       )}
                     </div>
                   </div>
@@ -121,8 +122,8 @@ const Contact = () => {
                         className="form-control mb-3"
                         
                       />
-                      {errors && errors.subject && (
-                        <p className="text-danger">Subject is required</p>
+                      {errors.subject && (
+                        <p className="text-danger">{errors.subject.message}</p>
                       )}
                     </div>
                   </div>
@@ -137,8 +138,8 @@ const Contact = () => {
                         className="form-control mb-3"
                       
                       />
-                      {errors && errors.message && (
-                        <p className="text-danger">Message is required</p>
+                      {errors.message && (
+                        <p className="text-danger">{errors.message.message}</p>
                       )}
                     </div>
                   </div>

@@ -58,6 +58,9 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 
 
 
+
+
+
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -83,6 +86,12 @@ app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/stripe', stripe);
+
+
+
+
+
+
 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
