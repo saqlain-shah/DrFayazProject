@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom'; // Import useLocation
 import Layout from '../../Layout';
 import { Link } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
@@ -12,9 +13,10 @@ import Uploader from '../../components/Uploader';
 import { servicesData, medicineData } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
 import MedicineDosageModal from '../../components/Modals/MedicineDosage';
-import { useParams } from 'react-router-dom';
 
 function NewMedicalRecord() {
+  const location = useLocation(); // Use useLocation hook
+  const appointmentData = location.state?.appointmentData; // Get appointmentData from location state
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
   const [isOpen, setIsOpen] = useState(false);

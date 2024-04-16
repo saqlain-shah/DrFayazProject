@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
 function PersonalInfo({ titles, onSave }) {
   const [profilePicture, setImageUrl] = useState('');
   const [title, setTitle] = useState(sortsDatas.title[0]);
@@ -19,7 +19,7 @@ function PersonalInfo({ titles, onSave }) {
   const [email, setEmail] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
   const [address, setAddress] = useState('');
-
+const navigate = useNavigate();
   const saveChanges = async () => {
     try {
       const token = localStorage.getItem('token'); // Retrieve token from local storage
@@ -56,6 +56,7 @@ function PersonalInfo({ titles, onSave }) {
       setEmail('');
       setEmergencyContact('');
       setAddress('');
+      navigate('/patients')
     } catch (error) {
       console.error('Error creating patient:', error);
       toast.error('Failed to create patient');
