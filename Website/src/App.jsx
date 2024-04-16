@@ -14,6 +14,8 @@ import ChangePassword from './components/Doctor/ChangePassword/ChangePassword';
 import ProfileSetting from './components/Doctor/ProfileSetting/ProfileSetting';
 import PrivateRoute from './Private';
 import { ToastContainer } from 'react-toastify';
+import Success from './StripeSuccess/Success';
+import Cancel from './StripeSuccess/Cancel';
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -24,6 +26,8 @@ function AppRoutes() {
       
       <Route path="/" element={<Home />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/success" element={<Success />} />
+      <Route path="/cancel" element={<Cancel/>} />
       <Route path="/appointment" element={<AppointmentPage />} />
       <Route path="/track-appointment" element={<TrackAppointment />} />
       <Route path="/doctors" element={<SearchDoctor />} />

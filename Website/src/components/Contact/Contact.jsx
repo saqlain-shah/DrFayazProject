@@ -10,49 +10,11 @@ const Contact = () => {
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
 
-  const firstNameRef = useRef();
-  const lastNameRef = useRef();
-  const emailRef = useRef();
-  const subjectRef = useRef();
-  const messageRef = useRef();
+ 
 
-  const sendEmail = async (emailData) => {
-    setIsSending(true);
-    try {
-      // Replace this with your logic to send emails
-      console.log("Email data:", emailData);
-      // Simulating a successful email send
-      setSendSuccess(true);
-    } catch (error) {
-      setSendError(error.message);
-    } finally {
-      setIsSending(false);
-    }
-  };
 
   const onSubmit = async (data) => {
-    // Check if the expected properties exist in the data object
-    if (
-      data &&
-      data.firstName &&
-      data.lastName &&
-      data.email &&
-      data.subject &&
-      data.message
-    ) {
-      const { firstName, lastName, email, subject, message } = data;
-      const emailData = `
-                From: "${firstName} ${lastName}" <${email}>
-                To: "Fayaz Sarwar" <fayazsarwar@gmail.com>
-                Subject: ${subject}
-                
-                ${message}
-            `;
-
-      await sendEmail(emailData);
-    } else {
-      console.error("Invalid form data:", data);
-    }
+   
   };
 
   return (
@@ -82,7 +44,7 @@ const Contact = () => {
                   <FaEnvelope className="icon" />
                   <div>
                     <h4>Email:</h4>
-                    <p>fayazsarwar@gmail.com</p>
+                    <p>fayyaz_sarwar@hotmail.com</p>
                   </div>
                 </div>
 
@@ -112,7 +74,7 @@ const Contact = () => {
                         name="firstName"
                         placeholder="First Name"
                         className="form-control mb-3"
-                        ref={firstNameRef}
+                      
                       />
                       {errors && errors.firstName && (
                         <p className="text-danger">First name is required</p>
@@ -127,7 +89,7 @@ const Contact = () => {
                         name="lastName"
                         placeholder="Last Name"
                         className="form-control mb-3"
-                        ref={lastNameRef}
+                       
                       />
                       {errors && errors.lastName && (
                         <p className="text-danger">Last name is required</p>
@@ -142,7 +104,7 @@ const Contact = () => {
                         name="email"
                         placeholder="Email"
                         className="form-control mb-3"
-                        ref={emailRef}
+                       
                       />
                       {errors && errors.email && (
                         <p className="text-danger">Email is required</p>
@@ -157,7 +119,7 @@ const Contact = () => {
                         name="subject"
                         placeholder="Enter your subject"
                         className="form-control mb-3"
-                        ref={subjectRef}
+                        
                       />
                       {errors && errors.subject && (
                         <p className="text-danger">Subject is required</p>
@@ -173,7 +135,7 @@ const Contact = () => {
                         rows="10"
                         placeholder="Enter your message"
                         className="form-control mb-3"
-                        ref={messageRef}
+                      
                       />
                       {errors && errors.message && (
                         <p className="text-danger">Message is required</p>
