@@ -4,7 +4,7 @@ import { createError } from '../utils/error.js';
 import User from '../models/Client.js'; // Import your User model
 import mongoose from 'mongoose';
 import nodemailer from 'nodemailer';
-
+import { transporter } from '../routes/transporter.js'
 export const login = async (req, res, next) => {
   try {
     console.log('Request Body:', req.body); // Log request body
@@ -143,16 +143,6 @@ export const logout = async (req, res, next) => {
 
 
 
-// Create a transporter object using SMTP transport
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'davbabu1122@gmail.com',
-    pass: 'ndbpwhkdnajteass'
-  }
-});
-
-// Export transporter and sendEmail function together
 export const sendEmail = (req, res) => {
   const { email, subject, body } = req.body;
 

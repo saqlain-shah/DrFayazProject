@@ -102,10 +102,9 @@ const Contact = () => {
                       <label>First Name</label>
                       <input
                         type="text"
-                        name="firstName"
+                        {...register("firstName", { required: "First name is required" })}
                         placeholder="First Name"
                         className="form-control mb-3"
-
                       />
                       {errors.firstName && (
                         <p className="text-danger">{errors.firstName.message}</p>
@@ -117,10 +116,9 @@ const Contact = () => {
                       <label>Last Name</label>
                       <input
                         type="text"
-                        name="lastName"
+                        {...register("lastName", { required: "Last name is required" })}
                         placeholder="Last Name"
                         className="form-control mb-3"
-
                       />
                       {errors.lastName && (
                         <p className="text-danger">{errors.lastName.message}</p>
@@ -132,11 +130,11 @@ const Contact = () => {
                       <label>Email</label>
                       <input
                         type="email"
-                        name="email"
+                        {...register("email", { required: "Email is required" })}
                         placeholder="Email"
                         className="form-control mb-3"
-
                       />
+
                       {errors.email && (
                         <p className="text-danger">{errors.email.message}</p>
                       )}
@@ -147,10 +145,9 @@ const Contact = () => {
                       <label>Subject</label>
                       <input
                         type="text"
-                        name="subject"
+                        {...register("subject", { required: "Subject is required" })}
                         placeholder="Enter your subject"
                         className="form-control mb-3"
-
                       />
                       {errors.subject && (
                         <p className="text-danger">{errors.subject.message}</p>
@@ -161,12 +158,12 @@ const Contact = () => {
                     <div className="form-group">
                       <label className="form-label">Message</label>
                       <textarea
+                        {...register("message", { required: "Message is required" })}
                         name="message"
                         cols="30"
                         rows="10"
                         placeholder="Enter your message"
                         className="form-control mb-3"
-
                       />
                       {errors.message && (
                         <p className="text-danger">{errors.message.message}</p>
