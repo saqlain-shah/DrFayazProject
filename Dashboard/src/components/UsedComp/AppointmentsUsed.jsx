@@ -15,7 +15,7 @@ function AppointmentsUsed({ token }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://localhost:8800/api/appointments', {
+      const response = await fetch('https://drfayazproject.onrender.com/api/appointments', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
