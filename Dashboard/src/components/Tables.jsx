@@ -383,7 +383,6 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   );
 }
 
-// patient table
 export function PatientTable({ data, functions, onEdit }) {
   const navigate = useNavigate();
 
@@ -392,17 +391,19 @@ export function PatientTable({ data, functions, onEdit }) {
   };
 
   const handleViewAppointment = (appointment) => {
-    // Handle view appointment action
-    navigate(`/patients/preview/${appointment._id}`, { state: { profileData: appointment } });
+    console.log("View Appointment Data:", appointment);
+    navigate(`/patients/profile/${appointment.patientInfo._id}`, { state: { appointmentData: appointment } });
   };
+  
+
   const appointmentMenuOptions = [
     {
-      title: 'View Appointment',
+      title: 'View',
       icon: FiEye,
       onClick: handleViewAppointment,
     },
     {
-      title: 'Cancel Appointment',
+      title: 'Cancel',
       icon: RiCloseLine,
       onClick: (appointment) => {
         // Handle cancel appointment action
@@ -491,34 +492,33 @@ export function PatientTable({ data, functions, onEdit }) {
                 </td>
               </tr>
               {item.appointments && item.appointments.map((_appointment, appIndex) => (
-  <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
-    <td className={tdClass}>{index + 1}</td>
-    <td className={tdClass}>
-      {_appointment.patientInfo.image && (
-        <img
-          src={`https://drfayazproject.onrender.com/${_appointment.patientInfo.image}`}
-          alt={_appointment.patientInfo.name}
-          className="w-full h-11 rounded-full object-cover border border-border"
-        />
-      )}
-    </td>
-    <td className={tdClass}>{_appointment.patientInfo.name}</td>
-    <td className={tdClass}>{_appointment.patientInfo.gender}</td>
-    <td className={tdClass}>{_appointment.patientInfo.bloodGroup}</td>
-    <td className={tdClass}>{_appointment.patientInfo.address}</td>
-    <td className={tdClass}>{_appointment.patientInfo.email}</td>
-    <td className={tdClass}>{_appointment.patientInfo.emergencyContact}</td>
-    <td className={tdClass}>{new Date(_appointment.createdAt).toLocaleString()}</td>
-    <td className={tdClass} style={{ position: 'relative' }}>
-      <MenuSelect datas={appointmentMenuOptions} item={_appointment}>
-        <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-          <BiDotsHorizontalRounded />
-        </div>
-      </MenuSelect>
-    </td>
-  </tr>
-))}
-
+                <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
+                  <td className={tdClass}>{index + 1}</td>
+                  <td className={tdClass}>
+                    {_appointment.patientInfo.image && (
+                      <img
+                        src={`http://localhost:8800/${_appointment.patientInfo.image}`}
+                        alt={_appointment.patientInfo.name}
+                        className="w-full h-11 rounded-full object-cover border border-border"
+                      />
+                    )}
+                  </td>
+                  <td className={tdClass}>{_appointment.patientInfo.name}</td>
+                  <td className={tdClass}>{_appointment.patientInfo.gender}</td>
+                  <td className={tdClass}>{_appointment.patientInfo.bloodGroup}</td>
+                  <td className={tdClass}>{_appointment.patientInfo.address}</td>
+                  <td className={tdClass}>{_appointment.patientInfo.email}</td>
+                  <td className={tdClass}>{_appointment.patientInfo.emergencyContact}</td>
+                  <td className={tdClass}>{new Date(_appointment.createdAt).toLocaleString()}</td>
+                  <td className={tdClass} style={{ position: 'relative' }}>
+                    <MenuSelect datas={appointmentMenuOptions} item={_appointment}>
+                      <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                        <BiDotsHorizontalRounded />
+                      </div>
+                    </MenuSelect>
+                  </td>
+                </tr>
+              ))}
             </React.Fragment>
           ))}
         </tbody>
@@ -526,6 +526,7 @@ export function PatientTable({ data, functions, onEdit }) {
     </div>
   );
 }
+
 
 
 
