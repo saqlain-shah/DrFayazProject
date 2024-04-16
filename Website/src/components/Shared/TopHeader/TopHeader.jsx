@@ -7,7 +7,7 @@ const TopHeader = () => {
         <div id="topbar" className="d-flex align-items-center fixed-top">
             <div className="container d-flex justify-content-between">
                 <div className="contact-info d-flex align-items-center">
-                    <FaEnvelope className='contact-icon'/> <a href="mailto:ujjalzaman@example.com">fayazsarwar@gmail.com</a>
+                    <FaEnvelope className='contact-icon'/> <a href="mailto:ujjalzaman@example.com">fayyaz_sarwar@hotmail.com</a>
                     <FaPhoneAlt className='contact-icon'/> <a href="tel:+88 01751 040425">+44 7579 389649</a> 
                 </div>
                 <div className="d-none d-lg-flex social-links align-items-center">

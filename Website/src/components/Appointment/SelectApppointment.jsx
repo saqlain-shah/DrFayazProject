@@ -35,13 +35,19 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     };
 
     return (
-        <div className="container mx-auto" >
-            <h2 text-2xl font-bold mb-4>Select Appointment</h2>
-            <div
-                style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
+        <div className="container mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
                 {appointmentSlots && appointmentSlots.length > 0 ? (
                     appointmentSlots.map((slot, index) => (
-                        <div key={slot._id} className="p-4 border rounded-md" style={{ margin: '10px' }}>
+                        <div
+                            key={slot._id}
+                            className="p-4 border rounded-md slot-item"
+                            style={{ margin: '10px', cursor: 'pointer' }}
+                            onMouseEnter={() => console.log('Mouse entered slot', slot)} // Log slot info when mouse enters
+                            onMouseLeave={() => console.log('Mouse left slot', slot)} // Log slot info when mouse leaves
+                            onClick={() => handleSlotSelection(slot._id)} // Add onClick event handler for slot selection
+                        >
                             <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                             <div>{moment(slot.startDateTime).format('HH:mm')} - {moment(slot.endDateTime).format('HH:mm')}</div>
                             <label htmlFor={`slot-${index}`} className="flex items-center mt-2">

@@ -11,40 +11,12 @@ const Contact = () => {
   const [sendError, setSendError] = useState(null);
   const [sendSuccess, setSendSuccess] = useState(false);
 
+ 
+
+
   const onSubmit = async (data) => {
-    setIsSending(true);
-    try {
-      const token = localStorage.getItem('token');
-
-      const response = await axios.post("http://localhost:8800/api/userauth/send-email", {
-        email: data.email,
-        subject: "New Contact Form Submission",
-        body: `
-          First Name: ${data.firstName}
-          Last Name: ${data.lastName}
-          Email: ${data.email}
-          Subject: ${data.subject}
-          Message: ${data.message}
-        `,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.data.success) {
-        setSendSuccess(true);
-      } else {
-        setSendError(response.data.error || "Error sending email");
-      }
-    } catch (error) {
-      setSendError("Error sending email");
-    } finally {
-      setIsSending(false);
-    }
+   
   };
-
-
 
   return (
     <>
@@ -73,7 +45,7 @@ const Contact = () => {
                   <FaEnvelope className="icon" />
                   <div>
                     <h4>Email:</h4>
-                    <p>fayazsarwar@gmail.com</p>
+                    <p>fayyaz_sarwar@hotmail.com</p>
                   </div>
                 </div>
 
@@ -103,7 +75,7 @@ const Contact = () => {
                         name="firstName"
                         placeholder="First Name"
                         className="form-control mb-3"
-                        {...register("firstName", { required: "First name is required" })} // Update to use {...register()}
+                      
                       />
                       {errors.firstName && (
                         <p className="text-danger">{errors.firstName.message}</p>
@@ -118,7 +90,7 @@ const Contact = () => {
                         name="lastName"
                         placeholder="Last Name"
                         className="form-control mb-3"
-                        {...register("lastName", { required: "Last name is required" })} // Update to use {...register()}
+                       
                       />
                       {errors.lastName && (
                         <p className="text-danger">{errors.lastName.message}</p>
@@ -133,7 +105,7 @@ const Contact = () => {
                         name="email"
                         placeholder="Email"
                         className="form-control mb-3"
-                        {...register("email", { required: "Email is required" })} // Update to use {...register()}
+                       
                       />
                       {errors.email && (
                         <p className="text-danger">{errors.email.message}</p>
@@ -148,7 +120,7 @@ const Contact = () => {
                         name="subject"
                         placeholder="Enter your subject"
                         className="form-control mb-3"
-                        {...register("subject", { required: "Subject is required" })} // Update to use {...register()}
+                        
                       />
                       {errors.subject && (
                         <p className="text-danger">{errors.subject.message}</p>
@@ -164,7 +136,7 @@ const Contact = () => {
                         rows="10"
                         placeholder="Enter your message"
                         className="form-control mb-3"
-                        {...register("message", { required: "Message is required" })} // Update to use {...register()}
+                      
                       />
                       {errors.message && (
                         <p className="text-danger">{errors.message.message}</p>

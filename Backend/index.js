@@ -81,8 +81,8 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/health-information', healthInformationRoutes);
 app.use('/api/services', servicesRoute);
 app.use('/api/schedule', schduleRoutes);
-app.use('/api/sandgrid', sandGridRoutes)
-app.use('/api/medicine', medicineRoute)
+app.use('/api/sandgrid', sandGridRoutes);
+app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/stripe', stripe);
