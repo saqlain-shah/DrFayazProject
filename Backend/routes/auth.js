@@ -1,19 +1,10 @@
-// // auth.js
-// import express from "express";
-// import { login } from "../controllers/auth.js";
-// const router = express.Router();
-// // Google authentication rout
-// // router.post("/register", register);
-// router.post("/login", login);
-
-
-// export default router;
-import express from "express";
+import express from 'express';
+import { login, register, changePassword ,updateDoctorById} from '../controllers/auth.js'; // Import the changePassword function
 const router = express.Router();
-import { login } from "../controllers/auth.js";
 
-// POST route for user login
 router.post('/login', login);
+router.post('/register', register);
+router.put('/change-password', changePassword); // Add this line to handle the change password request
+router.put('/:docterId', updateDoctorById);
 
 export default router;
-

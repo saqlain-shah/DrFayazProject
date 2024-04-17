@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const medicalRecordSchema = new mongoose.Schema(
     {
+        patient: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Patient',
+            required: true
+        },
         complaints: {
             type: [String],
             required: true
@@ -24,14 +29,22 @@ const medicalRecordSchema = new mongoose.Schema(
             medicines: [{
                 name: { type: String, required: true },
                 quantity: { type: Number, required: true },
-                dosage: { type: String, required: true }
+                dosage: { type: String, required: true },
+                instructions: { type: String, required: true },
+                itemPrice: { type: Number, required: true }, // Add itemPrice field
+                amount: { type: Number, required: true }
             }],
-            instructions: {
-                type: String
-            }
+            // instructions: {
+            //     type: String
+            // }
         },
         attachments: {
-            type: [String] // Array of attachment URLs
+            type: [{
+                filename: String,
+                originalname: String,
+                mimetype: String,
+                size: Number
+            }]
         }
     },
     {

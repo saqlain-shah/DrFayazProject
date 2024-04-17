@@ -1,7 +1,7 @@
 import React from 'react';
 import { MenuDatas } from '../components/Datas';
 import { Link } from 'react-router-dom';
-
+import pic from '../build/images/logo.jpg'
 function Sidebar() {
   // active link
   const currentPath = (path) => {
@@ -12,19 +12,15 @@ function Sidebar() {
     }
     return null;
   };
-
+  // object-contain
   return (
     <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-screen w-full border-r border-border">
       <Link to="/">
-        {/* <img
-  src="/images/logo.png"
-  alt="logo"
-  className="w-48 h-12 ml-4 object-contain rounded-lg shadow-md"
-/> */}
-        <div className="text-2xl font-bold text-blue-900 bg-blue-200 rounded-lg shadow-md px-6 py-3">
-          DR Fayaz
-        </div>
-
+        <img
+         src={pic}
+          alt="logo"
+          className="w-48 h-12 ml-4  rounded-lg shadow-md"
+        />
       </Link>
       <div className="flex-colo gap-2 mt-12">
         {MenuDatas.map((item, index) => (

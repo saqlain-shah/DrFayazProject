@@ -1,10 +1,12 @@
-import { Listbox, Menu, Switch } from '@headlessui/react';
-import React from 'react';
+import { Menu, Switch } from '@headlessui/react';
+import React, { useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
 import DatePicker from 'react-datepicker';
 import { FaCheck } from 'react-icons/fa';
-import Datetime from 'react-datetime';
 
+import Datetime from 'react-datetime';
+import { Listbox } from '@headlessui/react';
+import { BiChevronDown } from 'react-icons/bi';
 import 'react-datetime/css/react-datetime.css';
 export function Input({ label, name, type, color, placeholder, onChange, value }) {
   return (
@@ -57,7 +59,7 @@ export function MenuSelect({ children, datas, item: data }) {
     <div className="text-sm w-full relative">
       <Menu>
         <Menu.Button>{children}</Menu.Button>
-        <Menu.Items className="flex flex-col z-50 gap-4 absolute left-0  bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none">
+        <Menu.Items className="flex flex-col z-50 gap-4 absolute right-0  bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none">
           {datas.map((item, index) => (
             <button
               onClick={() => item.onClick(data)}
@@ -74,22 +76,27 @@ export function MenuSelect({ children, datas, item: data }) {
   );
 }
 
-// select 2
+export function Select({ selectedPerson, setSelectedPerson, datas }) {
+  console.log("Datas structure:", datas.map(item => ({ value: item.value, name: item.name })));
+  // Ensure selectedPerson is not undefined
+  const defaultSelectedPerson = selectedPerson || datas[0]; // Use the first item as default if selectedPerson is undefined
 
-export function Select({ children, selectedPerson, setSelectedPerson, datas }) {
+  const filteredDatas = datas.filter(person => {
+    return person.value === '' || person.value === defaultSelectedPerson.value;
+  });
+
   return (
-    <div className="text-sm relative w-full ">
+    <div className="text-sm relative w-full">
       <div className="w-full">
-        <Listbox value={selectedPerson} onChange={setSelectedPerson}>
-          <Listbox.Button className={'w-full'}>
-            {selectedPerson.name}
+        <Listbox value={defaultSelectedPerson} onChange={setSelectedPerson}>
+          <Listbox.Button className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4 w-full flex justify-between items-center focus:outline-none focus:border-subMain">
+            {defaultSelectedPerson.name} <BiChevronDown className="text-xl" />
           </Listbox.Button>
-          <Listbox.Options className="flex  flex-col gap-4 top-10 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none">
-            {datas.map((person) => (
+          <Listbox.Options className="flex flex-col gap-2 top-14 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-1 ring-1 ring-border focus:outline-none">
+            {filteredDatas.map((person) => (
               <Listbox.Option
-                className={`cursor-pointer text-xs hover:text-subMain`}
-                key={person.id}
-                value={person}
+                key={person.value} // Use a unique key for each option
+                value={person} // Pass the entire object as the value
                 disabled={person.unavailable}
               >
                 {person.name}
@@ -101,6 +108,62 @@ export function Select({ children, selectedPerson, setSelectedPerson, datas }) {
     </div>
   );
 }
+
+export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
+  const [active, setActive] = useState(null);
+
+  console.log("Selected Person:", selectedPerson);
+  console.log("Datas:", datas);
+
+  return (
+    <>
+      {Array.isArray(datas) && datas.length > 0 ? (
+        <div className="relative w-full">
+          <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+            {({ open }) => (
+              <>
+                <Listbox.Button className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4 w-full flex justify-between items-center focus:outline-none focus:border-subMain">
+                  <span>{selectedPerson}</span>
+                  <BiChevronDown className={`text-xl ${open ? 'transform rotate-180' : ''}`} />
+                </Listbox.Button>
+                {open && (
+                  <Listbox.Options className="flex flex-col gap-2 top-14 z-50 absolute left-0 w-full bg-white rounded-md shadow-lg py-1 ring-1 ring-border focus:outline-none">
+                    {datas.map((doctor, index) => (
+                      <Listbox.Option
+                        key={index}
+                        value={doctor}
+                        className={({ active, selected }) =>
+                          `cursor-pointer px-4 py-2 hover:text-subMain hover:bg-subMain hover:bg-opacity-10 ${selected ? 'font-bold' : ''}`
+                        }
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span className={`${selected ? 'font-semibold' : 'font-normal'}`}>
+                              {doctor}
+                            </span>
+                            {selected && (
+                              <span className={`${active ? 'text-subMain' : 'text-subMain'} absolute inset-y-0 right-0 flex items-center pr-3`}>
+                                ✓
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                )}
+              </>
+            )}
+          </Listbox>
+        </div>
+      ) : (
+        <p>No doctors available</p>
+      )}
+    </>
+  );
+}
+
+
 
 // switch
 

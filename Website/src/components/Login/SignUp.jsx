@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { FaCheck, FaEnvelope, FaLock, FaTimes, FaUser } from 'react-icons/fa';
+import { FaCheck, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import SocialSignUp from './SocialSignUp';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import './SignInForm.css';
 
-const SignUp = () => {
+const SignUp = ({ onSignUpSuccess }) => {
     const [loading, setLoading] = useState(false);
     const [infoError, setInfoError] = useState('');
     const [user, setUser] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
         email: '',
         password: ''
     });
@@ -22,7 +23,7 @@ const SignUp = () => {
         numeric: false
     });
     const [emailError, setEmailError] = useState(false);
-    const navigate = useNavigate();
+   
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,25 +45,34 @@ const SignUp = () => {
     };
 
     const handleSignUpSuccess = () => {
-        console.log('Sign-up successful!');
-        navigate("/login");
+        console.log('Sign-up successful!yyyy');
+        toast.success('Registration successful'); 
+        onSignUpSuccess();  // Invoke the callback function passed as prop
     };
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8800/api/auth/register', user);
-            if (response.data.success) {
-                console.log(response.data);
+            const response = await axios.post('http://localhost:8800/api/userauth/register', user);
+            if (response.data.message === 'Registration successful') {
                 handleSignUpSuccess();
-                navigate("/");
+              // Redirect to home page after successful sign-up
             } else {
                 setLoading(false);
-                setInfoError(response.data.message);
+                // setInfoError(response.data.message);
             }
+            
         } catch (error) {
             setLoading(false);
-            setInfoError('An error occurred while signing up.');
-            console.error('Error signing up:', error);
+            if (error.response) {
+                // Server responded with a status code outside of 2xx range
+                console.error('Gmail already exist:', error.response.data);
+                setInfoError('Email already exists');
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.error('Network error:', error.request);
+                setInfoError('Network error. Please check your connection.');
+            } 
+            
         }
     };
 
@@ -77,11 +87,7 @@ const SignUp = () => {
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
-                <input placeholder="First Name" name="firstName" type="text" onChange={handleChange} value={user.firstName} />
-            </div>
-            <div className="input-field">
-                <span className="fIcon"><FaUser /></span>
-                <input placeholder="Last Name" name="lastName" type="text" onChange={handleChange} value={user.lastName} />
+                <input placeholder="Full Name" name="name" type="text" onChange={handleChange} value={user.name} />
             </div>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>

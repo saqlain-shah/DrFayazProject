@@ -9,16 +9,24 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import healthInfoRoutes from './routes/healthInfoRoutes.js';
+import healthInformationRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
 import medicineRoute from './routes/medicineRoutes.js'
-import schduleRoutes from './routes/schedule.js'
+import doctorRoutes from './routes/doctor.js'
+import userauth from './routes/userauth.js'
+import schduleRoutes from './routes/schdule.js'
+import webAppointmentRoutes from './routes/webApoint.js'
+import { authenticate } from './utils/authMiddleware.js';
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from 'path';
 import cors from 'cors';
+import otpRoutes from './routes/Opt.js';
+import stripe from './routes/stripe.js';
+import webRoutes from './routes/webRoutes.js'
+//import helmet from 'helmet';
 
 const app = express();
 app.use(express.json());
@@ -28,12 +36,30 @@ setupMiddleware();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(cors());
+// Middleware to disable caching
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
 
+app.use(cors());
+//app.use(helmet())
+app.use(cors(
+  {
+    origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
+    // methods: ["POST", "GET", "DELETE", "PUT"],
+    credentials: true
+  }
+));
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
   res.json({ imageUrl: '/uploads/' + file.filename });
 });
+
+
+
+
+
 
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
@@ -42,17 +68,31 @@ app.get('/api/auth/google/callback', passport.authenticate('google', { failureRe
   res.redirect('http://localhost:5173/');
 });
 
+app.use(authenticate);
 app.use('/api/auth', authRoute);
+app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);
 app.use('/api/appointments', appointmentRoutes);
-app.use('/api/schdule', schduleRoutes);
+app.use('/api/web', webRoutes);
+app.use('/api/doctors', doctorRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/payments', paymentRoutes);
-app.use('/api/healthInfo', healthInfoRoutes);
+app.use('/api/health-information', healthInformationRoutes);
 app.use('/api/services', servicesRoute);
-app.use('/api/sandgrid', sandGridRoutes)
-app.use('/api/medicine', medicineRoute)
+app.use('/api/schedule', schduleRoutes);
+app.use('/api/sandgrid', sandGridRoutes);
+app.use('/api/medicine', medicineRoute);
+app.use('/api/v1', webAppointmentRoutes);
+app.use('/api/otp', otpRoutes);
+app.use('/api/stripe', stripe);
+
+
+
+
+
+
+
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
   await connectToDatabase();

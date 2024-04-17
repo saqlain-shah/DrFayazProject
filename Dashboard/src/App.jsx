@@ -1,18 +1,7 @@
-// ********* Delight - Dentist Website is created by Zpunet ******************
-// ********* If you get an error please contact us ******
-// ******** Email:info@codemarketi.com *********
-// ********* Website:www.codemarketi.com *********
-// ********* Phone:+255 762 352 746 *********
-// ********* Youtub Channel: https://www.youtube.com/channel/UCOYwYO-LEsrjqBs6xXSfq1w *********
-
-// ******** Support my work with *********
-// ********* https://www.patreon.com/zpunet *********
-// ********* https://www.buymeacoffee.com/zpunet *********
-
-// ********* This is the main component of the website *********
 import 'tailwindcss/tailwind.css';
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
 import Toast from './components/Notifications/Toast';
@@ -27,6 +16,10 @@ import CreateInvoice from './screens/Invoices/CreateInvoice';
 import EditInvoice from './screens/Invoices/EditInvoice';
 import PreviewInvoice from './screens/Invoices/PreviewInvoice';
 import EditPayment from './screens/Payments/EditPayment';
+
+
+
+
 import PreviewPayment from './screens/Payments/PreviewPayment';
 import Medicine from './screens/Medicine';
 import PatientProfile from './screens/Patients/PatientProfile';
@@ -37,10 +30,20 @@ import Receptions from './screens/Receptions';
 import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
+import Register from './screens/Register'; // Import the Register component
 import Schedule from './screens/Schedule/Schedule';
+import { useAuth } from './AuthContext'; // Import useAuth
+import { Navigate } from 'react-router-dom';
+import Webpatinet from './screens/Patients/Webpatinet';
 
+function PrivateRoute({ element, ...props }) {
+  const { user } = useAuth();
+
+  return user ? element : <Navigate to="/login" replace />;
+}
 
 function App() {
+  const { user } = useAuth();
   Aos.init();
 
   return (
@@ -50,35 +53,40 @@ function App() {
       {/* Routes */}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          {/* Redirect to dashboard if user is already logged in */}
+          {user && <Route path="/login" element={<Navigate to="/" replace />} />}
+          {/* Render login route only if user is not logged in */}
+          {!user && <Route path="/login" element={<Login />} />}
+          <Route path="/register" element={<Register />} /> {/* Add registration route */}
+          <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
           {/* invoce */}
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/invoices/create" element={<CreateInvoice />} />
-          <Route path="/invoices/edit/:id" element={<EditInvoice />} />
-          <Route path="/invoices/preview/:id" element={<PreviewInvoice />} />
+          <Route path="/invoices" element={<PrivateRoute element={<Invoices />} />} />
+          <Route path="/invoices/create" element={<PrivateRoute element={<CreateInvoice />} />} />
+          <Route path="/invoices/edit/:id" element={<PrivateRoute element={<EditInvoice />} />} />
+          <Route path="/invoices/preview/:id" element={<PrivateRoute element={<PreviewInvoice />} />} />
           {/* payments */}
-          <Route path="/payments" element={<Payments />} />
-          <Route path="/payments/edit/:id" element={<EditPayment />} />
-          <Route path="/payments/preview/:id" element={<PreviewPayment />} />
+          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} /><Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
+          <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
           {/* patient */}
-          <Route path="/patients" element={<Patients />} />
-          <Route path="/patients/preview/:id" element={<PatientProfile />} />
-          <Route path="/patients/create" element={<CreatePatient />} />
-          <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
+          <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
+          <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
+          <Route path="/patients/profile/:id" element={<PrivateRoute element={<PatientProfile />} />} />
+          <Route path="/appointments/preview/:id" element={<PrivateRoute element={<Webpatinet />} />} />
+          <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
+          <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />
           {/* doctors */}
-          <Route path="/doctors" element={<Doctors />} />
-          <Route path="/doctors/preview/:id" element={<DoctorProfile />} />
+          <Route path="/doctors" element={<PrivateRoute element={<Doctors />} />} />
+          <Route path="/doctors/preview/:id" element={<PrivateRoute element={<DoctorProfile />} />} />
           {/* {Schedule} */}
-          <Route path='/schedule' element={<Schedule />} />
+          <Route path="/schedule" element={<PrivateRoute element={<Schedule />} />} />
           {/* reception */}
-          <Route path="/receptions" element={<Receptions />} />
+          <Route path="/receptions" element={<PrivateRoute element={<Receptions />} />} />
           {/* others */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/campaigns" element={<Campaings />} />
-          <Route path="/medicine" element={<Medicine />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/appointments" element={<PrivateRoute element={<Appointments />} />} />
+          <Route path="/campaigns" element={<PrivateRoute element={<Campaings />} />} />
+          <Route path="/medicine" element={<PrivateRoute element={<Medicine />} />} />
+          <Route path="/services" element={<PrivateRoute element={<Services />} />} />
+          <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
@@ -87,10 +95,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-

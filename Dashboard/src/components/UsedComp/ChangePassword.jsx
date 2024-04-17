@@ -3,41 +3,65 @@ import { Button, Input } from '../Form';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useAuth } from '../../AuthContext';
 
-function ChangePassword({ userId }) {
-  console.log("ChangePassword component received userId:", userId);
+function ChangePassword() {
+  const { user } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChangePassword = async () => {
+    if (!user) {
+      console.log('User is not logged in');
+      return;
+    }
+
+    console.log('User ID:', user.id);
+    console.log('Old Password:', oldPassword);
+    console.log('New Password:', newPassword);
+
+    setLoading(true);
     try {
-      // Check if new password matches confirmation
       if (newPassword !== confirmPassword) {
-        return toast.error('New password and confirm password do not match');
+        throw new Error('New password and confirm password do not match');
       }
 
-      // Make API request to change password
-      await axios.put(`http://localhost:8800/api/patients/${userId}/change-password`, {
-        oldPassword,
-        newPassword,
-      });
+      const token = localStorage.getItem('token');
+      console.log('Token:', token);
+
+      const response = await axios.put(
+        'http://localhost:8800/api/auth/change-password',
+        {
+          userId: user.id,
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('Response:', response.data);
 
       toast.success('Password changed successfully');
-      // Clear input fields
       setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error) {
-      console.error('Error changing password:', error);
-      toast.error('Failed to change password');
+      console.error('Error changing password:', error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
 
   return (
-    <div className="flex-colo gap-4">
-      {/* old password */}
+    <div className="flex-col gap-4">
       <Input
         label="Old Password"
         color={true}
@@ -45,7 +69,6 @@ function ChangePassword({ userId }) {
         value={oldPassword}
         onChange={(e) => setOldPassword(e.target.value)}
       />
-      {/* new password */}
       <Input
         label="New Password"
         color={true}
@@ -53,7 +76,6 @@ function ChangePassword({ userId }) {
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
       />
-      {/* confirm password */}
       <Input
         label="Confirm Password"
         color={true}
@@ -61,7 +83,6 @@ function ChangePassword({ userId }) {
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
-      {/* submit */}
       <Button
         label={'Save Changes'}
         Icon={HiOutlineCheckCircle}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Layout from '../../Layout';
 import { Button, FromToDate, Select } from '../../components/Form';
 import { Transactiontable } from '../../components/Tables';
@@ -19,7 +19,28 @@ function Payments() {
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [startDate, endDate] = dateRange;
   const navigate = useNavigate();
+  const [transactionData, setTransactionData] = useState([]);
 
+
+  useEffect(() => {
+    // Fetch transaction data from your API or database here
+    // Example fetch call:
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:8800/api/web/', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch transaction data');
+      }
+      return response.json();
+    })
+    .then(data => setTransactionData(data))
+    .catch(error => console.error('Error fetching transaction data:', error));
+  }, []);
+  
   const sorts = [
     {
       id: 2,
@@ -69,16 +90,6 @@ function Payments() {
 
   return (
     <Layout>
-      {/* add button */}
-      <button
-        onClick={() => {
-          toast.error('Exporting is not available yet');
-        }}
-        className="w-16 hover:w-44 group transitions hover:h-14 h-16 border border-border z-50 bg-subMain text-white rounded-full flex-rows gap-4 fixed bottom-8 right-12 button-fb"
-      >
-        <p className="hidden text-sm group-hover:block">Export</p>
-        <MdOutlineCloudDownload className="text-2xl" />
-      </button>
       <h1 className="text-xl font-semibold">Payments</h1>
       {/* boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
@@ -143,23 +154,19 @@ function Payments() {
             bg="bg-dry"
             onChange={(update) => setDateRange(update)}
           />
-          {/* export */}
+          {/* export
           <Button
             label="Filter"
             Icon={MdFilterList}
             onClick={() => {
               toast.error('Filter data is not available yet');
             }}
-          />
+          /> */}
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
           <Transactiontable
             data={transactionData}
-            action={true}
-            functions={{
-              edit: editPayment,
-              preview: previewPayment,
-            }}
+
           />
         </div>
       </div>

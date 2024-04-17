@@ -1,14 +1,14 @@
 import Patient from '../../models/PatientModel/patient.js';
 import mongoose from 'mongoose';
-
+import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createPatient = async (req, res) => {
     try {
         // Extracting necessary fields from the request body
-        const { firstName, email, phone, gender, dateOfBirth, emergencyContact, address, bloodGroup } = req.body;
+        const { firstName, email, gender, emergencyContact, address, bloodGroup } = req.body;
 
         // Check if all required fields are present
-        if (!firstName || !email || !phone || !gender || !dateOfBirth || !emergencyContact || !address || !bloodGroup) {
+        if (!firstName || !email || !gender || !emergencyContact || !address || !bloodGroup) {
             return res.status(400).json({ message: "Please provide all necessary fields" });
         }
 
@@ -19,9 +19,9 @@ export const createPatient = async (req, res) => {
         const patient = new Patient({
             fullName: firstName,
             email,
-            phone,
+
             gender,
-            dateOfBirth,
+
             emergencyContact,
             address,
             bloodGroup,
@@ -39,11 +39,9 @@ export const createPatient = async (req, res) => {
     }
 };
 
-// Existing imports and code...
-
 export const getAllPatients = async (req, res, next) => {
     try {
-        const { search, gender, sortBy } = req.query;
+        const { search, gender, startDate } = req.query;
         let patients = [];
         let query = {};
 
@@ -51,32 +49,39 @@ export const getAllPatients = async (req, res, next) => {
             query.fullName = { $regex: search, $options: 'i' };
         }
 
-        if (gender && gender !== 'All') { // Only filter if gender is selected and not 'All'
-            const genderMap = {
-                male: 'Male',
-                female: 'Female',
-            };
-            query.gender = genderMap[gender];
+        // Modify the query to include gender filter
+        if (gender && gender !== 'all') { // Check if gender is provided and not 'all'
+            let genderValue = gender.toLowerCase(); // Convert to lowercase for consistency
+            // If the selected gender is 'male', directly set the query field to 'Male'
+            // Otherwise, use a case-insensitive regular expression to match any case of the provided gender value
+            query.gender = (genderValue === 'male') ? 'Male' : { $regex: new RegExp(genderValue, 'i') };
         }
 
-        let sortOption = {};
-        if (sortBy === 'new') {
-            sortOption = { createdAt: -1 };
-        } else if (sortBy === 'old') {
-            sortOption = { createdAt: 1 };
+        if (startDate) {
+            const selectedDate = new Date(startDate);
+            selectedDate.setHours(0, 0, 0, 0);
+            const nextDay = new Date(selectedDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            query.createdAt = { $gte: selectedDate, $lt: nextDay };
         }
 
-        patients = await Patient.find(query).sort(sortOption);
+        console.log('Generated MongoDB query:', query); // Add this line to log the query
+
+        patients = await Patient.find(query);
         res.status(200).json(patients);
     } catch (err) {
         next(err);
     }
 };
-
-// Other controllers...
-
-
-
+export const getMedicalRecordsByPatientId = async (req, res) => {
+    try {
+        const patientId = req.params.id;
+        const medicalRecords = await MedicalRecord.find({ patientId });
+        res.status(200).json({ data: medicalRecords });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch medical records for the patient', error: error.message });
+    }
+};
 
 // Controller to get a patient by ID
 export const getPatientById = async (req, res, next) => {
@@ -98,8 +103,24 @@ export const getPatientById = async (req, res, next) => {
         next(err);
     }
 };
-
-
+export const getTotalPatientCount = async (req, res) => {
+    try {
+        const totalCount = await Patient.countDocuments();
+        res.json({ totalCount });
+    } catch (err) {
+        console.error('Error getting total patient count:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+export const fetchRecentPatients = async (req, res) => {
+    try {
+        // Fetch patients sorted by creation timestamp in descending order (most recent first)
+        const recentPatients = await Patient.find().sort({ createdAt: -1 }).limit(5); // Adjust limit according to your requirement
+        res.status(200).json(recentPatients);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch recent patients', error: error.message });
+    }
+};
 // Controller to update a patient by ID
 export const updatePatient = async (req, res, next) => {
     try {

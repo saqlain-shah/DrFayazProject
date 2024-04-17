@@ -1,35 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../components/Form';
 import { BiPlus } from 'react-icons/bi';
-import { FiEye } from 'react-icons/fi';
+import { FiEye, FiEdit } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import MedicalRecodModal from '../../components/Modals/MedicalRecodModal';
+import EditMedicalRecordModal from './EditMedicalRecordModal'; // Import EditMedicalRecordModal
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import { useParams } from 'react-router-dom';
+import { fetchMedicalRecords } from './fetch';
 function MedicalRecord() {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
-  const [selectedData, setSelectedData] = useState();
+  const [selectedData, setSelectedData] = useState(null);
+  const [medicineDosage, setMedicineDosage] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState(null); // Define selectedRecord state variable
   const navigate = useNavigate();
+  const { id } = useParams();
+
+
 
   useEffect(() => {
-    fetchMedicalRecords();
-  }, []);
+    fetchMedicalRecords(id, setMedicalRecords, toast);
+  }, [id]);
 
-  const fetchMedicalRecords = async () => {
+  const handleDelete = async (recordId) => {
     try {
-      const response = await axios.get('http://localhost:8800/api/medical-records');
-      console.log('Fetched medical records:', response.data.data);
-      setMedicalRecords(response.data.data.map(record => ({
-        ...record,
-        treatment: record.treatment.map(t => t.name) // Assuming `treatment` is an array of objects
-      })));
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:8800/api/medical-records/${recordId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Update medical records after deletion by passing the patient's id
+      fetchMedicalRecords(id, setMedicalRecords, toast); // Pass id and setMedicalRecords function
+      toast.success('Medical record deleted successfully');
     } catch (error) {
-      console.error('Error fetching medical records:', error);
+      console.error('Error deleting medical record:', error);
+      toast.error('Failed to delete medical record');
     }
   };
+
+
+
+  const handleEdit = async (recordId, newData) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:8800/api/medical-records/${recordId}`, newData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchMedicalRecords(); // Update medical records after editing
+      toast.success('Medical record edited successfully');
+    } catch (error) {
+      console.error('Error editing medical record:', error);
+      toast.error('Failed to edit medical record');
+    }
+  };
+
+
 
   return (
     <>
@@ -39,21 +67,31 @@ function MedicalRecord() {
           closeModal={() => {
             setIsOpen(false);
             setSelectedData(record);
+            setMedicineDosage({ medicineDosage });
           }}
           isOpen={isOpen}
-          data={selectedData}
+          data={{ ...selectedData, id }}
+          token={localStorage.getItem('token')} // Include id in the data object
         />
       )}
+      {isEditOpen && (
+        <EditMedicalRecordModal
+          closeModal={() => setIsEditOpen(false)}
+          isOpen={isEditOpen}
+          selectedData={selectedRecord}
+          handleEdit={(recordId, newData) => handleEdit(recordId, newData)}  // Pass recordId to handleEdit
+        />
 
+      )}
       <div className="flex flex-col gap-6">
         <div className="flex-btn gap-4">
-          <h1 className="text-sm font-medium sm:block hidden">Medical Record</h1>
+          <h1 className="text-sm font-medium sm:block hidden">Medical Records</h1>
           <div className="sm:w-1/4 w-full">
             <Button
               label="New Record"
               Icon={BiPlus}
               onClick={() => {
-                navigate(`/patients/visiting/2`);
+                navigate(`/patients/visiting/${id}`);
               }}
             />
           </div>
@@ -100,6 +138,7 @@ function MedicalRecord() {
                   <span className="font-medium">Treatment:</span> {record.treatment.join(', ')}
                 </p>
               )}
+
             </div>
 
             <div className="col-span-12 md:col-span-2">
@@ -112,7 +151,7 @@ function MedicalRecord() {
               <button
                 onClick={() => {
                   setIsOpen(true);
-                  setSelectedData(record);
+                  setSelectedData(record); // Use record here
                 }}
                 className="text-sm flex-colo bg-white text-subMain border border-border rounded-md w-2/4 md:w-10 h-10"
               >
@@ -120,12 +159,21 @@ function MedicalRecord() {
               </button>
               <button
                 onClick={() => {
-                  toast.error('This feature is not available yet');
+                  setIsEditOpen(true);
+                  setSelectedRecord(record); // Pass selected record to modal
                 }}
+                className="text-sm flex-colo bg-white text-yellow-600 border border-border rounded-md w-2/4 md:w-10 h-10"
+              >
+                <FiEdit />
+              </button>
+
+              <button
+                onClick={() => handleDelete(record._id)}
                 className="text-sm flex-colo bg-white text-red-600 border border-border rounded-md w-2/4 md:w-10 h-10"
               >
                 <RiDeleteBin6Line />
               </button>
+
             </div>
           </div>
         ))}

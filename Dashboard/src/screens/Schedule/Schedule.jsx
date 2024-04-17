@@ -1,14 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { BiChevronLeft, BiChevronRight, BiPlus, BiTime } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import AddAppointmentModal from './SchduleModel';
-import { servicesData } from '../../components/Datas';
 
-// custom toolbar
 const CustomToolbar = (toolbar) => {
   // today button handler
   const goToBack = () => {
@@ -51,7 +49,7 @@ const CustomToolbar = (toolbar) => {
 
   return (
     <div className="flex flex-col gap-8 mb-8">
-      <h1 className="text-xl font-semibold">Appointments</h1>
+      <h1 className="text-xl font-semibold">Schedule</h1>
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
         <div className="md:col-span-1 flex sm:justify-start justify-center items-center">
           <button
@@ -74,7 +72,7 @@ const CustomToolbar = (toolbar) => {
           </button>
         </div>
         {/* filter */}
-        <div className="md:col-span-2 grid grid-cols-3 rounded-md  border border-subMain">
+        <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -82,20 +80,21 @@ const CustomToolbar = (toolbar) => {
                 item.view === 'month'
                   ? goToMonth
                   : item.view === 'week'
-                    ? goToWeek
-                    : goToDay
+                  ? goToWeek
+                  : goToDay
               }
-              className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
+              className={`border-l text-xl py-2 flex-colo border-subMain ${
+                toolbar.view === item.view
                   ? 'bg-subMain text-white'
                   : 'text-subMain'
-                }`}
+              }`}
             >
               {item.view === 'month' ? (
                 <HiOutlineViewGrid />
               ) : item.view === 'week' ? (
                 <HiOutlineCalendarDays />
               ) : (
-                <BiTime />
+                <BiPlus />
               )}
             </button>
           ))}
@@ -107,82 +106,48 @@ const CustomToolbar = (toolbar) => {
 
 function Schedule() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [appointments, setAppointments] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // handle modal close
-  const handleClose = () => {
-    setOpen(!open);
-    setData({});
+  const openModal = () => {
+    setIsModalOpen(true);
   };
 
-  const events = [
-    {
-      id: 0,
-      start: moment({ hours: 7 }).toDate(),
-      end: moment({ hours: 9 }).toDate(),
-      color: '#FB923C',
-      title: 'Saqlain Shah',
-      message: 'He is not sure about the time',
-      service: servicesData[1],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: '#FC8181',
-      title: 'Anees Ibrahim',
-      message: 'She is coming for checkup',
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: '#FFC107',
-      title: 'Ali Naqi',
-      message: 'She is coming for checkup. but she is not sure about the time',
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
-  ];
-
-  // onClick event handler
-  const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+  const handleSaveAppointment = (response) => {
+    const newAppointment = {
+      id: response._id, // Use the _id from the response as the id for the appointment
+      title: 'New Appointment', // You can set a default title or customize it based on your data
+      start: new Date(response.startDateTime),
+      end: new Date(response.endDateTime),
+    };
+    setAppointments([...appointments, newAppointment]);
+    closeModal();
+    
+    // Automatically delete the appointment after a certain time period (e.g., 24 hours)
+    setTimeout(() => {
+      setAppointments(prevAppointments =>
+        prevAppointments.filter(appointment => appointment.id !== response._id)
+      );
+    }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
   };
 
   return (
     <Layout>
-      {open && (
+      {isModalOpen && (
         <AddAppointmentModal
-          datas={data}
-          isOpen={open}
-          closeModal={() => {
-            handleClose();
-
-          }}
+          closeModal={closeModal}
+          isOpen={isModalOpen}
+          onSave={handleSaveAppointment}
         />
       )}
-      {/* calender */}
+
+      {/* Calendar */}
       <button
-        onClick={handleClose}
+        onClick={openModal}
         className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
       >
         <BiPlus className="text-2xl" />
@@ -190,49 +155,19 @@ function Schedule() {
 
       <Calendar
         localizer={localizer}
-        events={events}
+        events={appointments}
         startAccessor="start"
         endAccessor="end"
         style={{
-          // height fix screen
           height: 900,
           marginBottom: 50,
         }}
-        onSelectEvent={(event) => handleEventClick(event)}
         defaultDate={new Date()}
         timeslots={1}
         resizable
         step={60}
         selectable={true}
-        // custom event style
-        eventPropGetter={(event) => {
-          const style = {
-            backgroundColor: '#66B5A3',
-
-            borderRadius: '10px',
-            color: 'white',
-            border: '1px',
-            borderColor: '#F2FAF8',
-            fontSize: '12px',
-            padding: '5px 5px',
-          };
-          return {
-            style,
-          };
-        }}
-        // custom date style
-        dayPropGetter={(date) => {
-          const backgroundColor = 'white';
-          const style = {
-            backgroundColor,
-          };
-          return {
-            style,
-          };
-        }}
-        // remove agenda view
         views={['month', 'day', 'week']}
-        // toolbar={false}
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>

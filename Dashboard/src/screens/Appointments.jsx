@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import { BiChevronLeft, BiChevronRight, BiPlus, BiTime } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
-import AddAppointmentModal from '../components/Modals/AddApointmentModal';
-import { servicesData } from '../components/Datas';
+import axios from 'axios'; // Import Axios
+import { toast } from 'react-hot-toast';
+import AppointmentDetailsModal from './appointmentDetailModel';
 
-// custom toolbar
 const CustomToolbar = (toolbar) => {
   // today button handler
   const goToBack = () => {
@@ -40,7 +40,6 @@ const CustomToolbar = (toolbar) => {
   // day button handler
   const goToDay = () => {
     toolbar.onView('day');
-
   };
 
   // view button group
@@ -83,20 +82,21 @@ const CustomToolbar = (toolbar) => {
                 item.view === 'month'
                   ? goToMonth
                   : item.view === 'week'
-                    ? goToWeek
-                    : goToDay
+                  ? goToWeek
+                  : goToDay
               }
-              className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
-                ? 'bg-subMain text-white'
-                : 'text-subMain'
-                }`}
+              className={`border-l text-xl py-2 flex-colo border-subMain ${
+                toolbar.view === item.view
+                  ? 'bg-subMain text-white'
+                  : 'text-subMain'
+              }`}
             >
               {item.view === 'month' ? (
                 <HiOutlineViewGrid />
               ) : item.view === 'week' ? (
                 <HiOutlineCalendarDays />
               ) : (
-                <BiTime />
+                <BiPlus />
               )}
             </button>
           ))}
@@ -106,109 +106,82 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
-function Appointments() {
+function Appointments({ events }) {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [appointments, setAppointments] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // handle modal close
-  const handleClose = () => {
-    setOpen(!open);
-    setData({});
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8800/api/web/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+  
+        // Map the fetched appointments to the format expected by the Calendar component
+        const formattedAppointments = response.data.map(appointment => ({
+          id: appointment._id, // Assign unique ID to each appointment
+          title: appointment.selectedService.name, // Use service name as title
+          start: new Date(appointment.selectedSlot.startDateTime),
+          end: new Date(appointment.selectedSlot.endDateTime),
+          // Additional appointment details
+          selectedService: appointment.selectedService, // Include selectedService
+          patientInfo: appointment.patientInfo // Include patientInfo
+          // You can include other details here if needed
+        }));
+  
+        setAppointments(formattedAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+        toast.error('Failed to fetch appointments. Please try again.');
+      }
+    };
+  
+    fetchAppointments();
+  }, []);
+  
+  const onDelete = (eventId) => {
+    // Implement the logic to delete the appointment with the given eventId
+    console.log('Deleting event with ID:', eventId);
+    // Here you can make an API call to delete the event or update your state accordingly
   };
 
-  const events = [
-    {
-      id: 0,
-      start: moment({ hours: 7 }).toDate(),
-      end: moment({ hours: 9 }).toDate(),
-      color: '#FB923C',
-      title: 'Saqlain Shah',
-      message: 'He is not sure about the time',
-      service: servicesData[1],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: '#FC8181',
-      title: 'Anees Ibrahim',
-      message: 'She is coming for checkup',
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
 
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: '#FFC107',
-      title: 'Ali Naqi',
-      message: 'She is coming for checkup. but she is not sure about the time',
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
-  ];
-
-  // onClick event handler
-  const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+  const handleEventSelect = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
   };
 
   return (
     <Layout>
-      {open && (
-        <AddAppointmentModal
-          datas={data}
-          isOpen={open}
-          closeModal={() => {
-            handleClose();
-          }}
-        />
-      )}
-      {/* calender */}
-      <button
-        onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
-
+    <AppointmentDetailsModal
+  isOpen={isModalOpen} // Use isOpen instead of isModalOpen
+  closeModal={() => setIsModalOpen(false)}
+  event={selectedEvent}
+/>
       <Calendar
         localizer={localizer}
-        events={events}
+        events={appointments}
         startAccessor="start"
         endAccessor="end"
         style={{
-          // height fix screen
           height: 900,
           marginBottom: 50,
         }}
-        onSelectEvent={(event) => handleEventClick(event)}
+        onSelectEvent={handleEventSelect}
         defaultDate={new Date()}
         timeslots={1}
         resizable
         step={60}
         selectable={true}
-        // custom event style
         eventPropGetter={(event) => {
           const style = {
-            backgroundColor: '#66B5A3',
-
+            backgroundColor: event.color || '#66B5A3',
             borderRadius: '10px',
             color: 'white',
             border: '1px',
@@ -220,7 +193,6 @@ function Appointments() {
             style,
           };
         }}
-        // custom date style
         dayPropGetter={(date) => {
           const backgroundColor = 'white';
           const style = {
@@ -230,9 +202,7 @@ function Appointments() {
             style,
           };
         }}
-        // remove agenda view
         views={['month', 'day', 'week']}
-        // toolbar={false}
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+
 // Patient Schema
 const PatientSchema = new Schema({
     fullName: {
@@ -51,7 +52,10 @@ const PatientSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'MentalHealth'
     }
-}, { timestamps: true }); // Add timestamps option here
+}, { timestamps: true });
 
 const Patient = mongoose.model('Patient', PatientSchema);
+console.log('Patient model created:', Patient);
+
+
 export default Patient;

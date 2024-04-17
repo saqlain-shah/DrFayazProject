@@ -9,12 +9,12 @@ const HeroSection = () => {
                 <div>
                     <small>TOTAL HEALTH CARE SOLUTION</small>
                     <h1>Your Most Trusted <br />Health Partner</h1>
-                    <small>A repudiandae ipsam labore ipsa voluptatum quidem quae laudantium quisquam aperiam maiores sunt fugit, deserunt rem suscipit placeat.</small>
+                    <small>Take care of your health by staying connected with us..</small>
                 </div>
-                <div className="d-flex justify-content-start gap-2">
+                {/* <div className="d-flex justify-content-start gap-2">
                     <Link to={'/doctors'} className="btn-get-started scrollto">Get Started</Link>
                     <Link to={'/track-appointment'} className="btn-get-started scrollto">Track Appointment</Link>
-                </div>
+                </div> */}
             </div>
         </section>
     )

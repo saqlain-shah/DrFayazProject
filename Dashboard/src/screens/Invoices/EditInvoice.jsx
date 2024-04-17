@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import {
-  Button,
-  FromToDate,
-  Input,
-  Select,
-  Textarea,
-} from '../../components/Form';
+import { Button, FromToDate, Input, Select, Textarea } from '../../components/Form';
 import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import PatientMedicineServiceModal from '../../components/Modals/PatientMedicineServiceModal';
 import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
@@ -17,6 +11,7 @@ import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
+
 function EditInvoice() {
   const { id } = useParams();
   const [dateRange, setDateRange] = useState([
@@ -27,13 +22,33 @@ function EditInvoice() {
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
   const [currency, setCurrency] = useState(sortsDatas.currency[0]);
+  const [fetchedInvoice, setFetchedInvoice] = useState(null);
 
-  // date picker
+  useEffect(() => {
+    const fetchInvoiceData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`https://drfayazproject.onrender.com/api/invoices/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch invoice data');
+        }
+        const data = await response.json();
+        setFetchedInvoice(data);
+      } catch (error) {
+        console.error('Error fetching invoice data:', error);
+      }
+    };
+
+    fetchInvoiceData();
+  }, [id]);
+
   const onChangeDates = (update) => {
     setDateRange(update);
   };
-
-  const invoice = invoicesData.find((invoice) => invoice.id.toString() === id);
 
   return (
     <Layout>
@@ -59,13 +74,7 @@ function EditInvoice() {
         </Link>
         <h1 className="text-xl font-semibold">Edit Invoice</h1>
       </div>
-      <div
-        data-aos="fade-up"
-        data-aos-duration="1000"
-        data-aos-delay="100"
-        data-aos-offset="200"
-        className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
-      >
+      <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
         {/* header */}
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
@@ -75,7 +84,6 @@ function EditInvoice() {
               className=" w-32 object-contain"
             />
           </div>
-
           <div className="flex flex-col gap-4">
             <FromToDate
               startDate={startDate}
@@ -85,9 +93,9 @@ function EditInvoice() {
             />
           </div>
         </div>
-        {/* sender and recever */}
+        {/* sender and receiver */}
         <SenderReceverComp
-          item={invoice?.to}
+          item={fetchedInvoice?.patient} // Display patient's information
           functions={{
             openModal: () => {
               setIsOpen(!isOpen);
@@ -99,7 +107,7 @@ function EditInvoice() {
         <div className="grid grid-cols-6 gap-6 mt-8">
           <div className="lg:col-span-4 col-span-6 p-6 border border-border rounded-xl overflow-hidden">
             <InvoiceProductsTable
-              data={invoice?.items}
+              data={fetchedInvoice?.invoiceItems} // Display invoice items
               functions={{
                 deleteItem: (id) => {
                   toast.error('This feature is not available yet');
