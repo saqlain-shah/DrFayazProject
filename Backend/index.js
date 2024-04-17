@@ -26,7 +26,6 @@ import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
-
 //import helmet from 'helmet';
 
 const app = express();
@@ -34,15 +33,17 @@ app.use(express.json());
 dotenv.config();
 setupMiddleware();
 
-
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-// Serving static files
-app.use(express.static(path.join(__dirname, 'Website', 'dist')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serving static files
+app.use(express.static(path.join(__dirname, "/Website/dist")));
 
+// Middleware to serve index.html for all routes
+const indexPath = path.join(__dirname, '/Website/dist/index.html');
+app.get('*', (req, res) => {
+  res.sendFile(indexPath);
+});
 
 // Middleware to disable caching
 app.use((req, res, next) => {
@@ -50,26 +51,31 @@ app.use((req, res, next) => {
   next();
 });
 
-// Setting up CORS
-app.use(cors({
-  origin: ["http://localhost:5173", "https://drfayazproject.onrender.com"],
-  credentials: true
-}));
-
-// Handling file upload
+app.use(cors());
+//app.use(helmet())
+app.use(cors(
+  {
+    origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
+    // methods: ["POST", "GET", "DELETE", "PUT"],
+    credentials: true
+  }
+));
 app.post('/api/upload', upload.single('file'), (req, res) => {
   const file = req.file;
   res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
-// Google OAuth routes
+
+
+
+
+
+app.use('/api/medical-records', uploads, medicalRecordRoutes);
+
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   res.redirect('http://localhost:5173/');
 });
-
-
-
 
 app.use(authenticate);
 app.use('/api/auth', authRoute);
