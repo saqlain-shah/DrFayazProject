@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "nodemon index.js",
-    "build": "mkdir -p build && cp -R * build"
+    "build": "npm install --prefix ./Website && npm run build --prefix ./Website && npm install"
   },
   "keywords": [],
   "author": "",
