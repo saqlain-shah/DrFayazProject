@@ -61,12 +61,11 @@ const updateService = async (req, res) => {
     }
 };
 
-// Delete service by ID
 const deleteService = async (req, res) => {
     try {
         const service = await Service.findById(req.params.id);
         if (service) {
-            await service.remove();
+            await Service.deleteOne({ _id: service._id });
             res.json({ message: 'Service deleted' });
         } else {
             res.status(404).json({ message: 'Service not found' });
@@ -75,6 +74,8 @@ const deleteService = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 // Exporting controller functions
 export { getAllServices, createService, getServiceById, updateService, deleteService };

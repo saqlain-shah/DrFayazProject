@@ -51,7 +51,7 @@ function Services() {
           Authorization: `Bearer ${token}`
         }
       });
-      // Use the function form of setServicesData to ensure correct state update
+      // Filter out the deleted service using its ID
       setServicesData(prevServicesData => prevServicesData.filter(service => service._id !== item._id));
       toast.success('Service deleted successfully.');
     } catch (error) {
@@ -59,6 +59,7 @@ function Services() {
       toast.error('Failed to delete service. Please try again.');
     }
   };
+  
 
 
 
