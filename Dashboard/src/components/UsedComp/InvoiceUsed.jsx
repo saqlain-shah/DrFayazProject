@@ -11,7 +11,7 @@ function InvoiceUsed({ token, patientId }) {
     const fetchInvoices = async () => {
       try {
         if (patientId) { // Check if patientId is defined
-          const response = await axios.get(`https://drfayazproject.onrender.com/api/invoices/patient/${patientId}`, {
+          const response = await axios.get(`https://server-yvzt.onrender.com/api/invoices/patient/${patientId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

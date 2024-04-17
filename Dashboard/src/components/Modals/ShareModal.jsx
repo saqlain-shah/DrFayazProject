@@ -35,7 +35,7 @@ function ShareModal({ closeModal, isOpen, dataToShare }) {
   
     try {
       // Make API request to share data
-      const response = await axios.post('http://localhost:8800/api/files/share/whatsapp', {
+      const response = await axios.post('https://server-yvzt.onrender.com/api/files/share/whatsapp', {
         method: selectedOption === 1 ? 'email' : 'whatsapp', // Determine sharing method
         data: dataToShare, // Data to be shared (file path or other relevant data)
       });

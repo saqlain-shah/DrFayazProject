@@ -23,7 +23,7 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8800/api/auth/login', {
+      const response = await axios.post('https://server-yvzt.onrender.com/api/auth/login', {
         email,
         password,
       });

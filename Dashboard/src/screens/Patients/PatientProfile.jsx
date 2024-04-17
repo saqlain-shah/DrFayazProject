@@ -30,7 +30,7 @@ function PatientProfile() {
         const token = localStorage.getItem('token');
 
         // Fetch patient's profile data
-        const profileResponse = await axios.get(`http://localhost:8800/api/patients/${id}`, {
+        const profileResponse = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -57,7 +57,7 @@ function PatientProfile() {
         const token = localStorage.getItem('token');
         console.log('Token in PatientProfile component:', token);
         console.log('Fetching medical records...');
-        const response = await axios.get(`http://localhost:8800/api/medical-records/preview/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
@@ -92,7 +92,7 @@ function PatientProfile() {
 
     try {
       const response = await axios.post(
-        'http://localhost:8800/api/otp/verify-otp',
+        'https://server-yvzt.onrender.com/api/otp/verify-otp',
         { email: 'davabu1122@gmail.com', otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -120,7 +120,7 @@ function PatientProfile() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:8800/api/otp/send-otp-to-doctor',
+        'https://server-yvzt.onrender.com/api/otp/send-otp-to-doctor',
         { email: 'davabu1122@gmail.com' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -192,7 +192,7 @@ function PatientProfile() {
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex flex-col items-center justify-center">
           <img
-            src={`http://localhost:8800/${profileData.profilePicture}`}
+            src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
             alt="Profile"
             className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
           />

@@ -40,7 +40,7 @@ function Header() {
       },
     },
   ];
-  const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
+  const profileImageURL = profileImagePath ? `https://server-yvzt.onrender.com/${profileImagePath}` : null;
   return (
     <>
       {/* Header content */}

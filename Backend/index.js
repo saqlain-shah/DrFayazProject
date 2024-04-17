@@ -46,7 +46,7 @@ app.use(cors());
 //app.use(helmet())
 app.use(cors(
  {
- origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
+ origin: ["http://localhost:5173", "https://server-yvzt.onrender.com"],
  // methods: ["POST", "GET", "DELETE", "PUT"],
  credentials: true
  }

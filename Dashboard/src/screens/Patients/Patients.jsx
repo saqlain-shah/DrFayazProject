@@ -23,7 +23,7 @@ function Patients() {
     try {
       const token = localStorage.getItem('token');
       const formattedDate = startDate ? startDate.toLocaleDateString('en-US') : '';
-      const response = await axios.get('http://localhost:8800/api/patients', {
+      const response = await axios.get('https://server-yvzt.onrender.com/api/patients', {
         params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -34,7 +34,7 @@ function Patients() {
       // Iterate over patients to fetch appointment details from the new API endpoint
       const patientsWithAppointments = await Promise.all(response.data.map(async (patient) => {
         try {
-          const appointmentResponse = await axios.get(`http://localhost:8800/api/web/`, {
+          const appointmentResponse = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           console.log(`Fetched appointments for patient ID: ${patient._id}`, appointmentResponse.data);
@@ -84,7 +84,7 @@ function Patients() {
   const handleDelete = async (patientId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/patients/${patientId}`, {
+      await axios.delete(`https://server-yvzt.onrender.com/api/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchPatients();
@@ -104,12 +104,12 @@ function Patients() {
     try {
       const token = localStorage.getItem('token');
       if (patientData._id) {
-        await axios.put(`http://localhost:8800/api/patients/${patientData._id}`, patientData, {
+        await axios.put(`https://server-yvzt.onrender.com/api/patients/${patientData._id}`, patientData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Patient updated successfully');
       } else {
-        await axios.post('http://localhost:8800/api/patients', patientData, {
+        await axios.post('https://server-yvzt.onrender.com/api/patients', patientData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Patient created successfully');
