@@ -1,7 +1,7 @@
 // Inside webRoutes.js
 
 import express from 'express';
-import { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment } from '../controllers/webController.js';
+import { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment } from '../controllers/webcontroller.js';
 
 const router = express.Router();
 

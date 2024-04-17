@@ -38,22 +38,22 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middleware to disable caching
 app.use((req, res, next) => {
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  next();
+ res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+ next();
 });
 
 app.use(cors());
 //app.use(helmet())
 app.use(cors(
-  {
-    origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
-    // methods: ["POST", "GET", "DELETE", "PUT"],
-    credentials: true
-  }
+ {
+ origin: ["http://localhost:5173", "https://drfayazproject.onrender.com",],
+ // methods: ["POST", "GET", "DELETE", "PUT"],
+ credentials: true
+ }
 ));
 app.post('/api/upload', upload.single('file'), (req, res) => {
-  const file = req.file;
-  res.json({ imageUrl: '/uploads/' + file.filename });
+ const file = req.file;
+ res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
 
@@ -65,7 +65,7 @@ app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect('http://localhost:5173/');
+ res.redirect('http://localhost:5173/');
 });
 
 app.use(authenticate);
@@ -95,6 +95,6 @@ app.use('/api/stripe', stripe);
 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, async () => {
-  await connectToDatabase();
-  console.log(`Server is running on port ${PORT}`);
+ await connectToDatabase();
+ console.log(`Server is running on port ${PORT}`);
 });
