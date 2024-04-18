@@ -32,6 +32,8 @@ function Login() {
         const { token, id, name } = response.data;
         login({ id, name });
         localStorage.setItem('token', token);
+        localStorage.setItem('name', name);
+        localStorage.setItem('email', email);
         document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
         toast.success('Login successful');
         navigate('/');

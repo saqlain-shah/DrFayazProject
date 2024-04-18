@@ -1,12 +1,14 @@
-.nav-popover h5{
+.nav-popover h5 {
     font-size: 18px;
     margin-bottom: 0;
 }
-.nav-popover a{
+
+.nav-popover a {
     margin: 0 0;
 }
 
-.profileImage img{
+
+.profileImage img {
     height: 30px;
     border-radius: 50%;
     width: 30px;
@@ -16,14 +18,17 @@
     border: 2px #1977cc solid;
     cursor: pointer;
 }
-.hideTopHeader{
+
+.hideTopHeader {
     display: none !important;
-    transition: 1s!important;
+    transition: 1s !important;
 }
-.stickyHeader{
+
+.stickyHeader {
     top: 0 !important;
-    transition: 1ms!important;
+    transition: 1ms !important;
 }
+
 #header {
     background: #fff;
     transition: all 0.5s;

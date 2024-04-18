@@ -32,11 +32,10 @@ const DashboardSidebar = () => {
       
     }, [clientId]);
 
-    // const handleBeforeUnload = () => {
-    //     // Clear client ID and token from local storage
-    //     localStorage.removeItem('clientId');
-    //     localStorage.removeItem('token');
-    // };
+    const handleBeforeUnload = () => {
+        // Clear client ID and token from local storage
+
+    };
 
     const handleLogout = () => {
         // Clear client ID and token from local storage

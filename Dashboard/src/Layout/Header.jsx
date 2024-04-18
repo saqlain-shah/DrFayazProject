@@ -35,8 +35,10 @@ function Header() {
       title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
+
         logout(); // Call the logout function from useAuth
         navigate('/login');
+
       },
     },
   ];

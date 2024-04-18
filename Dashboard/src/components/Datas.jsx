@@ -77,11 +77,11 @@ export const MenuDatas = [
     path: "/settings",
     icon: AiOutlineSetting,
   },
-  {
-    title: "Medicine",
-    path: "/medicine",
-    icon: RiMedicineBottleLine,
-  },
+  // {
+  //   title: "Medicine",
+  //   path: "/medicine",
+  //   icon: RiMedicineBottleLine,
+  // },
   // {
   //   title: "Receptions",
   //   path: "/receptions",
