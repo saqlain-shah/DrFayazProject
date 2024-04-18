@@ -98,15 +98,15 @@ function Dashboard() {
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
       datas: [totalAppointments],
     },
-    {
-      id: 3,
-      title: "Prescriptions",
-      icon: TbFile,
-      value: 4160,
-      percent: 65.06,
-      color: ["bg-green-500", "text-green-500", "#34C759"],
-      datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
-    },
+    // {
+    //   id: 3,
+    //   title: "Prescriptions",
+    //   icon: TbFile,
+    //   value: 4160,
+    //   percent: 65.06,
+    //   color: ["bg-green-500", "text-green-500", "#34C759"],
+    //   datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
+    // },
     {
       id: 4,
       title: "Total Earnings",
@@ -120,7 +120,7 @@ function Dashboard() {
   return (
     <Layout>
       {/* boxes */}
-      <div className="w-full grid xl:grid-cols-4 gap-6 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1">
+      <div className="w-full grid xl:grid-cols-3 gap-6 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1" >
         {dashboardCards.map((card, index) => (
           <div
             key={card.id}
@@ -190,7 +190,7 @@ function Dashboard() {
             </div>
             {/* table */}
             <div className="mt-4 overflow-x-scroll">
-              <Transactiontable data={websitePatients} />
+              <Transactiontable data={websitePatients} action={true} />
             </div>
           </div>
         </div>

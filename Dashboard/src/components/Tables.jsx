@@ -16,24 +16,10 @@ import { RiCloseLine } from 'react-icons/ri';
 export function Transactiontable({ data, action, functions }) {
   const DropDown1 = [
     {
-      title: 'Edit',
+      title: 'Update',
       icon: FiEdit,
       onClick: (data) => {
         functions.edit(data.id);
-      },
-    },
-    {
-      title: 'View',
-      icon: FiEye,
-      onClick: (data) => {
-        functions.preview(data.id);
-      },
-    },
-    {
-      title: 'Delete',
-      icon: RiDeleteBin6Line,
-      onClick: () => {
-        toast.error('This feature is not available yet');
       },
     },
   ];
@@ -383,6 +369,7 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
 }
 
 export function PatientTable({ data, functions, onEdit }) {
+  console.log("patient data")
   const navigate = useNavigate();
 
   const handleEdit = (item) => {
@@ -394,6 +381,9 @@ export function PatientTable({ data, functions, onEdit }) {
     navigate(`/patients/profile/${appointment.patientInfo._id}`, { state: { appointmentData: appointment } });
   };
 
+
+
+
   const appointmentMenuOptions = [
     {
       title: 'View',
@@ -401,14 +391,20 @@ export function PatientTable({ data, functions, onEdit }) {
       onClick: handleViewAppointment,
     },
     {
-      title: 'Cancel',
-      icon: RiCloseLine,
-      onClick: (appointment) => {
-        // Handle cancel appointment action
+      title: 'Edit',
+      icon: FiEdit,
+      onClick: handleEdit
+    },
+    {
+      title: 'Delete',
+      icon: RiDeleteBin6Line,
+      onClick: (item) => {
+        functions.delete(item._id);
       },
     },
     // Add more appointment-specific menu options as needed
   ];
+
 
   const patientMenuOptions = [
     {
@@ -489,7 +485,7 @@ export function PatientTable({ data, functions, onEdit }) {
                   </MenuSelect>
                 </td>
               </tr>
-              {/* {item.appointments && item.appointments.map((_appointment, appIndex) => (
+              {item.appointments && item.appointments.map((_appointment, appIndex) => (
                 <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
                   <td className={tdClass}></td>
                   <td className={tdClass}>
@@ -516,7 +512,7 @@ export function PatientTable({ data, functions, onEdit }) {
                     </MenuSelect>
                   </td>
                 </tr>
-              ))} */}
+              ))}
             </React.Fragment>
           ))}
         </tbody>
@@ -524,12 +520,6 @@ export function PatientTable({ data, functions, onEdit }) {
     </div>
   );
 }
-
-
-
-
-
-
 
 export function PatientTableArray({ data, onEdit }) {
   console.log("data", data)
