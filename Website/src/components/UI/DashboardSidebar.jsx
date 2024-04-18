@@ -29,21 +29,14 @@ const DashboardSidebar = () => {
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-
-        // Adding event listener for beforeunload
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        // Cleanup function to remove event listener
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
+      
     }, [clientId]);
 
-    const handleBeforeUnload = () => {
-        // Clear client ID and token from local storage
-        localStorage.removeItem('clientId');
-        localStorage.removeItem('token');
-    };
+    // const handleBeforeUnload = () => {
+    //     // Clear client ID and token from local storage
+    //     localStorage.removeItem('clientId');
+    //     localStorage.removeItem('token');
+    // };
 
     const handleLogout = () => {
         // Clear client ID and token from local storage
