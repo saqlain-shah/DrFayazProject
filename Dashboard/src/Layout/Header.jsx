@@ -15,6 +15,7 @@ function Header() {
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get the logout function from useAuth
   const name = localStorage.getItem('name');
+  console.log("name", name)
   const profileImagePath = localStorage.getItem('profileImage'); // Retrieve profile image from local storage
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -35,7 +36,7 @@ function Header() {
       title: 'Logout',
       icon: AiOutlinePoweroff,
       onClick: () => {
-
+        localStorage.removeItem('token')
         logout(); // Call the logout function from useAuth
         navigate('/login');
 
