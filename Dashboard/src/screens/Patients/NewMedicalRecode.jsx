@@ -19,6 +19,7 @@ function NewMedicalRecord() {
   const appointmentData = location.state?.appointmentData; // Get appointmentData from location state
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
+  const [webPatientData, setWebPatientData] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [complaints, setComplaints] = useState('');
@@ -51,19 +52,34 @@ function NewMedicalRecord() {
   };
 
 
+
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const token = localStorage.getItem('token'); // Retrieve the authentication token from storage
+        const token = localStorage.getItem('token');
         const response = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
-          headers: { Authorization: `Bearer ${token}` } // Include the token in the request headers
+          headers: { Authorization: `Bearer ${token}` }
         });
         setPatientData(response.data);
       } catch (error) {
         console.error('Error fetching patient data:', error);
       }
     };
+
+    const fetchWebPatientData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWebPatientData(response.data);
+      } catch (error) {
+        console.error('Error fetching web patient data:', error);
+      }
+    };
+
     fetchPatientData();
+    fetchWebPatientData();
   }, [id]);
 
 
@@ -196,19 +212,20 @@ function NewMedicalRecord() {
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 flex-colo gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
           <img
-            src={`https://server-yvzt.onrender.com/${patientData.profilePicture}`}
+            src={webPatientData.patientInfo ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}` : ''}
             alt="profile"
             className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
           />
           <div className="gap-2 flex-colo">
-            <h2 className="text-sm font-semibold">{patientData.fullName}</h2>
-            <p className="text-xs text-textGray">{patientData.email}</p>
-            <p className="text-xs">{patientData.emergencyContact}</p>
+            <h2 className="text-sm font-semibold">{webPatientData.patientInfo ? webPatientData.patientInfo.name : ''}</h2>
+            <p className="text-xs text-textGray">{webPatientData.patientInfo ? webPatientData.patientInfo.email : ''}</p>
+            <p className="text-xs">{webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : ''}</p>
             <p className="text-xs text-subMain bg-text font-medium py-1 px-4 rounded-full border-[0.5px] border-subMain">
-              {patientData.age} yrs
+              {webPatientData.patientInfo ? webPatientData.patientInfo.age : ''} yrs
             </p>
           </div>
         </div>
+
 
         <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6">
           <div className="flex w-full flex-col gap-5">

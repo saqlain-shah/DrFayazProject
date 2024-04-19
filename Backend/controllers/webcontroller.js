@@ -12,7 +12,16 @@ export const createAppointment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
+export const getTotalAppointmentCount = async (req, res) => {
+  try {
+    const totalCount = await Appointment.countDocuments();
+    console.log("totalCount", totalCount)
+    res.json({ totalCount });
+  } catch (error) {
+    console.error('Error fetching total appointment count:', error);
+    res.status(500).json({ error: 'Error fetching total appointment count' });
+  }
+};
 export const getAllAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find();

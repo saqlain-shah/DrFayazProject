@@ -47,14 +47,13 @@ function EditPayment() {
             />
             <span
               className={`text-xs px-4
-              ${
-                payment.status === 'Paid'
+              ${payment.status === 'Paid'
                   ? 'bg-subMain text-subMain border-subMain'
                   : payment.status === 'Pending'
-                  ? 'bg-orange-500 text-orange-500 border-orange-500'
-                  : payment.status === 'Cancel' &&
+                    ? 'bg-orange-500 text-orange-500 border-orange-500'
+                    : payment.status === 'Cancel' &&
                     'bg-red-600 text-red-600 border-red-600'
-              }
+                }
                py-1 border bg-opacity-10 border-opacity-40 rounded-full`}
             >
               {payment.status}
