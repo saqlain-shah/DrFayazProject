@@ -9,10 +9,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddEditPatientModal from './EditPatient';
 import { useParams } from 'react-router-dom';
+
 function Patients() {
   const [isOpen, setIsOpen] = useState(false);
-  const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [patients, setPatients] = useState([]);
+  const [webPatients, setWebPatients] = useState([]); // Changed appointments to webPatients
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
@@ -27,58 +29,29 @@ function Patients() {
         params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
         headers: { Authorization: `Bearer ${token}` }
       });
-
-
-      console.log('Fetched patients:', response.data);
-
-      // Iterate over patients to fetch appointment details from the new API endpoint
-      const patientsWithAppointments = await Promise.all(response.data.map(async (patient) => {
-        try {
-          const appointmentResponse = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          console.log(`Fetched appointments for patient ID: ${patient._id}`, appointmentResponse.data);
-          // Extract only personal information of patients and combine with appointments
-          return {
-            _id: patient._id,
-            fullName: patient.fullName,
-            profilePicture: patient.profilePicture,
-            gender: patient.gender,
-            bloodGroup: patient.bloodGroup,
-            address: patient.address,
-            email: patient.email,
-            emergencyContact: patient.emergencyContact,
-            createdAt: patient.createdAt,
-            appointments: appointmentResponse.data
-          };
-        } catch (error) {
-          console.error(`Error fetching appointments for patient ID: ${patient._id}`, error);
-          // If there's an error fetching appointments, return patient data without appointments
-          return {
-            _id: patient._id,
-            fullName: patient.fullName,
-            profilePicture: patient.profilePicture,
-            gender: patient.gender,
-            bloodGroup: patient.bloodGroup,
-            address: patient.address,
-            email: patient.email,
-            emergencyContact: patient.emergencyContact,
-            createdAt: patient.createdAt,
-            appointments: []
-          };
-        }
-      }));
-
-      console.log('Patients with appointments:', patientsWithAppointments);
-      setPatients(patientsWithAppointments);
-
+      setPatients(response.data);
     } catch (error) {
       console.error('Error fetching patients:', error);
       toast.error('Failed to fetch patients');
     }
   };
+
+  const fetchWebPatients = async () => { // Renamed fetchAppointments to fetchWebPatients
+    try {
+      const token = localStorage.getItem('token');
+      const webPatientsResponse = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWebPatients(webPatientsResponse.data); // Changed appointments to webPatients
+    } catch (error) {
+      console.error('Error fetching webPatients:', error); // Changed appointments to webPatients
+      toast.error('Failed to fetch webPatients'); // Changed appointments to webPatients
+    }
+  };
+
   useEffect(() => {
     fetchPatients();
+    fetchWebPatients(); // Changed fetchAppointments to fetchWebPatients
   }, [searchQuery, startDate, genderFilter]);
 
   const handleDelete = async (patientId) => {
@@ -87,13 +60,19 @@ function Patients() {
       await axios.delete(`https://server-yvzt.onrender.com/api/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchPatients();
+      // Remove the deleted patient from the patients state
+      setPatients(patients.filter(patient => patient._id !== patientId));
+
+      // Remove webPatients associated with the deleted patient from the webPatients state
+      setWebPatients(webPatients.filter(webPatient => webPatient.patientInfo.id !== patientId));
+
       toast.success('Patient deleted successfully');
     } catch (error) {
       console.error('Error deleting patient:', error);
       toast.error('Failed to delete patient');
     }
   };
+
 
   const handleEdit = (patient) => {
     setSelectedPatient(patient);
@@ -120,6 +99,8 @@ function Patients() {
       toast.error('Failed to save patient');
     }
   };
+
+
 
   const handleCloseModal = () => {
     setIsOpen(false);
@@ -177,9 +158,11 @@ function Patients() {
 
         <div className="mt-8 overflow-x-auto">
           <PatientTable
-            data={patients}
+            patients={patients}
+            webPatients={webPatients} // Changed appointments to webPatients
             onEdit={handleEdit}
-            functions={{ delete: handleDelete }}
+            onDelete={handleDelete}
+            onSavePatient={handleSavePatient}
           />
         </div>
       </div>
@@ -189,7 +172,7 @@ function Patients() {
 
       <AddEditPatientModal
         isOpen={isOpen}
-        closeModal={handleCloseModal}
+        closeModal={() => setIsOpen(false)}
         patientData={selectedPatient}
         onSave={handleSavePatient}
       />

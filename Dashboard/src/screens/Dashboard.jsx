@@ -48,13 +48,24 @@ function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
-      const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
-      const recentPatientsData = await fetchRecentPatients();
-      const todayAppointmentsData = await fetchTodayAppointments();
-      const websitePatientsData = await fetchwebsitePatient(); // Fetch website patients data
+      console.log('Fetching data...'); // Log before making the fetch request
 
-      console.log('Website Patients Data:', websitePatientsData); // Add this line for debugging
+      const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
+      console.log('Patient Count:', patientCount); // Log patient count
+      console.log('Patient Percentage:', patientPercentage); // Log patient percentage
+
+      const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
+      console.log('Appointment Count:', appointmentCount); // Log appointment count
+      console.log('Appointment Percentage:', appointmentPercentage); // Log appointment percentage
+
+      const recentPatientsData = await fetchRecentPatients();
+      console.log('Recent Patients Data:', recentPatientsData); // Log recent patients data
+
+      const todayAppointmentsData = await fetchTodayAppointments();
+      console.log('Today Appointments Data:', todayAppointmentsData); // Log today appointments data
+
+      const websitePatientsData = await fetchwebsitePatient();
+      console.log('Website Patients Data:', websitePatientsData); // Log website patients data
 
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
@@ -62,11 +73,12 @@ function Dashboard() {
       setTotalAppointmentsPercentage(appointmentPercentage);
       setRecentPatients(recentPatientsData);
       setTodayAppointments(todayAppointmentsData.data);
-      setWebsitePatients(websitePatientsData); // Set website patients data in state
+      setWebsitePatients(websitePatientsData);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data:', error); // Log the error
     }
   };
+
 
 
 

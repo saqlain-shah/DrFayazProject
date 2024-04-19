@@ -65,7 +65,8 @@ function App() {
           <Route path="/invoices/edit/:id" element={<PrivateRoute element={<EditInvoice />} />} />
           <Route path="/invoices/preview/:id" element={<PrivateRoute element={<PreviewInvoice />} />} />
           {/* payments */}
-          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} /><Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
+          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} />
+          <Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
           <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
