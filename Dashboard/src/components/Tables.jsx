@@ -368,21 +368,27 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   );
 }
 
-export function PatientTable({ patients, webPatients, onDelete, functions, onEdit }) {
-  console.log("patients", patients);
-  console.log("webPatients", webPatients);
-
+export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatient, onEdit }) {
   const navigate = useNavigate();
 
   const handleEdit = (item) => {
     onEdit(item);
   };
 
+  const handleWebPatientEdit = (webPatient) => {
+    onEdit(webPatient.patientInfo);
+  };
+
+  const handleDelete = (item, isWebPatient) => {
+    onDelete(item._id, isWebPatient ? item : null); // Pass webPatient object if it's a webPatient, otherwise null
+  };
+
+
   const patientMenuOptions = [
     {
       title: 'Edit',
       icon: FiEdit,
-      onClick: handleEdit,
+      onClick: (item) => handleEdit(item), // Pass item as an argument
     },
     {
       title: 'View',
@@ -398,18 +404,30 @@ export function PatientTable({ patients, webPatients, onDelete, functions, onEdi
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: (item) => {
-        console.log("Clicked item:", item);
-        if (item && item._id) {
-          onDelete(item._id);
-        } else {
-          console.error("Item or _id is undefined:", item);
-        }
-      },
+      onClick: (item) => handleDelete(item, false), // Pass item as an argument
+    },
+  ];
 
+
+  const webPatientMenuOptions = [
+    {
+      title: 'Edit',
+      icon: FiEdit,
+      onClick: handleWebPatientEdit,
+    },
+    {
+      title: 'View',
+      icon: FiEye,
+      onClick: (webPatient) => {
+        navigate(`/patients/preview/${webPatient._id}`, { state: { profileData: webPatient, webPatientData: webPatient.patientInfo } });
+      },
+    },
+    {
+      title: 'Delete',
+      icon: RiDeleteBin6Line,
+      onClick: (webPatient) => onDeleteWebPatient(webPatient._id), // Pass webPatient ID to onDeleteWebPatient
     },
 
-    // Add other patient menu options as needed
   ];
 
 
@@ -487,14 +505,21 @@ export function PatientTable({ patients, webPatients, onDelete, functions, onEdi
                   )}
                 </td>
                 <td className={tdClass}>{webPatient.patientInfo.name}</td>
-                <td className={tdClass}>{webPatient.patientInfo.gender}</td>
+                <td className={tdClass}>
+                  <span
+                    className={`py-1 px-2 ${webPatient.patientInfo.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+                      } bg-opacity-10 text-xs rounded-xl`}
+                  >
+                    {webPatient.patientInfo.gender}
+                  </span>
+                </td>
                 <td className={tdClass}>{webPatient.patientInfo.bloodGroup}</td>
                 <td className={tdClass}>{webPatient.patientInfo.address}</td>
                 <td className={tdClass}>{webPatient.patientInfo.email}</td>
                 <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
                 <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={patientMenuOptions} item={webPatient}>
+                  <MenuSelect datas={webPatientMenuOptions} item={webPatient}>
                     <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                       <BiDotsHorizontalRounded />
                     </div>
@@ -531,7 +556,7 @@ export function PatientTableArray({ data, onEdit }) {
             <th className={thClass} style={{ width: '15%' }}>Email</th>
             <th className={thClass} style={{ width: '10%' }}>Blood Group</th>
             <th className={thClass} style={{ width: '20%' }}>Emergency Contact</th>
-            <th className={thClass} style={{ width: '15%' }}>Profile Picture</th>
+            {/* <th className={thClass} style={{ width: '15%' }}>Profile Picture</th> */}
             <th className={thClass} style={{ width: '8%' }}>Actions</th>
           </tr>
         </thead>
@@ -544,13 +569,13 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.email}</td>
               <td className={tdClass}>{patient.bloodGroup}</td>
               <td className={tdClass}>{patient.emergencyContact}</td>
-              <td className={tdClass}>
+              {/* <td className={tdClass}>
                 <img
                   src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
-              </td>
+              </td> */}
               <td className={tdClass}>
                 <button onClick={() => onEdit(patient._id)}>Edit</button> {/* Assuming onEdit is the function to edit a patient */}
               </td>
@@ -561,15 +586,6 @@ export function PatientTableArray({ data, onEdit }) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
 
 export function DoctorsTable({ data, functions, doctor }) {
   const thclass = 'py-3 px-4 text-left font-semibold';
@@ -756,9 +772,6 @@ export function AppointmentTable({ functions, token, patientId }) {
     </div>
   );
 }
-
-
-
 
 // payment table
 export function PaymentTable({ data, functions, doctor }) {
@@ -964,8 +977,6 @@ export function InvoiceProductsTable({ data, functions, button, selectedCurrency
     </table>
   );
 }
-
-
 
 
 // medicine Dosage table

@@ -62,14 +62,25 @@ function Patients() {
       });
       // Remove the deleted patient from the patients state
       setPatients(patients.filter(patient => patient._id !== patientId));
-
-      // Remove webPatients associated with the deleted patient from the webPatients state
-      setWebPatients(webPatients.filter(webPatient => webPatient.patientInfo.id !== patientId));
-
       toast.success('Patient deleted successfully');
     } catch (error) {
       console.error('Error deleting patient:', error);
       toast.error('Failed to delete patient');
+    }
+  };
+
+  const handleDeleteWebPatient = async (webPatientId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`https://server-yvzt.onrender.com/api/web/${webPatientId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      // Remove the deleted web patient from the webPatients state
+      setWebPatients(webPatients.filter(patient => patient._id !== webPatientId));
+      toast.success('Web patient deleted successfully');
+    } catch (error) {
+      console.error('Error deleting web patient:', error);
+      toast.error('Failed to delete web patient');
     }
   };
 
@@ -162,6 +173,7 @@ function Patients() {
             webPatients={webPatients} // Changed appointments to webPatients
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onDeleteWebPatient={handleDeleteWebPatient}
             onSavePatient={handleSavePatient}
           />
         </div>

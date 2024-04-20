@@ -1,15 +1,14 @@
-// Inside webRoutes.js
-
 import express from 'express';
-import { createAppointment, getAllAppointments, getTotalAppointmentCount, getAppointmentById, updateAppointment, deleteAppointment } from '../controllers/webcontroller.js';
+import { createWeb, getAllWebs, deleteWeb, getTotalWebCount, getWebById, updateWeb } from '../controllers/webcontroller.js';
 
 const router = express.Router();
 
-// Define routes for appointments
-router.post('/', createAppointment);
-router.get('/:id', getAppointmentById);
-router.get('/', getAllAppointments);
-router.put('/:id', updateAppointment); // Route for updating appointment
-router.delete('/:id', deleteAppointment); // Route for deleting appointment
-router.get('/total-count', getTotalAppointmentCount);
+// Define routes for webs
+router.post('/', createWeb); // Route for creating a web
+router.get('/:id', getWebById); // Route for getting a web by ID
+router.get('/', getAllWebs); // Route for getting all webs
+router.put('/:id', updateWeb); // Route for updating a web
+router.delete('/:id', deleteWeb); // Route for deleting a web
+router.get('/total-count', getTotalWebCount); // Route for getting total web count
+
 export default router;

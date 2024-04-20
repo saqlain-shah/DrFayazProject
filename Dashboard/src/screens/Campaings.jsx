@@ -69,7 +69,7 @@ function Campaings() {
           console.log("contact", contacts)
           setIsDialogOpen(true)
           handleCloseDialog
-          
+
         })
       })
 
@@ -111,13 +111,13 @@ function Campaings() {
         setData(data);
       },
     },
-    {
-      title: "Delete",
-      icon: RiDeleteBinLine,
-      onClick: () => {
-        toast.error("This feature is not available yet");
-      },
-    },
+    // {
+    //   title: "Delete",
+    //   icon: RiDeleteBinLine,
+    //   onClick: () => {
+    //     toast.error("This feature is not available yet");
+    //   },
+    // },
     {
       title: "Share",
       icon: FaShare,
@@ -133,13 +133,13 @@ function Campaings() {
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-          <Button
+          {/* <Button
             label="Add New"
             Icon={BiPlus}
             onClick={() => {
               closeModal();
             }}
-          />
+          /> */}
         </div>
       </div>
 
