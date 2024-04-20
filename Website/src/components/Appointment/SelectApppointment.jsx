@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
-    const [appointmentSlots, setAppointmentSlots] = useState({});
+    const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
     useEffect(() => {
@@ -36,17 +36,20 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
 
     return (
         <div className="container mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
+            <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
             <div style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
                 {appointmentSlots && appointmentSlots.length > 0 ? (
                     appointmentSlots.map((slot, index) => (
                         <div
                             key={slot._id}
-                            className="p-4 border rounded-md slot-item"
+                            className={`p-4 border rounded-md slot-item ${selectedSlot && selectedSlot._id === slot._id ? ' text-green-500' : ''}`}
                             style={{ margin: '10px', cursor: 'pointer' }}
-                            onMouseEnter={() => console.log('Mouse entered slot', slot)} // Log slot info when mouse enters
-                            onMouseLeave={() => console.log('Mouse left slot', slot)} // Log slot info when mouse leaves
-                            onClick={() => handleSlotSelection(slot._id)} // Add onClick event handler for slot selection
+                            onMouseEnter={() => console.log('Mouse entered slot', slot)}
+                            onMouseLeave={() => console.log('Mouse left slot', slot)}
+                            onClick={() => {
+                                console.log('Clicked slot:', slot);
+                                handleSlotSelection(slot._id);
+                            }}
                         >
                             <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                             <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>

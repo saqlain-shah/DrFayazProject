@@ -395,25 +395,26 @@ const AppointmentPage = () => {
       <Modal
         title="Appointment Details"
         open={showModal} // Control modal visibility
-        // Handle close event
+        onCancel={() => setShowModal(false)} // Handle close event
         footer={[
           <div>
-            {loading && <div className="loading-circle"></div>},
-            <Button key="back" onClick={makePayment}>
+            {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
+            <Button key="back" onClick={makePayment} disabled={loading}>
               {loading ? 'Processing...' : 'Checkout'}
-            </Button>,
+            </Button>
           </div>
         ]}
       >
-        <p>Patient Name: {selectValue.name} </p>
-        <p>Service: {selectedService ? selectedService.name : "Loading..."}</p>
+        <p><b>Patient Name:</b> {selectValue.name} </p>
+        <p><b>Service:</b> {selectedService ? selectedService.name : "Loading..."}</p>
         <p>
-          Service Charge:{" "}
+          <b>Service Charge:</b> {" "}
           {selectedService ? selectedService.price : "Loading..."} USD
         </p>
         {/* <p>Service Tax: 5 USD</p> */}
-        <p>Total Amount: {selectedService.price} USD</p>
+        <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
+
       <Footer />
     </>
   );

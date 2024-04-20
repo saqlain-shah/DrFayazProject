@@ -239,7 +239,7 @@ const PatientProfileSetting = () => {
                                 className="form-control" />
                         </div>
                     </div>
-                    <div className='text-center'>
+                    <div className='text-end'>
                         <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
                     </div>
                 </div>

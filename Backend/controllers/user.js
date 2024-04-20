@@ -5,6 +5,7 @@ import User from '../models/Client.js'; // Import your User model
 import mongoose from 'mongoose';
 import nodemailer from 'nodemailer';
 import { transporter } from '../routes/transporter.js'
+
 export const login = async (req, res, next) => {
   try {
     console.log('Request Body:', req.body); // Log request body
@@ -47,6 +48,8 @@ export const register = async (req, res, next) => {
     }
 
     const newUser = new User({ name, email, password });
+    const hash = await bcrypt.hash(password, 10); // Hash the password
+    newUser.password = hash; // Set the hashed password
     await newUser.save();
 
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
