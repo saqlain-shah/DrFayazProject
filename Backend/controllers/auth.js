@@ -60,14 +60,14 @@ export const updateDoctorById = async (req, res, next) => {
   const { fullName, email, phone, address, profileImage } = req.body;
 
   try {
-      const updatedDoctor = await User.findByIdAndUpdate(doctorId, { fullName, email, phone, address, profileImage }, { new: true });
-      if (!updatedDoctor) {
-          return res.status(404).json({ message: 'Doctor not found' });
-      }
-      return res.status(200).json(updatedDoctor);
+    const updatedDoctor = await User.findByIdAndUpdate(doctorId, { fullName, email, phone, address, profileImage }, { new: true });
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+    return res.status(200).json(updatedDoctor);
   } catch (error) {
-      console.error('Error updating doctor:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    console.error('Error updating doctor:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -89,7 +89,8 @@ export const changePassword = async (req, res, next) => {
 
     console.log('User found:', user);
 
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(oldPassword.trim(), user.password.trim());
+
     if (!isPasswordValid) {
       return res.status(400).json({ message: 'Invalid old password' });
     }

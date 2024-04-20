@@ -410,11 +410,11 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
 
 
   const webPatientMenuOptions = [
-    {
-      title: 'Edit',
-      icon: FiEdit,
-      onClick: handleWebPatientEdit,
-    },
+    // {
+    //   title: 'Edit',
+    //   icon: FiEdit,
+    //   onClick: handleWebPatientEdit,
+    // },
     {
       title: 'View',
       icon: FiEye,

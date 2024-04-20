@@ -12,7 +12,7 @@ export const fetchTotalPatientCount = async () => {
         }
         const data = await response.json();
         const totalPatients = data.totalCount;
-        const totalPatientsTarget = 100;
+        const totalPatientsTarget = 100; // Assuming this is your target value
         const totalPatientsPercentage = ((totalPatients / totalPatientsTarget) * 100).toFixed(2);
         return {
             totalCount: totalPatients,
