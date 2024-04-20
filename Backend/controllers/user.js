@@ -8,34 +8,27 @@ import { transporter } from '../routes/transporter.js'
 
 export const login = async (req, res, next) => {
   try {
-    console.log('Request Body:', req.body); // Log request body
-
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Compare trimmed password using bcrypt
-    const isValidPassword = await bcrypt.compare(req.body.password.trim(), user.password);
+    const isValidPassword = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate token upon successful login
     const token = jwt.sign({ email: req.body.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '90d' });
 
     const { password, ...details } = user._doc;
-
-    // Set token in cookie
     res.cookie('access_token', token, { httpOnly: true });
-
-    // Send token and id in response
     return res.status(200).json({ message: 'Login successful', token, ...details });
   } catch (error) {
-    console.error('Error logging in:', error); // Log any errors
+    console.error('Error logging in:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 export const register = async (req, res, next) => {
@@ -47,9 +40,8 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const newUser = new User({ name, email, password });
     const hash = await bcrypt.hash(password, 10); // Hash the password
-    newUser.password = hash; // Set the hashed password
+    const newUser = new User({ name, email, password: hash }); // Save the hashed password
     await newUser.save();
 
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
@@ -59,6 +51,7 @@ export const register = async (req, res, next) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 export const getClientById = async (req, res, next) => {
