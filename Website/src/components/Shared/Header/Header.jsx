@@ -77,7 +77,7 @@ const Header = ({ clientId }) => {
             <style>
                 {`
                 /* Style for dropdown menu */
-                .dropdown-menu {
+                .dropdown-toggle {
                     border: none;
                     background-color: #fff;
                     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
@@ -86,7 +86,7 @@ const Header = ({ clientId }) => {
                     z-index: 999;
                 }
 
-                .dropdown-menu a {
+                .dropdown-toggle a {
                     color: #333;
                     text-decoration: none;
                     display: block;
@@ -94,20 +94,20 @@ const Header = ({ clientId }) => {
                     transition: all 0.3s ease;
                 }
 
-                .dropdown-menu a:hover {
+                .dropdown-toggle a:hover {
                     background-color: #f5f5f5;
                     color: #555;
                 }
 
-                .dropdown-toggle:hover + .dropdown-menu {
+                .dropdown-toggle:hover + .dropdown-toggle {
                     display: block;
                 }
 
-                .dropdown-menu.show {
+                .dropdown-toggle.show {
                     display: block;
                 }
 
-                .dropdown-menu .dropdown-item {
+                .dropdown-toggle .dropdown-item {
                     font-size: 16px;
                     line-height: 24px;
                 }
