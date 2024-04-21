@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt } from "react-icons/fa";
-import img from '../../images/doc/doc4.jpg';
+import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
 
 const DashboardSidebar = () => {
@@ -20,9 +20,9 @@ const DashboardSidebar = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
-        axios.get(`https://server-yvzt.onrender.com/api/userauth/${clientId}`, config)
+        axios.get(`http://localhost:8800/api/userauth/${clientId}`, config)
             .then(response => {
-                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
+                const imagePath = `http://localhost:8800/${response.data.image}`
                 response.data.image = imagePath;
                 setUserData(response.data);
             })

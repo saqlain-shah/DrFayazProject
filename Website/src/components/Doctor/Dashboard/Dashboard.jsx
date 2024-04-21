@@ -16,7 +16,7 @@ const Dashboard = () => {
         <DashboardLayout >
             <div className="row">
                 <div className="col-md-12 rounded" style={{ background: '#f8f9fa' }}>
-                    <h5 className="text-title">Appointments</h5>
+                <h5 className="text-title" style={{ marginTop: '20px' }}>Appointments</h5>
                     <AppointmentPage/>
                 </div>
             </div>

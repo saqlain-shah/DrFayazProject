@@ -7,7 +7,6 @@ import img from '../../../images/dr1.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 
-
 const Header = ({ clientId }) => {
     const params = useParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -73,46 +72,6 @@ const Header = ({ clientId }) => {
                     </div>
                 </div>
             </header>
-            {/* CSS styles */}
-            <style>
-                {`
-                /* Style for dropdown menu */
-                .dropdown-menu {
-                    border: none;
-                    background-color: #fff;
-                    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-                    padding: 10px 0;
-                    transition: all 0.3s ease;
-                    z-index: 999;
-                }
-
-                .dropdown-menu a {
-                    color: #333;
-                    text-decoration: none;
-                    display: block;
-                    padding: 10px 20px;
-                    transition: all 0.3s ease;
-                }
-
-                .dropdown-menu a:hover {
-                    background-color: #f5f5f5;
-                    color: #555;
-                }
-
-                .dropdown-toggle:hover + .dropdown-menu {
-                    display: block;
-                }
-
-                .dropdown-menu.show {
-                    display: block;
-                }
-
-                .dropdown-menu .dropdown-item {
-                    font-size: 16px;
-                    line-height: 24px;
-                }
-                `}
-            </style>
         </>
     );
 };

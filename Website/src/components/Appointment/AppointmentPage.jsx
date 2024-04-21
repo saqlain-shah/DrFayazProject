@@ -50,7 +50,7 @@ const AppointmentPage = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
-
+ 
   const [
     createAppointmentByUnauthenticateUser,
     { data: appointmentData, isError, isSuccess, isLoading, error },
@@ -93,7 +93,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
+        `http://localhost:8800/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -158,7 +158,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "https://server-yvzt.onrender.com/api/stripe/checkout",
+        "http://localhost:8800/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -203,7 +203,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/services",
+        "http://localhost:8800/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -249,7 +249,7 @@ const AppointmentPage = () => {
 
     // Make a POST request to store the appointment data with token included in headers
     axios
-      .post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+      .post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -310,26 +310,31 @@ const AppointmentPage = () => {
       title: "Services",
       content: (
         <>
-          {serviceDetails && (
-            <div>
-              {serviceDetails.map((service, index) => (
-                <div key={index} onClick={() => {
-                  setSelectedService({
-                    name: service.name,
-                    price: service.price,
-                  });
-                  console.log(selectedService);
-                  setIsConfirmDisable(false);
-                }} className={` hover:bg-blue-500 p-4 cursor-pointer rounded-md ${selectedService.name === service.name && 'selected-service'}`}>
-                  <p className="  border bg-gray-800  text-base">
-                    Service Name: {service.name}<br />
-                    Service Price: {service.price}
-                  </p>
-                </div>
-              ))}
+        {serviceDetails && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {serviceDetails.map((service, index) => (
+                    <div
+                        key={index}
+                        onClick={() => {
+                            setSelectedService({
+                                name: service.name,
+                                price: service.price,
+                            });
+                            setIsConfirmDisable(false);
+                        }}
+                        className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${
+                            selectedService && selectedService.name === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                        }`}
+                    >
+                        <p className="border bg-gray-800 text-base p-2 rounded-md">
+                            <span className="font-bold">Service Name:</span> {service.name}<br />
+                            <span className="font-bold">Service Price:</span> {service.price}
+                        </p>
+                    </div>
+                ))}
             </div>
-          )}
-        </>
+        )}
+    </>
       ),
     },
   ];
@@ -342,7 +347,7 @@ const AppointmentPage = () => {
   return (
     <>
       <Header />
-      <div className="container" style={{ marginTop: "8rem", bottom: "5rem" }}>
+      <div className="container" style={{ marginTop: '-10%', bottom: "5rem" }}>
         <div
           className="container"
           style={{ marginBottom: "12rem", marginTop: "8rem" }}

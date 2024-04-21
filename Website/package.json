@@ -78,9 +78,10 @@
     "vite": "^5.0.12"
   },
   "proxy": {
-    "/api": {
-      "target": "https://drfayazproject.onrender.com",
-      "changeOrigin": true
+      "/api": {
+        "target": "http://localhost:8800",
+        "changeOrigin": true
+      }
     }
-  }
+
 }
