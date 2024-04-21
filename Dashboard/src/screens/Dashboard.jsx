@@ -28,58 +28,47 @@ import {
   transactionData,
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
-import { Link } from 'react-router-dom';
-import { fetchTotalPatientCount, fetchTotalAppointmentCount, fetchRecentPatients, fetchTodayAppointments, fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
+import { fetchTotalPatientCount, fetchRecentPatients, fetchTodayAppointments, fetchwebsitePatient, fetchWebPatientCount } from '../Api/api.js'; // Import all necessary functions
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
   const [totalPatientsPercentage, setTotalPatientsPercentage] = useState(0);
-  const [totalAppointments, setTotalAppointments] = useState(0);
-  const [totalAppointmentsPercentage, setTotalAppointmentsPercentage] = useState(0);
+  const [totalWebPatients, setTotalWebPatients] = useState(0);
+  const [totalWebPatientsPercentage, setTotalWebPatientsPercentage] = useState(0); // Add state for total web patients percentage
   const [recentPatients, setRecentPatients] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [websitePatients, setWebsitePatients] = useState([]);
+
   useEffect(() => {
+    console.log('Dashboard component mounted'); // Log when the component mounts
     fetchData();
   }, []);
-
-
-
 
   const fetchData = async () => {
     try {
       console.log('Fetching data...'); // Log before making the fetch request
 
       const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
-      console.log('Patient Count:', patientCount); // Log patient count
-      console.log('Patient Percentage:', patientPercentage); // Log patient percentage
-
-      const { totalCount: appointmentCount, percentage: appointmentPercentage } = await fetchTotalAppointmentCount();
-      console.log('Appointment Count:', appointmentCount); // Log appointment count
-      console.log('Appointment Percentage:', appointmentPercentage); // Log appointment percentage
-
-      const recentPatientsData = await fetchRecentPatients();
-      console.log('Recent Patients Data:', recentPatientsData); // Log recent patients data
-
-      const todayAppointmentsData = await fetchTodayAppointments();
-      console.log('Today Appointments Data:', todayAppointmentsData); // Log today appointments data
-
-      const websitePatientsData = await fetchwebsitePatient();
-      console.log('Website Patients Data:', websitePatientsData); // Log website patients data
-
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
-      setTotalAppointments(appointmentCount);
-      setTotalAppointmentsPercentage(appointmentPercentage);
+
+      const { totalCount: webPatientCount, percentage: webPatientPercentage } = await fetchWebPatientCount(); // Fetch total web patient count
+      setTotalWebPatients(webPatientCount);
+      setTotalWebPatientsPercentage(webPatientPercentage);
+
+
+      const recentPatientsData = await fetchRecentPatients();
       setRecentPatients(recentPatientsData);
+
+      const todayAppointmentsData = await fetchTodayAppointments();
       setTodayAppointments(todayAppointmentsData.data);
+
+      const websitePatientsData = await fetchwebsitePatient();
       setWebsitePatients(websitePatientsData);
     } catch (error) {
       console.error('Error fetching data:', error); // Log the error
     }
   };
-
-
 
 
   const formatTime = (timeString) => {
@@ -94,7 +83,7 @@ function Dashboard() {
   const dashboardCards = [
     {
       id: 1,
-      title: "Total Patients",
+      title: "Total Patient",
       icon: BsCheckCircleFill,
       value: totalPatients,
       percent: totalPatientsPercentage,
@@ -103,13 +92,22 @@ function Dashboard() {
     },
     {
       id: 2,
-      title: "Total Appointments",
-      icon: TbCalendar,
-      value: totalAppointments,
-      percent: totalAppointmentsPercentage,
+      title: "Total Appointments", // Update card title
+      icon: BsCheckCircleFill,
+      value: totalWebPatients, // Use total web patient count
+      percent: totalWebPatientsPercentage, // Use total web patient percentage
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
-      datas: [totalAppointments],
+      datas: [totalWebPatients], // You can add data if needed
     },
+    // {
+    //   id: 2,
+    //   title: "Total Appointments",
+    //   icon: TbCalendar,
+    //   value: 
+    //   percent: 
+    //   color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
+    //   datas: [],
+    // },
     // {
     //   id: 3,
     //   title: "Prescriptions",
