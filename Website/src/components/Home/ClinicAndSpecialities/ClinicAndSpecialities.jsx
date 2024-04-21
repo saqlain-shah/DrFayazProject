@@ -5,61 +5,35 @@ import img3 from '../../../images/specialities/specialities-03.png';
 import img4 from '../../../images/specialities/specialities-04.png';
 import img5 from '../../../images/specialities/specialities-05.png';
 import { FaCheckDouble } from "react-icons/fa";
-import './index.css';
+
+const specialties = [
+    { name: "Urology", image: img1 },
+    { name: "Neurology", image: img2 },
+    { name: "Orthopedic", image: img3 },
+    { name: "Cardiologist", image: img4 },
+    { name: "Dentist", image: img5 },
+];
 
 const ClinicAndSpecialities = () => {
-	return (
-		<section className="container section-features">
-			<div className="container-fluid">
-				<div className='mb-5 section-title text-center'>
-					<h2>Clinic and Specialities</h2>
-					<p className='m-0'>Providing expert care and specialized services to meet your healthcare needs at itClinic.</p>
-				</div>
-
-				<div className="row justify-content-center">
-					<div className="col-md-7">
-						<div className="specialities-slider slider d-flex justify-content-center align-items-center gap-3">
-							<div className="speicality-item text-center">
-								<div className="speicality-img">
-									<img src={img1} className="img-fluid" alt="" />
-									<span><i><FaCheckDouble/></i></span>
-								</div>
-								<p>Urology</p>
-							</div>
-							<div className="speicality-item text-center">
-								<div className="speicality-img">
-									<img src={img2} className="img-fluid" alt="" />
-									<span><i><FaCheckDouble/></i></span>
-								</div>
-								<p>Neurology</p>
-							</div>
-							<div className="speicality-item text-center">
-								<div className="speicality-img">
-									<img src={img3} className="img-fluid" alt="" />
-									<span><i><FaCheckDouble/></i></span>
-								</div>
-								<p>Orthopedic</p>
-							</div>
-							<div className="speicality-item text-center">
-								<div className="speicality-img">
-									<img src={img4} className="img-fluid" alt="" />
-									<span><i><FaCheckDouble/></i></span>
-								</div>
-								<p>Cardiologist</p>
-							</div>
-							<div className="speicality-item text-center">
-								<div className="speicality-img">
-									<img src={img5} className="img-fluid" alt="" />
-									<span><i><FaCheckDouble/></i></span>
-								</div>
-								<p>Dentist</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	);
+    return (
+        <section className="container px-4 py-12 mx-auto md:px-8">
+            <div className="max-w-6xl mx-auto">
+                <h2 className="mb-4 text-3xl font-semibold text-center text-gray-800 md:text-4xl">Clinic and Specialties</h2>
+                <p className="mb-8 text-lg text-center text-gray-600">Providing expert care and specialized services to meet your healthcare needs at itClinic.</p>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                    {specialties.map((specialty, index) => (
+                        <div key={index} className="flex flex-col items-center justify-center p-4 space-y-2 bg-white shadow-md rounded-lg">
+                            <div className="relative w-24 h-24">
+                                <img src={specialty.image} className="object-cover w-full h-full rounded-full" alt={specialty.name} />
+                                <span className="absolute top-0 right-0 text-green-500"><FaCheckDouble /></span>
+                            </div>
+                            <p className="text-lg font-semibold">{specialty.name}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default ClinicAndSpecialities;

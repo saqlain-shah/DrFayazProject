@@ -150,13 +150,13 @@ const PatientProfileSetting = () => {
                 <div className="row form-row" >
                     <div className="col-md-12">
                         <div className="form-group">
-                            <div className='change-avatar d-flex gap-2 align-items-center'>
+                            <div className='change-avatar   gap-2 align-items-center'>
                                 <img
                                     src={selectedImage ? selectedImage : (data?.image || pImage)}
                                     alt=""
-                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%' }}
+                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%',marginBottom:'30px' }}
                                 />
-                                <div>
+                                <div style={{ marginBottom:'30px' }}>
                                     <input type="file"  onChange={handleFileChange} />
                                 </div>
                             </div>
