@@ -11,16 +11,7 @@ export const createWeb = async (req, res) => {
   }
 };
 
-export const getTotalWebCount = async (req, res) => {
-  try {
-    const totalCount = await WebPatient.countDocuments();
-    console.log("totalCount", totalCount)
-    res.json({ totalCount });
-  } catch (error) {
-    console.error('Error fetching total Web count:', error);
-    res.status(500).json({ error: 'Error fetching total Web count' });
-  }
-};
+
 
 export const getAllWebs = async (req, res) => {
   try {
@@ -30,6 +21,8 @@ export const getAllWebs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 export const getWebById = async (req, res) => {
   try {
@@ -63,6 +56,25 @@ export const updateWeb = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getTotalWebCount = async (req, res) => {
+  try {
+    // Count the total number of documents in the WebPatient collection
+    const totalCount = await WebPatient.countDocuments();
+
+    // Log the total count to the console
+    console.log("totalCount", totalCount);
+
+    // Send the total count as JSON response
+    res.json({ totalCount });
+  } catch (error) {
+    // If an error occurs, log the error and send a 500 status code with an error message
+    console.error('Error fetching total Web count:', error);
+    res.status(500).json({ error: 'Error fetching total Web count' });
+  }
+};
+
+
 
 export const deleteWeb = async (req, res) => {
   try {
