@@ -35,7 +35,7 @@ function MedicalRecodModal({ closeModal, isOpen, data, }) {
           </div>
           <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6 xs:grid-cols-2 md:grid-cols-4 grid gap-4">
             {attachments.map((attachment, index) => {
-              const imageUrl = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
+              const imageUrl = `http://localhost:8800/uploads/${attachment.filename}`;
               console.log(imageUrl)
               return (
                 <img

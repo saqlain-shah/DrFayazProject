@@ -27,18 +27,30 @@ export const getAllWebs = async (req, res) => {
 export const getWebById = async (req, res) => {
   try {
     const WebId = req.params.id;
+    console.log('Requested Web ID:', WebId); // Add logging statement to log the requested Web ID
+
     if (!mongoose.Types.ObjectId.isValid(WebId)) {
+      console.log('Invalid Web ID format:', WebId); // Log if the Web ID format is invalid
       return res.status(400).json({ message: 'Invalid Web ID' });
     }
+
     const Web = await WebPatient.findById(WebId);
     if (!Web) {
+      console.log('Web not found for ID:', WebId); // Log if the Web with the given ID is not found
       return res.status(404).json({ message: 'Web not found' });
     }
-    res.status(200).json(Web);
+
+    // Counting logic
+    const count = await WebPatient.countDocuments();
+
+    res.status(200).json({ Web, count });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching Web by ID:', error); // Log any error that occurs during the process
+    res.status(500).json({ message: 'Error fetching Web by ID', error: error.message });
   }
 };
+
+
 
 export const updateWeb = async (req, res) => {
   try {
@@ -63,14 +75,14 @@ export const getTotalWebCount = async (req, res) => {
     const totalCount = await WebPatient.countDocuments();
 
     // Log the total count to the console
-    console.log("totalCount", totalCount);
+    console.log("Total count of web patients:", totalCount);
 
     // Send the total count as JSON response
     res.json({ totalCount });
   } catch (error) {
     // If an error occurs, log the error and send a 500 status code with an error message
-    console.error('Error fetching total Web count:', error);
-    res.status(500).json({ error: 'Error fetching total Web count' });
+    console.error('Error fetching total web patient count:', error);
+    res.status(500).json({ error: 'Error fetching total web patient count' });
   }
 };
 

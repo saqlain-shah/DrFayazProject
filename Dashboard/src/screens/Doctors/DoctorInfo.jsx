@@ -40,7 +40,7 @@ function DoctorInfo({ closeModal, onSave }) {
 
             const token = localStorage.getItem('token');
             const response = await axios.post(
-                'https://server-yvzt.onrender.com/api/doctors',
+                'http://localhost:8800/api/doctors',
                 formData,
                 {
                     headers: {

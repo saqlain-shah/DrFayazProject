@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useAuth } from '../../AuthContext';
 
 function ChangePassword() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,7 +40,7 @@ function ChangePassword() {
       console.log('Token:', token);
 
       const response = await axios.put(
-        'https://server-yvzt.onrender.com/api/auth/change-password',
+        'http://localhost:8800/api/auth/change-password',
         {
           userId: user.id,
           oldPassword,
@@ -66,6 +66,7 @@ function ChangePassword() {
       setLoading(false);
     }
   };
+
 
 
   return (

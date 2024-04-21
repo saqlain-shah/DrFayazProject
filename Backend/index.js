@@ -42,11 +42,12 @@ app.use((req, res, next) => {
     next();
 });
 
+dotenv.config();
 app.use(cors());
 //app.use(helmet())
 app.use(cors(
     {
-        origin: ["http://localhost:5173", "https://server-yvzt.onrender.com"],
+        origin: ["http://localhost:5173"],
         // methods: ["POST", "GET", "DELETE", "PUT"],
         credentials: true
     }

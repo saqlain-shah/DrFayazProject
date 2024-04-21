@@ -1146,11 +1146,11 @@ export const patientTab = [
     title: "Invoices",
     icon: RiFileList3Line,
   },
-  {
-    id: 4,
-    title: "Payments",
-    icon: RiMoneyDollarCircleLine,
-  },
+  // {
+  //   id: 4,
+  //   title: "Payments",
+  //   icon: RiMoneyDollarCircleLine,
+  // },
   {
     id: 5,
     title: "Images",

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios'; 
+import axios from 'axios';
 import Modal from './Modal';
 import { Button } from '../Form';
 import { toast } from 'react-hot-toast';
@@ -30,16 +30,16 @@ function ShareModal({ closeModal, isOpen, dataToShare }) {
       toast.error('Please select a sharing option');
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       // Make API request to share data
-      const response = await axios.post('https://server-yvzt.onrender.com/api/files/share/whatsapp', {
+      const response = await axios.post('http://localhost:8800/api/files/share/whatsapp', {
         method: selectedOption === 1 ? 'email' : 'whatsapp', // Determine sharing method
         data: dataToShare, // Data to be shared (file path or other relevant data)
       });
-  
+
       toast.success(response.data.message); // Display success message from server
       closeModal();
       setLoading(false);

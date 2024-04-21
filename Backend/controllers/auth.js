@@ -72,6 +72,7 @@ export const updateDoctorById = async (req, res, next) => {
 };
 
 
+
 export const changePassword = async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;
 
@@ -96,12 +97,15 @@ export const changePassword = async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log('New hashed password:', hashedPassword); // Log the hashed password before updating
     user.password = hashedPassword;
     await user.save();
 
+    console.log('Password changed successfully');
     return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     console.error('Error changing password:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
