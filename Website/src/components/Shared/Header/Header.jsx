@@ -60,7 +60,7 @@ const Header = ({ clientId }) => {
                     </button>
 
                     {/* Dropdown Menu for Small Screens */}
-                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '0px' }}>
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%' }}>
                         <div
                             className="toggle-menu"
                             onClick={() => setMenuOpen(!menuOpen)}
