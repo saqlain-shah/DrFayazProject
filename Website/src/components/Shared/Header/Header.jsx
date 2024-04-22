@@ -6,6 +6,7 @@ import { Link, NavLink } from 'react-router-dom';
 import img from '../../../images/dr1.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
+import { FaBars } from 'react-icons/fa';
 
 const Header = ({ clientId }) => {
     const params = useParams();
@@ -59,11 +60,15 @@ const Header = ({ clientId }) => {
                     </button>
 
                     {/* Dropdown Menu for Small Screens */}
-                    <div className="dropdown d-lg-none ml-auto">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" onClick={() => setMenuOpen(!menuOpen)}>
-                            Menu
-                        </button>
-                        <div className={`dropdown-menu ${menuOpen ? 'show' : ''}`} aria-labelledby="dropdownMenuButton">
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '0px' }}>
+                        <div
+                            className="toggle-menu"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <FaBars />
+                        </div>
+                        <div className={`dropdown-menu ${menuOpen ? 'show' : ''}`} aria-labelledby="dropdownMenuButton" style={{ marginRight: '100%' }}>
                             <NavLink to={'/'} className="dropdown-item">Home</NavLink>
                             <NavLink to={'/contact'} className="dropdown-item">Contact</NavLink>
                             {!isLoggedIn && <Link to={'/login'} className="dropdown-item">Login</Link>}
