@@ -60,29 +60,40 @@ export const fetchRecentPatients = async () => {
         throw new Error('Error fetching recent patients:', error);
     }
 };
-
-export const fetchWebPatientCount = async () => {
+export const fetchWebPatientTodayAppointments = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/web/count', {
+        const response = await fetch('http://localhost:8800/api/web/today-appointments', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-
         if (!response.ok) {
-            throw new Error('Failed to fetch data');
+            throw new Error('Failed to fetch today\'s web appointments');
         }
-
         const data = await response.json();
-        const totalWebPatients = data.totalCount; // Assuming the response contains a totalCount property
-        const totalWebPatientsTarget = 100; // Adjust this value as per your requirements
-        const totalWebPatientsPercentage = ((totalWebPatients / totalWebPatientsTarget) * 100).toFixed(2);
+        return data;
+    } catch (error) {
+        throw new Error('Error fetching today\'s web appointments:', error);
+    }
+};
+// api.js
 
-        return {
-            totalCount: totalWebPatients,
-            percentage: totalWebPatientsPercentage
-        };
+export const fetchTotalWebPatientCount = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        console.log('Fetching total web patient count...');
+        const response = await fetch('http://localhost:8800/api/web/total-count', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch total web patient count');
+        }
+        const data = await response.json();
+        console.log('Total web patient count data:', data);
+        return data;
     } catch (error) {
         console.error('Error fetching total web patient count:', error);
         throw new Error('Error fetching total web patient count:', error);
@@ -91,26 +102,4 @@ export const fetchWebPatientCount = async () => {
 
 
 
-
-
-
-
-// Fetch today's appointments
-export const fetchTodayAppointments = async () => {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/v1', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch today\'s appointments');
-        }
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        throw new Error('Error fetching today\'s appointments:', error);
-    }
-};
 

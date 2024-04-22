@@ -140,5 +140,3 @@ export const deleteAppointment = async (req, res, next) => {
         next(error);
     }
 };
-
-

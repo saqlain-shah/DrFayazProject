@@ -11,8 +11,6 @@ export const createWeb = async (req, res) => {
   }
 };
 
-
-
 export const getAllWebs = async (req, res) => {
   try {
     const Webs = await WebPatient.find();
@@ -22,35 +20,18 @@ export const getAllWebs = async (req, res) => {
   }
 };
 
-
-
 export const getWebById = async (req, res) => {
   try {
-    const WebId = req.params.id;
-    console.log('Requested Web ID:', WebId); // Add logging statement to log the requested Web ID
-
-    if (!mongoose.Types.ObjectId.isValid(WebId)) {
-      console.log('Invalid Web ID format:', WebId); // Log if the Web ID format is invalid
-      return res.status(400).json({ message: 'Invalid Web ID' });
-    }
-
-    const Web = await WebPatient.findById(WebId);
-    if (!Web) {
-      console.log('Web not found for ID:', WebId); // Log if the Web with the given ID is not found
+    const { id } = req.params; // Extract the ID from the request parameters
+    const web = await WebPatient.findById(id); // Assuming you are using Mongoose or similar for database operations
+    if (!web) {
       return res.status(404).json({ message: 'Web not found' });
     }
-
-    // Counting logic
-    const count = await WebPatient.countDocuments();
-
-    res.status(200).json({ Web, count });
+    res.status(200).json(web);
   } catch (error) {
-    console.error('Error fetching Web by ID:', error); // Log any error that occurs during the process
-    res.status(500).json({ message: 'Error fetching Web by ID', error: error.message });
+    res.status(500).json({ message: 'Server Error' });
   }
 };
-
-
 
 export const updateWeb = async (req, res) => {
   try {
@@ -69,24 +50,6 @@ export const updateWeb = async (req, res) => {
   }
 };
 
-export const getTotalWebCount = async (req, res) => {
-  try {
-    // Count the total number of documents in the WebPatient collection
-    const totalCount = await WebPatient.countDocuments();
-
-    // Log the total count to the console
-    console.log("Total count of web patients:", totalCount);
-
-    // Send the total count as JSON response
-    res.json({ totalCount });
-  } catch (error) {
-    // If an error occurs, log the error and send a 500 status code with an error message
-    console.error('Error fetching total web patient count:', error);
-    res.status(500).json({ error: 'Error fetching total web patient count' });
-  }
-};
-
-
 
 export const deleteWeb = async (req, res) => {
   try {
@@ -99,4 +62,40 @@ export const deleteWeb = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete web patient' });
   }
 };
+
+
+export const getTotalWebPatientCount = async (req, res) => {
+  try {
+    console.log('Received request for total web patient count');
+    const count = await WebPatient.countDocuments();
+    console.log('Total web patient count:', count);
+    res.status(200).json({ totalCount: count });
+  } catch (error) {
+    console.error('Error counting web patients:', error);
+    res.status(500).json({ message: 'Error counting web patients', error: error.message });
+  }
+};
+export const getTodayWebAppointments = async (req, res) => {
+  try {
+    // Get today's date
+    const today = new Date();
+    // Set the time to the beginning of the day (midnight)
+    today.setHours(0, 0, 0, 0);
+    // Create a query to find appointments of web patients for today
+    const todayAppointments = await WebPatient.find({
+      createdAt: { $gte: today }, // Find appointments created after or at the beginning of today
+    });
+    // Send the found appointments as a response
+    res.status(200).json(todayAppointments);
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching today\'s web appointments:', error);
+    res.status(500).json({ message: 'Error fetching today\'s web appointments', error: error.message });
+  }
+};
+
+
+
+
+
 

@@ -8,7 +8,7 @@ import {
   BsClockFill,
   BsXCircleFill,
 } from 'react-icons/bs';
-
+import { Link } from 'react-router-dom';
 import {
   TbCalendar,
   TbFile,
@@ -28,55 +28,54 @@ import {
   transactionData,
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
-import { fetchTotalPatientCount, fetchRecentPatients, fetchTodayAppointments, fetchwebsitePatient, fetchWebPatientCount } from '../Api/api.js'; // Import all necessary functions
+import { fetchTotalPatientCount, fetchTotalWebPatientCount, fetchRecentPatients, fetchWebPatientTodayAppointments, fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
   const [totalPatientsPercentage, setTotalPatientsPercentage] = useState(0);
-  const [totalWebPatients, setTotalWebPatients] = useState(0);
-  const [totalWebPatientsPercentage, setTotalWebPatientsPercentage] = useState(0); // Add state for total web patients percentage
   const [recentPatients, setRecentPatients] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [websitePatients, setWebsitePatients] = useState([]);
+  const [totalWebPatients, setTotalWebPatients] = useState(0);
+  const [webPatientsPercentage, setWebPatientsPercentage] = useState(0); // State for web patients percentage
 
   useEffect(() => {
-    console.log('Dashboard component mounted'); // Log when the component mounts
+    console.log('Dashboard component mounted');
     fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
-      console.log('Fetching data...'); // Log before making the fetch request
+      console.log('Fetching data...');
 
       const { totalCount: patientCount, percentage: patientPercentage } = await fetchTotalPatientCount();
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
 
-      const { totalCount: webPatientCount, percentage: webPatientPercentage } = await fetchWebPatientCount(); // Fetch total web patient count
-      setTotalWebPatients(webPatientCount);
-      setTotalWebPatientsPercentage(webPatientPercentage);
-
-
       const recentPatientsData = await fetchRecentPatients();
       setRecentPatients(recentPatientsData);
 
-      const todayAppointmentsData = await fetchTodayAppointments();
-      setTodayAppointments(todayAppointmentsData.data);
-
-      const websitePatientsData = await fetchwebsitePatient();
+      const websitePatientsData = await fetchwebsitePatient(); // Assuming you have the patient's id available
       setWebsitePatients(websitePatientsData);
+
+      const { totalCount: webPatientCount, percentage: webPatientsPercentage } = await fetchTotalWebPatientCount();
+      setTotalWebPatients(webPatientCount);
+      setWebPatientsPercentage(webPatientsPercentage);
+
+      const todayWebAppointmentsData = await fetchWebPatientTodayAppointments(); // Fetch today's web appointments
+      setTodayAppointments(todayWebAppointmentsData);
+
     } catch (error) {
-      console.error('Error fetching data:', error); // Log the error
+      console.error('Error fetching data:', error);
     }
   };
-
 
   const formatTime = (timeString) => {
     const date = new Date(timeString);
     const hours = date.getHours();
     const minutes = date.getMinutes();
-    const period = hours < 12 ? 'AM' : 'PM'; // Determine if it's AM or PM
-    const formattedHours = hours % 12 || 12; // Convert 0 to 12 for AM/PM format
+    const period = hours < 12 ? 'AM' : 'PM';
+    const formattedHours = hours % 12 || 12;
     return `${formattedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
   };
 
@@ -92,31 +91,14 @@ function Dashboard() {
     },
     {
       id: 2,
-      title: "Total Appointments", // Update card title
-      icon: BsCheckCircleFill,
-      value: totalWebPatients, // Use total web patient count
-      percent: totalWebPatientsPercentage, // Use total web patient percentage
+      title: "Total Appointments",
+      icon: TbCalendar,
+      value: totalWebPatients,
+      percent: webPatientsPercentage, // Use webPatientsPercentage here
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
-      datas: [totalWebPatients], // You can add data if needed
+      datas: [],
     },
-    // {
-    //   id: 2,
-    //   title: "Total Appointments",
-    //   icon: TbCalendar,
-    //   value: 
-    //   percent: 
-    //   color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
-    //   datas: [],
-    // },
-    // {
-    //   id: 3,
-    //   title: "Prescriptions",
-    //   icon: TbFile,
-    //   value: 4160,
-    //   percent: 65.06,
-    //   color: ["bg-green-500", "text-green-500", "#34C759"],
-    //   datas: [92, 80, 45, 15, 49, 77, 70, 51, 110, 20, 90, 60],
-    // },
+
     {
       id: 4,
       title: "Total Earnings",
@@ -240,12 +222,14 @@ function Dashboard() {
             ))}
           </div>
           {/* today apointments */}
+
+
           <div className="bg-white rounded-xl border-[1px] border-border p-5 xl:mt-6">
             <h2 className="text-sm mb-4 font-medium">Today Appointments</h2>
             {todayAppointments.map((appointment, index) => (
               <div key={index} className="grid grid-cols-12 gap-2 items-center">
                 <p className="text-textGray text-[12px] col-span-3 font-light">
-                  {formatTime(appointment.patientInfo.scheduleTime)}
+                  {formatTime(appointment.selectedSlot.startDateTime)} - {formatTime(appointment.selectedSlot.endDateTime)}
                 </p>
                 <div className="flex-colo relative col-span-2">
                   <hr className="w-[2px] h-20 bg-border" />
@@ -255,18 +239,18 @@ function Dashboard() {
                     {appointment.status === 'Approved' && <BsCheckCircleFill />}
                   </div>
                 </div>
-                <Link to="/appointments" className="flex flex-col gap-1 col-span-6">
+                <div className="flex flex-col gap-1 col-span-7">
                   <h2 className="text-xs font-medium">
-                    {appointment.patientInfo.firstName} {appointment.patientInfo.lastName}
+                    {appointment.patientInfo.name}
                   </h2>
                   <p className="text-[12px] font-light text-textGray">
-                    {/* Assuming 'from' and 'to' are properties of appointment */}
-                    {formatTime(appointment.patientInfo.scheduleTime)} - {formatTime(appointment.patientInfo.scheduleTime)}
+                    {appointment.patientInfo.email}
                   </p>
-                </Link>
+                </div>
               </div>
             ))}
           </div>
+
         </div>
       </div>
     </Layout>

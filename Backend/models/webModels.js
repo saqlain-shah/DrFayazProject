@@ -10,6 +10,7 @@ const WebPatientSchema = new mongoose.Schema({
     address: { type: String, required: true },
     email: { type: String, required: true },
     emergencyContact: { type: String, required: true },
+    image: { type: String },
     createdAt: { type: Date, default: Date.now }
   },
   selectedSlot: { type: mongoose.Schema.Types.Mixed, required: true },
