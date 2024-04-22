@@ -259,6 +259,13 @@ const AppointmentPage = () => {
         // Display a success toast message after appointment creation
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
+
+        axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
       })
       .catch((error) => {
         console.error("Error creating appointment:", error);
