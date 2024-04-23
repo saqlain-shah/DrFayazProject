@@ -12,10 +12,4 @@ router.post('/', createWeb); // Route for creating a web
 router.get('/', getAllWebs); // Route for getting all webs
 router.put('/:id', updateWeb); // Route for updating a web
 router.delete('/:id', deleteWeb); // Route for deleting a web
-
-
-
-
-
-
 export default router;

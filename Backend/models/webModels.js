@@ -15,7 +15,10 @@ const WebPatientSchema = new mongoose.Schema({
   },
   selectedSlot: { type: mongoose.Schema.Types.Mixed, required: true },
   selectedService: { type: mongoose.Schema.Types.Mixed, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  status: { type: String, enum: ['Pending', 'Approved', 'Cancelled'], default: 'Pending' },
+  method: { type: String, enum: ['Online', 'Cash'], default: 'Online' },
+  
 });
 
 // Create Web model

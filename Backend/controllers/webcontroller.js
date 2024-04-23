@@ -101,9 +101,3 @@ export const getTodayWebAppointments = async (req, res) => {
     res.status(500).json({ message: 'Error fetching today\'s web appointments', error: error.message });
   }
 };
-
-
-
-
-
-

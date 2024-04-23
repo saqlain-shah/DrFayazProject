@@ -14,47 +14,56 @@ import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
 
 export function Transactiontable({ data, action }) {
-  const DropDown1 = [
-    {
-      title: 'Update',
-      icon: FiEdit,
-    },
-  ];
 
-  const [updatedData, setUpdatedData] = useState(data);
-
+  const [updatedData, setUpdatedData] = useState();
   const handleStatusChange = (e, itemId) => {
-    const updatedItems = updatedData.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, selectedStatus: e.target.value };
+    const updatedItems = data.map((item) => {
+      if (item._id === itemId) {
+        return {
+          ...item,
+          status: e.target.value
+        };
       }
       return item;
     });
+    data=updatedItems;
+    console.log("data",data)
+    console.log("updatedItems",updatedItems)
     setUpdatedData(updatedItems);
   };
 
-  const handleMethodChange = (e, itemId) => {
-    const updatedItems = updatedData.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, selectedMethod: e.target.value };
-      }
-      return item;
-    });
-    setUpdatedData(updatedItems);
-  };
+  // const handleMethodChange = (e, itemId) => {
+  //   const updatedItems = data.map((item) => {
+  //     if (item._id === itemId) {
+  //       return {
+  //         ...item,
+  //         method: e.target.value
+  //       };
+  //     }
+  //     return item;
+  //   });
+  //   data=updatedItems;
+  //   console.log("updatedItems",updatedItems)
+  //   setUpdatedData(updatedItems);
+  // };
 
   const handleUpdate = (itemId) => {
-    const itemToUpdate = updatedData.find((item) => item.id === itemId);
+console.log("updated", updatedData)
+const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
+console.log("itemToUpdate", itemToUpdate)
+
+
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:8800/api/web/${itemId}`, {
+    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`,
+     {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        status: itemToUpdate.selectedStatus,
-        method: itemToUpdate.selectedMethod,
+        status: itemToUpdate.status,
+        method: itemToUpdate.method,
       }),
     })
       .then((response) => {
@@ -67,8 +76,20 @@ export function Transactiontable({ data, action }) {
       .then((data) => {
         // Handle success response if needed
       })
-      .catch((error) => console.error('Error updating status or method:', error));
+      .catch((error) => console.error('Error updating status or method:', error.message));
   };
+
+
+  const DropDown1 = [
+    {
+      title: 'Update',
+      icon: FiEdit,
+      onClick: handleUpdate
+    },
+  ];
+
+
+
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
@@ -112,8 +133,8 @@ export function Transactiontable({ data, action }) {
             <td className={tdclass}>{new Date(item.createdAt).toLocaleDateString()}</td>
             <td className={tdclass}>
               <select
-                value={item.selectedStatus}
-                onChange={(e) => handleStatusChange(e, item)}
+                value={item.status}
+                onChange={(e) => handleStatusChange(e, item._id)}
                 className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
                   ? 'bg-subMain text-subMain'
                   : item.status === 'Pending'
@@ -128,14 +149,15 @@ export function Transactiontable({ data, action }) {
             </td>
             <td className={`${tdclass} font-semibold`}>{item.selectedService.price}</td>
             <td className={tdclass}>
-              <select
-                value={item.selectedMethod}
-                onChange={(e) => handleMethodChange(e, item)}
+              {/* <select
+                value={item.method}
+                onChange={(e) => handleMethodChange(e, item._id)}
                 className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
               >
                 <option value="Online">Online</option>
                 <option value="Cash">Cash</option>
-              </select>
+              </select> */}
+              {item.method}
             </td>
             {action && (
               <td className={tdclass}>
