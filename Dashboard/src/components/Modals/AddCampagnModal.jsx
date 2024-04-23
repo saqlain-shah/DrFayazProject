@@ -53,7 +53,8 @@ function CampaignModal({ closeModal, isOpen, data }) {
         )}
 
         {/* compo */}
-        {indexs === 0 && <EmailComp data={data} />}
+        {indexs === 0 && <EmailComp data={data} closeModal={closeModal} />}
+
       </div>
     </Modal>
   );

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for react-toastify
 import Layout from '../Layout';
 import { Button, MenuSelect } from '../components/Form';
 import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
@@ -7,7 +9,7 @@ import { FaShare } from "react-icons/fa";
 import axios from 'axios';
 import ContactSelectionDialog from './ContactSelectionDialog';
 import CampaignModal from '../components/Modals/AddCampagnModal';
-import { FiEye } from 'react-icons/fi';
+import { FiTrash } from 'react-icons/fi'; // Import FiTrash for delete icon
 
 function Campaings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,19 +73,15 @@ function Campaings() {
 
   const actions = [
     {
-      title: "View",
-      icon: FiEye,
-      onClick: (data) => {
-        setIsOpen(true);
-        setData(data);
-      },
-    },
-    {
       title: "Share",
       icon: FaShare,
       onClick: toggleShareOptions,
     },
-
+    {
+      title: "Delete", // New delete action
+      icon: FiTrash,
+      onClick: (campaign) => deleteCampaign(campaign._id),
+    }
   ];
 
   useEffect(() => {
@@ -103,23 +101,25 @@ function Campaings() {
     fetchEmailCampaigns();
   }, []);
 
-  const deleteCampaign = async (campaignId) => {
+
+  const deleteCampaign = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/campaigns/${campaignId}`, {
+      await axios.delete(`http://localhost:8800/api/email-campaigns/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setCampaigns(prevCampaigns => prevCampaigns.filter(campaign => campaign.id !== campaignId));
+      setCampaigns(prevCampaigns => prevCampaigns.filter(campaign => campaign._id !== id));
+      // Show toast message on successful deletion
+      toast.success('Campaign deleted successfully');
     } catch (error) {
       console.error('Error deleting campaign:', error);
       // Handle error
     }
   };
 
-
-
   return (
     <Layout>
+      <ToastContainer /> {/* Add ToastContainer component */}
       {isOpen && (
         <CampaignModal isOpen={isOpen} closeModal={closeModal} data={data} />
       )}
@@ -184,8 +184,6 @@ function Campaings() {
             )}
           </div>
         ))}
-
-
       </div>
       <ContactSelectionDialog
         contacts={contacts}

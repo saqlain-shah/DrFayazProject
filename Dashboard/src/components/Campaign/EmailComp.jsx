@@ -3,6 +3,7 @@ import { Button, Input, Select, Textarea } from '../Form';
 import { BiChevronDown } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const sendToData = [
   {
@@ -22,23 +23,18 @@ const sendToData = [
   },
 ];
 
-function EmailComp({ data }) {
+function EmailComp({ data, closeModal }) {
   const [campaignTitle, setCampaignTitle] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [header, setHeader] = useState('');
   const [subHeader, setSubHeader] = useState('');
   const [message, setMessage] = useState('');
   const [image, setImage] = useState(null); // Add image state
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = async () => {
     try {
-      console.log("Submitting form data...");
-      console.log("Campaign Title:", campaignTitle);
-      console.log("Email Subject:", emailSubject);
-      console.log("Header:", header);
-      console.log("Sub-header:", subHeader);
-      console.log("Message:", message);
-
+      // Submit the campaign
       const formData = new FormData();
       formData.append('title', campaignTitle);
       formData.append('subject', emailSubject);
@@ -46,7 +42,7 @@ function EmailComp({ data }) {
       formData.append('subHeader', subHeader);
       formData.append('message', message);
       if (image) {
-        formData.append('image', image); // Append the image file to the form data
+        formData.append('image', image);
       }
 
       const token = localStorage.getItem('token');
@@ -57,19 +53,25 @@ function EmailComp({ data }) {
         }
       });
       console.log('Campaign created:', response.data);
-      toast.success('Email campaign created successfully!');
-      // Reset form fields after successful submission
+      toast.success('Campaign created successfully!');
+
+      // Reset form fields
       setCampaignTitle('');
       setEmailSubject('');
       setHeader('');
       setSubHeader('');
       setMessage('');
       setImage(null);
+
+      // Close modal
+      closeModal();
     } catch (error) {
       console.error('Error creating email campaign:', error);
       toast.error('Failed to create email campaign. Please try again later.');
     }
   };
+
+
 
   return (
     <div className="flex flex-col gap-4 w-full mt-6">
@@ -134,7 +136,7 @@ function EmailComp({ data }) {
       {/* button */}
       {!data?.id && (
         <Button
-          label={'Send Campaign'}
+          label={'Save Campaign'}
           onClick={handleSubmit}
         />
       )}
