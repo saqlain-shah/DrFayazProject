@@ -14,6 +14,13 @@ import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
 
 export function Transactiontable({ data, action }) {
+  const DropDown1 = [
+    {
+      title: 'Update',
+      icon: FiEdit,
+    },
+  ];
+
   const [updatedData, setUpdatedData] = useState(data);
 
   const handleStatusChange = (e, itemId) => {
@@ -78,7 +85,7 @@ export function Transactiontable({ data, action }) {
         </tr>
       </thead>
       <tbody>
-        {updatedData.map((item, index) => (
+        {data.map((item, index) => (
           <tr
             key={item.id}
             className="border-b border-border hover:bg-greyed transitions"
@@ -106,7 +113,7 @@ export function Transactiontable({ data, action }) {
             <td className={tdclass}>
               <select
                 value={item.selectedStatus}
-                onChange={(e) => handleStatusChange(e, item.id)}
+                onChange={(e) => handleStatusChange(e, item)}
                 className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
                   ? 'bg-subMain text-subMain'
                   : item.status === 'Pending'
@@ -123,7 +130,7 @@ export function Transactiontable({ data, action }) {
             <td className={tdclass}>
               <select
                 value={item.selectedMethod}
-                onChange={(e) => handleMethodChange(e, item.id)}
+                onChange={(e) => handleMethodChange(e, item)}
                 className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
               >
                 <option value="Online">Online</option>
@@ -132,7 +139,11 @@ export function Transactiontable({ data, action }) {
             </td>
             {action && (
               <td className={tdclass}>
-                <button onClick={() => handleUpdate(item.id)}>Update</button>
+                <MenuSelect datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
               </td>
             )}
           </tr>
