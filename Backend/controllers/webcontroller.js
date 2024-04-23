@@ -22,33 +22,41 @@ export const getAllWebs = async (req, res) => {
 
 export const getWebById = async (req, res) => {
   try {
-    const { id } = req.params; // Extract the ID from the request parameters
-    const web = await WebPatient.findById(id); // Assuming you are using Mongoose or similar for database operations
+    const { id } = req.params;
+    const web = await WebPatient.findById(id);
     if (!web) {
+      console.log('Web not found for ID:', id);
       return res.status(404).json({ message: 'Web not found' });
     }
+    console.log('Web found by ID:', web);
     res.status(200).json(web);
   } catch (error) {
+    console.error('Error fetching Web by ID:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 };
 
+
 export const updateWeb = async (req, res) => {
   try {
-    const WebId = req.params.id;
-    const updatedData = req.body;
-    if (!mongoose.Types.ObjectId.isValid(WebId)) {
-      return res.status(400).json({ message: 'Invalid Web ID' });
-    }
-    const updatedWeb = await WebPatient.findByIdAndUpdate(WebId, updatedData, { new: true });
+    const { id } = req.params;
+    console.log('Params:', req.params);
+    const { status, method } = req.body; // Extract updated status and method
+    console.log('Received request to update web with ID:', id);
+
+    // Update the web patient record with the new status and method
+    const updatedWeb = await WebPatient.findByIdAndUpdate(id, { status, method }, { new: true });
+
     if (!updatedWeb) {
       return res.status(404).json({ message: 'Web not found' });
     }
+
     res.status(200).json(updatedWeb);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 export const deleteWeb = async (req, res) => {

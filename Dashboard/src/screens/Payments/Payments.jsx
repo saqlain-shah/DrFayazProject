@@ -85,10 +85,8 @@ function Payments() {
   const editPayment = (id) => {
     navigate(`/payments/edit/${id}`);
   };
-  // preview
-  const previewPayment = (id) => {
-    navigate(`/payments/preview/${id}`);
-  };
+
+
 
   return (
     <Layout>
@@ -156,6 +154,7 @@ function Payments() {
           <Transactiontable
             data={transactionData}
             action={true}
+
           />
         </div>
       </div>

@@ -44,19 +44,7 @@ function EmailComp({ data }) {
       />
       {/* send to */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col w-full gap-3">
-          <p className="text-sm">Send To</p>
-          <Select
-            selectedPerson={sendTo}
-            setSelectedPerson={setSendTo}
-            datas={sendToData}
-          >
-            <div className="h-14 w-full text-xs text-main rounded-md bg-white border border-border px-4 flex items-center justify-between">
-              <p>{sendTo}</p>
-              <BiChevronDown className="text-xl" />
-            </div>
-          </Select>
-        </div>
+
         {/* subject */}
         <Input
           label="Email subject"

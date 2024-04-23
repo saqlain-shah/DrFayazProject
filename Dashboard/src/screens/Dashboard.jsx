@@ -27,7 +27,7 @@ import {
   memberData,
   transactionData,
 } from '../components/Datas';
-import { Transactiontable } from '../components/Tables';
+import { Transactiontabless } from '../components/Tables';
 import { fetchTotalPatientCount, fetchTotalWebPatientCount, fetchRecentPatients, fetchWebPatientTodayAppointments, fetchwebsitePatient } from '../Api/api.js'; // Import all necessary functions
 
 function Dashboard() {
@@ -182,7 +182,7 @@ function Dashboard() {
             </div>
             {/* table */}
             <div className="mt-4 overflow-x-scroll">
-              <Transactiontable data={websitePatients} action={true} />
+              <Transactiontabless data={websitePatients} action={true} />
             </div>
           </div>
         </div>

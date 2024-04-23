@@ -13,16 +13,137 @@ import axios from 'axios';
 import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
 
-export function Transactiontable({ data, action, functions }) {
-  const DropDown1 = [
-    {
-      title: 'Update',
-      icon: FiEdit,
-      onClick: (data) => {
-        functions.edit(data.id);
+export function Transactiontable({ data, action }) {
+  const [updatedData, setUpdatedData] = useState(data);
+
+  const handleStatusChange = (e, itemId) => {
+    const updatedItems = updatedData.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, selectedStatus: e.target.value };
+      }
+      return item;
+    });
+    setUpdatedData(updatedItems);
+  };
+
+  const handleMethodChange = (e, itemId) => {
+    const updatedItems = updatedData.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, selectedMethod: e.target.value };
+      }
+      return item;
+    });
+    setUpdatedData(updatedItems);
+  };
+
+  const handleUpdate = (itemId) => {
+    const itemToUpdate = updatedData.find((item) => item.id === itemId);
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:8800/api/web/${itemId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-    },
-  ];
+      body: JSON.stringify({
+        status: itemToUpdate.selectedStatus,
+        method: itemToUpdate.selectedMethod,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update status or method');
+        }
+        // Handle success response if needed
+        return response.json();
+      })
+      .then((data) => {
+        // Handle success response if needed
+      })
+      .catch((error) => console.error('Error updating status or method:', error));
+  };
+  return (
+    <table className="table-auto w-full">
+      <thead className="bg-dry rounded-md overflow-hidden">
+        <tr>
+          <th className={thclass}>#</th>
+          <th className={thclass}>Patient</th>
+          <th className={thclass}>Date</th>
+          <th className={thclass}>Status</th>
+          <th className={thclass}>
+            Amount <span className="text-xs font-light">(Tsh)</span>
+          </th>
+          <th className={thclass}>Method</th>
+          {action && <th className={thclass}>Actions</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {updatedData.map((item, index) => (
+          <tr
+            key={item.id}
+            className="border-b border-border hover:bg-greyed transitions"
+          >
+            <td className={tdclass}>{index + 1}</td>
+            <td className={tdclass}>
+              <div className="flex gap-4 items-center">
+                <span className="w-12">
+                  <img
+                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    alt={item.patientInfo.name}
+                    className="w-full h-12 rounded-full object-cover border border-border"
+                  />
+                </span>
+
+                <div>
+                  <h4 className="text-sm font-medium">{item.patientInfo.name}</h4>
+                  <p className="text-xs mt-1 text-textGray">
+                    {item.patientInfo.emergencyContact}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td className={tdclass}>{new Date(item.createdAt).toLocaleDateString()}</td>
+            <td className={tdclass}>
+              <select
+                value={item.selectedStatus}
+                onChange={(e) => handleStatusChange(e, item.id)}
+                className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
+                  ? 'bg-subMain text-subMain'
+                  : item.status === 'Pending'
+                    ? 'bg-orange-500 text-orange-500'
+                    : item.status === 'Cancel' && 'bg-red-600 text-red-600'
+                  } bg-opacity-10 text-xs rounded-xl`}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </td>
+            <td className={`${tdclass} font-semibold`}>{item.selectedService.price}</td>
+            <td className={tdclass}>
+              <select
+                value={item.selectedMethod}
+                onChange={(e) => handleMethodChange(e, item.id)}
+                className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
+              >
+                <option value="Online">Online</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </td>
+            {action && (
+              <td className={tdclass}>
+                <button onClick={() => handleUpdate(item.id)}>Update</button>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+export function Transactiontabless({ data, action, functions }) {
+
 
   const handleMethodChange = (e, item) => {
     const updatedData = data.map((row) => {
@@ -56,7 +177,7 @@ export function Transactiontable({ data, action, functions }) {
             Amount <span className="text-xs font-light">(Tsh)</span>
           </th>
           <th className={thclass}>Method</th>
-          {action && <th className={thclass}>Actions</th>}
+
         </tr>
       </thead>
       <tbody>
@@ -112,22 +233,13 @@ export function Transactiontable({ data, action, functions }) {
                 <option value="Cash">Cash</option>
               </select>
             </td>
-            {action && (
-              <td className={tdclass}>
-                <MenuSelect datas={DropDown1} item={item}>
-                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                    <BiDotsHorizontalRounded />
-                  </div>
-                </MenuSelect>
-              </td>
-            )}
+
           </tr>
         ))}
       </tbody>
     </table>
   );
 }
-
 
 
 export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {

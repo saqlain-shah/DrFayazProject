@@ -133,13 +133,13 @@ function Campaings() {
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-          {/* <Button
-            label="Add New"
+          <Button
+            label="Add News"
             Icon={BiPlus}
             onClick={() => {
               closeModal();
             }}
-          /> */}
+          />
         </div>
       </div>
 
