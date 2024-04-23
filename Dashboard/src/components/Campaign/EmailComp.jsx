@@ -1,40 +1,21 @@
+// EmailComp.js
 import React, { useState } from 'react';
-import { Button, Input, Select, Textarea } from '../Form';
-import { BiChevronDown } from 'react-icons/bi';
+import { Button, Input, Textarea } from '../Form';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
-const sendToData = [
-  {
-    id: 1,
-    name: 'All Patients',
-    value: 'all',
-  },
-  {
-    id: 2,
-    name: 'NHCF Patients',
-    value: 'nhcf',
-  },
-  {
-    id: 3,
-    name: 'Britam Patients',
-    value: 'britam',
-  },
-];
-
-function EmailComp({ data, closeModal }) {
+function EmailComp({ data, closeModal, updateCampaignsState }) {
   const [campaignTitle, setCampaignTitle] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [header, setHeader] = useState('');
   const [subHeader, setSubHeader] = useState('');
   const [message, setMessage] = useState('');
-  const [image, setImage] = useState(null); // Add image state
-  const navigate = useNavigate(); // Initialize navigate
+  const [image, setImage] = useState(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
-      // Submit the campaign
       const formData = new FormData();
       formData.append('title', campaignTitle);
       formData.append('subject', emailSubject);
@@ -55,7 +36,6 @@ function EmailComp({ data, closeModal }) {
       console.log('Campaign created:', response.data);
       toast.success('Campaign created successfully!');
 
-      // Reset form fields
       setCampaignTitle('');
       setEmailSubject('');
       setHeader('');
@@ -63,19 +43,16 @@ function EmailComp({ data, closeModal }) {
       setMessage('');
       setImage(null);
 
-      // Close modal
       closeModal();
+      updateCampaignsState(response.data); // Update campaigns state with new campaign data
     } catch (error) {
       console.error('Error creating email campaign:', error);
       toast.error('Failed to create email campaign. Please try again later.');
     }
   };
 
-
-
   return (
     <div className="flex flex-col gap-4 w-full mt-6">
-      {/* title */}
       <Input
         label="Campaign Title"
         color={true}
@@ -83,18 +60,13 @@ function EmailComp({ data, closeModal }) {
         value={campaignTitle}
         onChange={(e) => setCampaignTitle(e.target.value)}
       />
-      {/* send to */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* subject */}
-        <Input
-          label="Email subject"
-          color={true}
-          placeholder={data?.id && data?.action?.subject}
-          value={emailSubject}
-          onChange={(e) => setEmailSubject(e.target.value)}
-        />
-      </div>
-      {/* headers */}
+      <Input
+        label="Email subject"
+        color={true}
+        placeholder={data?.id && data?.action?.subject}
+        value={emailSubject}
+        onChange={(e) => setEmailSubject(e.target.value)}
+      />
       <div className="grid gap-4 sm:grid-cols-2">
         <Input
           label="Header"
@@ -111,19 +83,14 @@ function EmailComp({ data, closeModal }) {
           onChange={(e) => setSubHeader(e.target.value)}
         />
       </div>
-      {/* message */}
       <Textarea
         label="Message"
-        placeholder={
-          data?.id ? data?.action?.message : 'Dear Delight patient ....'
-        }
+        placeholder={data?.id ? data?.action?.message : 'Dear Delight patient ....'}
         color={true}
         rows={5}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
-
-      {/* Image input */}
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="text-sm">Image (optional)</label>
         <input
@@ -132,14 +99,10 @@ function EmailComp({ data, closeModal }) {
           onChange={(e) => setImage(e.target.files[0])}
         />
       </div>
-
-      {/* button */}
-      {!data?.id && (
-        <Button
-          label={'Save Campaign'}
-          onClick={handleSubmit}
-        />
-      )}
+      <Button
+        label={'Save Campaign'}
+        onClick={handleSubmit}
+      />
     </div>
   );
 }

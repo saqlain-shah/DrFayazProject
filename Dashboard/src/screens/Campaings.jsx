@@ -1,6 +1,7 @@
+// Campaings.js
 import React, { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS for react-toastify
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Layout from '../Layout';
 import { Button, MenuSelect } from '../components/Form';
 import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
@@ -9,7 +10,7 @@ import { FaShare } from "react-icons/fa";
 import axios from 'axios';
 import ContactSelectionDialog from './ContactSelectionDialog';
 import CampaignModal from '../components/Modals/AddCampagnModal';
-import { FiTrash } from 'react-icons/fi'; // Import FiTrash for delete icon
+import { FiTrash } from 'react-icons/fi';
 
 function Campaings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,7 @@ function Campaings() {
   const [contacts, setContacts] = useState([]);
   const [message, setMessage] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [campaigns, setCampaigns] = useState([]); // Define campaigns state
+  const [campaigns, setCampaigns] = useState([]);
 
   const openDialog = () => {
     setIsDialogOpen(true);
@@ -32,6 +33,10 @@ function Campaings() {
   const closeModal = () => {
     setIsOpen(!isOpen);
     setData({});
+  };
+
+  const updateCampaignsState = (newCampaign) => {
+    setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
   };
 
   const shareViaWhatsApp = async (campaign) => {
@@ -78,7 +83,7 @@ function Campaings() {
       onClick: toggleShareOptions,
     },
     {
-      title: "Delete", // New delete action
+      title: "Delete",
       icon: FiTrash,
       onClick: (campaign) => deleteCampaign(campaign._id),
     }
@@ -91,16 +96,14 @@ function Campaings() {
         const response = await axios.get('http://localhost:8800/api/email-campaigns', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setCampaigns(response.data); // Assuming the response data is an array of email campaigns
+        setCampaigns(response.data);
       } catch (error) {
         console.error('Error fetching email campaigns:', error);
-        // Handle error
       }
     };
 
     fetchEmailCampaigns();
   }, []);
-
 
   const deleteCampaign = async (id) => {
     try {
@@ -109,19 +112,18 @@ function Campaings() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCampaigns(prevCampaigns => prevCampaigns.filter(campaign => campaign._id !== id));
-      // Show toast message on successful deletion
       toast.success('Campaign deleted successfully');
     } catch (error) {
       console.error('Error deleting campaign:', error);
-      // Handle error
     }
   };
 
   return (
     <Layout>
-      <ToastContainer /> {/* Add ToastContainer component */}
+      <ToastContainer />
       {isOpen && (
-        <CampaignModal isOpen={isOpen} closeModal={closeModal} data={data} />
+        <CampaignModal isOpen={isOpen} closeModal={closeModal} data={data} updateCampaignsState={updateCampaignsState} />
+
       )}
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>

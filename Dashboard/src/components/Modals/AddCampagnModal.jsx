@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { MdOutlineTextsms } from 'react-icons/md';
 import EmailComp from '../Campaign/EmailComp';
 
-function CampaignModal({ closeModal, isOpen, data }) {
+function CampaignModal({ closeModal, isOpen, data, updateCampaignsState = { updateCampaignsState } }) {
   const [indexs, setIndexs] = useState(0);
 
   // change tab
@@ -53,7 +53,8 @@ function CampaignModal({ closeModal, isOpen, data }) {
         )}
 
         {/* compo */}
-        {indexs === 0 && <EmailComp data={data} closeModal={closeModal} />}
+        {indexs === 0 && <EmailComp data={data} closeModal={closeModal} updateCampaignsState={updateCampaignsState} />}
+
 
       </div>
     </Modal>
