@@ -18,7 +18,6 @@ function Patients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
-
   const { patientId } = useParams();
 
   const fetchPatients = async () => {

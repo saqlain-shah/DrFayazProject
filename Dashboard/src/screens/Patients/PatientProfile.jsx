@@ -217,21 +217,21 @@ function PatientProfile() {
       </div>
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex flex-col items-center justify-center">
-          {profileData.patientInfo && ( // Check if patientInfo exists in profileData
+          {profileData.fullName ? ( // Check if profileData is available
             <Fragment>
               <img
-                src={`http://localhost:8800/${profileData.patientInfo.image}`}
+                src={`http://localhost:8800/${profileData.profilePicture}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
               <div className="gap-2 flex-col">
-                <h2 className="text-sm font-semibold">{profileData.patientInfo.name}</h2>
-                <p className="text-xs text-textGray">{profileData.patientInfo.email}</p>
-                <p className="text-xs">{profileData.patientInfo.emergencyContact}</p>
+                <h2 className="text-sm font-semibold">{profileData.fullName}</h2>
+                <p className="text-xs text-textGray">{profileData.email}</p>
+                <p className="text-xs">{profileData.emergencyContact}</p>
               </div>
             </Fragment>
-          )}
-          {!profileData.fullName && webPatientData.patientInfo ? (
+          ) : null}
+          {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
             <Fragment>
               <img
                 src={`http://localhost:8800/${webPatientData.patientInfo.image}`}
@@ -245,7 +245,6 @@ function PatientProfile() {
               </div>
             </Fragment>
           ) : null}
-
 
 
           <div className="flex-col gap-3 px-2 xl:px-12 w-full">

@@ -17,6 +17,7 @@ import doctorRoutes from './routes/doctor.js'
 import userauth from './routes/userauth.js'
 import schduleRoutes from './routes/schdule.js'
 import webAppointmentRoutes from './routes/webApoint.js'
+import emailCampaignRoutes from './routes/emailCampaignRoutes.js'
 import { authenticate } from './utils/authMiddleware.js';
 import { upload, uploads } from './utils/multerConfig.js';
 import { fileURLToPath } from 'url';
@@ -97,6 +98,7 @@ app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
 app.use('/api/stripe', stripe);
+app.use('/api/', emailCampaignRoutes)
 
 
 
