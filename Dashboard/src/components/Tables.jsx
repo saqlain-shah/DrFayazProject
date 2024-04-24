@@ -26,9 +26,9 @@ export function Transactiontable({ data, action }) {
       }
       return item;
     });
-    data=updatedItems;
-    console.log("data",data)
-    console.log("updatedItems",updatedItems)
+    data = updatedItems;
+    console.log("data", data)
+    console.log("updatedItems", updatedItems)
     setUpdatedData(updatedItems);
   };
 
@@ -48,24 +48,24 @@ export function Transactiontable({ data, action }) {
   // };
 
   const handleUpdate = (itemId) => {
-console.log("updated", updatedData)
-const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
-console.log("itemToUpdate", itemToUpdate)
+    console.log("updated", updatedData)
+    const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
+    console.log("itemToUpdate", itemToUpdate)
 
 
     const token = localStorage.getItem('token');
     fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`,
-     {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        status: itemToUpdate.status,
-        method: itemToUpdate.method,
-      }),
-    })
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: itemToUpdate.status,
+          method: itemToUpdate.method,
+        }),
+      })
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to update status or method');

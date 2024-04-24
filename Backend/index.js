@@ -39,8 +39,6 @@ setupMiddleware();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Serving static files
-app.use(express.static(path.join(__dirname, 'Website', 'dist')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -71,6 +69,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
+app.use('/api/medical-records', uploads, medicalRecordRoutes);
 // Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {

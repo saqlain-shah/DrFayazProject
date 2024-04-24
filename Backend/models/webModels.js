@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 // Define schema for Web
 const WebPatientSchema = new mongoose.Schema({
@@ -13,12 +13,16 @@ const WebPatientSchema = new mongoose.Schema({
     image: { type: String },
     createdAt: { type: Date, default: Date.now }
   },
+  medicalRecords: [{
+    type: Schema.Types.ObjectId,
+    ref: 'HealthInfo'
+  }],
   selectedSlot: { type: mongoose.Schema.Types.Mixed, required: true },
   selectedService: { type: mongoose.Schema.Types.Mixed, required: true },
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['Pending', 'Approved', 'Cancelled'], default: 'Pending' },
   method: { type: String, enum: ['Online', 'Cash'], default: 'Online' },
-  
+
 });
 
 // Create Web model

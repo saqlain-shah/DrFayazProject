@@ -122,7 +122,9 @@ function Campaings() {
     <Layout>
       <ToastContainer />
       {isOpen && (
-        <CampaignModal isOpen={isOpen} closeModal={closeModal} data={data} updateCampaignsState={updateCampaignsState} />
+        <CampaignModal
+          isOpen={isOpen} closeModal={closeModal} data={data}
+          updateCampaignsState={updateCampaignsState} />
 
       )}
       <div className="flex-btn flex-wrap gap-4 items-center">
