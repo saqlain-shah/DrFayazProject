@@ -50,7 +50,7 @@ const AppointmentPage = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
- 
+
   const [
     createAppointmentByUnauthenticateUser,
     { data: appointmentData, isError, isSuccess, isLoading, error },
@@ -93,7 +93,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8800/api/userauth/${params.clientId}`,
+        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -158,7 +158,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "http://localhost:8800/api/stripe/checkout",
+        "https://server-yvzt.onrender.com/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -203,7 +203,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:8800/api/services",
+        "https://server-yvzt.onrender.com/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -249,7 +249,7 @@ const AppointmentPage = () => {
 
     // Make a POST request to store the appointment data with token included in headers
     axios
-      .post("http://localhost:8800/api/web/", appointmentData, {
+      .post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -260,7 +260,7 @@ const AppointmentPage = () => {
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
 
-        axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
+        axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -317,31 +317,30 @@ const AppointmentPage = () => {
       title: "Services",
       content: (
         <>
-        {serviceDetails && (
+          {serviceDetails && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {serviceDetails.map((service, index) => (
-                    <div
-                        key={index}
-                        onClick={() => {
-                            setSelectedService({
-                                name: service.name,
-                                price: service.price,
-                            });
-                            setIsConfirmDisable(false);
-                        }}
-                        className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${
-                            selectedService && selectedService.name === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
-                        }`}
-                    >
-                        <p className="border bg-gray-800 text-base p-2 rounded-md">
-                            <span className="font-bold">Service Name:</span> {service.name}<br />
-                            <span className="font-bold">Service Price:</span> {service.price}
-                        </p>
-                    </div>
-                ))}
+              {serviceDetails.map((service, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    setSelectedService({
+                      name: service.name,
+                      price: service.price,
+                    });
+                    setIsConfirmDisable(false);
+                  }}
+                  className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${selectedService && selectedService.name === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                    }`}
+                >
+                  <p className="border bg-gray-800 text-base p-2 rounded-md">
+                    <span className="font-bold">Service Name:</span> {service.name}<br />
+                    <span className="font-bold">Service Price:</span> {service.price}
+                  </p>
+                </div>
+              ))}
             </div>
-        )}
-    </>
+          )}
+        </>
       ),
     },
   ];

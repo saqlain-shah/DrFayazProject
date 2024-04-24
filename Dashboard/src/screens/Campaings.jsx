@@ -42,7 +42,7 @@ function Campaings() {
   const shareViaWhatsApp = async (campaign) => {
     setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
+    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }).then((res) => {
       res.data.forEach((patient) => {
@@ -58,7 +58,7 @@ function Campaings() {
   const shareViaEmail = async (campaign) => {
     setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
+    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }).then((res) => {
       res.data.forEach((patient) => {
@@ -93,7 +93,7 @@ function Campaings() {
     const fetchEmailCampaigns = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8800/api/email-campaigns', {
+        const response = await axios.get('https://server-yvzt.onrender.com/api/email-campaigns', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCampaigns(response.data);
@@ -108,7 +108,7 @@ function Campaings() {
   const deleteCampaign = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/email-campaigns/${id}`, {
+      await axios.delete(`https://server-yvzt.onrender.com/api/email-campaigns/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCampaigns(prevCampaigns => prevCampaigns.filter(campaign => campaign._id !== id));
@@ -159,7 +159,7 @@ function Campaings() {
               <div className="col-span-8">
                 <h1 className="text-sm font-light">{campaign.title}</h1>
                 {campaign.image && (
-                  <img src={`http://localhost:8800/${campaign.image}`} alt="Campaign" className="mt-2 w-full h-auto rounded" />
+                  <img src={`https://server-yvzt.onrender.com/${campaign.image}`} alt="Campaign" className="mt-2 w-full h-auto rounded" />
                 )}
               </div>
               <div className="col-span-2">

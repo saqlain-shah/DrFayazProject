@@ -21,12 +21,9 @@ function Payments() {
   const navigate = useNavigate();
   const [transactionData, setTransactionData] = useState([]);
 
-
   useEffect(() => {
-    // Fetch transaction data from your API or database here
-    // Example fetch call:
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8800/api/web/', {
+    fetch('https://server-yvzt.onrender.com/api/web/', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -39,7 +36,16 @@ function Payments() {
       })
       .then(data => setTransactionData(data))
       .catch(error => console.error('Error fetching transaction data:', error));
-  }, [  ]);
+  }, []);
+
+  const [updatedData, setUpdatedData] = useState([]);
+
+  useEffect(() => {
+    setTransactionData(updatedData);
+  }, [updatedData]);
+
+
+
 
 
 
@@ -154,7 +160,8 @@ function Payments() {
           <Transactiontable
             data={transactionData}
             action={true}
-
+            updatedData={updatedData}
+            setUpdatedData={setUpdatedData}
           />
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
+
 import { FiEye, FiEdit } from 'react-icons/fi';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
@@ -13,9 +14,8 @@ import axios from 'axios';
 import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
 
-export function Transactiontable({ data, action }) {
+export function Transactiontable({ data, action, updatedData, setUpdatedData }) {
 
-  const [updatedData, setUpdatedData] = useState();
   const handleStatusChange = (e, itemId) => {
     const updatedItems = data.map((item) => {
       if (item._id === itemId) {
@@ -26,58 +26,41 @@ export function Transactiontable({ data, action }) {
       }
       return item;
     });
-    data = updatedItems;
-    console.log("data", data)
-    console.log("updatedItems", updatedItems)
     setUpdatedData(updatedItems);
   };
 
-  // const handleMethodChange = (e, itemId) => {
-  //   const updatedItems = data.map((item) => {
-  //     if (item._id === itemId) {
-  //       return {
-  //         ...item,
-  //         method: e.target.value
-  //       };
-  //     }
-  //     return item;
-  //   });
-  //   data=updatedItems;
-  //   console.log("updatedItems",updatedItems)
-  //   setUpdatedData(updatedItems);
-  // };
+
+
 
   const handleUpdate = (itemId) => {
-    console.log("updated", updatedData)
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
-    console.log("itemToUpdate", itemToUpdate)
-
 
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          status: itemToUpdate.status,
-          method: itemToUpdate.method,
-        }),
-      })
+    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: itemToUpdate.status,
+        method: itemToUpdate.method,
+      }),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to update status or method');
         }
         // Handle success response if needed
-        return response.json();
+        toast.success('Transaction updated successfully!');
+
       })
-      .then((data) => {
-        // Handle success response if needed
-      })
-      .catch((error) => console.error('Error updating status or method:', error.message));
+      .catch((error) => {
+        console.error('Error updating status or method:', error.message);
+        toast.error('Failed to update transaction.');
+      });
   };
+
 
 
   const DropDown1 = [
@@ -116,7 +99,7 @@ export function Transactiontable({ data, action }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -224,7 +207,7 @@ export function Transactiontabless({ data, action, functions }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -335,7 +318,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`https://server-yvzt.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -459,8 +442,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('http://localhost:8800/api/services');
+      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -605,7 +588,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {item.profilePicture && (
                     <img
-                      src={`http://localhost:8800/${item.profilePicture}`}
+                      src={`https://server-yvzt.onrender.com/${item.profilePicture}`}
                       alt={item.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -643,7 +626,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {webPatient.patientInfo && (
                     <img
-                      src={`http://localhost:8800/${webPatient.patientInfo.image}`}
+                      src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
                       alt={webPatient.name}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -716,7 +699,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               {/* <td className={tdClass}>
                 <img
-                  src={`http://localhost:8800/${patient.profilePicture}`}
+                  src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
@@ -774,7 +757,7 @@ export function DoctorsTable({ data, functions, doctor }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`http://localhost:8800/${item.profileImage}`}
+                    src={`https://server-yvzt.onrender.com/${item.profileImage}`}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>
@@ -804,7 +787,7 @@ export function AppointmentTable({ functions, token, patientId }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8800/api/appointments/patient/${patientId}`, {
+        const response = await fetch(`https://server-yvzt.onrender.com/api/appointments/patient/${patientId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -831,7 +814,7 @@ export function AppointmentTable({ functions, token, patientId }) {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8800/api/appointments/${id}`, {
+      const response = await fetch(`https://server-yvzt.onrender.com/api/appointments/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

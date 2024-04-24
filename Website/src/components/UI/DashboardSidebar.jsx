@@ -20,16 +20,16 @@ const DashboardSidebar = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
-        axios.get(`http://localhost:8800/api/userauth/${clientId}`, config)
+        axios.get(`https://server-yvzt.onrender.com/api/userauth/${clientId}`, config)
             .then(response => {
-                const imagePath = `http://localhost:8800/${response.data.image}`
+                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
                 response.data.image = imagePath;
                 setUserData(response.data);
             })
             .catch(error => {
                 console.error('Error fetching user data:', error);
             });
-      
+
     }, [clientId]);
 
 

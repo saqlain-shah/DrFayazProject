@@ -19,7 +19,7 @@ const Contact = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.post("http://localhost:8800/api/userauth/send-email", {
+      const response = await axios.post("https://server-yvzt.onrender.com/api/userauth/send-email", {
         email: data.email,
         subject: "New Contact Form Submission",
         body: `
