@@ -1,81 +1,103 @@
-// Inside webController.js
-
-import Appointment from '../models/webModels.js';
+import WebPatient from '../models/webModels.js'
 import mongoose from 'mongoose';
 
-export const createAppointment = async (req, res) => {
+export const createWeb = async (req, res) => {
   try {
-    const appointmentData = req.body;
-    const appointment = await Appointment.create(appointmentData);
-    res.status(201).json(appointment);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-export const getTotalAppointmentCount = async (req, res) => {
-  try {
-    const totalCount = await Appointment.countDocuments();
-    console.log("totalCount", totalCount)
-    res.json({ totalCount });
-  } catch (error) {
-    console.error('Error fetching total appointment count:', error);
-    res.status(500).json({ error: 'Error fetching total appointment count' });
-  }
-};
-export const getAllAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find();
-    res.status(200).json(appointments);
+    const WebData = req.body;
+    const Web = await WebPatient.create(WebData);
+    res.status(201).json(Web);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getAppointmentById = async (req, res) => {
+export const getAllWebs = async (req, res) => {
   try {
-    const appointmentId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ message: 'Invalid appointment ID' });
-    }
-    const appointment = await Appointment.findById(appointmentId);
-    if (!appointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
-    res.status(200).json(appointment);
+    const Webs = await WebPatient.find();
+    res.status(200).json(Webs);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const updateAppointment = async (req, res) => {
+export const getWebById = async (req, res) => {
   try {
-    const appointmentId = req.params.id;
-    const updatedData = req.body;
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ message: 'Invalid appointment ID' });
+    const { id } = req.params;
+    const web = await WebPatient.findById(id);
+    if (!web) {
+      console.log('Web not found for ID:', id);
+      return res.status(404).json({ message: 'Web not found' });
     }
-    const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updatedData, { new: true });
-    if (!updatedAppointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
+    console.log('Web found by ID:', web);
+    res.status(200).json(web);
+  } catch (error) {
+    console.error('Error fetching Web by ID:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
+export const updateWeb = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log('Params:', req.params);
+    const { status, method } = req.body; // Extract updated status and method
+    console.log('Received request to update web with ID:', id);
+
+    // Update the web patient record with the new status and method
+    const updatedWeb = await WebPatient.findByIdAndUpdate(id, { status, method }, { new: true });
+
+    if (!updatedWeb) {
+      return res.status(404).json({ message: 'Web not found' });
     }
-    res.status(200).json(updatedAppointment);
+
+    res.status(200).json(updatedWeb);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const deleteAppointment = async (req, res) => {
+
+
+export const deleteWeb = async (req, res) => {
   try {
-    const appointmentId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      return res.status(400).json({ message: 'Invalid appointment ID' });
-    }
-    const deletedAppointment = await Appointment.findByIdAndRemove(appointmentId);
-    if (!deletedAppointment) {
-      return res.status(404).json({ message: 'Appointment not found' });
-    }
-    res.status(200).json({ message: 'Appointment deleted successfully' });
+    const { id } = req.params;
+    // Find the web patient by ID and delete it
+    await WebPatient.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: 'Web patient deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error deleting web patient:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete web patient' });
+  }
+};
+
+
+export const getTotalWebPatientCount = async (req, res) => {
+  try {
+    console.log('Received request for total web patient count');
+    const count = await WebPatient.countDocuments();
+    console.log('Total web patient count:', count);
+    res.status(200).json({ totalCount: count });
+  } catch (error) {
+    console.error('Error counting web patients:', error);
+    res.status(500).json({ message: 'Error counting web patients', error: error.message });
+  }
+};
+export const getTodayWebAppointments = async (req, res) => {
+  try {
+    // Get today's date
+    const today = new Date();
+    // Set the time to the beginning of the day (midnight)
+    today.setHours(0, 0, 0, 0);
+    // Create a query to find appointments of web patients for today
+    const todayAppointments = await WebPatient.find({
+      createdAt: { $gte: today }, // Find appointments created after or at the beginning of today
+    });
+    // Send the found appointments as a response
+    res.status(200).json(todayAppointments);
+  } catch (error) {
+    // Handle errors
+    console.error('Error fetching today\'s web appointments:', error);
+    res.status(500).json({ message: 'Error fetching today\'s web appointments', error: error.message });
   }
 };

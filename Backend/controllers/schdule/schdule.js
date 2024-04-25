@@ -23,3 +23,15 @@ export const createSchedule = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+
+export const deleteSchedule = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const deletedSchedule = await Schedule.findByIdAndDelete(id);
+        res.status(200).json(deletedSchedule);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

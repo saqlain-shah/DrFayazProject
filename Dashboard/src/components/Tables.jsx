@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MenuSelect } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
+
 import { FiEye, FiEdit } from 'react-icons/fi';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
@@ -13,16 +14,152 @@ import axios from 'axios';
 import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
 
-export function Transactiontable({ data, action, functions }) {
+export function Transactiontable({ data, action, updatedData, setUpdatedData }) {
+
+  const handleStatusChange = (e, itemId) => {
+    const updatedItems = data.map((item) => {
+      if (item._id === itemId) {
+        return {
+          ...item,
+          status: e.target.value
+        };
+      }
+      return item;
+    });
+    setUpdatedData(updatedItems);
+  };
+
+
+
+
+  const handleUpdate = (itemId) => {
+    const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
+
+    const token = localStorage.getItem('token');
+    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: itemToUpdate.status,
+        method: itemToUpdate.method,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update status or method');
+        }
+        // Handle success response if needed
+        toast.success('Transaction updated successfully!');
+
+      })
+      .catch((error) => {
+        console.error('Error updating status or method:', error.message);
+        toast.error('Failed to update transaction.');
+      });
+  };
+
+
+
   const DropDown1 = [
     {
       title: 'Update',
       icon: FiEdit,
-      onClick: (data) => {
-        functions.edit(data.id);
-      },
+      onClick: handleUpdate
     },
   ];
+
+
+
+  return (
+    <table className="table-auto w-full">
+      <thead className="bg-dry rounded-md overflow-hidden">
+        <tr>
+          <th className={thclass}>#</th>
+          <th className={thclass}>Patient</th>
+          <th className={thclass}>Date</th>
+          <th className={thclass}>Status</th>
+          <th className={thclass}>
+            Amount <span className="text-xs font-light">(Tsh)</span>
+          </th>
+          <th className={thclass}>Method</th>
+          {action && <th className={thclass}>Actions</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item, index) => (
+          <tr
+            key={item.id}
+            className="border-b border-border hover:bg-greyed transitions"
+          >
+            <td className={tdclass}>{index + 1}</td>
+            <td className={tdclass}>
+              <div className="flex gap-4 items-center">
+                <span className="w-12">
+                  <img
+                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    alt={item.patientInfo.name}
+                    className="w-full h-12 rounded-full object-cover border border-border"
+                  />
+                </span>
+
+                <div>
+                  <h4 className="text-sm font-medium">{item.patientInfo.name}</h4>
+                  <p className="text-xs mt-1 text-textGray">
+                    {item.patientInfo.emergencyContact}
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td className={tdclass}>{new Date(item.createdAt).toLocaleDateString()}</td>
+            <td className={tdclass}>
+              <select
+                value={item.status}
+                onChange={(e) => handleStatusChange(e, item._id)}
+                className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
+                  ? 'bg-subMain text-subMain'
+                  : item.status === 'Pending'
+                    ? 'bg-orange-500 text-orange-500'
+                    : item.status === 'Cancel' && 'bg-red-600 text-red-600'
+                  } bg-opacity-10 text-xs rounded-xl`}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </td>
+            <td className={`${tdclass} font-semibold`}>{item.selectedService.price}</td>
+            <td className={tdclass}>
+              {/* <select
+                value={item.method}
+                onChange={(e) => handleMethodChange(e, item._id)}
+                className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
+              >
+                <option value="Online">Online</option>
+                <option value="Cash">Cash</option>
+              </select> */}
+              {item.method}
+            </td>
+            {action && (
+              <td className={tdclass}>
+                <MenuSelect datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
+              </td>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+export function Transactiontabless({ data, action, functions }) {
+
 
   const handleMethodChange = (e, item) => {
     const updatedData = data.map((row) => {
@@ -56,7 +193,7 @@ export function Transactiontable({ data, action, functions }) {
             Amount <span className="text-xs font-light">(Tsh)</span>
           </th>
           <th className={thclass}>Method</th>
-          {action && <th className={thclass}>Actions</th>}
+
         </tr>
       </thead>
       <tbody>
@@ -112,22 +249,13 @@ export function Transactiontable({ data, action, functions }) {
                 <option value="Cash">Cash</option>
               </select>
             </td>
-            {action && (
-              <td className={tdclass}>
-                <MenuSelect datas={DropDown1} item={item}>
-                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                    <BiDotsHorizontalRounded />
-                  </div>
-                </MenuSelect>
-              </td>
-            )}
+
           </tr>
         ))}
       </tbody>
     </table>
   );
 }
-
 
 
 export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
@@ -368,21 +496,27 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   );
 }
 
-export function PatientTable({ patients, webPatients, onDelete, functions, onEdit }) {
-  console.log("patients", patients);
-  console.log("webPatients", webPatients);
-
+export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatient, onEdit }) {
   const navigate = useNavigate();
 
   const handleEdit = (item) => {
     onEdit(item);
   };
 
+  const handleWebPatientEdit = (webPatient) => {
+    onEdit(webPatient.patientInfo);
+  };
+
+  const handleDelete = (item, isWebPatient) => {
+    onDelete(item._id, isWebPatient ? item : null); // Pass webPatient object if it's a webPatient, otherwise null
+  };
+
+
   const patientMenuOptions = [
     {
       title: 'Edit',
       icon: FiEdit,
-      onClick: handleEdit,
+      onClick: (item) => handleEdit(item), // Pass item as an argument
     },
     {
       title: 'View',
@@ -398,18 +532,30 @@ export function PatientTable({ patients, webPatients, onDelete, functions, onEdi
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: (item) => {
-        console.log("Clicked item:", item);
-        if (item && item._id) {
-          onDelete(item._id);
-        } else {
-          console.error("Item or _id is undefined:", item);
-        }
-      },
+      onClick: (item) => handleDelete(item, false), // Pass item as an argument
+    },
+  ];
 
+
+  const webPatientMenuOptions = [
+    // {
+    //   title: 'Edit',
+    //   icon: FiEdit,
+    //   onClick: handleWebPatientEdit,
+    // },
+    {
+      title: 'View',
+      icon: FiEye,
+      onClick: (webPatient) => {
+        navigate(`/patients/preview/${webPatient._id}`, { state: { profileData: webPatient, webPatientData: webPatient.patientInfo } });
+      },
+    },
+    {
+      title: 'Delete',
+      icon: RiDeleteBin6Line,
+      onClick: (webPatient) => onDeleteWebPatient(webPatient._id), // Pass webPatient ID to onDeleteWebPatient
     },
 
-    // Add other patient menu options as needed
   ];
 
 
@@ -487,14 +633,21 @@ export function PatientTable({ patients, webPatients, onDelete, functions, onEdi
                   )}
                 </td>
                 <td className={tdClass}>{webPatient.patientInfo.name}</td>
-                <td className={tdClass}>{webPatient.patientInfo.gender}</td>
+                <td className={tdClass}>
+                  <span
+                    className={`py-1 px-2 ${webPatient.patientInfo.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+                      } bg-opacity-10 text-xs rounded-xl`}
+                  >
+                    {webPatient.patientInfo.gender}
+                  </span>
+                </td>
                 <td className={tdClass}>{webPatient.patientInfo.bloodGroup}</td>
                 <td className={tdClass}>{webPatient.patientInfo.address}</td>
                 <td className={tdClass}>{webPatient.patientInfo.email}</td>
                 <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
                 <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={patientMenuOptions} item={webPatient}>
+                  <MenuSelect datas={webPatientMenuOptions} item={webPatient}>
                     <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                       <BiDotsHorizontalRounded />
                     </div>
@@ -531,7 +684,7 @@ export function PatientTableArray({ data, onEdit }) {
             <th className={thClass} style={{ width: '15%' }}>Email</th>
             <th className={thClass} style={{ width: '10%' }}>Blood Group</th>
             <th className={thClass} style={{ width: '20%' }}>Emergency Contact</th>
-            <th className={thClass} style={{ width: '15%' }}>Profile Picture</th>
+            {/* <th className={thClass} style={{ width: '15%' }}>Profile Picture</th> */}
             <th className={thClass} style={{ width: '8%' }}>Actions</th>
           </tr>
         </thead>
@@ -544,13 +697,13 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.email}</td>
               <td className={tdClass}>{patient.bloodGroup}</td>
               <td className={tdClass}>{patient.emergencyContact}</td>
-              <td className={tdClass}>
+              {/* <td className={tdClass}>
                 <img
                   src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
-              </td>
+              </td> */}
               <td className={tdClass}>
                 <button onClick={() => onEdit(patient._id)}>Edit</button> {/* Assuming onEdit is the function to edit a patient */}
               </td>
@@ -561,15 +714,6 @@ export function PatientTableArray({ data, onEdit }) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
 
 export function DoctorsTable({ data, functions, doctor }) {
   const thclass = 'py-3 px-4 text-left font-semibold';
@@ -756,9 +900,6 @@ export function AppointmentTable({ functions, token, patientId }) {
     </div>
   );
 }
-
-
-
 
 // payment table
 export function PaymentTable({ data, functions, doctor }) {
@@ -964,8 +1105,6 @@ export function InvoiceProductsTable({ data, functions, button, selectedCurrency
     </table>
   );
 }
-
-
 
 
 // medicine Dosage table

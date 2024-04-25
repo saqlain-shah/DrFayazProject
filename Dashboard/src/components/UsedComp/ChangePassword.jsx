@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useAuth } from '../../AuthContext';
 
 function ChangePassword() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,12 +22,20 @@ function ChangePassword() {
     console.log('Old Password:', oldPassword);
     console.log('New Password:', newPassword);
 
+    // Check if new password and confirm password match
+    if (newPassword !== confirmPassword) {
+      toast.error('New password and confirm password do not match');
+      return;
+    }
+
+    // Check if old password and new password are the same
+    if (oldPassword === newPassword) {
+      toast.error('New password must be different from old password');
+      return;
+    }
+
     setLoading(true);
     try {
-      if (newPassword !== confirmPassword) {
-        throw new Error('New password and confirm password do not match');
-      }
-
       const token = localStorage.getItem('token');
       console.log('Token:', token);
 
@@ -58,6 +66,7 @@ function ChangePassword() {
       setLoading(false);
     }
   };
+
 
 
   return (

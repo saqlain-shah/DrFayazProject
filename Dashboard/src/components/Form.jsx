@@ -268,6 +268,11 @@ export function Checkbox({ label, name, onChange, checked }) {
   );
 }
 export function Checkboxe({ label, name, onChange, checked }) {
+  const handleCheckboxChange = () => {
+    console.log(`Checkbox "${name}" clicked. Current state: ${checked}`);
+    onChange(!checked); // Toggle the checked state
+  };
+
   return (
     <div className="text-sm w-full flex flex-row items-center">
       <label className="flex-colo cursor-pointer relative">
@@ -275,7 +280,7 @@ export function Checkboxe({ label, name, onChange, checked }) {
           type="checkbox"
           name={name}
           checked={checked}
-          onChange={() => onChange(name, !checked)} // Pass the correct checked value
+          onChange={handleCheckboxChange}
           className="absolute opacity-0 w-0 h-0"
         />
         <span
@@ -290,7 +295,6 @@ export function Checkboxe({ label, name, onChange, checked }) {
     </div>
   );
 }
-
 
 
 

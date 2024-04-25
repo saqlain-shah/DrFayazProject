@@ -59,7 +59,7 @@ function Services() {
       toast.error('Failed to delete service. Please try again.');
     }
   };
-  
+
 
 
 

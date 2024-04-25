@@ -6,14 +6,14 @@ import { Link } from 'react-router-dom';
 const InfoPage = () => {
     return (
         <section id="why-us" className="why-us">
-            <div className="container">
+            <div className="container" style={{marginTop:"10px"}}>
 
                 <div className="row">
                     <div className="col-lg-4 d-flex align-items-stretch">
                         <div className="content">
                             <h3>About Us</h3>
                             <p>
-                               <b>Dr Fayaz Sarwar</b> 
+                               <b>Dr Fayaz Sarwar</b> <br/>
                                 MBBS, MRCGP Int.
                                 Trained and working in UK
                                 Founder of Healthline

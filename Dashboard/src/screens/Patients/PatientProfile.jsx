@@ -155,7 +155,7 @@ function PatientProfile() {
       case 3:
         return <InvoiceUsed patientId={id} token={localStorage.getItem('token')} />;
       case 4:
-        return <PaymentsUsed doctor={false} />;
+      // return <PaymentsUsed doctor={false} />;
       case 5:
         return <PatientImages medicalRecords={medicalRecords} token={localStorage.getItem('token')} />
 
@@ -231,7 +231,7 @@ function PatientProfile() {
               </div>
             </Fragment>
           ) : null}
-          {!profileData.fullName && webPatientData.patientInfo ? ( // Check if profileData is not available but webPatientData is available
+          {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
             <Fragment>
               <img
                 src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
@@ -245,7 +245,6 @@ function PatientProfile() {
               </div>
             </Fragment>
           ) : null}
-
 
 
           <div className="flex-col gap-3 px-2 xl:px-12 w-full">

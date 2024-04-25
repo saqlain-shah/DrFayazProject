@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt } from "react-icons/fa";
-import img from '../../images/doc/doc4.jpg';
+import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
 
 const DashboardSidebar = () => {

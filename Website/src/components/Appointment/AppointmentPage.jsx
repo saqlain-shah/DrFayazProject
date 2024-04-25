@@ -259,6 +259,13 @@ const AppointmentPage = () => {
         // Display a success toast message after appointment creation
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
+
+        axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
       })
       .catch((error) => {
         console.error("Error creating appointment:", error);
@@ -311,19 +318,23 @@ const AppointmentPage = () => {
       content: (
         <>
           {serviceDetails && (
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {serviceDetails.map((service, index) => (
-                <div key={index} onClick={() => {
-                  setSelectedService({
-                    name: service.name,
-                    price: service.price,
-                  });
-                  console.log(selectedService);
-                  setIsConfirmDisable(false);
-                }} className={` hover:bg-blue-500 p-4 cursor-pointer rounded-md ${selectedService.name === service.name && 'selected-service'}`}>
-                  <p className="  border bg-gray-800  text-base">
-                    Service Name: {service.name}<br />
-                    Service Price: {service.price}
+                <div
+                  key={index}
+                  onClick={() => {
+                    setSelectedService({
+                      name: service.name,
+                      price: service.price,
+                    });
+                    setIsConfirmDisable(false);
+                  }}
+                  className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${selectedService && selectedService.name === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                    }`}
+                >
+                  <p className="border bg-gray-800 text-base p-2 rounded-md">
+                    <span className="font-bold">Service Name:</span> {service.name}<br />
+                    <span className="font-bold">Service Price:</span> {service.price}
                   </p>
                 </div>
               ))}
@@ -342,7 +353,7 @@ const AppointmentPage = () => {
   return (
     <>
       <Header />
-      <div className="container" style={{ marginTop: "8rem", bottom: "5rem" }}>
+      <div className="container" style={{ marginTop: '-10%', bottom: "5rem" }}>
         <div
           className="container"
           style={{ marginBottom: "12rem", marginTop: "8rem" }}
@@ -395,25 +406,26 @@ const AppointmentPage = () => {
       <Modal
         title="Appointment Details"
         open={showModal} // Control modal visibility
-        // Handle close event
+        onCancel={() => setShowModal(false)} // Handle close event
         footer={[
           <div>
-            {loading && <div className="loading-circle"></div>},
-            <Button key="back" onClick={makePayment}>
+            {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
+            <Button key="back" onClick={makePayment} disabled={loading}>
               {loading ? 'Processing...' : 'Checkout'}
-            </Button>,
+            </Button>
           </div>
         ]}
       >
-        <p>Patient Name: {selectValue.name} </p>
-        <p>Service: {selectedService ? selectedService.name : "Loading..."}</p>
+        <p><b>Patient Name:</b> {selectValue.name} </p>
+        <p><b>Service:</b> {selectedService ? selectedService.name : "Loading..."}</p>
         <p>
-          Service Charge:{" "}
+          <b>Service Charge:</b> {" "}
           {selectedService ? selectedService.price : "Loading..."} USD
         </p>
         {/* <p>Service Tax: 5 USD</p> */}
-        <p>Total Amount: {selectedService.price} USD</p>
+        <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
+
       <Footer />
     </>
   );

@@ -32,9 +32,10 @@ function NewMedicalRecord() {
     servicesData.map((item) => ({
       name: item.name,
       checked: false, // Ensure checked is set to a Boolean value
-      price: item.price,
+      price: item.price || 0, // Set price to 0 if it's undefined
     }))
   );
+
 
 
 
@@ -61,6 +62,7 @@ function NewMedicalRecord() {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPatientData(response.data);
+        console.log('Patient Data:', response.data); // Add log for patient data
       } catch (error) {
         console.error('Error fetching patient data:', error);
       }
@@ -73,6 +75,7 @@ function NewMedicalRecord() {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
+        console.log('Web Patient Data:', response.data); // Add log for web patient data
       } catch (error) {
         console.error('Error fetching web patient data:', error);
       }
@@ -81,6 +84,7 @@ function NewMedicalRecord() {
     fetchPatientData();
     fetchWebPatientData();
   }, [id]);
+
 
 
   const onChangePrescription = (name, checked) => {
@@ -211,20 +215,30 @@ function NewMedicalRecord() {
       </div>
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 flex-colo gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
-          <img
-            src={webPatientData.patientInfo ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}` : ''}
-            alt="profile"
-            className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
-          />
+          {webPatientData && patientData && (
+            <img
+              src={
+                webPatientData.patientInfo?.image
+                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
+                  : patientData.profilePicture
+                    ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
+                    : ''
+              }
+              alt="profile"
+              className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+            />
+          )}
           <div className="gap-2 flex-colo">
-            <h2 className="text-sm font-semibold">{webPatientData.patientInfo ? webPatientData.patientInfo.name : ''}</h2>
-            <p className="text-xs text-textGray">{webPatientData.patientInfo ? webPatientData.patientInfo.email : ''}</p>
-            <p className="text-xs">{webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : ''}</p>
+            <h2 className="text-sm font-semibold">{webPatientData?.patientInfo?.name || patientData?.fullName}</h2>
+            <p className="text-xs text-textGray">{webPatientData?.patientInfo?.email || patientData?.email}</p>
+            <p className="text-xs">{webPatientData?.patientInfo?.emergencyContact || patientData?.emergencyContact}</p>
             <p className="text-xs text-subMain bg-text font-medium py-1 px-4 rounded-full border-[0.5px] border-subMain">
-              {webPatientData.patientInfo ? webPatientData.patientInfo.age : ''} yrs
+              {webPatientData?.patientInfo?.age || ''} yrs
             </p>
           </div>
         </div>
+
+
 
 
         <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6">
@@ -285,7 +299,7 @@ function NewMedicalRecord() {
                 {servicesData?.slice(1, 100).map((item) => (
                   <Checkboxe
                     label={item.name}
-                    checked={treatments.find((i) => i.name === item.name).checked}
+                    checked={(treatments.find((i) => i.name === item.name) || { checked: false }).checked}
                     onChange={(checked) => onChangeTreatments(item.name, checked)} // Call onChangeTreatments with the treatment name and checked value
                     name={item.name}
                     key={item.id}

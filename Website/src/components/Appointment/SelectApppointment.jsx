@@ -3,7 +3,7 @@ import moment from 'moment';
 import axios from 'axios';
 
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
-    const [appointmentSlots, setAppointmentSlots] = useState({});
+    const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
     useEffect(() => {
@@ -35,25 +35,22 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     };
 
     return (
-        <div className="container mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
+        <div className="container">
+            <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
+            <div className="flex justify-center flex-wrap m-8 ">
                 {appointmentSlots && appointmentSlots.length > 0 ? (
                     appointmentSlots.map((slot, index) => (
                         <div
                             key={slot._id}
-                            className="p-4 border rounded-md slot-item"
-                            style={{ margin: '10px', cursor: 'pointer' }}
-                            onMouseEnter={() => console.log('Mouse entered slot', slot)} // Log slot info when mouse enters
-                            onMouseLeave={() => console.log('Mouse left slot', slot)} // Log slot info when mouse leaves
-                            onClick={() => handleSlotSelection(slot._id)} // Add onClick event handler for slot selection
+                            className={`p-4 border rounded-md shadow-md cursor-pointer ${selectedSlot && selectedSlot._id === slot._id ? 'bg-green-100' : 'bg-white'}`}
+                            style={{ minWidth: '200px', maxWidth: '300px', margin: '10px' }}
+                            onClick={() => handleSlotSelection(slot._id)}
                         >
                             <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
                             <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
-                            <label htmlFor={`slot-${index}`} className="flex items-center mt-2">
+                            <label className="flex items-center mt-2">
                                 <input
                                     type="radio"
-                                    id={`slot-${index}`}
                                     name="appointmentSlot"
                                     value={slot._id}
                                     checked={selectedSlot && selectedSlot._id === slot._id}

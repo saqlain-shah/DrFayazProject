@@ -82,14 +82,13 @@ const CustomToolbar = (toolbar) => {
                 item.view === 'month'
                   ? goToMonth
                   : item.view === 'week'
-                  ? goToWeek
-                  : goToDay
+                    ? goToWeek
+                    : goToDay
               }
-              className={`border-l text-xl py-2 flex-colo border-subMain ${
-                toolbar.view === item.view
-                  ? 'bg-subMain text-white'
-                  : 'text-subMain'
-              }`}
+              className={`border-l text-xl py-2 flex-colo border-subMain ${toolbar.view === item.view
+                ? 'bg-subMain text-white'
+                : 'text-subMain'
+                }`}
             >
               {item.view === 'month' ? (
                 <HiOutlineViewGrid />
@@ -122,7 +121,7 @@ function Appointments({ events }) {
             Authorization: `Bearer ${token}`
           }
         });
-  
+
         // Map the fetched appointments to the format expected by the Calendar component
         const formattedAppointments = response.data.map(appointment => ({
           id: appointment._id, // Assign unique ID to each appointment
@@ -134,17 +133,17 @@ function Appointments({ events }) {
           patientInfo: appointment.patientInfo // Include patientInfo
           // You can include other details here if needed
         }));
-  
+
         setAppointments(formattedAppointments);
       } catch (error) {
         console.error('Error fetching appointments:', error);
         toast.error('Failed to fetch appointments. Please try again.');
       }
     };
-  
+
     fetchAppointments();
   }, []);
-  
+
   const onDelete = (eventId) => {
     // Implement the logic to delete the appointment with the given eventId
     console.log('Deleting event with ID:', eventId);
@@ -159,11 +158,11 @@ function Appointments({ events }) {
 
   return (
     <Layout>
-    <AppointmentDetailsModal
-  isOpen={isModalOpen} // Use isOpen instead of isModalOpen
-  closeModal={() => setIsModalOpen(false)}
-  event={selectedEvent}
-/>
+      <AppointmentDetailsModal
+        isOpen={isModalOpen} // Use isOpen instead of isModalOpen
+        closeModal={() => setIsModalOpen(false)}
+        event={selectedEvent}
+      />
       <Calendar
         localizer={localizer}
         events={appointments}

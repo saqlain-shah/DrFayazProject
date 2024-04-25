@@ -170,7 +170,7 @@ const Contact = () => {
                       )}
                     </div>
                   </div>
-                  <div className="text-center mt-3 mb-5">
+                  <div className="text-end mt-3 mb-5">
                     <button
                       type="submit"
                       className="appointment-btn"
