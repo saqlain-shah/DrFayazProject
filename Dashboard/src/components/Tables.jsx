@@ -532,7 +532,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
     {
       title: 'Delete',
       icon: RiDeleteBin6Line,
-      onClick: (item) => handleDelete(item, false), // Pass item as an argument
+      onClick: (item) => handleDelete(item, false),
     },
   ];
 
@@ -570,14 +570,14 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
           <tr>
             <th className={thClass} style={{ width: '2%' }}>#</th>
             <th className={thClass} style={{ width: '1%' }}>Image</th>
-            <th className={thClass} style={{ width: '5%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '4%' }}>Full Name</th>
             <th className={thClass} style={{ width: '5%' }}>Gender</th>
-            <th className={thClass} style={{ width: '3%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '2%' }}>Blood Group</th>
             <th className={thClass} style={{ width: '5%' }}>Address</th>
             <th className={thClass} style={{ width: '5%' }}>Email</th>
             <th className={thClass} style={{ width: '5%' }}>Emergency Contact</th>
             <th className={thClass} style={{ width: '5%' }}>Created At</th>
-            <th className={thClass} style={{ width: '5%' }}>Actions</th>
+            <th className={thClass} style={{ width: '2%' }}>Actions</th>
           </tr>
         </thead>
         <tbody>
