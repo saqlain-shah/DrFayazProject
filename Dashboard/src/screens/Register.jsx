@@ -4,7 +4,8 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import pic from '../build/images/logo.jpg'
+import pic from '../build/images/logo.jpg';
+
 function Register() {
     const navigate = useNavigate();
     const [name, setName] = useState('');
@@ -12,6 +13,7 @@ function Register() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -20,8 +22,37 @@ function Register() {
         }
     }, []);
 
+    const validateForm = () => {
+        const errors = {};
+
+        if (!name.trim()) {
+            errors.name = 'Name is required';
+        } else if (name.length < 4) {
+            errors.name = 'Name must be at least 4 characters long';
+        }
+
+        if (!email.trim()) {
+            errors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            errors.email = 'Email is invalid';
+        }
+
+        if (!password.trim()) {
+            errors.password = 'Password is required';
+        } else if (password.length < 8) {
+            errors.password = 'Password must be at least 8 characters long';
+        }
+
+        setErrors(errors);
+
+        return Object.keys(errors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) {
+            return;
+        }
         setLoading(true);
         try {
             const response = await axios.post('https://server-yvzt.onrender.com/api/auth/register', {
@@ -76,6 +107,7 @@ function Register() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
+                    {errors.name && <span className="text-red-500">{errors.name}</span>}
                     <Input
                         label="Email"
                         type="email"
@@ -84,6 +116,7 @@ function Register() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
+                    {errors.email && <span className="text-red-500">{errors.email}</span>}
                     <Input
                         label="Password"
                         type="password"
@@ -92,6 +125,7 @@ function Register() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    {errors.password && <span className="text-red-500">{errors.password}</span>}
                 </div>
                 <div className="flex justify-between items-center">
                     <Button

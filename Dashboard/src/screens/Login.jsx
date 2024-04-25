@@ -5,13 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../AuthContext';
-import pic from '../build/images/logo.jpg'
+import pic from '../build/images/logo.jpg';
+
 function Login() {
   const navigate = useNavigate();
   const { user, login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -19,8 +21,27 @@ function Login() {
     }
   }, [user, navigate]);
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+    }
+
+    if (!password.trim()) {
+      errors.password = 'Password is required';
+    }
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     setLoading(true);
     try {
       const response = await axios.post('https://server-yvzt.onrender.com/api/auth/login', {
@@ -52,9 +73,6 @@ function Login() {
     navigate('/register');
   };
 
-  // Ensure user object exists before accessing its properties
-  const userName = user ? user.name : '';
-
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
@@ -72,6 +90,7 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {errors.email && <span className="text-red-500">{errors.email}</span>}
           <Input
             label="Password"
             type="password"
@@ -80,6 +99,7 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {errors.password && <span className="text-red-500">{errors.password}</span>}
         </div>
         <div className="flex justify-between items-center">
           <Button
@@ -90,7 +110,6 @@ function Login() {
           />
           <div style={{ marginLeft: '10px' }}>
             {/* Display user's name if available */}
-
             <Button
               label="Register"
               onClick={handleRegisterClick}
