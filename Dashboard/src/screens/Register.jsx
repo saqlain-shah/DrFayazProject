@@ -75,6 +75,10 @@ function Register() {
 
         document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
         toast.success('Registration successful');
+
+        // Send OTP email
+        await sendOtpEmail(email);
+
         setIsDentalModalOpen(true);
       } else {
         console.error('Registration failed:', response.data);
@@ -87,6 +91,27 @@ function Register() {
     }
   };
 
+  const sendOtpEmail = async () => {
+    const email = 'davbabu1122@gmail.com'; // Specific email address to send OTP
+    try {
+      const response = await axios.post(
+        'http://localhost:8800/api/otps/send-otp',
+        { email },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+  
+      if (response.status === 200) {
+        console.log('OTP email sent to:', email);
+      } else {
+        console.error('Failed to send OTP email:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error sending OTP email:', error);
+    }
+  };
+  
+  
+
   const handleLoginClick = () => {
     navigate('/login');
   };
@@ -97,17 +122,17 @@ function Register() {
 
   const verifyOtp = async () => {
     console.log('Verifying OTP...');
-
+    
     try {
       const response = await axios.post(
-        'http://localhost:8800/api/otp/verify-otp',
-        { email: 'davabu1122@gmail.com', otp: otpCode },
+        'http://localhost:8800/api/otps/verify-otp',
+        { otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-
+  
       console.log('OTP Verification Response:', response);
-
-      if (response.status === 200) {
+  
+      if (response.data.success) {
         console.log('OTP Verified!');
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
@@ -123,6 +148,8 @@ function Register() {
       setIsOtpValid(false);
     }
   };
+  
+  
 
   const closeDentalModal = () => {
     setIsDentalModalOpen(false);

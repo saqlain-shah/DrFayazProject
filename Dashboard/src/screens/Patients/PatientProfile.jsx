@@ -88,21 +88,24 @@ function PatientProfile() {
   };
 
   const verifyOtp = async () => {
+    const email = 'davbabu1122@gmail.com'; // Set your desired email address here
+  
     console.log('Verifying OTP...');
-
+  
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otp/verify-otp',
-        { email: 'davabu1122@gmail.com', otp: otpCode },
+        { email: email, otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-
-      console.log("OTP Verification Response:", response);
-
+  
+      console.log('OTP Verification Response:', response);
+  
       if (response.status === 200) {
         console.log('OTP Verified!');
         setIsOtpValid(true);
-        closeDentalModal();
+        setIsDentalModalOpen(false);
+        navigate('/login');
       } else {
         console.log('Failed to verify OTP:', response.data.message);
         alert('Invalid OTP code. Please try again.');
@@ -114,6 +117,7 @@ function PatientProfile() {
       setIsOtpValid(false);
     }
   };
+  
 
 
   const handleMentalHealthTabClick = async () => {

@@ -26,7 +26,7 @@ import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
-
+import otpRoutees from './routes/dashRouteOTP.js'
 //import helmet from 'helmet';
 
 const app = express();
@@ -87,6 +87,7 @@ app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes);
 app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
+app.use('/api/otps', otpRoutees);
 app.use('/api/otp', otpRoutes);
 app.use('/api/stripe', stripe);
 
