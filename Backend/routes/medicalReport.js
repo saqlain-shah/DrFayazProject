@@ -4,11 +4,7 @@ import * as MedicalRecordController from '../controllers/MedicalReport/medicalRe
 const router = express.Router();
 
 router.route('/')
-<<<<<<< HEAD
-    .post( MedicalRecordController.createMedicalRecord)
-=======
     .post(MedicalRecordController.createMedicalRecord)
->>>>>>> 4cf4ca24e4b49bd00c42f24f9dbdfc3d5121bf44
     .get(MedicalRecordController.getAllMedicalRecords);
 
 // Make sure this line is correctly pointing to the controller function
@@ -19,6 +15,3 @@ router.route('/:id')
 
 router.route('/preview/:id').get(MedicalRecordController.getMedicalRecordsByPatientId);
 export default router;
-
-
-
