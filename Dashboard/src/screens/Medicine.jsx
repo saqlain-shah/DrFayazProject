@@ -19,7 +19,14 @@ function Medicine() {
 
   const fetchData = async () => {
     try {
-      let response = await fetch('http://localhost:8800/api/medicine');
+      // Fetch token from wherever you store it (e.g., localStorage)
+      const token = localStorage.getItem('token');
+
+      let response = await fetch('http://localhost:8800/api/medicine', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -37,6 +44,7 @@ function Medicine() {
       toast.error('Failed to fetch data');
     }
   };
+
 
   useEffect(() => {
     fetchData();

@@ -12,18 +12,18 @@ import Service from '../Services/Service';
 import Gallery from '../Gallery/Gallery';
 import OurDoctors from '../OurDoctor/OurDoctors';
 
-const Home = () => {
+const Home = ({ clientId }) => {
     return (
         <>
-            <Header />
+            <Header clientId={clientId} />
             <HeroSection />
             <InfoPage />
             <Service />
             <ClinicAndSpecialities />
-            <BookDoctor />
+            {/* <BookDoctor /> */}
             {/* <Blog /> */}
             <Availabe />
-            <OurDoctors />
+            {/* <OurDoctors /> */}
             {/* <Testimonial /> */}
             <Gallery />
             <Footer />

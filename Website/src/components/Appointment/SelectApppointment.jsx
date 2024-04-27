@@ -1,103 +1,75 @@
-import { Button } from 'antd'
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import './index.css';
-import { doctorTimeSlot } from '../../constant/global';
-import { FaBriefcase, FaRegClock, FaLocationArrow, FaLink, FaCalendarAlt } from "react-icons/fa";
+import axios from 'axios';
 
-const SelectApppointment = ({ selectedDate, handleDateChange, selectTime, setSelectTime }) => {
-    const handleSelectTime = (date) => { setSelectTime(date) }
+const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
+    const [appointmentSlots, setAppointmentSlots] = useState({});
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
-    const amTimeSlot = doctorTimeSlot.filter((item) => item.includes('AM'));
-    const pmTimeSlot = doctorTimeSlot.filter((item) => item.includes('PM'));
+    useEffect(() => {
+        const fetchSchedule = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8800/api/schedule', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-    const last5Days = Array.from({ length: 5 }, (_, index) =>
-        moment().clone().subtract(index, 'days')
-    )
+                const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(slot.startDateTime));
+                setAppointmentSlots(filteredSlots);
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+            }
+        };
+
+        fetchSchedule();
+    }, []);
+
+    const handleSlotSelection = (slotId) => {
+        const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);
+        if (selectedSlot) {
+            setSelectedSlot(selectedSlot);
+            handleSelectAppointment(selectedSlot, patientId); // Pass patientId
+        }
+    };
 
     return (
-        <div style={{ marginTop: '5rem' }}>
-
-            <dir className="p-3" style={{ background: '#f8f9fa' }}>
-                <div className="row">
-                    <div className="col-md-3 col-sm-12 mt-3 info-part border-end">
-                        <p className='py-2 border-bottom info-head-date'>Would you like to schedule an Intervewi? Pick a Date & Time</p>
-                        <div className='icon-box'>
-                            <div className='d-flex gap-3'>
-                                <FaBriefcase className='icon' />
-                                <p>With Doctor</p>
-                            </div>
-                            <div className='d-flex gap-3'>
-                                <FaRegClock className='icon' />
-                                <p>30 Min</p>
-                            </div>
-                            <div className='d-flex gap-3'>
-                                <FaLocationArrow className='icon' />
-                                <p>Sylhet, Bangladesh<br /><span className="form-text">1020BD, Amertam, NorthEast,Srimongol</span></p>
-                            </div>
-                            <div className='d-flex gap-3'>
-                                <FaLink className='icon' />
-                                <p>Zoom Meeting</p>
-                            </div>
-                            <div className='d-flex gap-3'>
-                                <FaCalendarAlt className='icon' />
-                                <p>{(selectedDate && selectTime) && moment(selectedDate).format('LL') + ' ' + selectTime}</p>
-                            </div>
+        <div className="container mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Select Appointment</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-evenly', flexWrap: 'wrap', margin: '40px' }}>
+                {appointmentSlots && appointmentSlots.length > 0 ? (
+                    appointmentSlots.map((slot, index) => (
+                        <div
+                            key={slot._id}
+                            className="p-4 border rounded-md slot-item"
+                            style={{ margin: '10px', cursor: 'pointer' }}
+                            onMouseEnter={() => console.log('Mouse entered slot', slot)} // Log slot info when mouse enters
+                            onMouseLeave={() => console.log('Mouse left slot', slot)} // Log slot info when mouse leaves
+                            onClick={() => handleSlotSelection(slot._id)} // Add onClick event handler for slot selection
+                        >
+                            <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
+                            <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
+                            <label htmlFor={`slot-${index}`} className="flex items-center mt-2">
+                                <input
+                                    type="radio"
+                                    id={`slot-${index}`}
+                                    name="appointmentSlot"
+                                    value={slot._id}
+                                    checked={selectedSlot && selectedSlot._id === slot._id}
+                                    onChange={() => handleSlotSelection(slot._id)}
+                                    className="mr-2"
+                                />
+                                <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
+                            </label>
                         </div>
-                    </div>
-
-                    <div className="col-md-5 col-sm-12 mt-3 border-end">
-                        <p className='py-2 border-bottom info-head-date'>
-                            {selectedDate ? `Selected - ${moment(selectedDate).format('LL')}` : 'Pick a Time'}
-                        </p>
-                        <div className='info-date-card row'>
-                            {
-                                last5Days.map((item, index) => (
-                                    <div key={index + 5} className="mb-3 col-md-6" onClick={() => handleDateChange(item)}>
-                                        <div className={`p-3 mb-3 rounded text-center select-date ${moment(item).format('LL') === moment(selectedDate).format('LL') ? 'active' : ''}`}>
-                                            <div className='select-month'>{moment(item).format('MMMM YYYY')}</div>
-                                            <div className='select-day-num'>{moment(item).format('D')}</div>
-                                            <div className='select-month'>{moment(item).format('dddd')}</div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </div>
-                    </div>
-                    <div className="col-md-4 col-sm-12 mt-3">
-                        <p className='py-2 border-bottom info-head-date'>
-                            {selectTime ? `Selected -  ${selectTime} To ${moment(selectTime, 'hh:mm A').add(30, 'minutes').format('hh:mm A')}` : 'Pick a Time'}
-                        </p>
-
-                        <div className='select-time-div'>
-                            <h4>Morning Time <span className='text-secondary'>(8AM - 12PM)</span></h4>
-                            <div className="row text-center mt-3">
-                                {
-                                    amTimeSlot.map((item, id) => (
-                                        <div className="col-md-4 col-sm-6" key={id + 155}>
-                                            <Button type={item === selectTime ? "primary" : "default"} shape="" size='small' className='mb-3' onClick={() => handleSelectTime(item)}>{item}</Button>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-
-                        <div className='select-time-div'>
-                            <h4>After Noon Time <span className='text-secondary'>(1PM - 5PM)</span></h4>
-                            <div className="row text-center mt-3">
-                                {
-                                    pmTimeSlot.map((item, id) => (
-                                        <div className="col-md-4" key={id + 155}>
-                                            <Button type={item === selectTime ? "primary" : "default"} shape="" size='small' className='mb-3' onClick={() => handleSelectTime(item)}> {item} </Button>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </dir>
+                    ))
+                ) : (
+                    <div>No appointment slots available.</div>
+                )}
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default SelectApppointment;
+export default SelectAppointment;

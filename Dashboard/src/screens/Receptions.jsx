@@ -55,21 +55,21 @@ function Receptions() {
 
         <div className="grid md:grid-cols-6 sm:grid-cols-2 grid-cols-1 gap-2">
           <div className="md:col-span-5 grid lg:grid-cols-4 items-center gap-6">
-            <input
+            {/* <input
               type="text"
               placeholder='Search "Amina Mwakio"'
               className="h-14 w-full text-sm text-main rounded-md bg-dry border border-border px-4"
-            />
+            /> */}
           </div>
 
           {/* export */}
-          <Button
+          {/* <Button
             label="Export"
             Icon={MdOutlineCloudDownload}
             onClick={() => {
               toast.error('Exporting is not available yet');
             }}
-          />
+          /> */}
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
           <DoctorsTable

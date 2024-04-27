@@ -9,16 +9,16 @@ import './index.css';
 
 const ClinicAndSpecialities = () => {
 	return (
-		<section className="section section-specialities position-relative">
+		<section className="container section-features">
 			<div className="container-fluid">
 				<div className='mb-5 section-title text-center'>
 					<h2>Clinic and Specialities</h2>
-					<p className='m-0'>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+					<p className='m-0'>Providing expert care and specialized services to meet your healthcare needs at itClinic.</p>
 				</div>
 
 				<div className="row justify-content-center">
-					<div className="col-md-9">
-						<div className="specialities-slider slider d-flex justify-content-center align-items-center gap-5">
+					<div className="col-md-7">
+						<div className="specialities-slider slider d-flex justify-content-center align-items-center gap-3">
 							<div className="speicality-item text-center">
 								<div className="speicality-img">
 									<img src={img1} className="img-fluid" alt="" />

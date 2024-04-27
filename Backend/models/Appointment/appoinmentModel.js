@@ -1,15 +1,20 @@
 import mongoose from 'mongoose'
 
 const appointmentSchema = new mongoose.Schema({
-    patientName: { type: String, required: true },
-    purposeOfVisit: { type: String, required: true },
-    dateOfVisit: { type: Date, required: true },
-    startTime: { type: Date, required: true },
-    endTime: { type: String, required: true },
+    patient: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient',
+        required: true
+    },
+    patientName: { type: String },
+    purposeOfVisit: { type: String },
+    dateOfVisit: { type: Date },
+    startTime: { type: Date },
+    endTime: { type: Date },
     doctor: { type: String },
     status: {
         type: String,
-        enum: ['Pending', 'Confirmed', 'Cancelled', 'Approved'], // Add 'Pending' to the enum values
+        enum: ['Pending', 'Confirmed', 'Cancelled', 'Approved'],
         required: true
     },
     description: { type: String },

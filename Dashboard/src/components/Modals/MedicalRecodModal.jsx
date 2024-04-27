@@ -1,94 +1,109 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from './Modal';
-import { Button } from '../Form';
 import { FiEye } from 'react-icons/fi';
-import { MedicineDosageTable } from '../Tables';
-import { medicineData } from '../Datas';
-import { useNavigate } from 'react-router-dom';
+import { MedicineDosageTable } from '../../components/Tables';
+import axios from 'axios';
+function MedicalRecodModal({ closeModal, isOpen, data, }) {
+  const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
+  const [showMedicineDosages, setShowMedicineDosages] = useState(false);
+  const medicineDosages = prescription ? prescription.medicines : [];
 
-function MedicalRecodModal({ closeModal, isOpen, datas }) {
-  const navigate = useNavigate();
   return (
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title="12 May 2021"
+      data={data}
+      title={new Date(data.createdAt).toLocaleString()}
       width={'max-w-4xl'}
     >
       <div className="flex-colo gap-6">
-        {datas?.data?.slice(0, 3).map((data) => (
-          <div key={data.id} className="grid grid-cols-12 gap-4 w-full">
+        {/* Render prescription items if available */}
+        {medicineDosages.length > 0 && (
+          <div className="grid grid-cols-12 gap-4 w-full">
             <div className="col-span-12 md:col-span-3">
-              <p className="text-sm font-medium">{data.title}:</p>
+              <p className="text-sm font-medium">Prescriptions</p>
             </div>
             <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
-              <p className="text-xs text-main font-light leading-5">
-                {data.value}
-              </p>
+              {showMedicineDosages && <MedicineDosageTable data={medicineDosages} />}
             </div>
           </div>
-        ))}
-        {/* visual sign */}
-        <div className="grid grid-cols-12 gap-4 w-full">
-          <div className="col-span-12 md:col-span-3">
-            <p className="text-sm font-medium">Vital Signs:</p>
-          </div>
-          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
-            <p className="text-xs text-main font-light leading-5">
-              {datas?.vitalSigns?.map((item) => (
-                // separate each item with comma
-                <span key={item} className="mr-1">
-                  {item},
-                </span>
-              ))}
-            </p>
-          </div>
-        </div>
-        {/* medicine */}
-        <div className="grid grid-cols-12 gap-4 w-full">
-          <div className="col-span-12 md:col-span-3">
-            <p className="text-sm font-medium">Prescriptions</p>
-          </div>
-          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl overflow-hidden p-4">
-            <MedicineDosageTable
-              data={medicineData?.slice(0, 3)}
-              functions={{}}
-              button={false}
-            />
-          </div>
-        </div>
-        {/* attachments */}
+        )}
+
         <div className="grid grid-cols-12 gap-4 w-full">
           <div className="col-span-12 md:col-span-3">
             <p className="text-sm font-medium">Attachments:</p>
           </div>
           <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6 xs:grid-cols-2 md:grid-cols-4 grid gap-4">
-            {
-              // show attachments
-              datas?.attachments?.map((item) => (
+            {attachments.map((attachment, index) => {
+              const imageUrl = `http://localhost:8800/uploads/${attachment.filename}`;
+              console.log(imageUrl)
+              return (
                 <img
-                  key={item}
-                  src={item}
-                  alt="attachment"
-                  className="w-full md:h-32 object-cover rounded-md"
+                  src={imageUrl}
+                  alt={attachment.originalname}
+                  className="w-full h-40 rounded-lg object-cover"
+                  onLoad={() => {
+                    axios.get(imageUrl, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    }).then(response => {
+                      console.log('Image loaded successfully:', response);
+                    }).catch(error => {
+                      console.error('Error fetching attachment image:', error);
+                    });
+                  }}
                 />
-              ))
-            }
+              );
+            })}
           </div>
         </div>
 
-        {/* view Invoice */}
-        <div className="flex justify-end items-center w-full">
-          <div className="md:w-3/4 w-full">
-            <Button
-              label="View Invoice"
-              Icon={FiEye}
-              onClick={() => {
-                closeModal();
-                navigate(`/invoices/preview/198772`);
-              }}
-            />
+        {/* Render Complaints */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Complaints:</p>
           </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{complaints}</p>
+          </div>
+        </div>
+
+        {/* Render Diagnosis */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Diagnosis:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{diagnosis}</p>
+          </div>
+        </div>
+
+        {/* Render Vital Signs */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Vital Signs:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{vitalSigns}</p>
+          </div>
+        </div>
+
+        {/* Render Treatment */}
+        <div className="grid grid-cols-12 gap-4 w-full">
+          <div className="col-span-12 md:col-span-3">
+            <p className="text-sm font-medium">Treatment:</p>
+          </div>
+          <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6">
+            <p>{treatment}</p>
+          </div>
+        </div>
+
+        {/* Render eye icon to toggle MedicineDosageTable */}
+        <div className="flex items-center justify-end">
+          <FiEye
+            className="cursor-pointer mr-2"
+            onClick={() => setShowMedicineDosages(!showMedicineDosages)}
+          />
+          <p>Show Medicine Dosages</p>
         </div>
       </div>
     </Modal>

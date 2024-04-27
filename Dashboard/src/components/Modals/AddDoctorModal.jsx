@@ -1,73 +1,114 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
-import { Button, Input, Select } from '../Form';
-import { BiChevronDown } from 'react-icons/bi';
-import { sortsDatas } from '../Datas';
+import { Button, Input } from '../../components/Form';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
-import Access from '../Access';
-import Uploader from '../Uploader';
+import axios from 'axios';
 
 function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
-  const [instraction, setInstraction] = useState(sortsDatas.title[0]);
-  const [access, setAccess] = useState({});
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
 
-  const onSubmit = () => {
-    toast.error('This feature is not available yet');
+  const handleImageUpload = (event) => {
+    setProfileImage(event.target.files[0]);
+  };
+
+  const saveChanges = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('fullName', fullName);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('address', address);
+      formData.append('profileImage', profileImage);
+
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://drfayazproject.onrender.com/api/doctors',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log('Response:', response.data);
+      toast.success('Doctor information saved successfully');
+      closeModal();
+    } catch (error) {
+      console.error('Error saving doctor information:', error);
+      toast.error('Failed to save doctor information');
+    }
   };
 
   return (
-    <Modal
-      closeModal={closeModal}
-      isOpen={isOpen}
-      title={doctor ? 'Add Doctor' : datas?.id ? 'Edit Stuff' : 'Add Stuff'}
-      width={'max-w-3xl'}
-    >
-      <div className="flex gap-3 flex-col col-span-6 mb-6">
-        <p className="text-sm">Profile Image</p>
-        <Uploader />
-      </div>
-
-      <div className="flex-colo gap-6">
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <Input label="Full Name" color={true} placeholder="John Doe" />
-
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Title</p>
-            <Select
-              selectedPerson={instraction}
-              setSelectedPerson={setInstraction}
-              datas={sortsDatas.title}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {instraction.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
+    <Modal closeModal={closeModal} isOpen={isOpen}>
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2 className="text-lg font-semibold">
+            {doctor
+              ? 'Add Doctor'
+              : datas?.id
+                ? 'Edit Stuff'
+                : 'Add Stuff'}
+          </h2>
+        </div>
+        <div className="modal-body space-y-4">
+          <Input
+            label="Full Name"
+            color='true'
+            type="text"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+          <Input
+            label="Email"
+            type="email"
+            color='true'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            label="Phone Number"
+            type="text"
+            color='true'
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <Input
+            label="Address"
+            type="text"
+            color='true'
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <div>
+            <p className="text-sm font-medium">Profile Image</p>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
           </div>
         </div>
-
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <Input label="Email" color={true} />
-          <Input label="Phone Number" color={true} />
-        </div>
-
-        {/* password */}
-        <Input label="Password" color={true} />
-
-        {/* table access */}
-        <div className="w-full">
-          <Access setAccess={setAccess} />
-        </div>
-
-        {/* buttones */}
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <button
+        <div className="modal-footer flex justify-end">
+          <Button
+            label="Cancel"
+            variant="secondary"
             onClick={closeModal}
-            className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
-          >
-            Cancel
-          </button>
-          <Button label="Save" Icon={HiOutlineCheckCircle} onClick={onSubmit} />
+            className="mr-2"
+          />
+          <Button
+            label="Save Changes"
+            Icon={HiOutlineCheckCircle}
+            onClick={saveChanges}
+          />
         </div>
       </div>
     </Modal>

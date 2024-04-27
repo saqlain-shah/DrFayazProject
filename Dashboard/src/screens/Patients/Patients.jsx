@@ -1,55 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { sortsDatas } from '../../components/Datas';
-import { Link, useNavigate } from 'react-router-dom';
-import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import { MdFilterList } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { BiPlus } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
-import { Button, FromToDate, Select } from '../../components/Form';
 import { PatientTable } from '../../components/Tables';
 import axios from 'axios';
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import AddEditPatientModal from './EditPatient';
+import { useParams } from 'react-router-dom';
 function Patients() {
+  const [isOpen, setIsOpen] = useState(false);
   const [patients, setPatients] = useState([]);
-  const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
-  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-  const [sortBy, setSortBy] = useState('new'); // State for sorting
-  const navigate = useNavigate();
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
 
-  useEffect(() => {
-    console.log('Gender state before fetching patients:', gender); // Log the gender state before making the API request
+  const { patientId } = useParams();
 
-    const fetchPatients = async () => {
-      try {
-        const response = await axios.get('http://localhost:8800/api/patients', {
-          params: { search: searchQuery, gender: gender.value, sortBy }
-        });
-        console.log('Received patients:', response.data);
-        setPatients(response.data);
-      } catch (error) {
-        console.error('Error fetching patients:', error);
-        toast.error('Failed to fetch patients');
-      }
-    };
-
-    fetchPatients();
-  }, [searchQuery, gender, sortBy]);
+  const fetchPatients = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const formattedDate = startDate ? startDate.toLocaleDateString('en-US') : '';
+      const response = await axios.get('http://localhost:8800/api/patients', {
+        params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
 
-  const handleGenderChange = (selectedGender) => {
-    setGender(selectedGender.value); // Update to set the gender value
+      console.log('Fetched patients:', response.data);
+
+      // Iterate over patients to fetch appointment details from the new API endpoint
+      const patientsWithAppointments = await Promise.all(response.data.map(async (patient) => {
+        try {
+          const appointmentResponse = await axios.get(`http://localhost:8800/api/web/`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          console.log(`Fetched appointments for patient ID: ${patient._id}`, appointmentResponse.data);
+          // Extract only personal information of patients and combine with appointments
+          return {
+            _id: patient._id,
+            fullName: patient.fullName,
+            profilePicture: patient.profilePicture,
+            gender: patient.gender,
+            bloodGroup: patient.bloodGroup,
+            address: patient.address,
+            email: patient.email,
+            emergencyContact: patient.emergencyContact,
+            createdAt: patient.createdAt,
+            appointments: appointmentResponse.data
+          };
+        } catch (error) {
+          console.error(`Error fetching appointments for patient ID: ${patient._id}`, error);
+          // If there's an error fetching appointments, return patient data without appointments
+          return {
+            _id: patient._id,
+            fullName: patient.fullName,
+            profilePicture: patient.profilePicture,
+            gender: patient.gender,
+            bloodGroup: patient.bloodGroup,
+            address: patient.address,
+            email: patient.email,
+            emergencyContact: patient.emergencyContact,
+            createdAt: patient.createdAt,
+            appointments: []
+          };
+        }
+      }));
+
+      console.log('Patients with appointments:', patientsWithAppointments);
+      setPatients(patientsWithAppointments);
+
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      toast.error('Failed to fetch patients');
+    }
   };
+  useEffect(() => {
+    fetchPatients();
+  }, [searchQuery, startDate, genderFilter]);
 
   const handleDelete = async (patientId) => {
     try {
-      // Make an API call to delete the patient with the provided ID
-      await axios.delete(`http://localhost:8800/api/patients/${patientId}`);
-      // Refetch the patients after deletion
-      const response = await axios.get('http://localhost:8800/api/patients', {
-        params: { search: searchQuery, gender: gender.value, sortBy }
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:8800/api/patients/${patientId}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setPatients(response.data);
+      fetchPatients();
       toast.success('Patient deleted successfully');
     } catch (error) {
       console.error('Error deleting patient:', error);
@@ -57,12 +95,40 @@ function Patients() {
     }
   };
 
+  const handleEdit = (patient) => {
+    setSelectedPatient(patient);
+    setIsOpen(true);
+  };
 
-  // Function to handle sorting change
-  const handleSortChange = (value) => {
-    // Toggle between 'new' and 'old' when the same option is clicked again
-    const newSortBy = sortBy === 'new' ? 'old' : 'new';
-    setSortBy(newSortBy);
+  const handleSavePatient = async (patientData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (patientData._id) {
+        await axios.put(`http://localhost:8800/api/patients/${patientData._id}`, patientData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Patient updated successfully');
+      } else {
+        await axios.post('http://localhost:8800/api/patients', patientData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Patient created successfully');
+      }
+      fetchPatients();
+    } catch (error) {
+      console.error('Error saving patient:', error);
+      toast.error('Failed to save patient');
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setSelectedPatient(null);
+  };
+
+  const handleGenderFilterChange = (event) => {
+    const selectedValue = event.target.value;
+    setGenderFilter(selectedValue);
   };
 
   return (
@@ -75,61 +141,58 @@ function Patients() {
       </Link>
       <h1 className="text-xl font-semibold">Patients</h1>
       <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
-        <div className="grid lg:grid-cols-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2">
-          <input
-            type="text"
-            placeholder='Search "Patients"'
-            className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Select
-            selectedPerson={gender}
-            setSelectedPerson={handleGenderChange}
-            datas={[
-              { name: 'All', value: '' }, // Option for showing all patients
-              ...sortsDatas.genderFilter
-            ]}
-          >
-
-            <div className="h-14 w-full text-xs text-main rounded-md bg-dry border border-border px-4 flex items-center justify-between">
-              <p>{gender.name}</p>
-              <BiChevronDown className="text-xl" />
-            </div>
-          </Select>
-          <FromToDate
-            startDate={dateRange[0]}
-            endDate={dateRange[1]}
-            bg="bg-dry"
-            onChange={(update) => setDateRange(update)}
-          />
-          <Select
-            selectedPerson={sortBy}
-            setSelectedPerson={handleSortChange}
-            datas={[
-              { name: 'Newest First', value: 'new' },
-              { name: 'Oldest First', value: 'old' },
-            ]}
-          >
-            <div className="h-14 w-full text-xs text-main rounded-md bg-dry border border-border px-4 flex items-center justify-between">
-              {sortBy === 'new' ? 'Newest First' : 'Oldest First'} <BiChevronDown className="text-xl" />
-            </div>
-          </Select>
-          <Button
-            label="Filter"
-            Icon={MdFilterList}
-            onClick={() => {
-              toast.error('Filter data is not available yet');
-            }}
-          />
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+          <div className="flex-grow md:w-auto w-full">
+            <input
+              type="text"
+              placeholder='Search "Patients"'
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <div className="flex-grow md:w-auto w-full">
+            <select
+              value={genderFilter}
+              onChange={handleGenderFilterChange}
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
+            >
+              <option value="all">All</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div className="flex-grow w-full md:w-auto">
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={startDate}
+              placeholderText="Select start date"
+              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
+            />
+          </div>
         </div>
-        <div className="mt-8 w-full overflow-x-scroll">
+
+        <div className="mt-8 overflow-x-auto">
           <PatientTable
             data={patients}
+            onEdit={handleEdit}
             functions={{ delete: handleDelete }}
           />
         </div>
       </div>
+
+
+
+
+      <AddEditPatientModal
+        isOpen={isOpen}
+        closeModal={handleCloseModal}
+        patientData={selectedPatient}
+        onSave={handleSavePatient}
+      />
     </Layout>
   );
 }

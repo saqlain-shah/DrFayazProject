@@ -1,15 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { Button } from '../../components/Form';
-import { MdOutlineCloudDownload } from 'react-icons/md';
-import { toast } from 'react-hot-toast';
-import { InvoiceTable } from '../../components/Tables';
-import { invoicesData } from '../../components/Datas';
-import { BiPlus } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-import { memberData } from '../../components/Datas'; // Import memberData
+import { BiPlus } from 'react-icons/bi';
+import { InvoiceTable } from '../../components/Tables';
+import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 function Invoices() {
+  const [invoicesData, setInvoicesData] = useState([]);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('https://drfayazproject.onrender.com/api/invoices', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setInvoicesData(response.data);
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+        toast.error('Error fetching invoices');
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const deleteInvoice = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`https://drfayazproject.onrender.com/api/invoices/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setInvoicesData(invoicesData.filter((invoice) => invoice._id !== id));
+      toast.success('Invoice deleted successfully');
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      toast.error('Error deleting invoice');
+    }
+  };
+  const updateInvoiceData = (updatedInvoice) => {
+    setInvoicesData(invoicesData.map((invoice) => {
+      if (invoice._id === updatedInvoice._id) {
+        return updatedInvoice;
+      }
+      return invoice;
+    }));
+  };
   return (
     <Layout>
       <Link
@@ -28,22 +69,15 @@ function Invoices() {
       >
         <div className="grid md:grid-cols-6 sm:grid-cols-2 grid-cols-1 gap-2">
           <div className="md:col-span-5 grid lg:grid-cols-4 items-center gap-6">
-            <input
+            {/* <input
               type="text"
               placeholder='Search "patient name"'
               className="h-14 w-full text-sm text-main rounded-md bg-dry border border-border px-4"
-            />
+            /> */}
           </div>
-          <Button
-            label="Export"
-            Icon={MdOutlineCloudDownload}
-            onClick={() => {
-              toast.error('Exporting is not available yet');
-            }}
-          />
         </div>
         <div className="mt-8 w-full overflow-x-scroll">
-          <InvoiceTable data={invoicesData} />
+          <InvoiceTable data={invoicesData} deleteInvoice={deleteInvoice} updateInvoiceData={updateInvoiceData} />
         </div>
       </div>
     </Layout>

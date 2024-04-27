@@ -1,55 +1,106 @@
-// controllers/authController.js
-
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
 import { createError } from '../utils/error.js';
+import User from '../models/User.js'; // Import your User model
+import mongoose from 'mongoose';
 
-export const register = async (req, res, next) => {
+export const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
   try {
-    const { firstName, lastName, email, password } = req.body;
-
-    // Check if a user with the same email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ success: false, message: 'User with this email already exists.' });
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Compare trimmed password using bcrypt
+    const isValidPassword = await bcrypt.compare(password.trim(), user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
 
-    // Save the user to the database
-    const newUser = new User({ firstName, lastName, email, password: hashedPassword });
-    await newUser.save();
+    // Generate token upon successful login
+    const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '90d' });
 
-    res.status(200).json({ success: true, message: "User has been created." });
-  } catch (err) {
-    next(err);
+    // Set token as an HTTP cookie
+    res.cookie('access_token', token, { httpOnly: true, maxAge: 90 * 24 * 60 * 60 * 1000 }); // Expires in 90 days
+
+    // Set token in response body
+    res.status(200).json({ message: 'Login successful', token, id: user._id });
+
+  } catch (error) {
+    console.error('Error logging in:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
-export const login = async (req, res, next) => {
+
+export const register = async (req, res, next) => {
+  const { name, email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
+    const newUser = new User({ name, email, password });
+    await newUser.save();
+
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
+    res.cookie('access_token', token, { httpOnly: true }).status(201).json({ message: 'Registration successful', token });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const updateDoctorById = async (req, res, next) => {
+  const { doctorId } = req.params;
+  const { fullName, email, phone, address, profileImage } = req.body;
+
+  try {
+      const updatedDoctor = await User.findByIdAndUpdate(doctorId, { fullName, email, phone, address, profileImage }, { new: true });
+      if (!updatedDoctor) {
+          return res.status(404).json({ message: 'Doctor not found' });
+      }
+      return res.status(200).json(updatedDoctor);
+  } catch (error) {
+      console.error('Error updating doctor:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+export const changePassword = async (req, res, next) => {
+  const { userId, oldPassword, newPassword } = req.body;
+
+  try {
+    console.log('Request body:', req.body); // Log the request body to verify userId, oldPassword, and newPassword
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is missing' });
+    }
+
+    const user = await User.findById(userId);
     if (!user) {
-      return next(createError(404, "User not found!"));
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return next(createError(400, "Wrong password or username!"));
+    console.log('User found:', user);
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid old password' });
     }
 
-    // Generate JWT token for authentication
-    const expiresIn = 90 * 24 * 60 * 60; // 90 days in seconds
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn });
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
 
-    // Send JWT token in response as a cookie named "access_token"
-    res.cookie("access_token", token, { httpOnly: true }).status(200).json({ message: "Login successful", token });
-
-  } catch (err) {
-    next(err);
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

@@ -17,7 +17,7 @@ const Gallery = () => {
             <div class="text-center mb-5">
                 <div class="section-title mb-3">
                     <h2>Gallery</h2>
-                    <p>Lorem ipsum dolor sit amet.</p>
+                    <p>Gallary of Our HaelthCare Center.</p>
                 </div>
             </div>
 
@@ -29,7 +29,7 @@ const Gallery = () => {
                                 <div class="col-lg-3 col-md-4 col-sm-12" key={index + 55}>
                                     <div class="gallery-item">
                                         <div class="galelry-lightbox d-flex justify-content-center align-items-center">
-                                            <Image src={item} alt="" class="w-100" style={{objectFit:'cover',maxHeight:'280px', minHeight:'280px'}}/>
+                                            <Image src={item} alt="" className="w-full object-cover h-48 sm:h-64"/>
                                         </div>
                                     </div>
                                 </div>

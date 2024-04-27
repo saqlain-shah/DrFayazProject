@@ -1,17 +1,17 @@
 import Appointment from '../../models/Appointment/appoinmentModel.js'
+import mongoose from 'mongoose';
+
 
 export const createAppointment = async (req, res, next) => {
     try {
-        // Assuming `req.body` contains the appointment data sent from the client
-        const { patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
+        const { patientId, patientName, purposeOfVisit, dateOfVisit, startTime, endTime, doctor, status, description, share } = req.body;
 
-        // Validate required fields
-        if (!patientName || !purposeOfVisit || !dateOfVisit || !startTime || !endTime) {
-            return res.status(400).json({ error: 'Patient name, purpose of visit, date of visit, start time, and end time are required.' });
+        if (!startTime || !endTime || !patientId || !purposeOfVisit) {
+            return res.status(400).json({ error: 'Patient ID, purpose of visit, start time, and end time are required fields.' });
         }
 
-        // Create a new appointment instance
         const newAppointment = new Appointment({
+            patient: patientId,
             patientName,
             purposeOfVisit,
             dateOfVisit,
@@ -23,19 +23,75 @@ export const createAppointment = async (req, res, next) => {
             share
         });
 
-        // Save the appointment to the database
         const savedAppointment = await newAppointment.save();
 
-        // Respond with the saved appointment
         res.status(201).json({ message: 'Appointment created successfully', appointment: savedAppointment });
     } catch (error) {
-        // Handle errors
         next(error);
     }
 };
-;
 
-// Controller to get all appointments
+export const getTotalAppointmentCount = async (req, res) => {
+    try {
+        const totalCount = await Appointment.countDocuments();
+        res.json({ totalCount });
+    } catch (error) {
+        console.error('Error fetching total appointment count:', error);
+        res.status(500).json({ error: 'Error fetching total appointment count' });
+    }
+};
+export const getAppointmentsForToday = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1); // Get tomorrow's date
+
+        // Query appointments for today
+        const appointments = await Appointment.find({
+            start: {
+                $gte: today,
+                $lt: tomorrow
+            }
+        }).populate('patient');
+
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error('Error fetching today\'s appointments:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+export const getAppointmentsByPatientId = async (req, res) => {
+    try {
+        const { patientId } = req.params;
+
+        // Check if patientId is null or undefined
+        if (!patientId) {
+            return res.status(400).json({ message: 'Patient ID is required' });
+        }
+
+        // Check if patientId is a valid ObjectId
+        if (!mongoose.isValidObjectId(patientId)) {
+            return res.status(400).json({ message: 'Invalid Patient ID' });
+        }
+
+        // Find appointments where the patient field matches the provided patientId
+        const appointments = await Appointment.find({ patient: patientId });
+
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error('Error fetching appointments by patient ID:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+
+
+
+
+
+
 export const getAllAppointments = async (req, res, next) => {
     try {
         const appointments = await Appointment.find();
@@ -45,7 +101,6 @@ export const getAllAppointments = async (req, res, next) => {
     }
 };
 
-// Controller to get an appointment by ID
 export const getAppointmentById = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -59,7 +114,6 @@ export const getAppointmentById = async (req, res, next) => {
     }
 };
 
-// Controller to update an appointment by ID
 export const updateAppointment = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -74,7 +128,6 @@ export const updateAppointment = async (req, res, next) => {
     }
 };
 
-// Controller to delete an appointment by ID
 export const deleteAppointment = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -87,3 +140,4 @@ export const deleteAppointment = async (req, res, next) => {
         next(error);
     }
 };
+
