@@ -1,11 +1,8 @@
 import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
-<<<<<<< HEAD
 import multer from 'multer';
+import { upload } from '../../utils/multerConfig.js';
 
-import { upload } from '../../utils/multerConfig.js'; 
-
-const uploadMiddleware = upload.array('attachments', 5); 
-
+const uploadMiddleware = upload.array('attachments', 5);
 
 export const createMedicalRecord = async (req, res) => {
     try {
@@ -22,13 +19,13 @@ export const createMedicalRecord = async (req, res) => {
             const { complaints, diagnosis, treatment, vitalSigns } = req.body;
 
             const parsedTreatment = JSON.parse(treatment);
-            const attachments = req.files ? req.files.map(file => file.filename) : []; 
+            const attachments = req.files ? req.files.map(file => file.filename) : [];
             const medicalRecord = new MedicalRecord({
                 complaints,
                 diagnosis,
-                treatment: parsedTreatment, 
+                treatment: parsedTreatment,
                 vitalSigns,
-                attachments 
+                attachments
             });
 
             await medicalRecord.save();
@@ -39,61 +36,7 @@ export const createMedicalRecord = async (req, res) => {
 
             res.status(201).json(responseData);
         });
-=======
-export const createMedicalRecord = async (req, res) => {
-    try {
-        console.log('Request Files:', req.files); // Log request files
-        const { patientId, complaints, diagnosis, vitalSigns, prescription, treatment, medicine } = req.body;
-
-
-        // Parse the prescription array if it's a string
-        const parsedPrescription = typeof prescription === 'string' ? JSON.parse(prescription) : prescription;
-
-        // Parse the treatment array if it's a string
-        const parsedTreatment = typeof treatment === 'string' ? JSON.parse(treatment) : treatment;
-
-        // Extract uploaded files from request
-        const attachments = req.files.map(file => ({
-            filename: file.filename,
-            originalname: file.originalname,
-            mimetype: file.mimetype,
-            size: file.size,
-            // Add any other relevant file data you want to store
-        }));
-
-        console.log('Extracted Attachments:', attachments); // Log extracted attachments
-
-        // Create a new medical record instance
-        const medicalRecord = new MedicalRecord({
-            patient: patientId,
-            complaints,
-            diagnosis,
-            treatment: parsedTreatment,
-            vitalSigns,
-            prescription: parsedPrescription,
-            medicine,
-            attachments
-        });
-
-
-        // Save the medical record to the database
-        await medicalRecord.save();
-
-        console.log('Medical record saved successfully');
-
-        // Include the created medical record and medicine data in the response
-        const responseData = {
-            message: 'Medical record created successfully',
-            data: {
-                medicalRecord,
-            }
-        };
-
-        // Send a success response
-        res.status(201).json(responseData);
->>>>>>> 4cf4ca24e4b49bd00c42f24f9dbdfc3d5121bf44
     } catch (error) {
-        // If an error occurs, log the error message and send an error response
         console.error('Validation Error:', error.message);
         res.status(500).json({ message: 'Failed to create medical record', error: error.message });
     }
@@ -120,16 +63,17 @@ export const updateMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to update medical record', error: error.message });
     }
 };
+
 export const getMedicalRecordsByPatientId = async (req, res) => {
     try {
         const patientId = req.params.id;
-        // Find medical records by patient ID
         const medicalRecords = await MedicalRecord.find({ patient: patientId });
         res.status(200).json({ success: true, data: medicalRecords });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
 export const deleteMedicalRecord = async (req, res) => {
     try {
         const medicalRecord = await MedicalRecord.findByIdAndDelete(req.params.id);
@@ -141,7 +85,3 @@ export const deleteMedicalRecord = async (req, res) => {
         res.status(500).json({ message: 'Failed to delete medical record', error: error.message });
     }
 };
-// MedicalRecordController.js
-
-
-
