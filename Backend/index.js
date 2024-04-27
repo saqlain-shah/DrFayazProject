@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 //     credentials: true // If you're including credentials in your requests
 // }));
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com'],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5174/'],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 

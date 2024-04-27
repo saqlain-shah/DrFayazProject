@@ -13,7 +13,7 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState = { upda
 
   // tabs data
   const tabs = [
-    { title: 'Email', icon: MdOutlineTextsms, value: 'email' },
+  
   ];
 
   // edit

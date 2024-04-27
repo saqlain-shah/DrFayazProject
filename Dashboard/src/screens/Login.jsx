@@ -108,15 +108,13 @@ function Login() {
             disabled={loading}
             type="submit"
           />
-          <div style={{ marginLeft: '10px' }}>
-            {/* Display user's name if available */}
-            <Button
-              label="Register"
-              onClick={handleRegisterClick}
-              color="primary"
-            />
-          </div>
         </div>
+        <div className="text-center mt-4">
+                    <span>Create an account? </span>
+                    <button className="text-blue-500" onClick={handleRegisterClick}>
+                    Register
+                    </button>
+                </div>
       </form>
     </div>
   );
