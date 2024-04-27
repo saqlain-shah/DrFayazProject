@@ -73,7 +73,7 @@ app.use('/api/medical-records', uploads, medicalRecordRoutes);
 // Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect('http://localhost:5173/');
+    res.redirect('https://www.avicenahealthcare.com');
 });
 
 
