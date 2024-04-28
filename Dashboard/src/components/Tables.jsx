@@ -455,81 +455,45 @@ export function PatientTable({ data, functions, onEdit }) {
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <React.Fragment key={item._id}>
-              <tr className="border-b border-border hover:bg-greyed transitions">
-                <td className={tdClass}>{index + 1}</td>
-                <td className={tdClass}>
-                  {item.profilePicture && (
-                    <img
-                      src={`http://localhost:8800/${item.profilePicture}`}
-                      alt={item.fullName}
-                      className="w-full h-11 rounded-full object-cover border border-border"
-                    />
-                  )}
-                </td>
-                <td className={tdClass}>{item.fullName}</td>
-                <td className={tdClass}>
-                  <span
-                    className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
-                      } bg-opacity-10 text-xs rounded-xl`}
-                  >
-                    {item.gender}
-                  </span>
-                </td>
-                <td className={tdClass}>{item.bloodGroup}</td>
-                <td className={tdClass}>{item.address}</td>
-                <td className={tdClass}>{item.email}</td>
-                <td className={tdClass}>{item.emergencyContact}</td>
-                <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
-                <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={patientMenuOptions} item={item}>
-                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                      <BiDotsHorizontalRounded />
-                    </div>
-                  </MenuSelect>
-                </td>
-              </tr>
-              {/* {item.appointments && item.appointments.map((_appointment, appIndex) => (
-                <tr key={_appointment._id} className="border-b border-border hover:bg-greyed transitions">
-                  <td className={tdClass}></td>
-                  <td className={tdClass}>
-                    {item.profilePicture && (
-                      <img
-                        src={`http://localhost:8800/${_appointment.patientInfo.image}`}
-                        alt={item.fullName}
-                        className="w-full h-11 rounded-full object-cover border border-border"
-                      />
-                    )}
-                  </td>
-                  <td className={tdClass}>{_appointment.patientInfo.name}</td>
-                  <td className={tdClass}>{_appointment.patientInfo.gender}</td>
-                  <td className={tdClass}>{_appointment.patientInfo.bloodGroup}</td>
-                  <td className={tdClass}>{_appointment.patientInfo.address}</td>
-                  <td className={tdClass}>{_appointment.patientInfo.email}</td>
-                  <td className={tdClass}>{_appointment.patientInfo.emergencyContact}</td>
-                  <td className={tdClass}>{new Date(_appointment.createdAt).toLocaleString()}</td>
-                  <td className={tdClass} style={{ position: 'relative' }}>
-                    <MenuSelect datas={appointmentMenuOptions} item={_appointment}>
-                      <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                        <BiDotsHorizontalRounded />
-                      </div>
-                    </MenuSelect>
-                  </td>
-                </tr>
-              ))} */}
-            </React.Fragment>
+            <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+              <td className={tdClass}>{index + 1}</td>
+              <td className={tdClass}>
+                {item.profilePicture && (
+                  <img
+                    src={`http://localhost:8800/${item.profilePicture}`}
+                    alt={item.fullName}
+                    className="w-full h-11 rounded-full object-cover border border-border"
+                  />
+                )}
+              </td>
+              <td className={tdClass}>{item.fullName}</td>
+              <td className={tdClass}>
+                <span
+                  className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+                    } bg-opacity-10 text-xs rounded-xl`}
+                >
+                  {item.gender}
+                </span>
+              </td>
+              <td className={tdClass}>{item.bloodGroup}</td>
+              <td className={tdClass}>{item.address}</td>
+              <td className={tdClass}>{item.email}</td>
+              <td className={tdClass}>{item.emergencyContact}</td>
+              <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
+              <td className={tdClass} style={{ position: 'relative' }}>
+                <MenuSelect datas={patientMenuOptions} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
 }
-
-
-
-
-
-
 
 export function PatientTableArray({ data, onEdit }) {
   console.log("data", data)
@@ -583,15 +547,6 @@ export function PatientTableArray({ data, onEdit }) {
   );
 }
 
-
-
-
-
-
-
-
-
-
 export function DoctorsTable({ data, functions, doctor }) {
   const thclass = 'py-3 px-4 text-left font-semibold';
   const tdclass = 'py-3 px-4';
@@ -614,47 +569,49 @@ export function DoctorsTable({ data, functions, doctor }) {
   ];
 
   return (
-    <table className="table-auto w-full">
-      <thead className="bg-dry rounded-md overflow-hidden">
-        <tr>
-          <th className={thclass}>#</th>
-          <th className={thclass}>{doctor ? 'Doctor' : 'Receptionist'}</th>
-          <th className={thclass}>FullName</th>
-          <th className={thclass}>Created At</th>
-          <th className={thclass}>Phone</th>
-          <th className={thclass}>Email</th>
-          <th className={thclass}>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item, index) => (
-          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-            <td className={tdclass}>{index + 1}</td>
-            <td className={tdclass}>
-              <div className="flex gap-4 items-center">
-                <span className="w-12">
-                  <img
-                    src={`http://localhost:8800/${item.profileImage}`}
-                    className="w-full h-12 rounded-full object-cover border border-border"
-                  />
-                </span>
-              </div>
-            </td>
-            <td className={tdclass}>{item.fullName}</td>
-            <td className={tdclass}>{item.createdAt}</td>
-            <td className={tdclass}>{item.phone}</td>
-            <td className={tdclass}>{item.email}</td>
-            <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
-                <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                  <BiDotsHorizontalRounded />
-                </div>
-              </MenuSelect>
-            </td>
+    <div className="overflow-x-auto">
+      <table className="table-auto w-full">
+        <thead className="bg-dry rounded-md overflow-hidden">
+          <tr>
+            <th className={thclass}>#</th>
+            <th className={thclass}>{doctor ? 'Doctor' : 'Receptionist'}</th>
+            <th className={thclass}>FullName</th>
+            <th className={thclass}>Created At</th>
+            <th className={thclass}>Phone</th>
+            <th className={thclass}>Email</th>
+            <th className={thclass}>Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
+              <td className={tdclass}>{index + 1}</td>
+              <td className={tdclass}>
+                <div className="flex gap-4 items-center">
+                  <span className="w-12">
+                    <img
+                      src={`http://localhost:8800/${item.profileImage}`}
+                      className="w-full h-12 rounded-full object-cover border border-border"
+                    />
+                  </span>
+                </div>
+              </td>
+              <td className={tdclass}>{item.fullName}</td>
+              <td className={tdclass}>{item.createdAt}</td>
+              <td className={tdclass}>{item.phone}</td>
+              <td className={tdclass}>{item.email}</td>
+              <td className={tdclass}>
+                <MenuSelect datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelect>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -778,10 +735,6 @@ export function AppointmentTable({ functions, token, patientId }) {
   );
 }
 
-
-
-
-// payment table
 export function PaymentTable({ data, functions, doctor }) {
   return (
     <table className="table-auto w-full">
