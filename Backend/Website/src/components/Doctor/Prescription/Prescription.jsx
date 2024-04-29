@@ -26,7 +26,7 @@ const Prescription = () => {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const response = await axios.get("http://localhost:8800/api/web/", config);
+            const response = await axios.get("https://server-yvzt.onrender.com/api/web/", config);
             setData(response.data);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -57,13 +57,13 @@ const Prescription = () => {
             render: patientInfo => patientInfo.name
         },
         {
-            title: 'Service Name',
+            title: 'Service',
             dataIndex: 'selectedService',
             key: 'selectedService',
             render: selectedService => selectedService.name
         },
         {
-            title: 'Patient Price',
+            title: 'Service Price',
             dataIndex: 'selectedService',
             key: 'selectedService',
             render: selectedService => selectedService.price

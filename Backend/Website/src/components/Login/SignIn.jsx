@@ -15,7 +15,7 @@ const SignIn = ({ handleResponse }) => {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:8800/api/userauth/login', data);
+            const response = await axios.post('https://server-yvzt.onrender.com/api/userauth/login', data);
             const { token, _id } = response.data; // Assuming token and _id are returned from the API
             if (token && _id) {
                 localStorage.setItem('token', token); // Store token in local storage
@@ -32,7 +32,7 @@ const SignIn = ({ handleResponse }) => {
             setLoading(false);
         }
     };
-    
+
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
@@ -51,8 +51,8 @@ const SignIn = ({ handleResponse }) => {
             <button className="iBtn" type="submit" value="sign In" disabled={loading}>
                 {loading ? <Spinner animation="border" variant="info" /> : "Sign In"}
             </button>
-            <p className="social-text">Or Sign in with social platforms</p>
-            <div onClick={handleResponse} className="socialBtn">Sign Up</div>
+            {/* <p className="social-text">Or Sign in with social platforms</p> */}
+            {/* <div onClick={handleResponse} className="socialBtn">Sign Up</div> */}
         </form>
     );
 };

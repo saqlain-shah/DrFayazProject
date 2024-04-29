@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaCheck, FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
-import SocialSignUp from './SocialSignUp';
+// import SocialSignUp from './SocialSignUp';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -23,7 +23,7 @@ const SignUp = ({ onSignUpSuccess }) => {
         numeric: false
     });
     const [emailError, setEmailError] = useState(false);
-   
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,21 +46,21 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     const handleSignUpSuccess = () => {
         console.log('Sign-up successful!yyyy');
-        toast.success('Registration successful'); 
+        toast.success('Registration successful');
         onSignUpSuccess();  // Invoke the callback function passed as prop
     };
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8800/api/userauth/register', user);
+            const response = await axios.post('https://server-yvzt.onrender.com/api/userauth/register', user);
             if (response.data.message === 'Registration successful') {
                 handleSignUpSuccess();
-              // Redirect to home page after successful sign-up
+                // Redirect to home page after successful sign-up
             } else {
                 setLoading(false);
                 // setInfoError(response.data.message);
             }
-            
+
         } catch (error) {
             setLoading(false);
             if (error.response) {
@@ -71,8 +71,8 @@ const SignUp = ({ onSignUpSuccess }) => {
                 // The request was made but no response was received
                 console.error('Network error:', error.request);
                 setInfoError('Network error. Please check your connection.');
-            } 
-            
+            }
+
         }
     };
 
@@ -110,8 +110,8 @@ const SignUp = ({ onSignUpSuccess }) => {
                 <p><FaCheck style={{ color: passwordValidation.specialChar ? "green" : "red" }} /> Must have a special character</p>
                 <p><FaCheck style={{ color: passwordValidation.carLength ? "green" : "red" }} /> Must have at least 8 characters</p>
             </div>
-            <p className="social-text">Or sign up with a social account</p>
-            <SocialSignUp onSignUpSuccess={handleSignUpSuccess} />
+            {/* <p className="social-text">Or sign up with a social account</p> */}
+            {/* <SocialSignUp onSignUpSuccess={handleSignUpSuccess} /> */}
         </form>
     );
 };

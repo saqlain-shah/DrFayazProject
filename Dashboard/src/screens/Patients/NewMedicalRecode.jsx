@@ -18,6 +18,7 @@ function NewMedicalRecord() {
   const appointmentData = location.state?.appointmentData;
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
+  const [webPatientData, setWebPatientData] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [complaints, setComplaints] = useState('');
@@ -29,11 +30,22 @@ function NewMedicalRecord() {
   const [treatments, setTreatments] = useState(
     servicesData.map((item) => ({
       name: item.name,
+<<<<<<< HEAD
       checked: false,
       price: item.price,
     }))
   );
 
+=======
+      checked: false, // Ensure checked is set to a Boolean value
+      price: item.price || 0, // Set price to 0 if it's undefined
+    }))
+  );
+
+
+
+
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
   const addMedicineDosage = (medicineDosage) => {
     setMedicineDosages((prevMedicineDosages) => [...prevMedicineDosages, medicineDosage]);
     console.log('Medicine Dosage:', medicineDosage);
@@ -46,21 +58,51 @@ function NewMedicalRecord() {
     setTreatments(updatedTreatments);
   };
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
+=======
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
           headers: { Authorization: `Bearer ${token}` }
         });
         setPatientData(response.data);
+        console.log('Patient Data:', response.data); // Add log for patient data
       } catch (error) {
         console.error('Error fetching patient data:', error);
       }
     };
+
+    const fetchWebPatientData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWebPatientData(response.data);
+        console.log('Web Patient Data:', response.data); // Add log for web patient data
+      } catch (error) {
+        console.error('Error fetching web patient data:', error);
+      }
+    };
+
     fetchPatientData();
+    fetchWebPatientData();
   }, [id]);
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
   const onChangePrescription = (name, checked) => {
     const updatedPrescription = [...prescription];
     if (checked) {
@@ -123,7 +165,7 @@ function NewMedicalRecord() {
 
     const token = localStorage.getItem('token');
     axios
-      .post('http://localhost:8800/api/medical-records', formData, {
+      .post('https://server-yvzt.onrender.com/api/medical-records', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -177,20 +219,31 @@ function NewMedicalRecord() {
       </div>
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 flex-colo gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
-          <img
-            src={`http://localhost:8800/${patientData.profilePicture}`}
-            alt="profile"
-            className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
-          />
+          {webPatientData && patientData && (
+            <img
+              src={
+                webPatientData.patientInfo?.image
+                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
+                  : patientData.profilePicture
+                    ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
+                    : ''
+              }
+              alt="profile"
+              className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+            />
+          )}
           <div className="gap-2 flex-colo">
-            <h2 className="text-sm font-semibold">{patientData.fullName}</h2>
-            <p className="text-xs text-textGray">{patientData.email}</p>
-            <p className="text-xs">{patientData.emergencyContact}</p>
+            <h2 className="text-sm font-semibold">{webPatientData?.patientInfo?.name || patientData?.fullName}</h2>
+            <p className="text-xs text-textGray">{webPatientData?.patientInfo?.email || patientData?.email}</p>
+            <p className="text-xs">{webPatientData?.patientInfo?.emergencyContact || patientData?.emergencyContact}</p>
             <p className="text-xs text-subMain bg-text font-medium py-1 px-4 rounded-full border-[0.5px] border-subMain">
-              {patientData.age} yrs
+              {webPatientData?.patientInfo?.age || ''} yrs
             </p>
           </div>
         </div>
+
+
+
 
         <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6">
           <div className="flex w-full flex-col gap-5">
@@ -241,8 +294,13 @@ function NewMedicalRecord() {
                 {servicesData?.slice(1, 100).map((item) => (
                   <Checkboxe
                     label={item.name}
+<<<<<<< HEAD
                     checked={treatments.find((i) => i.name === item.name).checked}
                     onChange={(checked) => onChangeTreatments(item.name, checked)}
+=======
+                    checked={(treatments.find((i) => i.name === item.name) || { checked: false }).checked}
+                    onChange={(checked) => onChangeTreatments(item.name, checked)} // Call onChangeTreatments with the treatment name and checked value
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
                     name={item.name}
                     key={item.id}
                   />

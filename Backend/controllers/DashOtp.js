@@ -118,6 +118,7 @@ export const verifyOTP = async (req, res) => {
 //     console.error('Error verifying OTP:', error);
 //     res.status(500).json({ success: false, message: 'Error verifying OTP' });
 //   }
+<<<<<<< HEAD
 // };
 
 
@@ -127,3 +128,6 @@ export const verifyOTP = async (req, res) => {
 
 
 
+=======
+// };
+>>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918

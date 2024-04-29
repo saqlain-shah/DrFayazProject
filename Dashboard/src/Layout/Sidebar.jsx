@@ -17,9 +17,9 @@ function Sidebar() {
     <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-screen w-full border-r border-border">
       <Link to="/">
         <img
-         src={pic}
+          src={pic}
           alt="logo"
-          className="w-48 h-12 ml-4  rounded-lg shadow-md"
+          className="w-48 h-15 ml-4  rounded-lg "
         />
       </Link>
       <div className="flex-colo gap-2 mt-12">

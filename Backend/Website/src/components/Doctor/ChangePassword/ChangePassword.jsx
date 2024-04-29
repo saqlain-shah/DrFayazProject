@@ -8,8 +8,15 @@ const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const params = useParams(); // Get URL parameters using useParams
+    const [passwordError, setPasswordError] = useState('');
 
     const handleChangePassword = async () => {
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=.*[^\w\d]).{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            setPasswordError('Password must have at least one number, one uppercase and lowercase letter, one special character, and be at least 8 characters long');
+            return;
+        }
+
         const token = localStorage.getItem('token');
         const config = {
             headers: {
@@ -17,10 +24,11 @@ const ChangePassword = () => {
             }
         };
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/change-password/${params.clientId}`, { oldPassword, newPassword }, config);
+            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/change-password/${params.clientId}`, { oldPassword, newPassword }, config);
             message.success(response.data.message);
             setOldPassword('');
             setNewPassword('');
+            setPasswordError('');
         } catch (error) {
             console.error('Error changing password:', error);
             message.error('Failed to change password');
@@ -42,9 +50,10 @@ const ChangePassword = () => {
                         <div className="form-group mb-3 card-label">
                             <label>New Password</label>
                             <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder='New Password' className="form-control" />
+                            {passwordError && <p className="text-danger">{passwordError}</p>}
                         </div>
                     </div>
-                    <div className='mt-5 text-center'>
+                    <div className='mt-5 text-end'>
                         <Button onClick={handleChangePassword} type="primary" size='large'>Save Changes</Button>
                     </div>
                 </form>

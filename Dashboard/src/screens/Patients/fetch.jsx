@@ -4,7 +4,7 @@ export const fetchMedicalRecords = async (id, setMedicalRecords, toast) => {
     try {
         const token = localStorage.getItem('token');
         console.log('Fetching medical records for patient ID:', id);
-        const response = await axios.get(`http://localhost:8800/api/medical-records/preview/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Response from medical records API:', response.data);

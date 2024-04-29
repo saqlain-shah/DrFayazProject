@@ -77,11 +77,11 @@ export const MenuDatas = [
     path: "/settings",
     icon: AiOutlineSetting,
   },
-  {
-    title: "Medicine",
-    path: "/medicine",
-    icon: RiMedicineBottleLine,
-  },
+  // {
+  //   title: "Medicine",
+  //   path: "/medicine",
+  //   icon: RiMedicineBottleLine,
+  // },
   // {
   //   title: "Receptions",
   //   path: "/receptions",
@@ -1146,11 +1146,11 @@ export const patientTab = [
     title: "Invoices",
     icon: RiFileList3Line,
   },
-  {
-    id: 4,
-    title: "Payments",
-    icon: RiMoneyDollarCircleLine,
-  },
+  // {
+  //   id: 4,
+  //   title: "Payments",
+  //   icon: RiMoneyDollarCircleLine,
+  // },
   {
     id: 5,
     title: "Images",

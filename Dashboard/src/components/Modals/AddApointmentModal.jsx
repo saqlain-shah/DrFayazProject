@@ -30,7 +30,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://drfayazproject.onrender.com/api/doctors', {
+      const response = await axios.get('https://server-yvzt.onrender.com/api/doctors', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,7 +84,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
     };
 
     console.log("Sending appointment data:", data);
-    const apiUrl = 'https://drfayazproject.onrender.com/api/appointments';
+    const apiUrl = 'https://server-yvzt.onrender.com/api/appointments';
     const token = localStorage.getItem('token');
 
     axios.post(apiUrl, data, {

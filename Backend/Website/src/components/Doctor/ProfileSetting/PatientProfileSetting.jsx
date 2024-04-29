@@ -45,10 +45,10 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
+        await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
             .then(response => {
                 console.log(response)
-                const imagePath = `http://localhost:8800/${response.data.image}`
+                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
                 response.data.image = imagePath;
                 setData(response.data);
             })
@@ -128,7 +128,7 @@ const PatientProfileSetting = () => {
 
         try {
             // Send PUT request with FormData
-            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
+            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
             console.log('Response:', response);
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
@@ -150,14 +150,14 @@ const PatientProfileSetting = () => {
                 <div className="row form-row" >
                     <div className="col-md-12">
                         <div className="form-group">
-                            <div className='change-avatar d-flex gap-2 align-items-center'>
+                            <div className='change-avatar   gap-2 align-items-center'>
                                 <img
                                     src={selectedImage ? selectedImage : (data?.image || pImage)}
                                     alt=""
-                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%' }}
+                                    style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '50%', marginBottom: '30px' }}
                                 />
-                                <div>
-                                    <input type="file"  onChange={handleFileChange} />
+                                <div style={{ marginBottom: '30px' }}>
+                                    <input type="file" onChange={handleFileChange} />
                                 </div>
                             </div>
                         </div>
@@ -239,7 +239,7 @@ const PatientProfileSetting = () => {
                                 className="form-control" />
                         </div>
                     </div>
-                    <div className='text-center'>
+                    <div className='text-end'>
                         <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
                     </div>
                 </div>

@@ -65,13 +65,14 @@ function App() {
           <Route path="/invoices/edit/:id" element={<PrivateRoute element={<EditInvoice />} />} />
           <Route path="/invoices/preview/:id" element={<PrivateRoute element={<PreviewInvoice />} />} />
           {/* payments */}
-          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} /><Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
+          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} />
+          <Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
           <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
           <Route path="/patients/profile/:id" element={<PrivateRoute element={<PatientProfile />} />} />
-          <Route path="/appointments/preview/:id" element={<PrivateRoute element={<Webpatinet />} />} />
+
           <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
           <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />
           {/* doctors */}

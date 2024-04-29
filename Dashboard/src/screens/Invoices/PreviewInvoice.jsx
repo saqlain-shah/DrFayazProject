@@ -33,7 +33,7 @@ function PreviewInvoice() {
     const fetchInvoice = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://drfayazproject.onrender.com/api/invoices/${id}`, {
+        const response = await fetch(`https://server-yvzt.onrender.com/api/invoices/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -225,7 +225,7 @@ function PreviewInvoice() {
           </Link>
           <h1 className="text-xl font-semibold">Preview Invoice</h1>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
+        {/* <div className="flex flex-wrap items-center gap-4">
           <button
             onClick={() => {
               setIsShareOpen(true);
@@ -267,7 +267,7 @@ function PreviewInvoice() {
             Editt <FiEdit />
           </Link>
 
-        </div>
+        </div> */}
       </div>
       <div className='actual-receipt'>
         {invoice && (
@@ -304,7 +304,7 @@ function PreviewInvoice() {
                   total={invoice?.total}
                 />
               </div>
-              <div className="col-span-6 lg:col-span-2 flex flex-col gap-6">
+              {/* <div className="col-span-6 lg:col-span-2 flex flex-col gap-6">
                 <div className="flex-btn gap-4">
                   <p className="text-sm font-extralight">Currency:</p>
                   <h6 className="text-sm font-medium">USD ($)</h6>
@@ -332,7 +332,7 @@ function PreviewInvoice() {
                     www.example.com/payments
                   </p>
                 </div>
-              </div>
+              </div> */}
 
             </div>
           </div>

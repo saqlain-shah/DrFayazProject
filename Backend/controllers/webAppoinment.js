@@ -33,3 +33,12 @@ export const deleteWebAppointment = async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to delete web appointment' });
     }
 };
+export const getWebAppointment = async (req, res) => {
+    try {
+        const count = await WebAppointment.countDocuments();
+        res.status(200).json({ count });
+    } catch (error) {
+        console.error('Error counting webs:', error);
+        res.status(500).json({ message: 'Error counting webs', error: error.message });
+    }
+};

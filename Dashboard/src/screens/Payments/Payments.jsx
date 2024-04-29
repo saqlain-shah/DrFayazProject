@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Button, FromToDate, Select } from '../../components/Form';
 import { Transactiontable } from '../../components/Tables';
@@ -21,26 +21,34 @@ function Payments() {
   const navigate = useNavigate();
   const [transactionData, setTransactionData] = useState([]);
 
-
   useEffect(() => {
-    // Fetch transaction data from your API or database here
-    // Example fetch call:
     const token = localStorage.getItem('token');
-    fetch('http://localhost:8800/api/web/', {
+    fetch('https://server-yvzt.onrender.com/api/web/', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to fetch transaction data');
-      }
-      return response.json();
-    })
-    .then(data => setTransactionData(data))
-    .catch(error => console.error('Error fetching transaction data:', error));
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch transaction data');
+        }
+        return response.json();
+      })
+      .then(data => setTransactionData(data))
+      .catch(error => console.error('Error fetching transaction data:', error));
   }, []);
-  
+
+  const [updatedData, setUpdatedData] = useState([]);
+
+  useEffect(() => {
+    setTransactionData(updatedData);
+  }, [updatedData]);
+
+
+
+
+
+
   const sorts = [
     {
       id: 2,
@@ -83,16 +91,14 @@ function Payments() {
   const editPayment = (id) => {
     navigate(`/payments/edit/${id}`);
   };
-  // preview
-  const previewPayment = (id) => {
-    navigate(`/payments/preview/${id}`);
-  };
+
+
 
   return (
     <Layout>
       <h1 className="text-xl font-semibold">Payments</h1>
       {/* boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {boxes.map((box) => (
           <div
             key={box.id}
@@ -107,8 +113,8 @@ function Payments() {
                 {box.title === 'Today Payments'
                   ? 'today'
                   : box.title === 'Monthly Payments'
-                  ? 'this month'
-                  : 'this year'}
+                    ? 'this month'
+                    : 'this year'}
               </p>
             </div>
             <div
@@ -118,7 +124,7 @@ function Payments() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
       {/* datas */}
       <div
         data-aos="fade-up"
@@ -128,32 +134,19 @@ function Payments() {
         className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
       >
         <div className="grid lg:grid-cols-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-2">
-          <input
+          {/* <input
             type="text"
             placeholder='Search "Patients"'
             className="h-14 text-sm text-main rounded-md bg-dry border border-border px-4"
-          />
-          {/* sort  */}
-          {sorts.map((item) => (
-            <Select
-              key={item.id}
-              selectedPerson={item.selected}
-              setSelectedPerson={item.setSelected}
-              datas={item.datas}
-            >
-              <div className="h-14 w-full text-xs text-main rounded-md bg-dry border border-border px-4 flex items-center justify-between">
-                <p>{item.selected.name}</p>
-                <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
-          ))}
+          /> */}
+
           {/* date */}
-          <FromToDate
+          {/* <FromToDate
             startDate={startDate}
             endDate={endDate}
             bg="bg-dry"
             onChange={(update) => setDateRange(update)}
-          />
+          /> */}
           {/* export
           <Button
             label="Filter"
@@ -166,7 +159,9 @@ function Payments() {
         <div className="mt-8 w-full overflow-x-scroll">
           <Transactiontable
             data={transactionData}
-
+            action={true}
+            updatedData={updatedData}
+            setUpdatedData={setUpdatedData}
           />
         </div>
       </div>

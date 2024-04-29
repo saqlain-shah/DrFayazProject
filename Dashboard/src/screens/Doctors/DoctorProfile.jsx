@@ -25,7 +25,7 @@ function DoctorProfile() {
     const fetchDoctorData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://drfayazproject.onrender.com/api/doctors/${doctorId}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/doctors/${doctorId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -76,7 +76,7 @@ function DoctorProfile() {
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex items-center justify-center flex-col">
           <img
-            src={`https://drfayazproject.onrender.com/${doctorData ? doctorData.profileImage : '/images/user1.png'}`}
+            src={`https://server-yvzt.onrender.com/${doctorData ? doctorData.profileImage : '/images/user1.png'}`}
             alt="Doctor"
             className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
           />
