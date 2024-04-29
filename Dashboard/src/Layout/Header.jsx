@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { MenuSelect } from "../components/Form";
 import { TbUser } from "react-icons/tb";
 import { AiOutlinePoweroff } from "react-icons/ai";
@@ -10,12 +10,13 @@ import { BiMenu } from "react-icons/bi";
 import { useAuth } from "../AuthContext"; // Import the useAuth hook
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios';
 
 function Header() {
+  const [notificationsData, setNotificationsData] = useState([]);
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get the logout function from useAuth
   const name = localStorage.getItem('name');
-  console.log("name", name)
   const profileImagePath = localStorage.getItem('profileImage'); // Retrieve profile image from local storage
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -39,11 +40,34 @@ function Header() {
         localStorage.removeItem('token')
         logout(); // Call the logout function from useAuth
         navigate('/login');
-
       },
     },
   ];
   const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:8800/api/web/notifications', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setNotificationsData(response.data);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  
+  
+
+  const unreadNotificationsCount = notificationsData.filter(item => item.status === 'Pending').length;
+
   return (
     <>
       {/* Header content */}
@@ -66,7 +90,7 @@ function Header() {
               <div className="relative">
                 <MdOutlineNotificationsNone className="text-2xl hover:text-subMain" />
                 <span className="absolute -top-2.5 -right-2.5 font-semibold bg-subMain rounded-full px-1.5 py-0.5 text-xs text-white text-center">
-                  5
+                  {unreadNotificationsCount}
                 </span>
               </div>
             </NotificationComp>
@@ -112,4 +136,3 @@ function Header() {
 }
 
 export default Header;
-

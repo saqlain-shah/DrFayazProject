@@ -22,7 +22,7 @@ const WebPatientSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['Pending', 'Approved', 'Cancelled'], default: 'Pending' },
   method: { type: String, enum: ['Online', 'Cash'], default: 'Online' },
-
+  message: { type: String } 
 });
 
 // Create Web model

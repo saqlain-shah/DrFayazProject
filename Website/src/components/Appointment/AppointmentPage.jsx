@@ -233,20 +233,20 @@ const AppointmentPage = () => {
     console.log("Confirming appointment...");
     setShowModal(true); // Show the modal after confirming the appointment
     setShowAppointmentDetails(true);
-
+  
     // Combine appointment data
     const appointmentData = {
       patientInfo: selectValue, // Personal information
       selectedSlot: selectedSlot, // Selected appointment slot
       selectedService: selectedService, // Selected service
     };
-
+  
     // Retrieve token from localStorage
     const token = localStorage.getItem("token");
-
+  
     // Include ID in the appointment data
     appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
-
+  
     // Make a POST request to store the appointment data with token included in headers
     axios
       .post("http://localhost:8800/api/web/", appointmentData, {
@@ -259,19 +259,39 @@ const AppointmentPage = () => {
         // Display a success toast message after appointment creation
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
+  
+        // Send notification after successful appointment
+      // Frontend code to send notifications
+axios.post('http://localhost:8800/api/web/notifications', {
+  email: selectValue.email,
+  message: "Your appointment has been successfully scheduled. Thank you!",
+}, {
+  headers: {
+      Authorization: `Bearer ${token}`,
+  },
+})
+.then((notificationResponse) => {
+  console.log("Notification sent successfully:", notificationResponse.data);
+})
+.catch((notificationError) => {
+  console.error("Error sending notification:", notificationError);
+});
 
+  
+        // After sending notification, delete the selected slot
         axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
       })
       .catch((error) => {
         console.error("Error creating appointment:", error);
         // Handle error, e.g., show an error message to the user
       });
   };
+
+  
 
   useEffect(() => {
     if (isSuccess) {

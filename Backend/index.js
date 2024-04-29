@@ -27,7 +27,11 @@ import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
-import webRoutes from './routes/webRoutes.js';
+import webRoutes from './routes/webRoutes.js'
+
+
+
+
 
 const app = express();
 app.use(express.json());
@@ -48,17 +52,14 @@ app.use((req, res, next) => {
 });
 
 
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174/"],
-  credentials: true
-}));
-
-// const corsOptions = {
-//     origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173'],
-//     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
-// };
 
 
+const corsOptions = {
+    origin: ['http://localhost:5174','http://localhost:5173'],
+    credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
+};
+
+app.use(cors(corsOptions));
 
 
 

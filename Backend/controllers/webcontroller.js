@@ -101,3 +101,36 @@ export const getTodayWebAppointments = async (req, res) => {
     res.status(500).json({ message: 'Error fetching today\'s web appointments', error: error.message });
   }
 };
+
+
+
+// webcontroller.js
+
+// Controller method for fetching notifications
+export const getNotifications = async (req, res) => {
+  try {
+      // Fetch notifications data from your database or any other source
+      // For example, you can retrieve notifications from a MongoDB collection
+      const notifications = await WebPatient.find();
+
+      // Send the notifications data as a response
+      res.status(200).json(notifications);
+  } catch (error) {
+      console.error('Error fetching notifications:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
+  }
+};
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  try {
+    // Update all notifications to mark them as read
+    await WebPatient.updateMany({}, { status: 'Read' });
+
+    // Send a success response
+    res.status(200).json({ success: true, message: 'All notifications marked as read' });
+  } catch (error) {
+    // Handle errors
+    console.error('Error marking all notifications as read:', error);
+    res.status(500).json({ success: false, message: 'Failed to mark all notifications as read' });
+  }
+};
