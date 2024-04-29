@@ -27,13 +27,7 @@ import path from 'path';
 import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
-import webRoutes from './routes/webRoutes.js'
-<<<<<<< HEAD
-import otpDashRoutes from './routes/dashOtpRoutes.js'
-=======
-
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
-//import helmet from 'helmet';
+import webRoutes from './routes/webRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -43,12 +37,6 @@ setupMiddleware();
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
-<<<<<<< HEAD
-// Serving static files
-app.use(express.static(path.join(__dirname, 'Website', 'dist')));
-=======
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -59,26 +47,21 @@ app.use((req, res, next) => {
     next();
 });
 
-// Setting up CORS
-<<<<<<< HEAD
+
 app.use(cors({
-  origin: ["http://localhost:5173", "https://drfayazproject.onrender.com"],
+  origin: ["http://localhost:5173", "http://localhost:5174/"],
   credentials: true
 }));
-=======
-// app.use(cors({
-//     origin: 'http://localhost:5173',
-//     credentials: true // If you're including credentials in your requests
-// }));
-const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173'],
-    credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
-};
 
-app.use(cors(corsOptions));
+// const corsOptions = {
+//     origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173'],
+//     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
+// };
 
 
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
+
+
+
 
 // Handling file upload
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -86,10 +69,8 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
-<<<<<<< HEAD
-=======
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
+
 // Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {

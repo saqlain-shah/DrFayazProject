@@ -30,22 +30,19 @@ function NewMedicalRecord() {
   const [treatments, setTreatments] = useState(
     servicesData.map((item) => ({
       name: item.name,
-<<<<<<< HEAD
+
       checked: false,
       price: item.price,
     }))
   );
 
-=======
-      checked: false, // Ensure checked is set to a Boolean value
-      price: item.price || 0, // Set price to 0 if it's undefined
-    }))
-  );
+      // checked: false, // Ensure checked is set to a Boolean value
+      // price: item.price || 0, // Set price to 0 if it's undefined
+ 
 
 
 
 
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
   const addMedicineDosage = (medicineDosage) => {
     setMedicineDosages((prevMedicineDosages) => [...prevMedicineDosages, medicineDosage]);
     console.log('Medicine Dosage:', medicineDosage);
@@ -58,20 +55,15 @@ function NewMedicalRecord() {
     setTreatments(updatedTreatments);
   };
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
+
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-<<<<<<< HEAD
         const response = await axios.get(`http://localhost:8800/api/patients/${id}`, {
-=======
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
+
           headers: { Authorization: `Bearer ${token}` }
         });
         setPatientData(response.data);
@@ -84,7 +76,7 @@ function NewMedicalRecord() {
     const fetchWebPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
+        const response = await axios.get(`http://localhost:8800/api/web/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
@@ -98,11 +90,6 @@ function NewMedicalRecord() {
     fetchWebPatientData();
   }, [id]);
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
   const onChangePrescription = (name, checked) => {
     const updatedPrescription = [...prescription];
     if (checked) {
@@ -165,7 +152,7 @@ function NewMedicalRecord() {
 
     const token = localStorage.getItem('token');
     axios
-      .post('https://server-yvzt.onrender.com/api/medical-records', formData, {
+      .post('http://localhost:8800/api/medical-records', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -223,9 +210,9 @@ function NewMedicalRecord() {
             <img
               src={
                 webPatientData.patientInfo?.image
-                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
+                  ? `http://localhost:8800/${webPatientData.patientInfo.image}`
                   : patientData.profilePicture
-                    ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
+                    ? `http://localhost:8800/${patientData.profilePicture}`
                     : ''
               }
               alt="profile"
@@ -294,13 +281,13 @@ function NewMedicalRecord() {
                 {servicesData?.slice(1, 100).map((item) => (
                   <Checkboxe
                     label={item.name}
-<<<<<<< HEAD
+
                     checked={treatments.find((i) => i.name === item.name).checked}
                     onChange={(checked) => onChangeTreatments(item.name, checked)}
-=======
-                    checked={(treatments.find((i) => i.name === item.name) || { checked: false }).checked}
-                    onChange={(checked) => onChangeTreatments(item.name, checked)} // Call onChangeTreatments with the treatment name and checked value
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
+
+                    // checked={(treatments.find((i) => i.name === item.name) || { checked: false }).checked}
+                    // onChange={(checked) => onChangeTreatments(item.name, checked)} // Call onChangeTreatments with the treatment name and checked value
+
                     name={item.name}
                     key={item.id}
                   />

@@ -31,7 +31,7 @@ function PatientProfile() {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const profileResponse = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
+        const profileResponse = await axios.get(`http://localhost:8800/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfileData(profileResponse.data);
@@ -43,7 +43,7 @@ function PatientProfile() {
     const fetchWebPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
+        const response = await axios.get(`http://localhost:8800/api/web/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
@@ -64,7 +64,7 @@ function PatientProfile() {
         const token = localStorage.getItem('token');
         console.log('Token in PatientProfile component:', token);
         console.log('Fetching medical records...');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
+        const response = await axios.get(`http://localhost:8800/api/medical-records/preview/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
@@ -101,13 +101,8 @@ function PatientProfile() {
   
     try {
       const response = await axios.post(
-<<<<<<< HEAD
         'http://localhost:8800/api/otp/verify-otp',
         { email: email, otp: otpCode },
-=======
-        'https://server-yvzt.onrender.com/api/otp/verify-otp',
-        { email: 'davabu1122@gmail.com', otp: otpCode },
->>>>>>> 1e73cdba4b9b6a782d752c5fbc535447a2b75918
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
   
@@ -136,7 +131,7 @@ function PatientProfile() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otp/send-otp-to-doctor',
+        'http://localhost:8800/api/otp/send-otp-to-doctor',
         { email: 'davabu1122@gmail.com' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -229,7 +224,7 @@ function PatientProfile() {
           {profileData.fullName ? ( // Check if profileData is available
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
+                src={`http://localhost:8800/${profileData.profilePicture}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
@@ -243,7 +238,7 @@ function PatientProfile() {
           {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
+                src={`http://localhost:8800/${webPatientData.patientInfo.image}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
