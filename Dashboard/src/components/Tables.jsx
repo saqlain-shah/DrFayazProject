@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MenuSelect } from './Form';
+import {   MenuSelectss } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -144,11 +144,11 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
             </td>
             {action && (
               <td className={tdclass}>
-                <MenuSelect datas={DropDown1} item={item}>
+                < MenuSelectss datas={DropDown1} item={item}>
                   <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                     <BiDotsHorizontalRounded />
                   </div>
-                </MenuSelect>
+                </ MenuSelectss>
               </td>
             )}
           </tr>
@@ -335,11 +335,11 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
             <td className={tdclass}>{new Date(item?.dueDate).toLocaleString()}</td>
             <td className={`${tdclass} font-semibold`}>{item?.total}</td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -407,11 +407,11 @@ export function MedicineTable({ data, onEdit, onDelete }) {
             <td className={tdclass}>{item?.measure}</td>
             <td className={tdclass}>{item?.description}</td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -483,11 +483,11 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
               </span>
             </td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -604,11 +604,11 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>{item.emergencyContact}</td>
                 <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={patientMenuOptions} item={item}>
+                  <MenuSelectss datas={patientMenuOptions} item={item}>
                     <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg" style={{position:'sticky'}}>
                       <BiDotsHorizontalRounded />
                     </div>
-                  </MenuSelect>
+                  </MenuSelectss>
                 </td>
               </tr>
             </React.Fragment>
@@ -642,11 +642,11 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
                 <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={webPatientMenuOptions} item={webPatient}>
+                  <MenuSelectss datas={webPatientMenuOptions} item={webPatient}>
                     <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                       <BiDotsHorizontalRounded />
                     </div>
-                  </MenuSelect>
+                  </MenuSelectss>
                 </td>
               </tr>
             </React.Fragment>
@@ -767,11 +767,11 @@ export function DoctorsTable({ data, functions, doctor }) {
               <td className={tdclass}>{item.phone}</td>
               <td className={tdclass}>{item.email}</td>
               <td className={tdclass}>
-                <MenuSelect datas={DropDown1} item={item}>
+                < MenuSelectss datas={DropDown1} item={item}>
                   <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                     <BiDotsHorizontalRounded />
                   </div>
-                </MenuSelect>
+                </ MenuSelectss>
               </td>
             </tr>
           ))}
