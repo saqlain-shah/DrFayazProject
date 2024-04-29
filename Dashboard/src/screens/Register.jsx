@@ -75,7 +75,7 @@ function Register() {
   const sendOtpEmail = async (targetEmail) => {
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/send-otp',
+        'http://localhost:8800/api/otps/send-otp',
         { email: targetEmail },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -104,7 +104,7 @@ function Register() {
     
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/verify-otp',
+        'http://localhost:8800/api/otps/verify-otp',
         { otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -131,7 +131,7 @@ function Register() {
 
   const registerUser = async () => {
     try {
-      const response = await axios.post('https://server-yvzt.onrender.com/api/auth/register', {
+      const response = await axios.post('http://localhost:8800/api/auth/register', {
         name,
         email,
         password,
