@@ -9,6 +9,7 @@ import appointmentRoutes from './routes/appointmentRoutes.js';
 import medicalRecordRoutes from './routes/medicalReport.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import otpDashRoutes from './routes/dashOtpRoutes.js'
 import healthInformationRoutes from './routes/healthInfoRoutes.js';
 import servicesRoute from './routes/services.js';
 import sandGridRoutes from './routes/sendgridRoutes.js'
@@ -55,7 +56,7 @@ app.use((req, res, next) => {
 //     credentials: true // If you're including credentials in your requests
 // }));
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com'],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173/'],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
@@ -96,6 +97,7 @@ app.use('/api/sandgrid', sandGridRoutes);
 app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
 app.use('/api/otp', otpRoutes);
+app.use('/api/otps', otpDashRoutes);
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
 
