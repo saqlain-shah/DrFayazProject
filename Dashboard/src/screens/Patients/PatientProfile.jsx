@@ -18,35 +18,42 @@ import { FaTimes } from 'react-icons/fa';
 function PatientProfile() {
   const { id } = useParams();
   const [profileData, setProfileData] = useState({});
+  const [webPatientData, setWebPatientData] = useState({});
   const [activeTab, setActiveTab] = useState(1);
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
+
+
   // Inside PatientProfile component
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-
-        // Fetch patient's profile data
         const profileResponse = await axios.get(`http://localhost:8800/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-
-        console.log('Profile Data:', profileResponse.data); // Add this line to check profile data
-
-
-
-        // Set profile data and appointments in state
         setProfileData(profileResponse.data);
-
       } catch (error) {
         console.error('Error fetching profile data:', error);
       }
     };
 
+    const fetchWebPatientData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8800/api/web/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWebPatientData(response.data);
+      } catch (error) {
+        console.error('Error fetching web patient data:', error);
+      }
+    };
+
     fetchProfileData();
+    fetchWebPatientData();
   }, [id]);
 
 
@@ -88,21 +95,24 @@ function PatientProfile() {
   };
 
   const verifyOtp = async () => {
+    const email = 'davbabu1122@gmail.com'; // Set your desired email address here
+  
     console.log('Verifying OTP...');
-
+  
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otp/verify-otp',
-        { email: 'davabu1122@gmail.com', otp: otpCode },
+        { email: email, otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-
-      console.log("OTP Verification Response:", response);
-
+  
+      console.log('OTP Verification Response:', response);
+  
       if (response.status === 200) {
         console.log('OTP Verified!');
         setIsOtpValid(true);
-        closeDentalModal();
+        setIsDentalModalOpen(false);
+        navigate('/login');
       } else {
         console.log('Failed to verify OTP:', response.data.message);
         alert('Invalid OTP code. Please try again.');
@@ -114,6 +124,7 @@ function PatientProfile() {
       setIsOtpValid(false);
     }
   };
+  
 
 
   const handleMentalHealthTabClick = async () => {
@@ -148,7 +159,7 @@ function PatientProfile() {
       case 3:
         return <InvoiceUsed patientId={id} token={localStorage.getItem('token')} />;
       case 4:
-        return <PaymentsUsed doctor={false} />;
+      // return <PaymentsUsed doctor={false} />;
       case 5:
         return <PatientImages medicalRecords={medicalRecords} token={localStorage.getItem('token')} />
 
@@ -156,7 +167,8 @@ function PatientProfile() {
         console.log("Rendering DentalChart...");
         return isOtpValid ? <DentalChart /> : null;
       case 7:
-        return <PatientTableArray data={formatProfileData(profileData)} />;
+        return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
+
       case 8:
         return <HealthInfomation />;
       default:
@@ -164,22 +176,40 @@ function PatientProfile() {
     }
   };
 
-  const formatProfileData = (data) => {
-    return [
-      {
-        _id: data._id,
-        fullName: data.fullName,
-        gender: data.gender,
-        bloodGroup: data.bloodGroup,
-        address: data.address,
-        email: data.email,
-        emergencyContact: data.emergencyContact,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        profilePicture: data.profilePicture
-      }
-    ];
+  const formatProfileData = (profileData, webPatientData) => {
+    const formattedData = [];
+
+    if (profileData && profileData._id) {
+      formattedData.push({
+        _id: profileData._id,
+        fullName: profileData.fullName,
+        gender: profileData.gender,
+        bloodGroup: profileData.bloodGroup,
+        address: profileData.address,
+        email: profileData.email,
+        emergencyContact: profileData.emergencyContact,
+        createdAt: profileData.createdAt,
+        updatedAt: profileData.updatedAt,
+        profilePicture: profileData.profilePicture
+      });
+    }
+
+    if (webPatientData && webPatientData._id) {
+      formattedData.push({
+        _id: webPatientData._id,
+        fullName: webPatientData.patientInfo ? webPatientData.patientInfo.name : '',
+        gender: webPatientData.patientInfo ? webPatientData.patientInfo.gender : '',
+        bloodGroup: webPatientData.patientInfo ? webPatientData.patientInfo.bloodGroup : '',
+        address: webPatientData.patientInfo ? webPatientData.patientInfo.address : '',
+        email: webPatientData.patientInfo ? webPatientData.patientInfo.email : '',
+        emergencyContact: webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : '',
+        createdAt: webPatientData.createdAt
+      });
+    }
+
+    return formattedData;
   };
+
 
   return (
     <Layout>
@@ -191,16 +221,35 @@ function PatientProfile() {
       </div>
       <div className="grid grid-cols-12 gap-6 my-8 items-start">
         <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28 flex flex-col items-center justify-center">
-          <img
-            src={`http://localhost:8800/${profileData.profilePicture}`}
-            alt="Profile"
-            className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
-          />
-          <div className="gap-2 flex-col">
-            <h2 className="text-sm font-semibold">{profileData.fullName}</h2>
-            <p className="text-xs text-textGray">{profileData.email}</p>
-            <p className="text-xs">{profileData.emergencyContact}</p>
-          </div>
+          {profileData.fullName ? ( // Check if profileData is available
+            <Fragment>
+              <img
+                src={`http://localhost:8800/${profileData.profilePicture}`}
+                alt="Profile"
+                className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+              />
+              <div className="gap-2 flex-col">
+                <h2 className="text-sm font-semibold">{profileData.fullName}</h2>
+                <p className="text-xs text-textGray">{profileData.email}</p>
+                <p className="text-xs">{profileData.emergencyContact}</p>
+              </div>
+            </Fragment>
+          ) : null}
+          {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
+            <Fragment>
+              <img
+                src={`http://localhost:8800/${webPatientData.patientInfo.image}`}
+                alt="Profile"
+                className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+              />
+              <div className="gap-2 flex-col">
+                <h2 className="text-sm font-semibold">{webPatientData.patientInfo.name}</h2>
+                <p className="text-xs text-textGray">{webPatientData.patientInfo.email}</p>
+                <p className="text-xs">{webPatientData.patientInfo.emergencyContact}</p>
+              </div>
+            </Fragment>
+          ) : null}
+
 
           <div className="flex-col gap-3 px-2 xl:px-12 w-full">
             {patientTab.map((tab, index) => (

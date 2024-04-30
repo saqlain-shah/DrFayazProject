@@ -76,6 +76,30 @@ export function MenuSelect({ children, datas, item: data }) {
   );
 }
 
+export function MenuSelectss({ children, datas, item: data }) {
+  return (
+    <div className="text-sm w-full relative">
+      <Menu>
+        <Menu.Button>{children}</Menu.Button>
+        <Menu.Items className="flex flex-col z-50 gap-4 fixed right-10 top-24.5 bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none">
+
+          {datas.map((item, index) => (
+            <button
+              onClick={() => item.onClick(data)}
+              key={index}
+              className={`flex gap-4 items-center hover:text-subMain`}
+            >
+              {item.icon && <item.icon className="text-md text-subMain" />}
+              {item.title}
+            </button>
+          ))}
+        </Menu.Items>
+      </Menu>
+    </div>
+  );
+}
+
+
 export function Select({ selectedPerson, setSelectedPerson, datas }) {
   console.log("Datas structure:", datas.map(item => ({ value: item.value, name: item.name })));
   // Ensure selectedPerson is not undefined
@@ -268,6 +292,11 @@ export function Checkbox({ label, name, onChange, checked }) {
   );
 }
 export function Checkboxe({ label, name, onChange, checked }) {
+  const handleCheckboxChange = () => {
+    console.log(`Checkbox "${name}" clicked. Current state: ${checked}`);
+    onChange(!checked); // Toggle the checked state
+  };
+
   return (
     <div className="text-sm w-full flex flex-row items-center">
       <label className="flex-colo cursor-pointer relative">
@@ -275,7 +304,7 @@ export function Checkboxe({ label, name, onChange, checked }) {
           type="checkbox"
           name={name}
           checked={checked}
-          onChange={() => onChange(name, !checked)} // Pass the correct checked value
+          onChange={handleCheckboxChange}
           className="absolute opacity-0 w-0 h-0"
         />
         <span
@@ -290,7 +319,6 @@ export function Checkboxe({ label, name, onChange, checked }) {
     </div>
   );
 }
-
 
 
 

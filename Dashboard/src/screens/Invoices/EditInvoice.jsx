@@ -28,7 +28,7 @@ function EditInvoice() {
     const fetchInvoiceData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://drfayazproject.onrender.com/api/invoices/${id}`, {
+        const response = await fetch(`http://localhost:8800/api/invoices/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

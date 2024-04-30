@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppointmentTable } from '../Tables';
+// import { AppointmentTable } from '../Tables';
 import { useNavigate } from 'react-router-dom';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
 import EditAppointmentModal from '../Modals/EditAppointment';
@@ -15,7 +15,7 @@ function AppointmentsUsed({ token }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://drfayazproject.onrender.com/api/appointments', {
+      const response = await fetch('http://localhost:8800/api/appointments', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

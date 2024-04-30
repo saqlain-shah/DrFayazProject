@@ -6,12 +6,13 @@ import { Link, NavLink } from 'react-router-dom';
 import img from '../../../images/dr1.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
-
+import { FaBars } from 'react-icons/fa';
 
 const Header = ({ clientId }) => {
     const params = useParams();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [show, setShow] = useState(true);
+    const [menuOpen, setMenuOpen] = useState(false); // State to control the dropdown
     const Navigate = useNavigate();
 
     // This effect will run only once on component mount
@@ -39,25 +40,41 @@ const Header = ({ clientId }) => {
                         <img src={img} alt="" className="img-fluid w-32 h-20" />
                     </Link>
 
+                    {/* Render different elements based on screen size */}
                     <nav id="navbar" className="navbar order-last order-lg-0">
-                        <ul>
+                        <ul className="d-none d-lg-flex">
                             <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Home</NavLink></li>
                             <li><NavLink to={'/contact'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Contact</NavLink></li>
                             {!isLoggedIn && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
                         </ul>
                         {isLoggedIn &&
-                            <div>
-                                <Popover>
-                                    <div className='profileImage'>
-
-                                    </div>
-                                </Popover>
+                            <div className='profileImage'>
+                                {/* Profile Image */}
                             </div>
                         }
                     </nav>
-                    <button className="appointment-btn scrollto" onClick={handleMakeAppointment}>
+
+                    {/* Button for making an appointment */}
+                    <button className="appointment-btn scrollto d-none d-lg-block" onClick={handleMakeAppointment}>
                         <span className="d-none d-md-inline">Make an</span> Appointment
                     </button>
+
+                    {/* Dropdown Menu for Small Screens */}
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%' }}>
+                        <div
+                            className="toggle-menu"
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <FaBars />
+                        </div>
+                        <div className={`dropdown-menu ${menuOpen ? 'show' : ''}`} aria-labelledby="dropdownMenuButton" style={{ marginRight: '100%' }}>
+                            <NavLink to={'/'} className="dropdown-item">Home</NavLink>
+                            <NavLink to={'/contact'} className="dropdown-item">Contact</NavLink>
+                            {!isLoggedIn && <Link to={'/login'} className="dropdown-item">Login</Link>}
+                            <button className="dropdown-item" onClick={handleMakeAppointment}>Make an Appointment</button>
+                        </div>
+                    </div>
                 </div>
             </header>
         </>

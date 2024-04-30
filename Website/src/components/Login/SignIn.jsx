@@ -32,7 +32,7 @@ const SignIn = ({ handleResponse }) => {
             setLoading(false);
         }
     };
-    
+
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
@@ -51,8 +51,8 @@ const SignIn = ({ handleResponse }) => {
             <button className="iBtn" type="submit" value="sign In" disabled={loading}>
                 {loading ? <Spinner animation="border" variant="info" /> : "Sign In"}
             </button>
-            <p className="social-text">Or Sign in with social platforms</p>
-            <div onClick={handleResponse} className="socialBtn">Sign Up</div>
+            {/* <p className="social-text">Or Sign in with social platforms</p> */}
+            {/* <div onClick={handleResponse} className="socialBtn">Sign Up</div> */}
         </form>
     );
 };
