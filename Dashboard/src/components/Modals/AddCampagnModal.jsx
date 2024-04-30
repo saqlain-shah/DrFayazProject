@@ -63,27 +63,25 @@ function CampaignModal({ closeModal, isOpen, data }) {
                 onClick={() => changeTab(index)}
                 key={index}
                 className={`flex gap-4 items-center p-2 rounded-full 
-              ${
-                indexs === 0 && item.value === 'email'
-                  ? 'bg-subMain text-white'
-                  : indexs === 1 && item.value === 'whatsapp'
-                  ? 'bg-subMain text-white'
-                  : indexs === 2 && item.value === 'sms'
-                  ? 'bg-subMain text-white'
-                  : 'text-black'
-              }`}
+              ${indexs === 0 && item.value === 'email'
+                    ? 'bg-subMain text-white'
+                    : indexs === 1 && item.value === 'whatsapp'
+                      ? 'bg-subMain text-white'
+                      : indexs === 2 && item.value === 'sms'
+                        ? 'bg-subMain text-white'
+                        : 'text-black'
+                  }`}
               >
                 <div
                   className={`
-              ${
-                indexs === 0 && item.value === 'email'
-                  ? 'bg-white text-black'
-                  : indexs === 1 && item.value === 'whatsapp'
-                  ? 'bg-white text-black'
-                  : indexs === 2 && item.value === 'sms'
-                  ? 'bg-white text-black'
-                  : 'bg-white'
-              } w-10 h-10 text-md rounded-full flex-colo`}
+              ${indexs === 0 && item.value === 'email'
+                      ? 'bg-white text-black'
+                      : indexs === 1 && item.value === 'whatsapp'
+                        ? 'bg-white text-black'
+                        : indexs === 2 && item.value === 'sms'
+                          ? 'bg-white text-black'
+                          : 'bg-white'
+                    } w-10 h-10 text-md rounded-full flex-colo`}
                 >
                   <item.icon />
                 </div>

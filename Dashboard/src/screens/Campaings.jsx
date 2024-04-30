@@ -55,11 +55,12 @@ function Campaings() {
   const shareViaWhatsApp = async (item) => {
     setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('https://drfayazproject.onrender.com/api/patients/', {
+    await axios.get('http://localhost:8800/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }
     )
       .then((res) => {
+
         console.log("patients", res.data)
         res.data.map((patient) => {
           if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
@@ -69,7 +70,7 @@ function Campaings() {
           console.log("contact", contacts)
           setIsDialogOpen(true)
           handleCloseDialog
-          
+
         })
       })
 
@@ -78,7 +79,7 @@ function Campaings() {
   const shareViaEmail = async (item) => {
     setMessage(`Title: ${item.title}\nSend To: ${item.sendTo}\nMessage: ${item.action.message}`)
     const token = localStorage.getItem('token');
-    await axios.get('https://drfayazproject.onrender.com/api/patients/', {
+    await axios.get('http://localhost:8800/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
     }
     )
