@@ -4,6 +4,9 @@ import Layout from '../../Layout';
 import { toast } from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
+import pic from '../../build/images/upLogo.jpg'
+
+
 import { FiEdit } from 'react-icons/fi';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { AiOutlinePrinter } from 'react-icons/ai';
@@ -238,12 +241,12 @@ function PreviewInvoice() {
           >
             Share <RiShareBoxLine />
           </button>
-          <button
-            className={buttonClass}
-            onClick={shareViaWhatsApp}
-          >
-            WhatsApp
-          </button> */}
+          // <button
+          //   className={buttonClass}
+          //   onClick={shareViaWhatsApp}
+          // >
+          //   WhatsApp
+          // </button> */}
           {/* <button
             className={buttonClass}
             onClick={shareViaEmail}
@@ -279,7 +282,7 @@ function PreviewInvoice() {
             <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
               <div className="lg:col-span-3">
                 <img
-                  src="/images/logo.png"
+                  src={pic}
                   alt="logo"
                   className="w-32 object-contain"
                 />

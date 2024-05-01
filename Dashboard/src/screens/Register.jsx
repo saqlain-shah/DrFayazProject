@@ -6,7 +6,7 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import pic from '../build/images/logo.jpg';
+import pic from '../build/images/upLogo.jpg';
 import { FaTimes } from 'react-icons/fa';
 
 function Register() {
@@ -71,7 +71,7 @@ function Register() {
       setLoading(false);
     }
   };
-  
+
   const sendOtpEmail = async (targetEmail) => {
     try {
       const response = await axios.post(
@@ -102,7 +102,7 @@ function Register() {
 
   const verifyOtp = async () => {
     console.log('Verifying OTP...');
-    
+
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otps/verify-otp',

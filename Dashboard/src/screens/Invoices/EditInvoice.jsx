@@ -7,6 +7,7 @@ import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
 import { invoicesData, sortsDatas } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
 import { BsSend } from 'react-icons/bs';
+import pic from '../../build/images/upLogo.jpg'
 import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { InvoiceProductsTable } from '../../components/Tables';
@@ -88,7 +89,7 @@ function EditInvoice() {
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
             <img
-              src="/images/logo.png"
+              src={pic}
               alt="logo"
               className=" w-32 object-contain"
             />
