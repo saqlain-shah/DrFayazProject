@@ -18,6 +18,7 @@ function EditInvoice() {
     new Date(),
     new Date(new Date().setDate(new Date().getDate() + 7)),
   ]);
+  const [invoiceItems, setInvoiceItems] = useState([]);
   const [startDate, endDate] = dateRange;
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
@@ -49,7 +50,13 @@ function EditInvoice() {
   const onChangeDates = (update) => {
     setDateRange(update);
   };
-
+  const handleAddItem = (selectedService, quantity) => {
+    const newItem = {
+      ...selectedService,
+      quantity: quantity
+    };
+    setInvoiceItems([...invoiceItems, newItem]);
+  };
   return (
     <Layout>
       {isOpen && (
@@ -59,10 +66,12 @@ function EditInvoice() {
           patient={true}
         />
       )}
+
       {itemOpen && (
         <AddItemModal
           closeModal={() => setItemOpen(!itemOpen)}
           isOpen={itemOpen}
+          handleAddItem={handleAddItem}
         />
       )}
       <div className="flex items-center gap-4">

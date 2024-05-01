@@ -125,17 +125,21 @@ function PreviewInvoice() {
       console.error("Element with class 'actual-receipt' not found.");
       return;
     }
+
     setLoader(true);
-    html2canvas(capture).then((canvas) => {
+    html2canvas(capture, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
-      const doc = new jsPDF('p', 'mm', 'legal')
-      const componentWidth = doc.internal.pageSize.getWidth();
-      const componentHeight = doc.internal.pageSize.getHeight();
-      doc.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
+      const doc = new jsPDF('p', 'mm', 'legal');
+      const aspectRatio = canvas.width / canvas.height;
+      const width = doc.internal.pageSize.getWidth() - 20; // Adjust margins
+      const height = width / aspectRatio;
+
+      doc.addImage(imgData, 'PNG', 10, 10, width, height);
       setLoader(false);
       doc.save('receipt.pdf');
     });
   };
+
 
   const shareViaEmail = async () => {
     try {
@@ -225,8 +229,8 @@ function PreviewInvoice() {
           </Link>
           <h1 className="text-xl font-semibold">Preview Invoice</h1>
         </div>
-        {/* <div className="flex flex-wrap items-center gap-4">
-          <button
+        <div className="flex flex-wrap items-center gap-4">
+          {/* <button
             onClick={() => {
               setIsShareOpen(true);
             }}
@@ -239,13 +243,13 @@ function PreviewInvoice() {
             onClick={shareViaWhatsApp}
           >
             WhatsApp
-          </button>
-          <button
+          </button> */}
+          {/* <button
             className={buttonClass}
             onClick={shareViaEmail}
           >
             Email
-          </button>
+          </button> */}
           <button
             className={buttonClass}
             onClick={downloadPDF}
@@ -263,11 +267,11 @@ function PreviewInvoice() {
           >
             Print <AiOutlinePrinter />
           </button>
-          <Link to={`/invoices/edit/${invoice?._id}`} className={buttonClass}>
+          {/* <Link to={`/invoices/edit/${invoice?._id}`} className={buttonClass}>
             Editt <FiEdit />
-          </Link>
+          </Link> */}
 
-        </div> */}
+        </div>
       </div>
       <div className='actual-receipt'>
         {invoice && (
@@ -281,7 +285,7 @@ function PreviewInvoice() {
                 />
               </div>
               <div className="flex flex-col gap-4 sm:items-end">
-                <h6 className="text-xs font-medium">#{invoice?.id}</h6>
+                {/* <h6 className="text-xs font-medium">#{invoice?.id}</h6> */}
                 <div className="flex gap-4">
                   <p className="text-sm font-extralight">Date:</p>
                   <h6 className="text-xs font-medium">{invoice?.createdDate}</h6>
