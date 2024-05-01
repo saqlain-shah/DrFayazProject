@@ -70,6 +70,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
+
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 // Google OAuth routes
