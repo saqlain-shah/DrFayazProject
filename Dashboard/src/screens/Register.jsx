@@ -6,7 +6,7 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import pic from '../build/images/logo.jpg';
+import pic from '/images/dr.jpg';
 import { FaTimes } from 'react-icons/fa';
 
 function Register() {
@@ -171,7 +171,7 @@ function Register() {
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
-        <img src={pic} alt="logo" className="w-48 h-16 object-contain" />
+        <img src={pic} alt="logo" className="w-48 h-26 object-contain" />
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input
             label="Name"

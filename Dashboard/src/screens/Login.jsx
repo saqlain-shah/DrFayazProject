@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../AuthContext';
-import pic from '../build/images/logo.jpg';
+import pic from '/images/dr.jpg';
 
 function Login() {
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ function Login() {
         <img
           src={pic}
           alt="logo"
-          className="w-48 h-16 object-contain mb-4"
+          className="w-48 h-26 object-contain mb-4"
         />
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input
