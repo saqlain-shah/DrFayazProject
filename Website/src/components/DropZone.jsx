@@ -12,8 +12,9 @@ const BASE_URL =
     "https://www.myserver.com";
 
 export default function AdvancedDropzoneDemo({ handleChange, files }) {
-    const [extFiles, setExtFiles] = React.useState([]);
+    const [extFiles, setExtFiles] = React.useState([] || files);
     const [imageSrc, setImageSrc] = React.useState(undefined);
+    let images = [];
     //    const [videoSrc, setVideoSrc] = React.useState(undefined);
     useEffect(() => {
     }, [files])
@@ -21,11 +22,21 @@ export default function AdvancedDropzoneDemo({ handleChange, files }) {
     const updateFiles = (incommingFiles) => {
         console.log("incomming files", incommingFiles);
         setExtFiles(incommingFiles);
-        handleChange(incommingFiles);
+        incommingFiles.map((image, i) => {
+
+            images.push(image.file)
+        })
+        handleChange(images);
+        console.log("files", images)
+        images = [];
     };
     const onDelete = (id) => {
         setExtFiles(extFiles.filter((x) => x.id !== id));
-        handleChange(extFiles);
+        extFiles.map((ext) => {
+            images.push(files.file)
+        })
+        handleChange(images);
+        images = [];
     };
     const handleSee = (imageSource) => {
         setImageSrc(imageSource);
@@ -66,20 +77,8 @@ export default function AdvancedDropzoneDemo({ handleChange, files }) {
                 maxFiles={5}
                 maxFileSize={5 * 1024 * 1024}
                 label="Drag'n drop files here or click to browse"
-                uploadConfig={{
-                    // autoUpload: true
-                    url: BASE_URL + "/file",
-                    cleanOnUpload: true,
-                }}
                 onUploadStart={handleStart}
                 onUploadFinish={handleFinish}
-                fakeUpload
-                actionButtons={{
-                    position: "after",
-                    abortButton: {},
-                    deleteButton: {},
-                    uploadButton: {},
-                }}
             >
                 {extFiles.map((file) => (
                     <FileMosaic

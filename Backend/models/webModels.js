@@ -10,7 +10,8 @@ const WebPatientSchema = new mongoose.Schema({
     address: { type: String, required: true },
     email: { type: String, required: true },
     emergencyContact: { type: String, required: true },
-    image: { type: Array },
+    attachment: { type: Array },
+    image: { type: String },
     createdAt: { type: Date, default: Date.now }
   },
   medicalRecords: [{
@@ -22,7 +23,7 @@ const WebPatientSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   status: { type: String, enum: ['Pending', 'Approved', 'Cancelled'], default: 'Pending' },
   method: { type: String, enum: ['Online', 'Cash'], default: 'Online' },
-  message: { type: String } 
+  message: { type: String }
 });
 
 // Create Web model
