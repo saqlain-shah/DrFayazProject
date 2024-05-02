@@ -50,14 +50,14 @@ export const sendOTP = async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'fayyaz_sarwar@hotmail.com', // Replace with your Gmail email address
-                pass: 'irgkjyfkjorzlupa' // Replace with your Gmail App Password
+                user: 'davbabu1122@gmail.com', // Replace with your Gmail email address
+                pass: 'fbwjeroygujljrie' // Replace with your Gmail App Password
             }
         });
 
         // Email content
         const mailOptions = {
-            from: 'fayyaz_sarwar@hotmail.com', // Replace with your Gmail email address
+            from: 'davbabu1122@gmail.com', // Replace with your Gmail email address
             to: email,
             subject: 'OTP for Verification',
             html: renderedTemplate

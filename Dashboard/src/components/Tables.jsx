@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {   MenuSelectss } from './Form';
+import { MenuSelectss } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -605,7 +605,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
                   <MenuSelectss datas={patientMenuOptions} item={item}>
-                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg" style={{position:'sticky'}}>
+                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg" style={{ position: 'sticky' }}>
                       <BiDotsHorizontalRounded />
                     </div>
                   </MenuSelectss>
@@ -676,14 +676,14 @@ export function PatientTableArray({ data, onEdit }) {
       <table className="table-auto w-full">
         <thead className="bg-gray-200 rounded-md overflow-hidden">
           <tr>
-            <th className={thClass} style={{ width: '2%' }}>#</th>
-            <th className={thClass} style={{ width: '20%' }}>Full Name</th>
-            <th className={thClass} style={{ width: '10%' }}>Gender</th>
-            <th className={thClass} style={{ width: '15%' }}>Email</th>
-            <th className={thClass} style={{ width: '10%' }}>Blood Group</th>
-            <th className={thClass} style={{ width: '20%' }}>Emergency Contact</th>
+            <th className={thClass} style={{ width: '5%' }}>#</th>
+            <th className={thClass} style={{ width: '8%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '8%' }}>Gender</th>
+            <th className={thClass} style={{ width: '8%' }}>Email</th>
+            <th className={thClass} style={{ width: '7%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '10%' }}>Emergency Contact</th>
             {/* <th className={thClass} style={{ width: '15%' }}>Profile Picture</th> */}
-            <th className={thClass} style={{ width: '8%' }}>Actions</th>
+
           </tr>
         </thead>
         <tbody>
@@ -702,9 +702,7 @@ export function PatientTableArray({ data, onEdit }) {
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
               </td> */}
-              <td className={tdClass}>
-                <button onClick={() => onEdit(patient._id)}>Edit</button> {/* Assuming onEdit is the function to edit a patient */}
-              </td>
+
             </tr>
           ))}
         </tbody>

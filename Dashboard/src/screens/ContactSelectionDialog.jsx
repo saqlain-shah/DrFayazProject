@@ -4,45 +4,28 @@ import Modal from 'react-modal';
 const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
     const [selectedContact, setSelectedContact] = useState({
         name: "",
-        phoneNumber: 0,
+        phoneNumber: "", // Updated to empty string
         email: ""
-
     });
+
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleContactSelect = (contact) => {
         console.log('Contact selected:', contact);
         if (contact) {
-            setSelectedContact(contact)
-            if (selectedContact.phoneNumber) {
-                console.log("select", selectedContact);
-                const whatsappUrl = `https://wa.me/${selectedContact.phoneNumber}?text=${encodeURIComponent(message)}`;
+            if (contact.phoneNumber) {
+                const whatsappUrl = `https://wa.me/${contact.phoneNumber}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
-                setSelectedContact({
-                    name: "",
-                    phoneNumber: 0,
-                    email: ""
-
-                })
-                onClose()
+            } else if (contact.email) {
+                const subject = encodeURIComponent("Check out this campaign");
+                const gmailUrl = `mailto:${contact.email}?subject=${subject}&body=${encodeURIComponent(message)}`;
+                window.location.href = gmailUrl;
             }
-            if (selectedContact.email) {
-                console.log('Contact selected:', email);
-                console.log("select", selectedContact);
-                const subject = encodeURIComponent("Check out this campaign")
-                const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${selectedContact.email}&su=${subject}&body=${message}`;
-                window.open(gmailUrl, '_blank');
-                setSelectedContact({
-                    name: "",
-                    phoneNumber: 0,
-                    email: ""
-
-                })
-                onClose()
-            }
-            console.log("handleContactSelect executed");
+            onClose(); // Close dialog after action
         }
     };
+
+
 
     const handleClose = () => {
         // Close the dialog and pass the selected contact if available

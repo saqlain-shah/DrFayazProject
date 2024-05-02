@@ -11,7 +11,7 @@ import { IoArrowBackOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
-import pic from '../../build/images/logo.jpg';
+import pic from '../../build/images/upLogo.jpg';
 //import { v4 as uuidv4 } from 'uuid';
 
 function CreateInvoice() {
@@ -235,7 +235,7 @@ function CreateInvoice() {
             <img
               src={pic}
               alt="logo"
-              className=" w-32 object-contain"
+              className=" w-36 object-contain"
             />
           </div>
           <div className="flex flex-col gap-4">
@@ -345,7 +345,7 @@ function CreateInvoice() {
               rows={3}
             />
             <Button
-              label="Save & Send"
+              label="Save"
               onClick={handleSaveAndSend}
               Icon={BsSend}
             />

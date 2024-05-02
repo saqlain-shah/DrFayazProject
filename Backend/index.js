@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 
 
 const corsOptions = {
-    origin: ['http://localhost:5174','http://localhost:5173'],
+    origin: ['http://localhost:5174', 'http://localhost:5173'],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
@@ -69,6 +69,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     const file = req.file;
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
+
 
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 

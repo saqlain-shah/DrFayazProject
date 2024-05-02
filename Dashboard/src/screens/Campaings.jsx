@@ -45,64 +45,42 @@ function Campaigns() {
 
 
   const shareViaWhatsApp = async (campaign) => {
-    if (!campaign || !campaign.message) {
-      console.error('Invalid campaign data:', campaign);
-      return; // Exit the function early if campaign data is invalid
-    }
-  
-    const defaultPhoneNumber = '03400582358'; // Replace with the default phone number
-    const message = encodeURIComponent(`Title: ${campaign.title}\nMessage: ${campaign.message}`);
-    const phoneNumber = encodeURIComponent(defaultPhoneNumber);
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-  
-    console.log('Constructed WhatsApp URL:', whatsappUrl); // Log the constructed WhatsApp URL
-  
-    window.open(whatsappUrl, '_blank');
+    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('http://localhost:8800/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => {
+      res.data.forEach((patient) => {
+        if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
+          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
+        }
+      });
+      setIsDialogOpen(true);
+      handleCloseDialog();
+    });
   };
-  
-
 
   const shareViaEmail = async (campaign) => {
-    if (!campaign || !campaign.message) {
-      console.error('Invalid campaign data:', campaign);
-      return; // Exit the function early if campaign data is invalid
-    }
-  
-    // Filter out the fields you want to exclude, including _id
-    const filteredCampaign = Object.fromEntries(
-      Object.entries(campaign).filter(([key]) =>
-        !['_id', 'image', 'createdAt', 'updatedAt', '__v'].includes(key)
-      )
-    );
-  
-    // Combine all the filtered response data into the email message
-    const emailMessage = Object.entries(filteredCampaign)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join('\n');
-  
-    // Set a default email address or use a predetermined email address
-    const defaultEmail = 'davbabu1122@gmail.com'; // Replace with your desired default email address
-  
-    const subject = encodeURIComponent(campaign.subject || 'Your Subject Here');
-    const message = encodeURIComponent(campaign.message + '\n\n' + emailMessage); // Append filtered campaign data to the email message
-    const email = encodeURIComponent(defaultEmail);
-  
-    const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${email}&su=${subject}&body=${message}`;
-  
-    console.log('Constructed Gmail URL:', gmailUrl); // Log the constructed email URL
-  
-    window.open(gmailUrl, '_blank');
+    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('http://localhost:8800/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => {
+      res.data.forEach((patient) => {
+        if (!contacts.some(contact => contact.email === patient.email)) {
+          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, email: patient.email }]);
+        }
+      });
+      setIsDialogOpen(true);
+      setShowShareOptions(false);
+      handleCloseDialog();
+    });
   };
-  
-  
-  
-  
-  
-  
-  
+
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
+
 
   const actions = [
     {
@@ -217,7 +195,6 @@ function Campaigns() {
             {showShareOptions && (
               <div className="mt-4 flex gap-4">
                 <Button label="Share via Email" onClick={() => shareViaEmail(campaign)} />
-                <Button label="Share via WhatsApp" onClick={() => shareViaWhatsApp(campaign)} />
               </div>
             )}
           </div>

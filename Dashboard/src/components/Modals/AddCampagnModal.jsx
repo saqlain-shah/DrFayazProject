@@ -3,25 +3,24 @@ import Modal from './Modal';
 import { MdOutlineTextsms } from 'react-icons/md';
 import EmailComp from '../Campaign/EmailComp';
 
-function CampaignModal({ closeModal, isOpen, data, updateCampaignsState = { updateCampaignsState } }) {
+function CampaignModal({ closeModal, isOpen, data, updateCampaignsState }) {
   const [indexs, setIndexs] = useState(0);
 
-  // change tab
+  // Change tab
   const changeTab = (value) => {
     setIndexs(value);
   };
 
-  // tabs data
+  // Tabs data
   const tabs = [
-  
+    { title: 'Email', icon: MdOutlineTextsms },
+    // Add other tabs here if needed
   ];
 
-  // edit
+  // Edit
   useEffect(() => {
-    if (data?.id) {
-      if (data?.type === 'email') {
-        setIndexs(0);
-      }
+    if (data?.id && data?.type === 'email') {
+      setIndexs(0);
     }
   }, [data]);
 
@@ -33,14 +32,14 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState = { upda
       width={'max-w-3xl'}
     >
       <div className="flex flex-col gap-6">
-        {/* radio */}
+        {/* Radio */}
         {!data?.id && (
           <div className="grid grid-cols-3 gap-4 w-full bg-dry rounded-md sm:rounded-full overflow-hidden">
             {tabs.map((item, index) => (
               <button
                 onClick={() => changeTab(index)}
                 key={index}
-                className={`flex gap-4 items-center p-2 rounded-full ${indexs === index ? 'bg-white text-black' : ''
+                className={`flex gap-4 items-center p-2 rounded-full ${indexs === index ? 'bg-subMain text-white' : 'text-black'
                   }`}
               >
                 <div className="w-10 h-10 text-md rounded-full flex items-center justify-center">
@@ -52,10 +51,8 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState = { upda
           </div>
         )}
 
-        {/* compo */}
+        {/* Component */}
         {indexs === 0 && <EmailComp data={data} closeModal={closeModal} updateCampaignsState={updateCampaignsState} />}
-
-
       </div>
     </Modal>
   );
