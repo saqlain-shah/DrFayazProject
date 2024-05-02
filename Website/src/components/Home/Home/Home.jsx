@@ -19,7 +19,7 @@ const Home = ({ clientId }) => {
             <HeroSection />
             <InfoPage />
             <Service />
-            <ClinicAndSpecialities />
+            {/* <ClinicAndSpecialities /> */}
             {/* <BookDoctor /> */}
             {/* <Blog /> */}
             <Availabe />

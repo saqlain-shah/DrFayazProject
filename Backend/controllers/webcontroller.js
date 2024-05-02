@@ -2,9 +2,12 @@ import WebPatient from '../models/webModels.js'
 import mongoose from 'mongoose';
 
 export const createWeb = async (req, res) => {
+  const WebData = req.body;
+  const files = req.files;
+  const images = files.map(file => file.path)
+  console.log("data",WebData, images);
   try {
-    const WebData = req.body;
-    const Web = await WebPatient.create(WebData);
+    const Web = await WebPatient.create({ ...WebData, image: images });
     res.status(201).json(Web);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -109,15 +112,15 @@ export const getTodayWebAppointments = async (req, res) => {
 // Controller method for fetching notifications
 export const getNotifications = async (req, res) => {
   try {
-      // Fetch notifications data from your database or any other source
-      // For example, you can retrieve notifications from a MongoDB collection
-      const notifications = await WebPatient.find();
+    // Fetch notifications data from your database or any other source
+    // For example, you can retrieve notifications from a MongoDB collection
+    const notifications = await WebPatient.find();
 
-      // Send the notifications data as a response
-      res.status(200).json(notifications);
+    // Send the notifications data as a response
+    res.status(200).json(notifications);
   } catch (error) {
-      console.error('Error fetching notifications:', error);
-      res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
   }
 };
 

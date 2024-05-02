@@ -20,8 +20,8 @@ const InfoPage = () => {
                                 Your health, our responsibility<br/>
 
                                <b>Expertise:</b> <br/>
-                                To make it simple “I am your family doctor and will look after each member of your family from even before birth till death”
-                                I am a consultant in family health. I have distinct expertise and experience in providing whole person medical care whilst managing the complexity, uncertainty and risk associated with the continuous care. I strive to provide comprehensive and equitable care for everyone, taking into account their health care needs, stage of life and background. I work in, connect with and lead multidisciplinary teams that care for people and their families, respecting the context in which they live, aiming to ensure all of their physical and mental health needs are met.
+                                I have distinct expertise and experience in providing whole person medical care whilst managing the complexity, uncertainty and risk associated with the continuous care. To make it simple “I am your family doctor and will look after each member of your family from even before birth till death”
+                                I am a consultant in family health. I strive to provide comprehensive and equitable care for everyone, taking into account their health care needs, stage of life and background. I work in, connect with and lead multidisciplinary teams that care for people and their families, respecting the context in which they live, aiming to ensure all of their physical and mental health needs are met.
 
                             </p>
                             <div className="text-center">

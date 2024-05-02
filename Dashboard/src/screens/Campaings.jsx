@@ -1,4 +1,3 @@
-// Campaings.js
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,13 +5,13 @@ import Layout from '../Layout';
 import { Button, MenuSelect } from '../components/Form';
 import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
 import { HiOutlineMail } from 'react-icons/hi';
-import { FaShare } from "react-icons/fa";
+import { FaShare, FaEdit } from "react-icons/fa";
 import axios from 'axios';
 import ContactSelectionDialog from './ContactSelectionDialog';
 import CampaignModal from '../components/Modals/AddCampagnModal';
 import { FiTrash } from 'react-icons/fi';
 
-function Campaings() {
+function Campaigns() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState({});
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -31,7 +30,7 @@ function Campaings() {
   };
 
   const closeModal = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(false);
     setData({});
   };
 
@@ -39,39 +38,68 @@ function Campaings() {
     setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
   };
 
-  const shareViaWhatsApp = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
-    const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
-        if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
-          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
-        }
-      });
-      setIsDialogOpen(true);
-      handleCloseDialog();
-    });
+  const editCampaign = (campaign) => {
+    setIsOpen(true);
+    setData(campaign);
   };
+
+
+  const shareViaWhatsApp = async (campaign) => {
+    if (!campaign || !campaign.message) {
+      console.error('Invalid campaign data:', campaign);
+      return; // Exit the function early if campaign data is invalid
+    }
+  
+    const defaultPhoneNumber = '03400582358'; // Replace with the default phone number
+    const message = encodeURIComponent(`Title: ${campaign.title}\nMessage: ${campaign.message}`);
+    const phoneNumber = encodeURIComponent(defaultPhoneNumber);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  
+    console.log('Constructed WhatsApp URL:', whatsappUrl); // Log the constructed WhatsApp URL
+  
+    window.open(whatsappUrl, '_blank');
+  };
+  
+
 
   const shareViaEmail = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
-    const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
-        if (!contacts.some(contact => contact.email === patient.email)) {
-          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, email: patient.email }]);
-        }
-      });
-      setIsDialogOpen(true);
-      setShowShareOptions(false);
-      handleCloseDialog();
-    });
+    if (!campaign || !campaign.message) {
+      console.error('Invalid campaign data:', campaign);
+      return; // Exit the function early if campaign data is invalid
+    }
+  
+    // Filter out the fields you want to exclude, including _id
+    const filteredCampaign = Object.fromEntries(
+      Object.entries(campaign).filter(([key]) =>
+        !['_id', 'image', 'createdAt', 'updatedAt', '__v'].includes(key)
+      )
+    );
+  
+    // Combine all the filtered response data into the email message
+    const emailMessage = Object.entries(filteredCampaign)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('\n');
+  
+    // Set a default email address or use a predetermined email address
+    const defaultEmail = 'davbabu1122@gmail.com'; // Replace with your desired default email address
+  
+    const subject = encodeURIComponent(campaign.subject || 'Your Subject Here');
+    const message = encodeURIComponent(campaign.message + '\n\n' + emailMessage); // Append filtered campaign data to the email message
+    const email = encodeURIComponent(defaultEmail);
+  
+    const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${email}&su=${subject}&body=${message}`;
+  
+    console.log('Constructed Gmail URL:', gmailUrl); // Log the constructed email URL
+  
+    window.open(gmailUrl, '_blank');
   };
-
+  
+  
+  
+  
+  
+  
+  
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
@@ -81,6 +109,11 @@ function Campaings() {
       title: "Share",
       icon: FaShare,
       onClick: toggleShareOptions,
+    },
+    {
+      title: "Edit",
+      icon: FaEdit,
+      onClick: editCampaign,
     },
     {
       title: "Delete",
@@ -125,7 +158,6 @@ function Campaings() {
         <CampaignModal
           isOpen={isOpen} closeModal={closeModal} data={data}
           updateCampaignsState={updateCampaignsState} />
-
       )}
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
@@ -173,8 +205,9 @@ function Campaings() {
             <div className="mt-4 flex flex-col gap-3">
               <h4 className="text-sm font-medium">Message</h4>
               <p className="text-xs leading-5 text-textGray">
-                {campaign.message}....
+                {campaign.message}
               </p>
+
               <div className="flex gap-2">
                 <span className="text-xs bg-dry text-textGray rounded-xl border py-2 px-4 border-border">
                   {campaign.createdAt}
@@ -184,6 +217,7 @@ function Campaings() {
             {showShareOptions && (
               <div className="mt-4 flex gap-4">
                 <Button label="Share via Email" onClick={() => shareViaEmail(campaign)} />
+                <Button label="Share via WhatsApp" onClick={() => shareViaWhatsApp(campaign)} />
               </div>
             )}
           </div>
@@ -199,4 +233,4 @@ function Campaings() {
   );
 }
 
-export default Campaings;
+export default Campaigns;

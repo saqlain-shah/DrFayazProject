@@ -11,6 +11,7 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleContactSelect = (contact) => {
+        console.log('Contact selected:', contact);
         if (contact) {
             setSelectedContact(contact)
             if (selectedContact.phoneNumber) {
@@ -26,6 +27,7 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
                 onClose()
             }
             if (selectedContact.email) {
+                console.log('Contact selected:', email);
                 console.log("select", selectedContact);
                 const subject = encodeURIComponent("Check out this campaign")
                 const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${selectedContact.email}&su=${subject}&body=${message}`;
@@ -38,6 +40,7 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
                 })
                 onClose()
             }
+            console.log("handleContactSelect executed");
         }
     };
 
@@ -53,9 +56,11 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
     };
 
     // Filter contacts based on searchQuery
-    const filteredContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+   // Filter contacts based on searchQuery
+const filteredContacts = contacts.filter(contact =>
+    contact.name?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
     return (
         <Modal isOpen={isOpen} className="p-4 bg-white rounded-lg shadow-lg max-w-md mx-auto mt-20">

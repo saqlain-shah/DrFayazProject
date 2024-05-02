@@ -10,7 +10,7 @@ const WebPatientSchema = new mongoose.Schema({
     address: { type: String, required: true },
     email: { type: String, required: true },
     emergencyContact: { type: String, required: true },
-    image: { type: String },
+    image: { type: Array },
     createdAt: { type: Date, default: Date.now }
   },
   medicalRecords: [{
