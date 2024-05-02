@@ -1,13 +1,39 @@
 import WebPatient from '../models/webModels.js'
 import mongoose from 'mongoose';
 
+// export const createWeb = async (req, res) => {
+//   const WebData = req.body;
+//   // const files = req.files;
+//   // const images = files.map(file => file.path)
+//   // console.log("data",WebData, images);
+//   try {
+//     const Web = await WebPatient.create(WebData );
+//     res.status(201).json(Web);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 export const createWeb = async (req, res) => {
-  const WebData = req.body;
+
+  const { name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, endDateTime, startDateTime, serviceName, image, price } = req.body;
+  let patientInfo = { name, image, email, emergencyContact, reasonForVisit, gender, address, bloodGroup }
+  const selectedSlot = { endDateTime, startDateTime }
+  const selectedService = { serviceName, price }
   const files = req.files;
-  const images = files.map(file => file.path)
-  console.log("data",WebData, images);
+  // let images = []
+  // console.log("files", files)
+  // console.log("data", patientInfo, selectedSlot, selectedService, images);
   try {
-    const Web = await WebPatient.create({ ...WebData, image: images });
+    if (!files || files.length === 0) {
+      return res.status(400).send('file upload failed')
+    }
+    else {
+      const images = files.map(file => file.path)
+      patientInfo = { ...patientInfo, attachment: images }
+      console.log("patient", patientInfo)
+    }
+    const Web = await WebPatient.create({ patientInfo: patientInfo, selectedSlot: selectedSlot, selectedService: selectedService });
     res.status(201).json(Web);
   } catch (error) {
     res.status(500).json({ message: error.message });

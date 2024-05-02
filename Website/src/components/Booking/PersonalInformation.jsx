@@ -3,8 +3,8 @@ import { Button } from 'antd';
 import Dropzone from '../DropZone';
 import { useState } from 'react';
 
-const PersonalInformation = ({handleFileChange, handleChange, selectValue, onNext, onPrev, selectedSlot }) => {
-    const { name, reasonForVisit, bloodGroup, image, gender, emergencyContact, email, address } = selectValue;
+const PersonalInformation = ({handleFileChange, handleChange, selectValue, selectedSlot }) => {
+    const { name, reasonForVisit, bloodGroup, attachments, gender, emergencyContact, email, address } = selectValue;
     const [files, setFiles] = useState([])
     useEffect(() => {
         // if (selectedSlot) {
@@ -19,12 +19,12 @@ const PersonalInformation = ({handleFileChange, handleChange, selectValue, onNex
 
     const handleNext = () => {
         // Call the onNext function passed from the parent component to move to the next step
-        onNext();
+        // onNext();
     };
 
     const handlePrev = () => {
         // Call the onPrev function passed from the parent component
-        onPrev();
+        // onPrev();
     };
     const handleFilesChange = (newFiles) => {
         setFiles(newFiles)
@@ -80,8 +80,8 @@ const PersonalInformation = ({handleFileChange, handleChange, selectValue, onNex
                     <div className="form-group card-label mb-3">
                         <label>Attachments</label>
                         <Dropzone
-                            handleChange={handleFilesChange}
-                            files={files}
+                            handleChange={handleFileChange}
+                            files={attachments}
                         />
                     </div>
                 </div>
