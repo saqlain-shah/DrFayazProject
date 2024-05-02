@@ -1,5 +1,5 @@
 import React from 'react';
-import img from '../../../images/features/feature.png';
+import img from '../../../images/features/AC.jpg';
 import './index.css';
 import AvailableServiceContent from './AvailableServiceContent';
 
@@ -14,7 +14,7 @@ const Availabe = () => {
 					</div>
 					<div className="col-md-7">
 						<div className='mb-4 section-title text-center'>
-							<h2 className='text-uppercase'>Availabe Service</h2>
+							<h2 className='text-uppercase'>Available Service</h2>
 							<p className='m-0'>The Following Service are availabe in our Healthcare Center.</p>
 						</div>
 						<AvailableServiceContent/>

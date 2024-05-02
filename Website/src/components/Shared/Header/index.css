@@ -56,9 +56,9 @@
 }
 
 #header .logo img {
-    max-height: 40px;
+    max-height: 62px;
 }
-
+/* change the width 40 62px */
 
 .navbar {
     padding: 0;
