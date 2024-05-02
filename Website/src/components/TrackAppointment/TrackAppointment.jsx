@@ -62,7 +62,8 @@ const TrackAppointment = () => {
                                 <section className="container" style={{ marginBottom: '8rem', marginTop: '5rem' }}>
                                     <div className="flex" style={{ maxWidth: '900px' }}>
                                         <div className='mb-4 section-title text-center'>
-                                            <h5 className='text-uppercase'>Availabe Service</h5>
+                                            <h5 className='text-uppercase'>Available Service</h5>
+                                            {/* change spelling */}
                                         </div>
                                         <AvailableServiceContent />
                                     </div>

@@ -1,15 +1,23 @@
-import img4 from '../../../images/features/feature-05.jpg';
-import img5 from '../../../images/features/feature-06.jpg';
-import img6 from '../../../images/features/3.jpg';
+import img2 from '../../../images/features/CC.jpg';
+import img3 from '../../../images/features/WHC.jpg';
+import img4 from '../../../images/features/AC.jpg';
+import img5 from '../../../images/features/MenHC.jpg';
+import img from '../../../images/features/EA.jpg';
 
+import img6 from '../../../images/features/MHC.jpg';
+import img7 from '../../../images/features/DC.jpg';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 
 const AvailableServiceContent = () => {
     const availabeServiceArray = [
-        { title: 'Men health ', img: img5 },
-        { title: 'Women health', img: img4 },
-        { title: 'Children health', img: img6},
+        { title: 'Emergency Appointments', img: img },
+        { title: "Children's clinic", img: img2 },
+        { title: 'Women Health clinic', img: img3 },
+        { title: 'Antenatal clinic', img: img4 },
+        { title: 'Men’s Health clinic', img: img5 },
+        { title: 'Mental Health clinic', img: img6 },
+        { title: "Dermatology clinic", img: img7 },
     ]
     return (
         <div className="d-flex justify-content-center align-items-center gap-4">
