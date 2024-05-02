@@ -7,6 +7,7 @@ import AddItemModal from '../../components/Modals/AddItemInvoiceModal';
 import { invoicesData, sortsDatas } from '../../components/Datas';
 import { toast } from 'react-hot-toast';
 import { BsSend } from 'react-icons/bs';
+import pic from '../../build/images/upLogo.jpg'
 import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { InvoiceProductsTable } from '../../components/Tables';
@@ -18,6 +19,7 @@ function EditInvoice() {
     new Date(),
     new Date(new Date().setDate(new Date().getDate() + 7)),
   ]);
+  const [invoiceItems, setInvoiceItems] = useState([]);
   const [startDate, endDate] = dateRange;
   const [isOpen, setIsOpen] = useState(false);
   const [itemOpen, setItemOpen] = useState(false);
@@ -28,7 +30,7 @@ function EditInvoice() {
     const fetchInvoiceData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://drfayazproject.onrender.com/api/invoices/${id}`, {
+        const response = await fetch(`http://localhost:8800/api/invoices/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -49,7 +51,13 @@ function EditInvoice() {
   const onChangeDates = (update) => {
     setDateRange(update);
   };
-
+  const handleAddItem = (selectedService, quantity) => {
+    const newItem = {
+      ...selectedService,
+      quantity: quantity
+    };
+    setInvoiceItems([...invoiceItems, newItem]);
+  };
   return (
     <Layout>
       {isOpen && (
@@ -59,10 +67,12 @@ function EditInvoice() {
           patient={true}
         />
       )}
+
       {itemOpen && (
         <AddItemModal
           closeModal={() => setItemOpen(!itemOpen)}
           isOpen={itemOpen}
+          handleAddItem={handleAddItem}
         />
       )}
       <div className="flex items-center gap-4">
@@ -79,7 +89,7 @@ function EditInvoice() {
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3">
             <img
-              src="/images/logo.png"
+              src={pic}
               alt="logo"
               className=" w-32 object-contain"
             />

@@ -1,3 +1,4 @@
+// Frontend: Register Component
 import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Button, Input } from '../components/Form';
@@ -5,7 +6,7 @@ import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import pic from '../build/images/logo.jpg';
+import pic from '../build/images/upLogo.jpg';
 import { FaTimes } from 'react-icons/fa';
 
 function Register() {
@@ -60,57 +61,36 @@ function Register() {
     }
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8800/api/auth/register', {
-        name,
-        email,
-        password,
-      });
-      if (response.status === 201) {
-        const token = response.data.token;
-
-        // Store the token, name, and email in local storage
-        localStorage.setItem('token', token);
-        localStorage.setItem('name', name);
-        localStorage.setItem('email', email);
-
-        document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
-        toast.success('Registration successful');
-
-        // Send OTP email
-        await sendOtpEmail(email);
-
-        setIsDentalModalOpen(true);
-      } else {
-        console.error('Registration failed:', response.data);
-      }
+      // First, send OTP email to the predefined email address
+      await sendOtpEmail('davbabu1122@gmail.com'); // Use the predefined email address
+      setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
-      console.error('Error registering:', error);
-      toast.error('Error registering');
+      console.error('Error sending OTP email:', error);
+      toast.error('An error occurred while sending OTP email. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const sendOtpEmail = async () => {
-    const email = 'davbabu1122@gmail.com'; // Specific email address to send OTP
+  const sendOtpEmail = async (targetEmail) => {
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otps/send-otp',
-        { email },
+
+        { email: targetEmail },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-  
+
       if (response.status === 200) {
-        console.log('OTP email sent to:', email);
+        console.log('OTP email sent to:', targetEmail);
       } else {
         console.error('Failed to send OTP email:', response.data.message);
       }
     } catch (error) {
       console.error('Error sending OTP email:', error);
+      throw error;
     }
   };
-  
-  
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -122,34 +102,67 @@ function Register() {
 
   const verifyOtp = async () => {
     console.log('Verifying OTP...');
-    
+
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otps/verify-otp',
+
         { otp: otpCode },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-  
+
       console.log('OTP Verification Response:', response);
-  
+
       if (response.data.success) {
         console.log('OTP Verified!');
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
-        navigate('/login');
+        // Proceed with registration after OTP is verified
+        await registerUser();
       } else {
         console.log('Failed to verify OTP:', response.data.message);
-        alert('Invalid OTP code. Please try again.');
+        toast.error('Invalid OTP code. Please try again.');
         setIsOtpValid(false);
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('An error occurred while verifying OTP. Please try again.');
+      toast.error('An error occurred while verifying OTP. Please try again.');
       setIsOtpValid(false);
     }
   };
-  
-  
+
+  const registerUser = async () => {
+    try {
+
+      const response = await axios.post('http://localhost:8800/api/auth/register', {
+
+        name,
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        const token = response.data.token;
+
+        // Store the token, name, and email in local storage
+        localStorage.setItem('token', token);
+        localStorage.setItem('name', name);
+        localStorage.setItem('email', email);
+
+        document.cookie = `token=${token}; path=/; SameSite=Strict; Secure`;
+        toast.success('Registration successful');
+        navigate('/login');
+      } else {
+        console.error('Registration failed:', response.data);
+        toast.error('Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error registering:', error);
+      toast.error('An error occurred while registering. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const closeDentalModal = () => {
     setIsDentalModalOpen(false);
@@ -222,7 +235,7 @@ function Register() {
 
 export default Register;
 
-function Modal({ closeModal, isOpen, width, children, title, handleOtpInputChange, verifyOtp, otpCode }) {
+function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otpCode }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={closeModal}>
@@ -254,7 +267,7 @@ function Modal({ closeModal, isOpen, width, children, title, handleOtpInputChang
                   } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
               >
                 <div className="w-full flex-btn gap-2 mb-8">
-                  <h1 className="text-md font-semibold">{title}</h1>
+                  <h1 className="text-md font-semibold">Enter OTP Code</h1>
                   <button
                     onClick={closeModal}
                     className="w-14 h-12 bg-dry text-red-600 rounded-md flex-colo"

@@ -1,15 +1,31 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 // Define schema for Web
-const WebSchema = new mongoose.Schema({
+const WebPatientSchema = new mongoose.Schema({
   // Define your Web schema here
-  patientInfo: { type: mongoose.Schema.Types.Mixed, required: true },
+  patientInfo: {
+    name: { type: String, required: true },
+    gender: { type: String, required: true },
+    bloodGroup: { type: String, required: true },
+    address: { type: String, required: true },
+    email: { type: String, required: true },
+    emergencyContact: { type: String, required: true },
+    image: { type: Array },
+    createdAt: { type: Date, default: Date.now }
+  },
+  medicalRecords: [{
+    type: Schema.Types.ObjectId,
+    ref: 'HealthInfo'
+  }],
   selectedSlot: { type: mongoose.Schema.Types.Mixed, required: true },
   selectedService: { type: mongoose.Schema.Types.Mixed, required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  status: { type: String, enum: ['Pending', 'Approved', 'Cancelled'], default: 'Pending' },
+  method: { type: String, enum: ['Online', 'Cash'], default: 'Online' },
+  message: { type: String } 
 });
 
 // Create Web model
-const Web = mongoose.model('Web', WebSchema);
+const WebPatient = mongoose.model('WebPatient', WebPatientSchema);
 
-export default Web;
+export default WebPatient;

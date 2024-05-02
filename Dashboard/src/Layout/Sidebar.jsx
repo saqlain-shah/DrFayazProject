@@ -1,7 +1,7 @@
 import React from 'react';
 import { MenuDatas } from '../components/Datas';
 import { Link } from 'react-router-dom';
-import pic from '../build/images/logo.jpg'
+import pic from '../build/images/upLogo.jpg'
 function Sidebar() {
   // active link
   const currentPath = (path) => {
@@ -17,12 +17,12 @@ function Sidebar() {
     <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-screen w-full border-r border-border">
       <Link to="/">
         <img
-         src={pic}
+          src={pic}
           alt="logo"
-          className="w-48 h-12 ml-4  rounded-lg shadow-md"
+          className="w-56 h-20 ml-2  rounded-lg "
         />
       </Link>
-      <div className="flex-colo gap-2 mt-12">
+      <div className="flex-colo gap-2">
         {MenuDatas.map((item, index) => (
           <Link
             to={item.path}

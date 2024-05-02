@@ -27,7 +27,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
 
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://drfayazproject.onrender.com/api/doctors',
+        'https://server-yvzt.onrender.com/api/doctors',
         formData,
         {
           headers: {
@@ -49,7 +49,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
   return (
     <Modal closeModal={closeModal} isOpen={isOpen}>
       <div className="modal-content">
-        <div className="modal-header">
+        {/* <div className="modal-header">
           <h2 className="text-lg font-semibold">
             {doctor
               ? 'Add Doctor'
@@ -57,7 +57,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
                 ? 'Edit Stuff'
                 : 'Add Stuff'}
           </h2>
-        </div>
+        </div> */}
         <div className="modal-body space-y-4">
           <Input
             label="Full Name"
@@ -97,12 +97,12 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
             />
           </div>
         </div>
-        <div className="modal-footer flex justify-end">
+        <div className="grid sm:grid-cols-2 gap-4 w-full mt-3">
           <Button
             label="Cancel"
             variant="secondary"
             onClick={closeModal}
-            className="mr-2"
+            className="mr-4"
           />
           <Button
             label="Save Changes"
@@ -110,6 +110,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
             onClick={saveChanges}
           />
         </div>
+
       </div>
     </Modal>
   );

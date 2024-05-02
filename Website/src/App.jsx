@@ -22,20 +22,20 @@ function AppRoutes() {
 
   return (
     <Routes>
-       <Route path="/login" element={<SignInForm />}  />
-      
+      <Route path="/login" element={<SignInForm />} />
+
       <Route path="/" element={<Home />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/success" element={<Success />} />
-      <Route path="/cancel" element={<Cancel/>} />
+      <Route path="/cancel" element={<Cancel />} />
       <Route path="/appointment" element={<AppointmentPage />} />
       <Route path="/track-appointment" element={<TrackAppointment />} />
       <Route path="/doctors" element={<SearchDoctor />} />
       <Route path="/dashboard/:clientId" element={<Dashboard />} />
-      <Route path="/dashboard/prescription/:clientId"  element={<Prescription />}  />
-      <Route path="/dashboard/prescription/:id" element={<PrescriptionView />}  />
+      <Route path="/dashboard/prescription/:clientId" element={<Prescription />} />
+      <Route path="/dashboard/prescription/:id" element={<PrescriptionView />} />
       <Route path="/dashboard/profile-setting/:clientId" element={<ProfileSetting />} />
-      <Route path="/dashboard/change-password/:clientId"  element={<ChangePassword />}  />
+      <Route path="/dashboard/change-password/:clientId" element={<ChangePassword />} />
     </Routes>
   );
 }

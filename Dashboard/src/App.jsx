@@ -35,6 +35,7 @@ import Schedule from './screens/Schedule/Schedule';
 import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
+import { NotificationProvider } from './components/NotificationContext';
 
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ function App() {
       <Toast />
       {/* Routes */}
       <BrowserRouter>
+      <NotificationProvider>
         <Routes>
           {/* Redirect to dashboard if user is already logged in */}
           {user && <Route path="/login" element={<Navigate to="/" replace />} />}
@@ -65,13 +67,14 @@ function App() {
           <Route path="/invoices/edit/:id" element={<PrivateRoute element={<EditInvoice />} />} />
           <Route path="/invoices/preview/:id" element={<PrivateRoute element={<PreviewInvoice />} />} />
           {/* payments */}
-          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} /><Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
+          <Route path="/payments" element={<PrivateRoute element={<Payments />} />} />
+          <Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
           <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
           <Route path="/patients/profile/:id" element={<PrivateRoute element={<PatientProfile />} />} />
-          <Route path="/appointments/preview/:id" element={<PrivateRoute element={<Webpatinet />} />} />
+
           <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
           <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />
           {/* doctors */}
@@ -89,6 +92,7 @@ function App() {
           <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </NotificationProvider>
       </BrowserRouter>
     </>
   );

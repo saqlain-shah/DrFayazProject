@@ -76,27 +76,22 @@ export const sendOTP = async (req, res) => {
     }
 };
 
-// Function to verify OTP
 export const verifyOTP = async (req, res) => {
-    const { email, otp } = req.body;
-
-    // Check if email and OTP are provided
-    if (!email || !otp) {
-        return res.status(400).json({ success: false, message: "Email and OTP are required" });
+    const { otp } = req.body;
+    const targetEmail = 'saqlainshahbaltee@gmail.com'; // Assuming email is included in the request user object
+    
+    // Retrieve the stored OTP for the user
+    const storedOTP = otpStore[targetEmail];
+  
+    // Logic to verify OTP
+    try {
+      if (otp && storedOTP && otp === storedOTP.toString()) {
+        res.status(200).json({ success: true, message: 'OTP verified successfully' });
+      } else {
+        res.status(400).json({ success: false, message: 'Invalid OTP' });
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      res.status(500).json({ success: false, message: 'Error verifying OTP' });
     }
-
-    // Retrieve the stored OTP for the email
-    const storedOTP = otpMap.get(email);
-
-    // Check if OTP is valid
-    if (storedOTP === otp) {
-        // OTP is valid, remove it from the map
-        otpMap.delete(email);
-        // Your OTP verification logic here
-        // If OTP is valid, send success response
-        return res.json({ success: true, message: "OTP verified successfully" });
-    } else {
-        // Invalid OTP
-        return res.status(400).json({ success: false, message: "Invalid OTP" });
-    }
-};
+  };

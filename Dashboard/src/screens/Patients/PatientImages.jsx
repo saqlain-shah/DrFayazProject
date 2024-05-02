@@ -7,7 +7,7 @@ function PatientImages({ medicalRecords }) {
       try {
         medicalRecords && medicalRecords.data && medicalRecords.data.forEach(record => {
           record.attachments && record.attachments.forEach(attachment => {
-            const imageUrl = `http://localhost:8800s/${attachment.filename}`;
+            const imageUrl = `http://localhost:8800/${attachment.filename}`;
             axios.get(imageUrl)
               .then(response => {
                 console.log('Image loaded successfully:', response);
@@ -32,7 +32,7 @@ function PatientImages({ medicalRecords }) {
           <h3 className="text-lg font-semibold mb-2">{record.fullName}</h3>
           <div className="flex flex-wrap justify-center gap-2">
             {record.attachments && record.attachments.map((attachment, attachmentIndex) => {
-              const imageUrl = `http://localhost:8800s/uploads/${attachment.filename}`;
+              const imageUrl = `http://localhost:8800/uploads/${attachment.filename}`;
               return (
                 <div key={attachmentIndex}>
                   {attachment.filename && (

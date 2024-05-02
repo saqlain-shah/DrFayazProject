@@ -7,10 +7,10 @@ export const createPatient = async (req, res) => {
         // Extracting necessary fields from the request body
         const { firstName, email, gender, emergencyContact, address, bloodGroup } = req.body;
 
-        // Check if all required fields are present
-        if (!firstName || !email || !gender || !emergencyContact || !address || !bloodGroup) {
-            return res.status(400).json({ message: "Please provide all necessary fields" });
-        }
+        // // Check if all required fields are present
+        // if (!firstName || !email || !gender || !emergencyContact || !address || !bloodGroup) {
+        //     return res.status(400).json({ message: "Please provide all necessary fields" });
+        // }
 
         // Get profile picture from the request file (assuming multer is used for file upload)
         const profilePicture = req.file;

@@ -7,7 +7,8 @@ const clientSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   bloodGroup: {
-    type: String, enum: ['AB+ve', 'AB-ve', 'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve'] },
+    type: String, enum: ['AB+ve', 'AB-ve', 'A+ve', 'A-ve', 'B+ve', 'B-ve', 'O+ve', 'O-ve']
+  },
   gender: { type: String, enum: ['male', 'female', 'other'] },
   emergencyContact: { type: Number, default: 0 },
   address: { type: String, default: "" },
@@ -15,6 +16,18 @@ const clientSchema = new mongoose.Schema({
 });
 
 // Hash password before saving to the database
+// clientSchema.pre('save', async function (next) {
+//   try {
+//     if (!this.isModified('password')) return next();
+//     const hash = await bcrypt.hash(this.password, 10);
+//     this.password = hash;
+//     next();
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
+
+
 clientSchema.pre('save', async function (next) {
   try {
     if (!this.isModified('password')) return next();

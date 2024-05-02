@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt } from "react-icons/fa";
-import img from '../../images/doc/doc4.jpg';
+import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
 
 const DashboardSidebar = () => {
@@ -30,20 +30,9 @@ const DashboardSidebar = () => {
                 console.error('Error fetching user data:', error);
             });
 
-        // Adding event listener for beforeunload
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        // Cleanup function to remove event listener
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
     }, [clientId]);
 
-    const handleBeforeUnload = () => {
-        // Clear client ID and token from local storage
-        localStorage.removeItem('clientId');
-        localStorage.removeItem('token');
-    };
+
 
     const handleLogout = () => {
         // Clear client ID and token from local storage

@@ -15,7 +15,7 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   const fetchServices = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://drfayazproject.onrender.com/api/services', {
+      const response = await axios.get('http://localhost:8800/api/services', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setServices(response.data);

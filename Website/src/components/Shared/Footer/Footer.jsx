@@ -4,7 +4,8 @@ const Footer = () => {
     return (
         <footer className="footer">
             <div className="container">
-                <p className="copyRight text-center">© {(new Date()).getFullYear()} All Rights Reserved</p>
+                {/* <p className="copyRight text-center">© {(new Date()).getFullYear()} Avicena Health Care</p> */}
+                <p className="copyRight text-center"> Avicena Health Care</p>
             </div>
         </footer>
     );

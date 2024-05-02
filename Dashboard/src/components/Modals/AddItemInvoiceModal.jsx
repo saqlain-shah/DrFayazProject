@@ -16,14 +16,14 @@ function AddItemModal({ closeModal, isOpen, handleAddItem }) {
 
   const handleAddItemClick = () => {
     if (selectedService && quantity > 0) {
-      console.log('Adding item:', selectedService, quantity); // Log selected service and quantity
-      handleAddItem(selectedService, quantity); // Pass the selected service and quantity to the parent component
+      handleAddItem(selectedService, quantity);
       closeModal();
     } else {
-      console.log('Invalid selection'); // Log invalid selection
+      console.log('Invalid selection');
       // Handle error case where service is not selected or quantity is invalid
     }
   };
+
 
   return (
     <Modal
