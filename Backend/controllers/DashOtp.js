@@ -4,16 +4,18 @@ import nodemailer from 'nodemailer';
 // Object to store OTPs for each user
 const otpStore = {};
 
-// Method to send OTP to the predefined email address
+// Method to send OTP to the provided email address
 export const sendOTP = async (req, res) => {
   // Logic to generate and send OTP via email
   try {
+    const { email } = req.body; // Extract email from request body
+
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
-        user: 'davbabu1122@gmail.com', // Replace with your Gmail address
-        pass: 'fbwjeroygujljrie', // Replace with your Gmail password
+        user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail address
+        pass: 'qfonuissqspipwtq' // Replace with your Gmail password
       },
     });
 
@@ -22,12 +24,12 @@ export const sendOTP = async (req, res) => {
     console.log('OTP:', OTP);
 
     // Store the OTP for the user
-    otpStore['davbabu1122@gmail.com'] = OTP;
+    otpStore[email] = OTP.toString(); // Store OTP with the email provided in the request body
 
     // Send OTP email
     const info = await transporter.sendMail({
       from: '"Your App Name" <your_email@gmail.com>', // Sender address
-      to: 'davbabu1122@gmail.com', // Send OTP to the predefined email address
+      to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
       text: `Your OTP for verification is: ${OTP}`, // Plain text body
     });
@@ -40,19 +42,19 @@ export const sendOTP = async (req, res) => {
   }
 };
 
-
-
 // Method to verify the provided OTP
 export const verifyOTP = async (req, res) => {
-  const { otp } = req.body;
-  const targetEmail = 'davbabu1122@gmail.com'; // Assuming email is included in the request user object
-  
+  const { otp, email } = req.body; // Extract email and OTP from request body
+  console.log("email", email);
+
   // Retrieve the stored OTP for the user
-  const storedOTP = otpStore[targetEmail];
+  const storedOTP = otpStore[email]; // Retrieve stored OTP using the provided email
 
   // Logic to verify OTP
   try {
-    if (otp && storedOTP && otp === storedOTP.toString()) {
+    if (otp && storedOTP && otp.trim() === storedOTP.trim()) {
+      // Remove the OTP from the store after successful verification
+      delete otpStore[email];
       res.status(200).json({ success: true, message: 'OTP verified successfully' });
     } else {
       res.status(400).json({ success: false, message: 'Invalid OTP' });
@@ -62,7 +64,6 @@ export const verifyOTP = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error verifying OTP' });
   }
 };
-
 
 
 

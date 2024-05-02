@@ -1,10 +1,9 @@
-// controllers/OTP/otp.js
 import fs from 'fs';
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 
 // Map to store generated OTPs
-let otpMap = new Map();
+global.otpMap = new Map();
 
 // Function to generate OTP
 const generateOTP = () => {
@@ -14,11 +13,11 @@ const generateOTP = () => {
 
 // Function to send OTP to email
 export const sendOTP = async (req, res) => {
-    const { email } = req.body;
+    const { email, otpType } = req.body;
 
-    // Check if email is provided in the request body
-    if (!email) {
-        return res.status(400).json({ success: false, message: "Email is required" });
+    // Check if email and otpType are provided in the request body
+    if (!email || !otpType) {
+        return res.status(400).json({ success: false, message: "Email and OTP type are required" });
     }
 
     // Generate OTP
@@ -30,7 +29,7 @@ export const sendOTP = async (req, res) => {
     }
 
     // Store the OTP temporarily (you can replace this with database storage)
-    otpMap.set(email, generatedOTP);
+    otpMap.set(`${email}_${otpType}`, generatedOTP); // Use both email and otpType to create a unique key for storing OTP
 
     // Load email template
     let emailTemplate;
@@ -51,7 +50,7 @@ export const sendOTP = async (req, res) => {
             service: 'gmail',
             auth: {
                 user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
-                pass: 'fixewzwfhheqvfgr' // Replace with your Gmail App Password
+                pass: 'qfonuissqspipwtq' // Replace with your Gmail App Password
             }
         });
 
@@ -71,27 +70,40 @@ export const sendOTP = async (req, res) => {
     } catch (error) {
         console.error('Error sending OTP:', error);
         // Remove OTP from temporary storage if sending fails
-        otpMap.delete(email);
+        otpMap.delete(`${email}_${otpType}`); // Remove the OTP from the map if sending fails
         return res.status(500).json({ success: false, message: "Failed to send OTP" });
     }
 };
 
 export const verifyOTP = async (req, res) => {
-    const { otp } = req.body;
-    const targetEmail = 'saqlainshahbaltee@gmail.com'; // Assuming email is included in the request user object
-    
-    // Retrieve the stored OTP for the user
-    const storedOTP = otpStore[targetEmail];
+    const { email, otp, otpType } = req.body; // Get otpType from the request body
   
-    // Logic to verify OTP
-    try {
-      if (otp && storedOTP && otp === storedOTP.toString()) {
-        res.status(200).json({ success: true, message: 'OTP verified successfully' });
-      } else {
-        res.status(400).json({ success: false, message: 'Invalid OTP' });
-      }
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
-      res.status(500).json({ success: false, message: 'Error verifying OTP' });
+    // Check if email, OTP, and otpType are provided
+    if (!email || !otp || !otpType) {
+      return res.status(400).json({ success: false, message: "Email, OTP, and OTP type are required" });
+    }
+  
+    // Retrieve the stored OTP for the email and otpType
+    const storedOTP = otpMap.get(`${email}_${otpType}`);
+  
+    // Check if storedOTP exists
+    if (!storedOTP) {
+      return res.status(400).json({ success: false, message: "No OTP found for the provided email and OTP type" });
+    }
+  
+    // Convert storedOTP and user OTP to strings
+    const storedOTPString = storedOTP.toString();
+    const userOTPString = otp.toString();
+  
+    // Check if OTP is valid
+    if (storedOTPString === userOTPString) {
+      // OTP is valid, remove it from the map
+      otpMap.delete(`${email}_${otpType}`);
+      // Your OTP verification logic here
+      // If OTP is valid, send success response
+      return res.json({ success: true, message: "OTP verified successfully" });
+    } else {
+      // Invalid OTP
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
   };

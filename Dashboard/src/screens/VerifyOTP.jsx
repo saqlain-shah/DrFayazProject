@@ -15,7 +15,7 @@ function VerifyOTP() {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post('https://server-yvzt.onrender.com/api/auth/verifyotp', {
+            const response = await axios.post('http://localhost:8800/api/auth/verifyotp', {
                 otp,
             });
             if (response.status === 200) {

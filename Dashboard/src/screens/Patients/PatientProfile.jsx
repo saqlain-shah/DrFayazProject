@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import Layout from '../../Layout';
 import { patientTab } from '../../components/Datas';
 import { IoArrowBackOutline } from 'react-icons/io5';
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MedicalRecord from "./MedicalRecord";
 import AppointmentsUsed from "../../components/UsedComp/AppointmentsUsed";
 import InvoiceUsed from "../../components/UsedComp/InvoiceUsed";
@@ -24,7 +24,7 @@ function PatientProfile() {
   const [otpCode, setOtpCode] = useState('');
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
-
+  const [error, setError] = useState(null); // Define error state
 
   // Inside PatientProfile component
   useEffect(() => {
@@ -56,8 +56,6 @@ function PatientProfile() {
     fetchWebPatientData();
   }, [id]);
 
-
-
   useEffect(() => {
     const fetchMedicalRecords = async () => {
       try {
@@ -81,7 +79,6 @@ function PatientProfile() {
     fetchMedicalRecords();
   }, [id]);
 
-
   const openDentalModal = () => {
     setIsDentalModalOpen(true);
   };
@@ -91,28 +88,28 @@ function PatientProfile() {
   };
 
   const handleOtpInputChange = (event) => {
-    setOtpCode(event.target.value);
+    const { value } = event.target;
+    setOtpCode(value);
   };
 
-  const verifyOtp = async () => {
-    const email = 'davbabu1122@gmail.com'; // Set your desired email address here
+  const verifyOtp = async (otpType) => {
+    const email = 'saqlainshahbaltee@gmail.com'; // Set your desired email address here
   
     console.log('Verifying OTP...');
   
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otp/verify-otp',
-        { email: email, otp: otpCode },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        { email: email, otp: otpCode, otpType: otpType }, // Pass otpType along with other data
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' } }
       );
   
       console.log('OTP Verification Response:', response);
   
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.success) { // Check if response is successful
         console.log('OTP Verified!');
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
-        navigate('/login');
       } else {
         console.log('Failed to verify OTP:', response.data.message);
         alert('Invalid OTP code. Please try again.');
@@ -126,13 +123,12 @@ function PatientProfile() {
   };
   
 
-
   const handleMentalHealthTabClick = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
         'http://localhost:8800/api/otp/send-otp-to-doctor',
-        { email: 'davabu1122@gmail.com' },
+        { email: 'saqlainshahbaltee@gmail.com', otpType: 'dental' }, // Pass otpType
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -144,13 +140,12 @@ function PatientProfile() {
     } catch (error) {
       console.error('Error sending OTP to doctor:', error);
     }
-  };
+};
 
-
-
+  
   const tabPanel = () => {
     console.log("Active Tab:", activeTab);
-
+  
     switch (activeTab) {
       case 1:
         return <MedicalRecord />;
@@ -159,22 +154,23 @@ function PatientProfile() {
       case 3:
         return <InvoiceUsed patientId={id} token={localStorage.getItem('token')} />;
       case 4:
-      // return <PaymentsUsed doctor={false} />;
+        // return <PaymentsUsed doctor={false} />;
       case 5:
         return <PatientImages medicalRecords={medicalRecords} token={localStorage.getItem('token')} />
-
+  
       case 6:
         console.log("Rendering DentalChart...");
-        return isOtpValid ? <DentalChart /> : null;
+        return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is valid
       case 7:
         return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
-
+  
       case 8:
         return <HealthInfomation />;
       default:
         return null;
     }
   };
+  
 
   const formatProfileData = (profileData, webPatientData) => {
     const formattedData = [];
@@ -285,12 +281,13 @@ function PatientProfile() {
             placeholder="Enter OTP Code"
             className="border border-gray-400 rounded-md p-2 mb-4"
           />
-          <button
-            onClick={verifyOtp}
-            className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
-          >
-            Verify OTP
-          </button>
+        <button
+  onClick={() => verifyOtp('dental')} // Pass otpType as 'dental'
+  className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+>
+  Verify OTP
+</button>
+
         </div>
       </Modal>
     </Layout>
@@ -348,4 +345,3 @@ function Modal({ closeModal, isOpen, width, children, title }) {
     </Transition>
   );
 }
-

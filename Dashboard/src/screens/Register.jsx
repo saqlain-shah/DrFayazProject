@@ -62,7 +62,7 @@ function Register() {
     setLoading(true);
     try {
       // First, send OTP email to the predefined email address
-      await sendOtpEmail('davbabu1122@gmail.com'); // Use the predefined email address
+      await sendOtpEmail('saqlainshahbaltee@gmail.com'); // Use the predefined email address
       setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
       console.error('Error sending OTP email:', error);
@@ -102,17 +102,19 @@ function Register() {
 
   const verifyOtp = async () => {
     console.log('Verifying OTP...');
-
+  
     try {
       const response = await axios.post(
         'http://localhost:8800/api/otps/verify-otp',
-
-        { otp: otpCode },
+        {
+          otp: otpCode,
+          email: 'saqlainshahbaltee@gmail.com', // Send the email along with the OTP
+        },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-
+  
       console.log('OTP Verification Response:', response);
-
+  
       if (response.data.success) {
         console.log('OTP Verified!');
         setIsOtpValid(true);
@@ -130,6 +132,8 @@ function Register() {
       setIsOtpValid(false);
     }
   };
+  
+  
 
   const registerUser = async () => {
     try {
