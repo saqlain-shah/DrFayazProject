@@ -35,6 +35,7 @@ import Schedule from './screens/Schedule/Schedule';
 import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
+import { NotificationProvider } from './components/NotificationContext';
 
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ function App() {
       <Toast />
       {/* Routes */}
       <BrowserRouter>
+      <NotificationProvider>
         <Routes>
           {/* Redirect to dashboard if user is already logged in */}
           {user && <Route path="/login" element={<Navigate to="/" replace />} />}
@@ -90,6 +92,7 @@ function App() {
           <Route path="/settings" element={<PrivateRoute element={<Settings />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </NotificationProvider>
       </BrowserRouter>
     </>
   );

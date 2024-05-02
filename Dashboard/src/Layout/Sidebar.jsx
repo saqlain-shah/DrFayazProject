@@ -1,7 +1,7 @@
 import React from 'react';
 import { MenuDatas } from '../components/Datas';
 import { Link } from 'react-router-dom';
-import pic from '../build/images/logo.jpg'
+import pic from '../build/images/upLogo.jpg'
 function Sidebar() {
   // active link
   const currentPath = (path) => {
@@ -19,10 +19,10 @@ function Sidebar() {
         <img
           src={pic}
           alt="logo"
-          className="w-48 h-15 ml-4  rounded-lg "
+          className="w-56 h-26 ml-2  rounded-lg "
         />
       </Link>
-      <div className="flex-colo gap-2 mt-12">
+      <div className="flex-colo gap-2">
         {MenuDatas.map((item, index) => (
           <Link
             to={item.path}

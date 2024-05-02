@@ -9,10 +9,10 @@ import { Navigation, Autoplay } from 'swiper/modules';
 
 const AvailableServiceContent = () => {
     const availabeServiceArray = [
-        { title: 'Dentist', img: img5 },
-        { title: 'Cardiologist', img: img4 },
-        { title: 'Urology', img: img1 },
-        { title: 'Neurology', img: img2 },
+        { title: 'Men health clinic', img: img5 },
+        { title: 'Women health', img: img4 },
+        { title: 'Children health', img: img1 },
+        // { title: 'Neurology', img: img2 },
         { title: 'Orthopedic', img: img3 },
     ]
     return (

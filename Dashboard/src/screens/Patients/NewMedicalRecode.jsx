@@ -347,5 +347,3 @@ function NewMedicalRecord() {
 }
 
 export default NewMedicalRecord;
-
-

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MenuSelect } from './Form';
+import { MenuSelectss } from './Form';
 import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -144,11 +144,11 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
             </td>
             {action && (
               <td className={tdclass}>
-                <MenuSelect datas={DropDown1} item={item}>
+                < MenuSelectss datas={DropDown1} item={item}>
                   <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                     <BiDotsHorizontalRounded />
                   </div>
-                </MenuSelect>
+                </ MenuSelectss>
               </td>
             )}
           </tr>
@@ -335,11 +335,11 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
             <td className={tdclass}>{new Date(item?.dueDate).toLocaleString()}</td>
             <td className={`${tdclass} font-semibold`}>{item?.total}</td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -407,11 +407,11 @@ export function MedicineTable({ data, onEdit, onDelete }) {
             <td className={tdclass}>{item?.measure}</td>
             <td className={tdclass}>{item?.description}</td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -483,11 +483,11 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
               </span>
             </td>
             <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
+              < MenuSelectss datas={DropDown1} item={item}>
                 <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                   <BiDotsHorizontalRounded />
                 </div>
-              </MenuSelect>
+              </ MenuSelectss>
             </td>
           </tr>
         ))}
@@ -510,7 +510,6 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
   const handleDelete = (item, isWebPatient) => {
     onDelete(item._id, isWebPatient ? item : null); // Pass webPatient object if it's a webPatient, otherwise null
   };
-
 
   const patientMenuOptions = [
     {
@@ -536,7 +535,6 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
     },
   ];
 
-
   const webPatientMenuOptions = [
     // {
     //   title: 'Edit',
@@ -555,10 +553,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
       icon: RiDeleteBin6Line,
       onClick: (webPatient) => onDeleteWebPatient(webPatient._id), // Pass webPatient ID to onDeleteWebPatient
     },
-
   ];
-
-
 
   const thClass = 'text-start text-sm font-medium py-3 px-1 whitespace-nowrap';
   const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
@@ -609,11 +604,11 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>{item.emergencyContact}</td>
                 <td className={tdClass}>{new Date(item.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={patientMenuOptions} item={item}>
-                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                  <MenuSelectss datas={patientMenuOptions} item={item}>
+                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg" style={{ position: 'sticky' }}>
                       <BiDotsHorizontalRounded />
                     </div>
-                  </MenuSelect>
+                  </MenuSelectss>
                 </td>
               </tr>
             </React.Fragment>
@@ -647,21 +642,24 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
                 <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
                 <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelect datas={webPatientMenuOptions} item={webPatient}>
+                  <MenuSelectss datas={webPatientMenuOptions} item={webPatient}>
                     <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                       <BiDotsHorizontalRounded />
                     </div>
-                  </MenuSelect>
+                  </MenuSelectss>
                 </td>
               </tr>
             </React.Fragment>
           ))}
-
         </tbody>
       </table>
     </div>
   );
 }
+
+
+
+
 
 export function PatientTableArray({ data, onEdit }) {
   console.log("data", data)
@@ -678,14 +676,14 @@ export function PatientTableArray({ data, onEdit }) {
       <table className="table-auto w-full">
         <thead className="bg-gray-200 rounded-md overflow-hidden">
           <tr>
-            <th className={thClass} style={{ width: '2%' }}>#</th>
-            <th className={thClass} style={{ width: '20%' }}>Full Name</th>
-            <th className={thClass} style={{ width: '10%' }}>Gender</th>
-            <th className={thClass} style={{ width: '15%' }}>Email</th>
-            <th className={thClass} style={{ width: '10%' }}>Blood Group</th>
-            <th className={thClass} style={{ width: '20%' }}>Emergency Contact</th>
+            <th className={thClass} style={{ width: '5%' }}>#</th>
+            <th className={thClass} style={{ width: '8%' }}>Full Name</th>
+            <th className={thClass} style={{ width: '8%' }}>Gender</th>
+            <th className={thClass} style={{ width: '8%' }}>Email</th>
+            <th className={thClass} style={{ width: '7%' }}>Blood Group</th>
+            <th className={thClass} style={{ width: '10%' }}>Emergency Contact</th>
             {/* <th className={thClass} style={{ width: '15%' }}>Profile Picture</th> */}
-            <th className={thClass} style={{ width: '8%' }}>Actions</th>
+
           </tr>
         </thead>
         <tbody>
@@ -704,9 +702,7 @@ export function PatientTableArray({ data, onEdit }) {
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
               </td> */}
-              <td className={tdClass}>
-                <button onClick={() => onEdit(patient._id)}>Edit</button> {/* Assuming onEdit is the function to edit a patient */}
-              </td>
+
             </tr>
           ))}
         </tbody>
@@ -737,161 +733,43 @@ export function DoctorsTable({ data, functions, doctor }) {
   ];
 
   return (
-    <table className="table-auto w-full">
-      <thead className="bg-dry rounded-md overflow-hidden">
-        <tr>
-          <th className={thclass}>#</th>
-          <th className={thclass}>{doctor ? 'Doctor' : 'Receptionist'}</th>
-          <th className={thclass}>FullName</th>
-          <th className={thclass}>Created At</th>
-          <th className={thclass}>Phone</th>
-          <th className={thclass}>Email</th>
-          <th className={thclass}>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item, index) => (
-          <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-            <td className={tdclass}>{index + 1}</td>
-            <td className={tdclass}>
-              <div className="flex gap-4 items-center">
-                <span className="w-12">
-                  <img
-                    src={`https://server-yvzt.onrender.com/${item.profileImage}`}
-                    className="w-full h-12 rounded-full object-cover border border-border"
-                  />
-                </span>
-              </div>
-            </td>
-            <td className={tdclass}>{item.fullName}</td>
-            <td className={tdclass}>{item.createdAt}</td>
-            <td className={tdclass}>{item.phone}</td>
-            <td className={tdclass}>{item.email}</td>
-            <td className={tdclass}>
-              <MenuSelect datas={DropDown1} item={item}>
-                <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                  <BiDotsHorizontalRounded />
-                </div>
-              </MenuSelect>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-export function AppointmentTable({ functions, token, patientId }) {
-  const [appointments, setAppointments] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`https://server-yvzt.onrender.com/api/appointments/patient/${patientId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setAppointments(data);
-      } catch (error) {
-        console.error('Error fetching appointments:', error);
-      }
-    };
-
-    fetchData();
-  }, [token, patientId]);
-
-  const getStatusClass = (status) => {
-    if (status === 'Pending') {
-      return 'bg-yellow-500';
-    } else if (status === 'Completed') {
-      return 'bg-green-500';
-    } else {
-      return 'bg-blue-500';
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`https://server-yvzt.onrender.com/api/appointments/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        // Remove the deleted appointment from the state
-        setAppointments(appointments.filter(appointment => appointment._id !== id));
-        // Display success toast message
-        toast.success('Appointment deleted successfully!', {
-          position: 'bottom-right',
-        });
-      } else {
-        console.error('Failed to delete appointment');
-        // Display error toast message if deletion fails
-        toast.error('Failed to delete appointment');
-      }
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-      // Display error toast message if an error occurs during deletion
-      toast.error('Error deleting appointment');
-    }
-  };
-
-  const DropDown1 = [
-    {
-      title: 'Edit',
-      icon: FiEdit,
-      onClick: (item) => {
-        functions.edit(item); // Invoke the edit function with the appointment item
-      },
-    },
-    {
-      title: 'Delete',
-      icon: RiDeleteBin6Line,
-      onClick: (item) => {
-        // Call the delete function
-        handleDelete(item._id);
-      },
-    },
-  ];
-
-  return (
     <div className="overflow-x-auto">
       <table className="table-auto w-full">
         <thead className="bg-dry rounded-md overflow-hidden">
           <tr>
-            <th className="py-3 px-4 text-left font-semibold">Date of Visit</th>
-            <th className="py-3 px-4 text-left font-semibold">Doctor</th>
-            <th className="py-3 px-4 text-left font-semibold">Start Time</th>
-            <th className="py-3 px-4 text-left font-semibold">End Time</th>
-            <th className="py-3 px-4 text-left font-semibold">Patient Name</th>
-            <th className="py-3 px-4 text-left font-semibold">Purpose of Visit</th>
-            <th className="py-3 px-4 text-left font-semibold">Status</th>
-            <th className="py-3 px-4 text-left font-semibold">Actions</th>
+            <th className={thclass}>#</th>
+            <th className={thclass}>{doctor ? 'Doctor' : 'Receptionist'}</th>
+            <th className={thclass}>FullName</th>
+            <th className={thclass}>Created At</th>
+            <th className={thclass}>Phone</th>
+            <th className={thclass}>Email</th>
+            <th className={thclass}>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {appointments.map((item) => (
+          {data.map((item, index) => (
             <tr key={item._id} className="border-b border-border hover:bg-greyed transitions">
-              <td className="py-3 px-4">{new Date(item.dateOfVisit).toLocaleDateString()}</td>
-              <td className="py-3 px-4">{item.doctor}</td>
-              <td className="py-3 px-4">{new Date(item.startTime).toLocaleTimeString()}</td>
-              <td className="py-3 px-4">{new Date(item.endTime).toLocaleTimeString()}</td>
-              <td className="py-3 px-4">{item.patientName}</td>
-              <td className="py-3 px-4">{item.purposeOfVisit}</td>
-              <td className="py-3 px-4">
-                <span className={`py-1 px-4 ${getStatusClass(item.status)} bg-opacity-10 text-xs rounded-xl`}>
-                  {item.status}
-                </span>
+              <td className={tdclass}>{index + 1}</td>
+              <td className={tdclass}>
+                <div className="flex gap-4 items-center">
+                  <span className="w-12">
+                    <img
+                      src={`https://server-yvzt.onrender.com/${item.profileImage}`}
+                      className="w-full h-12 rounded-full object-cover border border-border"
+                    />
+                  </span>
+                </div>
               </td>
-              <td className="py-3 px-4" style={{ position: 'relative' }}>
-                <MenuSelect datas={DropDown1} item={item}>
+              <td className={tdclass}>{item.fullName}</td>
+              <td className={tdclass}>{item.createdAt}</td>
+              <td className={tdclass}>{item.phone}</td>
+              <td className={tdclass}>{item.email}</td>
+              <td className={tdclass}>
+                < MenuSelectss datas={DropDown1} item={item}>
                   <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                     <BiDotsHorizontalRounded />
                   </div>
-                </MenuSelect>
+                </ MenuSelectss>
               </td>
             </tr>
           ))}
@@ -901,7 +779,8 @@ export function AppointmentTable({ functions, token, patientId }) {
   );
 }
 
-// payment table
+
+
 export function PaymentTable({ data, functions, doctor }) {
   return (
     <table className="table-auto w-full">

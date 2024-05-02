@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
+import Dropzone from '../DropZone';
+import { useState } from 'react';
 
-const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, selectedSlot }) => {
-    const { name, reasonForVisit, bloodGroup,image, gender, emergencyContact, email ,address} = selectValue;
-
+const PersonalInformation = ({handleFileChange, handleChange, selectValue, selectedSlot }) => {
+    const { name, reasonForVisit, bloodGroup, attachments, gender, emergencyContact, email, address } = selectValue;
+    const [files, setFiles] = useState([])
     useEffect(() => {
         // if (selectedSlot) {
         //     // Extract user data from the selected slot
@@ -17,13 +19,17 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
 
     const handleNext = () => {
         // Call the onNext function passed from the parent component to move to the next step
-        onNext();
+        // onNext();
     };
 
     const handlePrev = () => {
         // Call the onPrev function passed from the parent component
-        onPrev();
+        // onPrev();
     };
+    const handleFilesChange = (newFiles) => {
+        setFiles(newFiles)
+        handleFileChange(files)
+    }
 
     return (
         <form className="rounded p-3 mt-5" style={{ background: "#f8f9fa" }}>
@@ -67,7 +73,16 @@ const PersonalInformation = ({ handleChange, selectValue, onNext, onPrev, select
                 <div className="col-md-12 col-sm-12">
                     <div className="form-group card-label mb-3">
                         <label>Reason For Visit</label>
-                        <textarea rows={8} onChange={(e) => handleChange(e)} name='reasonForVisit' value={reasonForVisit || ''} className="form-control" type="text" />
+                        <textarea rows={4} onChange={(e) => handleChange(e)} name='reasonForVisit' value={reasonForVisit || ''} className="form-control" type="text" />
+                    </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                    <div className="form-group card-label mb-3">
+                        <label>Attachments</label>
+                        <Dropzone
+                            handleChange={handleFileChange}
+                            files={attachments}
+                        />
                     </div>
                 </div>
             </div>

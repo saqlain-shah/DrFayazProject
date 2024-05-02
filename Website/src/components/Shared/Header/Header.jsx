@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './index.css';
 import TopHeader from '../TopHeader/TopHeader';
 import { Link, NavLink } from 'react-router-dom';
-import img from '../../../images/dr1.jpg';
 import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 import { FaBars } from 'react-icons/fa';
@@ -37,14 +36,15 @@ const Header = ({ clientId }) => {
             <header id="header" className={`fixed-top ${!show && "stickyHeader"}`}>
                 <div className="container d-flex align-items-center">
                     <Link to={'/'} className="logo me-auto">
-                        <img src={img} alt="" className="img-fluid w-32 h-20" />
+                        <img src="/logo.jpg" alt="" className="img-fluid w-42 h-25" /> 
+                        {/* change the logo */}
                     </Link>
 
                     {/* Render different elements based on screen size */}
                     <nav id="navbar" className="navbar order-last order-lg-0">
                         <ul className="d-none d-lg-flex">
-                            <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Home</NavLink></li>
-                            <li><NavLink to={'/contact'} className={({ isActive }) => isActive ? "nav-link scrollto active" : ""}>Contact</NavLink></li>
+                            <li><NavLink to={'/'} className={({ isActive }) => isActive ? "nav-link scrollto active" : "no-underline"}>Home</NavLink></li>
+                            <li><NavLink to={'/contact'} className={({ isActive }) => isActive ? "nav-link scrollto active " : "no-underline"}>Contact</NavLink></li>
                             {!isLoggedIn && <li><Link to={'/login'} className="nav-link scrollto">Login</Link></li>}
                         </ul>
                         {isLoggedIn &&

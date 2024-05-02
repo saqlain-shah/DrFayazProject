@@ -100,6 +100,3 @@ export const deleteMedicalRecord = async (req, res) => {
     }
 };
 // MedicalRecordController.js
-
-
-

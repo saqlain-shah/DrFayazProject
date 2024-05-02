@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../AuthContext';
-import pic from '../build/images/logo.jpg';
+import pic from '../build/images/upLogo.jpg';
 
 function Login() {
   const navigate = useNavigate();
@@ -110,11 +110,11 @@ function Login() {
           />
         </div>
         <div className="text-center mt-4">
-                    <span>Create an account? </span>
-                    <button className="text-blue-500" onClick={handleRegisterClick}>
-                    Register
-                    </button>
-                </div>
+          <span>Create an account? </span>
+          <button className="text-blue-500" onClick={handleRegisterClick}>
+            Register
+          </button>
+        </div>
       </form>
     </div>
   );
