@@ -88,11 +88,7 @@ function Campaigns() {
       icon: FaShare,
       onClick: toggleShareOptions,
     },
-    {
-      title: "Edit",
-      icon: FaEdit,
-      onClick: editCampaign,
-    },
+  
     {
       title: "Delete",
       icon: FiTrash,
