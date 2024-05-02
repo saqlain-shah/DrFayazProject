@@ -52,7 +52,7 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8800/api/userauth/register', user);
+            const response = await axios.post('https://server-yvzt.onrender.com/api/userauth/register', user);
             if (response.data.message === 'Registration successful') {
                 handleSignUpSuccess();
                 // Redirect to home page after successful sign-up

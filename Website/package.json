@@ -77,11 +77,5 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.0.12"
-  },
-  "proxy": {
-    "/api": {
-      "target": "http://localhost:8800",
-      "changeOrigin": true
-    }
   }
 }

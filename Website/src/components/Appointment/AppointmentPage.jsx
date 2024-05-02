@@ -101,7 +101,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8800/api/userauth/${params.clientId}`,
+        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -167,7 +167,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "http://localhost:8800/api/stripe/checkout",
+        "https://server-yvzt.onrender.com/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -212,7 +212,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:8800/api/services",
+        "https://server-yvzt.onrender.com/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -284,7 +284,7 @@ const AppointmentPage = () => {
 
     // Make a POST request to store the appointment data with token included in headers
     await axios
-      .post("http://localhost:8800/api/web/", appointmentData, {
+      .post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -298,7 +298,7 @@ const AppointmentPage = () => {
         setShowAppointmentDetails(true);
         // Send notification after successful appointment
         // Frontend code to send notifications
-        // axios.post('http://localhost:8800/api/web/notifications', {
+        // axios.post('https://server-yvzt.onrender.com/api/web/notifications', {
         //   email: selectValue.email,
         //   message: "Your appointment has been successfully scheduled. Thank you!",
 
@@ -314,7 +314,7 @@ const AppointmentPage = () => {
 
 
         // // After sending notification, delete the selected slot
-        // axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
+        // axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
       })
       .catch((error) => {
         console.error("Error creating appointment:", error);
