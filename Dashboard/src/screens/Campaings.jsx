@@ -135,13 +135,14 @@ function Campaigns() {
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-          <Button
-            label="Add New"
-            Icon={BiPlus}
-            onClick={() => {
-              closeModal();
-            }}
-          />
+        <Button
+  label="Add New"
+  Icon={BiPlus}
+  onClick={() => {
+    setIsOpen(true);
+  }}
+/>
+
         </div>
       </div>
 
