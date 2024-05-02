@@ -13,7 +13,7 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState }) {
 
   // Tabs data
   const tabs = [
-    { title: 'Email', icon: MdOutlineTextsms },
+    // { title: 'Email', icon: MdOutlineTextsms },
     // Add other tabs here if needed
   ];
 
@@ -42,9 +42,9 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState }) {
                 className={`flex gap-4 items-center p-2 rounded-full ${indexs === index ? 'bg-subMain text-white' : 'text-black'
                   }`}
               >
-                <div className="w-10 h-10 text-md rounded-full flex items-center justify-center">
+                {/* <div className="w-10 h-10 text-md rounded-full flex items-center justify-center">
                   <item.icon />
-                </div>
+                </div> */}
                 <h5 className="text-xs font-medium">{item.title}</h5>
               </button>
             ))}

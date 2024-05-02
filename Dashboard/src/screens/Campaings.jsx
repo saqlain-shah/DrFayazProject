@@ -88,7 +88,6 @@ function Campaigns() {
       icon: FaShare,
       onClick: toggleShareOptions,
     },
-  
     {
       title: "Delete",
       icon: FiTrash,

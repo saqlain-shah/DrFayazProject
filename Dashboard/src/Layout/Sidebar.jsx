@@ -19,7 +19,7 @@ function Sidebar() {
         <img
           src={pic}
           alt="logo"
-          className="w-56 h-20 ml-2  rounded-lg "
+          className="w-56 h-26 ml-2  rounded-lg "
         />
       </Link>
       <div className="flex-colo gap-2">
