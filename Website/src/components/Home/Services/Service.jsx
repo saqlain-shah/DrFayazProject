@@ -28,7 +28,7 @@ Available round the clock, we're here whenever you need us. Our services are acc
                     </div>
                     <div className="col-lg-4">
                         <div className="service-content ps-4 mt-4 mt-lg-0">
-                            <h2>Personal care <br />healthy living</h2>
+                            <h2>Holistic  care <br />of Whole Family </h2>
                             <p className="mt-4 mb-5 text-secondary form-text">Providing top-tier healthcare services tailored to meet your needs, ensuring your well-being and peace of mind .</p>
                            
                         </div>

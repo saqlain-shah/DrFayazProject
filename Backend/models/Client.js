@@ -16,6 +16,18 @@ const clientSchema = new mongoose.Schema({
 });
 
 // Hash password before saving to the database
+// clientSchema.pre('save', async function (next) {
+//   try {
+//     if (!this.isModified('password')) return next();
+//     const hash = await bcrypt.hash(this.password, 10);
+//     this.password = hash;
+//     next();
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
+
+
 clientSchema.pre('save', async function (next) {
   try {
     if (!this.isModified('password')) return next();

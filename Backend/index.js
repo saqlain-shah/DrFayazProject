@@ -29,7 +29,9 @@ import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
 
-//import helmet from 'helmet';
+
+
+
 
 const app = express();
 app.use(express.json());
@@ -39,7 +41,6 @@ setupMiddleware();
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -50,17 +51,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Setting up CORS
-// app.use(cors({
-//     origin: 'http://localhost:5173',
-//     credentials: true // If you're including credentials in your requests
-// }));
+
+
+
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173'],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5174', 'http://localhost:5173',],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
 app.use(cors(corsOptions));
+
 
 
 
@@ -70,7 +70,9 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
+
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
+
 // Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
@@ -96,14 +98,12 @@ app.use('/api/schedule', schduleRoutes);
 app.use('/api/sandgrid', sandGridRoutes);
 app.use('/api/medicine', medicineRoute);
 app.use('/api/v1', webAppointmentRoutes);
+app.use('/api/otps', otpDashRoutes);
+
 app.use('/api/otp', otpRoutes);
 app.use('/api/otps', otpDashRoutes);
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
-
-
-
-
 
 
 

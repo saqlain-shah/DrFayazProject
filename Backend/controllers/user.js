@@ -91,34 +91,40 @@ export const updateClientById = async (req, res, next) => {
 };
 
 export const changePassword = async (req, res, next) => {
-  const { clientId } = req.params;
-  const { oldPassword, newPassword } = req.body;
+  const { userId, oldPassword, newPassword } = req.body;
 
   try {
-    console.log('Request body:', req.body);
+    console.log('Change Password Request Body:', req.body);
 
-    if (!clientId) {
+    if (!userId) {
+      console.log('User ID is missing');
       return res.status(400).json({ message: 'User ID is missing' });
     }
 
-    const user = await User.findById(clientId);
+    const user = await User.findById(userId);
     if (!user) {
+      console.log('User not found');
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('User found:', user);
+    // console.log('User found:', user);
 
-    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(oldPassword.trim(), user.password.trim());
+
     if (!isPasswordValid) {
+      console.log('Invalid old password');
       return res.status(400).json({ message: 'Invalid old password' });
     }
 
-    const hash = await bcrypt.hash(newPassword, 10);
-    user.password = hash;
-    console.log('hash', hash, user.password);
+    // console.log('Old password is valid');
+
+    // const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // console.log('New hashed password:', hash);
+    // 
+    user.password = newPassword;
     await user.save();
 
-
+    console.log('Password changed successfully');
     return res.status(200).json({ message: 'Password changed successfully' });
   } catch (error) {
     console.error('Error changing password:', error);

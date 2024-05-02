@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppointmentTable } from '../Tables';
+// import { AppointmentTable } from '../Tables';
 import { useNavigate } from 'react-router-dom';
 import AddAppointmentModal from '../Modals/AddApointmentModal';
 import EditAppointmentModal from '../Modals/EditAppointment';

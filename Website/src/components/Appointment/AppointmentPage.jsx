@@ -1,17 +1,19 @@
+
+
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import moment from "moment";
+// import moment from "moment";
 import axios from "axios";
 import { Link, json, useParams } from "react-router-dom"; // Import useParams
-import axiosBaseQuery from "./axiosBaseQuery";
+// import axiosBaseQuery from "./axiosBaseQuery";
 import { Button, Steps, message, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 import Footer from "../Shared/Footer/Footer";
 import Header from "../Shared/Header/Header";
 import SelectAppointment from "./SelectApppointment";
 import PersonalInformation from "../Booking/PersonalInformation"; // Import PersonalInformation component
-import CheckoutPage from "../Booking/BookingCheckout/CheckoutPage";
-import useAuthCheck from "../../redux/hooks/useAuthCheck";
+//import CheckoutPage from "../Booking/BookingCheckout/CheckoutPage";
+//import useAuthCheck from "../../redux/hooks/useAuthCheck";
 import { useCreateAppointmentByUnauthenticateUserMutation } from "../../redux/api/appointmentApi";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../../redux/feature/invoiceSlice";
@@ -23,7 +25,7 @@ const initialValue = {
   // paymentType: 'creditCard',
   name: "",
   email: "",
-  image: "",
+  attachments: [],
   emergencyContact: 0,
   reasonForVisit: "",
   description: "",
@@ -44,7 +46,10 @@ const AppointmentPage = () => {
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
   const [serviceDetails, setServiceDetails] = useState([]); // State to store service details
-  const [selectedService, setSelectedService] = useState({}); // State to store service details
+  const [selectedService, setSelectedService] = useState({
+    serviceName: "",
+    price: 0,
+  }); // State to store service details
   const [totalAmount, setTotalAmount] = useState(0); // State to store total amount
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -58,6 +63,9 @@ const AppointmentPage = () => {
 
   const handleChange = (e) => {
     setSelectValue({ ...selectValue, [e.target.name]: e.target.value });
+  };
+  const handleFileChange = (files) => {
+    setSelectValue({ ...selectValue, attachments: files });
   };
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
@@ -116,10 +124,11 @@ const AppointmentPage = () => {
   const next = (e) => {
     e.preventDefault();
     setCurrent(current + 1);
-    if (current !== 2) {
+    if (current === 0) {
       fetchData(params);
     }
-    console.log(current);
+    console.log("selectedService", selectedService);
+    console.log("selected values", selectValue)
   };
 
   const prev = () => {
@@ -229,49 +238,91 @@ const AppointmentPage = () => {
 
 
 
-  const handleConfirmAppointment = () => {
+  const handleConfirmAppointment = async () => {
     console.log("Confirming appointment...");
-    setShowModal(true); // Show the modal after confirming the appointment
-    setShowAppointmentDetails(true);
-
+    setSelectValue({ ...selectValue, id: userId });
+    const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
+    const { endDateTime, startDateTime } = selectedSlot;
+    const { serviceName, price } = selectedService
     // Combine appointment data
-    const appointmentData = {
-      patientInfo: selectValue, // Personal information
-      selectedSlot: selectedSlot, // Selected appointment slot
-      selectedService: selectedService, // Selected service
-    };
+    const appointmentData = new FormData();
+    // appointmentData.append('id', selectValue.id);
+    appointmentData.append('name', name);
+    appointmentData.append('email', email);
+    appointmentData.append('emergencyContact', emergencyContact);
+    appointmentData.append('reasonForVisit', reasonForVisit);
+    appointmentData.append('image', image);
+    appointmentData.append('gender', gender);
+    appointmentData.append('address', address);
+    appointmentData.append('bloodGroup', bloodGroup);
+    // appointmentData.append('slotId', selectValue.slotId);
+    // appointmentData.append('selectedStartDate', selectedSlot.startDateTime);
+    // appointmentData.append('selectedEndDate', selectedSlot.endDateTime);
+    // console.log("image and others", selectValue, atta);
+    // appointmentData.append("patientInfo", other);
+    attachments.map((attachment) => {
+      appointmentData.append("files", attachment);
+
+    })
+
+    appointmentData.append("endDateTime", endDateTime);
+    appointmentData.append("startDateTime", startDateTime);
+    appointmentData.append("serviceName", serviceName);
+    appointmentData.append("price", price);
+    // appointmentData.append('servicePrice', selectedService.price);
+    // {
+    //   patientInfo: selectValue, // Personal information
+    //   selectedSlot: selectedSlot, // Selected appointment slot
+    //   selectedService: selectedService, // Selected service
+    // };
 
     // Retrieve token from localStorage
     const token = localStorage.getItem("token");
 
     // Include ID in the appointment data
-    appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
+    // appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
 
     // Make a POST request to store the appointment data with token included in headers
-    axios
+    await axios
       .post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        console.log("Appointment created successfully:", response.data);
+        console.log("Appointment created successfully:", response);
         // Display a success toast message after appointment creation
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
+        setShowModal(true); // Show the modal after confirming the appointment
+        setShowAppointmentDetails(true);
+        // Send notification after successful appointment
+        // Frontend code to send notifications
+        // axios.post('https://server-yvzt.onrender.com/api/web/notifications', {
+        //   email: selectValue.email,
+        //   message: "Your appointment has been successfully scheduled. Thank you!",
 
-        axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // })
+        //   .then((notificationResponse) => {
+        //     console.log("Notification sent successfully:", notificationResponse.data);
 
+
+        //   })
+        //   .catch((notificationError) => {
+        //     console.error("Error sending notification:", notificationError);
+        //   });
+
+
+        // // After sending notification, delete the selected slot
+        // axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
       })
       .catch((error) => {
         console.error("Error creating appointment:", error);
         // Handle error, e.g., show an error message to the user
       });
   };
+
+
 
   useEffect(() => {
     if (isSuccess) {
@@ -305,10 +356,9 @@ const AppointmentPage = () => {
       content: (
         <PersonalInformation
           handleChange={handleChange}
+          handleFileChange={handleFileChange}
           selectValue={selectValue}
           handleConfirmAppointment={handleConfirmAppointment} // Pass the function here
-          onNext={next}
-          onPrev={prev}
           selectedSlot={selectedSlot} // Pass the selected slot information
         />
       ),
@@ -324,12 +374,12 @@ const AppointmentPage = () => {
                   key={index}
                   onClick={() => {
                     setSelectedService({
-                      name: service.name,
+                      serviceName: service.name,
                       price: service.price,
                     });
                     setIsConfirmDisable(false);
                   }}
-                  className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${selectedService && selectedService.name === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
+                  className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${selectedService && selectedService.serviceName === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
                     }`}
                 >
                   <p className="border bg-gray-800 text-base p-2 rounded-md">
@@ -417,7 +467,7 @@ const AppointmentPage = () => {
         ]}
       >
         <p><b>Patient Name:</b> {selectValue.name} </p>
-        <p><b>Service:</b> {selectedService ? selectedService.name : "Loading..."}</p>
+        <p><b>Service:</b> {selectedService ? selectedService.serviceName : "Loading..."}</p>
         <p>
           <b>Service Charge:</b> {" "}
           {selectedService ? selectedService.price : "Loading..."} USD

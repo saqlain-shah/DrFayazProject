@@ -110,11 +110,11 @@ function Login() {
           />
         </div>
         <div className="text-center mt-4">
-                    <span>Create an account? </span>
-                    <button className="text-blue-500" onClick={handleRegisterClick}>
-                    Register
-                    </button>
-                </div>
+          <span>Create an account? </span>
+          <button className="text-blue-500" onClick={handleRegisterClick}>
+            Register
+          </button>
+        </div>
       </form>
     </div>
   );

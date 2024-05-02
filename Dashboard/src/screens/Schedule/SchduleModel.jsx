@@ -29,19 +29,30 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
 
     const handleSaveAppointment = () => {
+        // Check if endDateTime is before startDateTime (i.e., the end time is before the start time)
+        const isInvalidTimeRange = endDateTime < startDateTime  || 
+        (endDateTime.getHours() === startDateTime.getHours() && 
+         endDateTime.getMinutes() === startDateTime.getMinutes());
+    
+        if (isInvalidTimeRange) {
+            // If the time range is invalid, display a message and return without saving
+            toast.error('Invalid time range. Please select a valid time range.');
+            return;
+        }
+    
         // Here you can handle saving the appointment
         // You can use startDateTime, endDateTime, and shares state values
         // For example, you can send a request to your backend API to save the appointment
-
+    
         // Fetch token from localStorage
         const token = localStorage.getItem('token');
-
+    
         const appointmentPayload = {
             startDateTime,
             endDateTime,
             shares
         };
-
+    
         axios.post('https://server-yvzt.onrender.com/api/schedule', appointmentPayload, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -57,9 +68,11 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
                 console.error('Error saving appointment:', error);
                 toast.error('Failed to save appointment');
             });
-
+    
         console.log("appointment date", appointmentPayload)
     };
+    
+    
 
     return (
         <Modal

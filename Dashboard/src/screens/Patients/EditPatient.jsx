@@ -139,7 +139,7 @@ function AddEditPatientModal({ closeModal, isOpen, patientData, onSave }) {
             onClick={closeModal}
             className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
           >
-            {patientData ? 'Discard' : 'Cancel'}
+            {patientData ? '' : 'Cancel'}
           </button>
           <Button
             label="Save"

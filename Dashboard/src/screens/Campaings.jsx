@@ -1,4 +1,3 @@
-// Campaings.js
 import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,13 +5,13 @@ import Layout from '../Layout';
 import { Button, MenuSelect } from '../components/Form';
 import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
 import { HiOutlineMail } from 'react-icons/hi';
-import { FaShare } from "react-icons/fa";
+import { FaShare, FaEdit } from "react-icons/fa";
 import axios from 'axios';
 import ContactSelectionDialog from './ContactSelectionDialog';
 import CampaignModal from '../components/Modals/AddCampagnModal';
 import { FiTrash } from 'react-icons/fi';
 
-function Campaings() {
+function Campaigns() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState({});
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -31,13 +30,19 @@ function Campaings() {
   };
 
   const closeModal = () => {
-    setIsOpen(!isOpen);
+    setIsOpen(false);
     setData({});
   };
 
   const updateCampaignsState = (newCampaign) => {
     setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
   };
+
+  const editCampaign = (campaign) => {
+    setIsOpen(true);
+    setData(campaign);
+  };
+
 
   const shareViaWhatsApp = async (campaign) => {
     setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
@@ -75,6 +80,7 @@ function Campaings() {
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
+
 
   const actions = [
     {
@@ -125,18 +131,18 @@ function Campaings() {
         <CampaignModal
           isOpen={isOpen} closeModal={closeModal} data={data}
           updateCampaignsState={updateCampaignsState} />
-
       )}
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-          <Button
-            label="Add New"
-            Icon={BiPlus}
-            onClick={() => {
-              closeModal();
-            }}
-          />
+        <Button
+  label="Add New"
+  Icon={BiPlus}
+  onClick={() => {
+    setIsOpen(true);
+  }}
+/>
+
         </div>
       </div>
 
@@ -173,8 +179,9 @@ function Campaings() {
             <div className="mt-4 flex flex-col gap-3">
               <h4 className="text-sm font-medium">Message</h4>
               <p className="text-xs leading-5 text-textGray">
-                {campaign.message}....
+                {campaign.message}
               </p>
+
               <div className="flex gap-2">
                 <span className="text-xs bg-dry text-textGray rounded-xl border py-2 px-4 border-border">
                   {campaign.createdAt}
@@ -199,4 +206,4 @@ function Campaings() {
   );
 }
 
-export default Campaings;
+export default Campaigns;
