@@ -23,7 +23,7 @@ function Payments() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('https://server-yvzt.onrender.com/api/web/', {
+    fetch('http://localhost:8800/api/web/', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -156,7 +156,7 @@ function Payments() {
             }}
           /> */}
         </div>
-        <div className="mt-8 w-full overflow-x-scroll">
+        <div className="mt-8 w-full overflow-x-hidden">
           <Transactiontable
             data={transactionData}
             action={true}

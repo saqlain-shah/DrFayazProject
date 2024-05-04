@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { MenuSelectss } from './Form';
-import { BiDotsHorizontalRounded } from 'react-icons/bi';
+import { BiDotsHorizontalRounded,BiTrash } from 'react-icons/bi';
 import { v4 as uuidv4 } from 'uuid';
-
 import { FiEye, FiEdit } from 'react-icons/fi';
 import { RiDeleteBinLine } from 'react-icons/ri';
-import { RiDeleteBin6Line, RiEditLine } from 'react-icons/ri';
+import { RiDeleteBin6Line, RiEditLine  } from 'react-icons/ri';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 const thclass = 'text-start text-sm font-medium py-3 px-2 whitespace-nowrap';
@@ -29,14 +28,11 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
     setUpdatedData(updatedItems);
   };
 
-
-
-
   const handleUpdate = (itemId) => {
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
 
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -53,15 +49,55 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
         }
         // Handle success response if needed
         toast.success('Transaction updated successfully!');
-
       })
       .catch((error) => {
         console.error('Error updating status or method:', error.message);
         toast.error('Failed to update transaction.');
       });
   };
-
-
+  const handleDelete = (itemId) => {
+    console.log('Deleting item with ID:', itemId);
+  
+    // Ensure itemId is in the correct format
+    const id = itemId._id.toString(); // Assuming _id is an ObjectId
+  
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:8800/api/web/${id}`, { // Use id instead of itemId
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to delete payment');
+        }
+        // Remove the deleted payment from UI
+        const updatedItems = data.filter((item) => item._id !== itemId._id);
+        setUpdatedData(updatedItems);
+        toast.success('Payment deleted successfully!');
+      })
+      .catch((error) => {
+        console.error('Error deleting payment:', error.message);
+        toast.error('Failed to delete payment.');
+      });
+  };
+  
+  
+  
+  
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'Paid':
+        return 'bg-subMain text-subMain w-50';
+      case 'Pending':
+        return 'bg-orange-500 text-orange-500';
+      case 'Cancelled':
+        return 'bg-red-600 text-red-600';
+      default:
+        return '';
+    }
+  };
 
   const DropDown1 = [
     {
@@ -69,14 +105,18 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
       icon: FiEdit,
       onClick: handleUpdate
     },
+    {
+      title: 'Delete',
+      icon: BiTrash,
+      onClick: handleDelete
+    },
   ];
-
-
 
   return (
     <table className="table-auto w-full">
       <thead className="bg-dry rounded-md overflow-hidden">
         <tr>
+          {/* Adjust thclass according to your styling */}
           <th className={thclass}>#</th>
           <th className={thclass}>Patient</th>
           <th className={thclass}>Date</th>
@@ -99,7 +139,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -118,12 +158,14 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
               <select
                 value={item.status}
                 onChange={(e) => handleStatusChange(e, item._id)}
-                className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
-                  ? 'bg-subMain text-subMain'
-                  : item.status === 'Pending'
-                    ? 'bg-orange-500 text-orange-500'
-                    : item.status === 'Cancel' && 'bg-red-600 text-red-600'
-                  } bg-opacity-10 text-xs rounded-xl`}
+                className="bg-opacity-10 text-xs rounded-xl"
+                style={{
+                  backgroundColor: '#f0f0f0',
+                  color: '#333',
+                  border: '1px solid #ccc',
+                  width: '200px',
+                  padding: '8px', // Adjusted padding
+                }}
               >
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
@@ -131,24 +173,15 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
               </select>
             </td>
             <td className={`${tdclass} font-semibold`}>{item.selectedService.price}</td>
-            <td className={tdclass}>
-              {/* <select
-                value={item.method}
-                onChange={(e) => handleMethodChange(e, item._id)}
-                className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
-              >
-                <option value="Online">Online</option>
-                <option value="Cash">Cash</option>
-              </select> */}
-              {item.method}
-            </td>
+            <td className={tdclass}>{item.method}</td>
             {action && (
               <td className={tdclass}>
-                < MenuSelectss datas={DropDown1} item={item}>
+                {/* Adjust MenuSelectss component according to your implementation */}
+                <MenuSelectss datas={DropDown1} item={item}>
                   <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
                     <BiDotsHorizontalRounded />
                   </div>
-                </ MenuSelectss>
+                </MenuSelectss>
               </td>
             )}
           </tr>
@@ -158,28 +191,61 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
   );
 }
 
-export function Transactiontabless({ data, action, functions }) {
+export function Transactiontables({ data, action, updatedData, setUpdatedData }) {
+  // Ensure data contains items with various status values
+  console.log("Data:", data);
 
-
-  const handleMethodChange = (e, item) => {
-    const updatedData = data.map((row) => {
-      if (row.id === item.id) {
-        return { ...row, selectedMethod: e.target.value };
+  const handleStatusChange = (e, itemId) => {
+    const updatedItems = data.map((item) => {
+      if (item._id === itemId) {
+        return {
+          ...item,
+          status: e.target.value
+        };
       }
-      return row;
+      return item;
     });
-    functions.updateData(updatedData);
+    setUpdatedData(updatedItems);
   };
 
-  const handleStatusChange = (e, item) => {
-    const updatedData = data.map((row) => {
-      if (row.id === item.id) {
-        return { ...row, selectedStatus: e.target.value };
-      }
-      return row;
-    });
-    functions.updateData(updatedData);
+  // Handle status update
+  const handleUpdate = (itemId) => {
+    const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
+
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: itemToUpdate.status,
+        method: itemToUpdate.method,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to update status or method');
+        }
+        // Handle success response if needed
+        toast.success('Transaction updated successfully!');
+      })
+      .catch((error) => {
+        console.error('Error updating status or method:', error.message);
+        toast.error('Failed to update transaction.');
+      });
   };
+
+  // Define action dropdown
+  const DropDown1 = [
+    {
+      title: 'Update',
+      icon: FiEdit,
+      onClick: handleUpdate
+    },
+    
+  ];
 
   return (
     <table className="table-auto w-full">
@@ -193,7 +259,7 @@ export function Transactiontabless({ data, action, functions }) {
             Amount <span className="text-xs font-light">(Tsh)</span>
           </th>
           <th className={thclass}>Method</th>
-
+          {/* {action && <th className={thclass}>Actions</th>} */}
         </tr>
       </thead>
       <tbody>
@@ -207,12 +273,11 @@ export function Transactiontabless({ data, action, functions }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
                 </span>
-
                 <div>
                   <h4 className="text-sm font-medium">{item.patientInfo.name}</h4>
                   <p className="text-xs mt-1 text-textGray">
@@ -223,39 +288,39 @@ export function Transactiontabless({ data, action, functions }) {
             </td>
             <td className={tdclass}>{new Date(item.createdAt).toLocaleDateString()}</td>
             <td className={tdclass}>
-              <select
-                value={item.selectedStatus}
-                onChange={(e) => handleStatusChange(e, item)}
-                className={`py-1 px-2 ${tdclass} ${item.status === 'Paid'
-                  ? 'bg-subMain text-subMain'
-                  : item.status === 'Pending'
-                    ? 'bg-orange-500 text-orange-500'
-                    : item.status === 'Cancel' && 'bg-red-600 text-red-600'
-                  } bg-opacity-10 text-xs rounded-xl`}
-              >
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Cancelled">Cancelled</option>
-              </select>
+              {/* Conditionally render the status based on item's status */}
+            {item.status === 'Approved' && (
+  <span className="bg-green-500 text-white py-1 px-2 rounded-xl text-xs">Approved</span>
+)}
+
+              {item.status === 'Pending' && (
+                <span className="bg-orange-500 text-white py-1 px-2 rounded-xl text-xs">Pending</span>
+              )}
+              {item.status === 'Cancelled' && (
+                <span className="bg-red-600 text-white py-1 px-2 rounded-xl text-xs">Cancelled</span>
+              )}
             </td>
             <td className={`${tdclass} font-semibold`}>{item.selectedService.price}</td>
             <td className={tdclass}>
-              <select
-                value={item.selectedMethod}
-                onChange={(e) => handleMethodChange(e, item)}
-                className={`py-1 px-2 ${tdclass} bg-opacity-10 text-xs rounded-xl`}
-              >
-                <option value="Online">Online</option>
-                <option value="Cash">Cash</option>
-              </select>
+              {item.method}
             </td>
-
+            {/* Conditionally render actions */}
+            {/* {action && (
+              <td className={tdclass}>
+                <MenuSelectss datas={DropDown1} item={item}>
+                  <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+                    <BiDotsHorizontalRounded />
+                  </div>
+                </MenuSelectss>
+              </td>
+            )} */}
           </tr>
         ))}
       </tbody>
     </table>
   );
 }
+
 
 
 export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
@@ -318,7 +383,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -442,8 +507,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
+      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('http://localhost:8800/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -583,7 +648,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {item.profilePicture && (
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profilePicture}`}
+                      src={`http://localhost:8800/${item.profilePicture}`}
                       alt={item.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -621,7 +686,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {webPatient.patientInfo && (
                     <img
-                      src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
+                      src={`http://localhost:8800/${webPatient.patientInfo.image}`}
                       alt={webPatient.name}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -697,7 +762,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               {/* <td className={tdClass}>
                 <img
-                  src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
+                  src={`http://localhost:8800/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
@@ -754,7 +819,7 @@ export function DoctorsTable({ data, functions, doctor }) {
                 <div className="flex gap-4 items-center">
                   <span className="w-12">
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profileImage}`}
+                      src={`http://localhost:8800/${item.profileImage}`}
                       className="w-full h-12 rounded-full object-cover border border-border"
                     />
                   </span>

@@ -104,14 +104,18 @@ export const deleteWeb = async (req, res) => {
 export const getTotalWebPatientCount = async (req, res) => {
   try {
     console.log('Received request for total web patient count');
-    const count = await WebPatient.countDocuments();
-    console.log('Total web patient count:', count);
-    res.status(200).json({ totalCount: count });
+    const totalCount = await WebPatient.countDocuments();
+    const targetCount = 100; // Update this with your target value
+    const percentage = (totalCount / targetCount) * 100;
+    console.log('Total web patient count:', totalCount);
+    console.log('Percentage:', percentage);
+    res.status(200).json({ totalCount, percentage });
   } catch (error) {
     console.error('Error counting web patients:', error);
     res.status(500).json({ message: 'Error counting web patients', error: error.message });
   }
 };
+
 export const getTodayWebAppointments = async (req, res) => {
   try {
     // Get today's date
