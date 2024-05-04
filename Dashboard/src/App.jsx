@@ -37,6 +37,7 @@ import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
 import { NotificationProvider } from './components/NotificationContext';
 
+
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
 
