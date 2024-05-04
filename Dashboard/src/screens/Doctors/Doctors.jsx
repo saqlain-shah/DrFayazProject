@@ -98,7 +98,7 @@ function Doctors() {
             }}
           /> */}
         </div>
-        <div className="mt-8 w-full overflow-x-scroll">
+        <div className="mt-8 w-full overflow-x-hidden">
           <DoctorsTable
             doctor={true}
             data={doctorInfo.map((item) => ({

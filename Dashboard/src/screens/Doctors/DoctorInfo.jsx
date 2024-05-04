@@ -110,12 +110,12 @@ function DoctorInfo({ closeModal, onSave }) {
             </div>
             <br />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                <Button
+                {/* <Button
                     label={'Delete Account'}
                     onClick={() => {
                         toast.error('This feature is not available yet');
                     }}
-                />
+                /> */}
                 <Button
                     label={'Save Changes'}
                     Icon={HiOutlineCheckCircle}

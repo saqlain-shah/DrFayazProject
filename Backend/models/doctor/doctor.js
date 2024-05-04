@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 const doctorSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        required: true,
+        
     },
 
     phone: {
         type: String,
-        required: true,
+       
     },
     email: {
         type: String,
@@ -16,7 +16,7 @@ const doctorSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true,
+      
     },
 
     profileImage: {

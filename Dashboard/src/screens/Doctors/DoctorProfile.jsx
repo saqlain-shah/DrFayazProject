@@ -47,16 +47,16 @@ function DoctorProfile() {
     switch (activeTab) {
       case 1:
         return <DoctorInfo doctorData={doctorData} />;
-      case 2:
-        return <PatientsUsed />;
-      case 3:
-        return <AppointmentsUsed token={localStorage.getItem('token')} />; // Pass token to AppointmentsUsed
-      case 4:
-        return <PaymentsUsed />;
-      case 5:
-        return <InvoiceUsed />;
-      case 6:
-        return <Access />;
+      // case 2:
+      //   return <PatientsUsed />;
+      // case 3:
+      //   return <AppointmentsUsed token={localStorage.getItem('token')} />; // Pass token to AppointmentsUsed
+      // case 4:
+      //   return <PaymentsUsed />;
+      // case 5:
+      //   return <InvoiceUsed />;
+      // case 6:
+      //   return <Access />;
       default:
         return null;
     }
