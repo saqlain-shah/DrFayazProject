@@ -62,14 +62,15 @@ const Header = ({ clientId }) => {
                     </button>
 
 
-                       {/* Right side button for small screens */}
-                    <button className="appointment-btn  d-lg-none "  style={{ float: 'right',marginRight:'100px' }} 
+                        {/* Right side button for small screens */}
+            <button className="appointment-btn  d-lg-none "  style={{ float: 'right',marginRight:'50%' }} 
                     onClick={handleMakeAppointment}>
                     <span className="d-none d-md-inline">Make an</span> Appointment
                     </button>
+                  
 
                        {/* Dropdown Menu for Small Screens */}
-                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '20%',marginLeft:'100px'}}>
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%'}}>
                         <div
                             className="toggle-menu"
                             onClick={() => setMenuOpen(!menuOpen)}
@@ -81,12 +82,11 @@ const Header = ({ clientId }) => {
                             <NavLink to={'/'} className="dropdown-item">Home</NavLink>
                             <NavLink to={'/contact'} className="dropdown-item">Contact</NavLink>
                             {!isLoggedIn && <Link to={'/login'} className="dropdown-item">Login</Link>}
-                            <button className="dropdown-item" onClick={handleMakeAppointment}>Make an Appointment</button>
+                            <button className="dropdown-item" onClick={handleMakeAppointment}>Appointment</button>
                         </div>
                     </div>
 
-
-                  
+            
                     
 
                    
