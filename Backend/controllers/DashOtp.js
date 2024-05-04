@@ -28,10 +28,15 @@ export const sendOTP = async (req, res) => {
 
     // Send OTP email
     const info = await transporter.sendMail({
-      from: '"Your App Name" <your_email@gmail.com>', // Sender address
       to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
-      text: `Your OTP for verification is: ${OTP}`, // Plain text body
+      html: `
+      <p>Dear Fayaz,</p>
+      <p>Your OTP for verification is: <strong>${OTP}</strong></p>
+      <p>Please use this OTP to complete your verification process.</p>
+      <p><strong>Warning:</strong> It seems there was an attempt to access your dashboard. If this was not you, please disregard this message. If you suspect unauthorized access, please contact support immediately.</p>
+      <p>Thank you!</p>
+    ` // Plain text body
     });
 
     console.log('Message sent: %s', info.messageId);

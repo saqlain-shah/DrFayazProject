@@ -8,12 +8,14 @@ const emailCampaignSchema = new Schema(
             type: String,
             required: true,
         },
-        subject: {
+        description: {
             type: String,
             required: true,
         },
-        header: String,
-        subHeader: String,
+        link: {
+            type: String, // Assuming link is a string
+            required: false, // Change to true if link is required
+        },
         message: {
             type: String,
             required: true,

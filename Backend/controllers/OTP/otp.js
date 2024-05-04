@@ -1,5 +1,4 @@
 import fs from 'fs';
-import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 
 // Map to store generated OTPs
@@ -31,17 +30,14 @@ export const sendOTP = async (req, res) => {
     // Store the OTP temporarily (you can replace this with database storage)
     otpMap.set(`${email}_${otpType}`, generatedOTP); // Use both email and otpType to create a unique key for storing OTP
 
-    // Load email template
-    let emailTemplate;
-    try {
-        emailTemplate = fs.readFileSync('templates/otp_template.ejs', 'utf-8');
-    } catch (error) {
-        console.error('Error loading email template:', error);
-        return res.status(500).json({ success: false, message: "Failed to load email template" });
-    }
-
-    // Render email template with OTP data
-    const renderedTemplate = ejs.render(emailTemplate, { generatedOTP });
+    // HTML content for OTP email
+    const htmlContent = `
+    <p>Dear Dentist,</p>
+    <p>Your OTP for verification is: <strong>${generatedOTP}</strong></p>
+    <p>Please use this OTP to complete your access to the dental chart.</p>
+    <p><strong>Warning:</strong> It appears there was an attempt to access your patient records. If this was not initiated by you, please disregard this message. If you suspect unauthorized access, please contact support immediately.</p>
+    <p>Thank you!</p>
+    `;
 
     // Send OTP to the provided email
     try {
@@ -59,7 +55,7 @@ export const sendOTP = async (req, res) => {
             from: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
             to: email,
             subject: 'OTP for Verification',
-            html: renderedTemplate
+            html: htmlContent
         };
 
         // Send email
@@ -77,33 +73,33 @@ export const sendOTP = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
     const { email, otp, otpType } = req.body; // Get otpType from the request body
-  
+
     // Check if email, OTP, and otpType are provided
     if (!email || !otp || !otpType) {
-      return res.status(400).json({ success: false, message: "Email, OTP, and OTP type are required" });
+        return res.status(400).json({ success: false, message: "Email, OTP, and OTP type are required" });
     }
-  
+
     // Retrieve the stored OTP for the email and otpType
     const storedOTP = otpMap.get(`${email}_${otpType}`);
-  
+
     // Check if storedOTP exists
     if (!storedOTP) {
-      return res.status(400).json({ success: false, message: "No OTP found for the provided email and OTP type" });
+        return res.status(400).json({ success: false, message: "No OTP found for the provided email and OTP type" });
     }
-  
+
     // Convert storedOTP and user OTP to strings
     const storedOTPString = storedOTP.toString();
     const userOTPString = otp.toString();
-  
+
     // Check if OTP is valid
     if (storedOTPString === userOTPString) {
-      // OTP is valid, remove it from the map
-      otpMap.delete(`${email}_${otpType}`);
-      // Your OTP verification logic here
-      // If OTP is valid, send success response
-      return res.json({ success: true, message: "OTP verified successfully" });
+        // OTP is valid, remove it from the map
+        otpMap.delete(`${email}_${otpType}`);
+        // Your OTP verification logic here
+        // If OTP is valid, send success response
+        return res.json({ success: true, message: "OTP verified successfully" });
     } else {
-      // Invalid OTP
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
+        // Invalid OTP
+        return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
-  };
+};

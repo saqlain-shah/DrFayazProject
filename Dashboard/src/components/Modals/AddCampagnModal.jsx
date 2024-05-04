@@ -28,7 +28,7 @@ function CampaignModal({ closeModal, isOpen, data, updateCampaignsState }) {
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title={data?.id ? 'View Campaign' : 'Create Campaign'}
+      title={data?.id ? 'View Campaign' : 'Create Library'}
       width={'max-w-3xl'}
     >
       <div className="flex flex-col gap-6">

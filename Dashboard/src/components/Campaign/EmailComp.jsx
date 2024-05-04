@@ -1,4 +1,3 @@
-// EmailComp.js
 import React, { useState } from 'react';
 import { Button, Input, Textarea } from '../Form';
 import { toast } from 'react-hot-toast';
@@ -7,24 +6,22 @@ import { useNavigate } from 'react-router-dom';
 
 function EmailComp({ data, closeModal, updateCampaignsState }) {
   const [campaignTitle, setCampaignTitle] = useState('');
-  const [emailSubject, setEmailSubject] = useState('');
-  const [header, setHeader] = useState('');
-  const [subHeader, setSubHeader] = useState('');
+  const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
   const [image, setImage] = useState(null);
+  const [link, setLink] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
       formData.append('title', campaignTitle);
-      formData.append('subject', emailSubject);
-      formData.append('header', header);
-      formData.append('subHeader', subHeader);
+      formData.append('description', description);
       formData.append('message', message);
       if (image) {
         formData.append('image', image);
       }
+      formData.append('link', link);
 
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8800/api/email-campaigns', formData, {
@@ -37,11 +34,10 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
       toast.success('Campaign created successfully!');
 
       setCampaignTitle('');
-      setEmailSubject('');
-      setHeader('');
-      setSubHeader('');
+      setDescription('');
       setMessage('');
       setImage(null);
+      setLink('');
 
       closeModal();
       updateCampaignsState(response.data); // Update campaigns state with new campaign data
@@ -60,29 +56,14 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
         value={campaignTitle}
         onChange={(e) => setCampaignTitle(e.target.value)}
       />
-      <Input
-        label="Email subject"
+      <Textarea
+        label="Description"
+        placeholder={data?.id ? data?.action?.description : 'Enter campaign description...'}
         color={true}
-        placeholder={data?.id && data?.action?.subject}
-        value={emailSubject}
-        onChange={(e) => setEmailSubject(e.target.value)}
+        rows={5}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
       />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Header"
-          color={true}
-          placeholder={data?.id && data?.action?.header}
-          value={header}
-          onChange={(e) => setHeader(e.target.value)}
-        />
-        <Input
-          label="Sub-header"
-          color={true}
-          placeholder={data?.id && data?.action?.subHeader}
-          value={subHeader}
-          onChange={(e) => setSubHeader(e.target.value)}
-        />
-      </div>
       <Textarea
         label="Message"
         placeholder={data?.id ? data?.action?.message : 'Dear Delight patient ....'}
@@ -90,6 +71,13 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
         rows={5}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
+      />
+      <Input
+        label="Link"
+        color={true}
+        placeholder="Enter link..."
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="text-sm">Image (optional)</label>

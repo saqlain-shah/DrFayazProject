@@ -68,7 +68,7 @@ export const MenuDatas = [
   },
 
   {
-    title: "Campaigns",
+    title: "Library",
     path: "/campaigns",
     icon: MdOutlineCampaign,
   },
