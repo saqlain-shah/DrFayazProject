@@ -162,13 +162,13 @@ function Dashboard() {
         <div className="xl:col-span-6  w-full">
           <div className="bg-white rounded-xl border-[1px] border-border p-5">
             <div className="flex-btn gap-2">
-              <h2 className="text-sm font-medium">Earning Reports</h2>
-              <p className="flex gap-4 text-sm items-center">
-                5.44%{" "}
-                <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
-                  +2.4%
-                </span>
-              </p>
+            <h2 className="text-sm font-medium">Earning Reports</h2>
+<p className="flex gap-4 text-sm items-center">
+  {totalEarnings} 
+  <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
+    {earningsPercent}%
+  </span>
+</p>
             </div>
             {/* Earning Reports */}
             <div className="mt-4">
