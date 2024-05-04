@@ -101,7 +101,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
+        `http://localhost:8800/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -167,7 +167,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "https://server-yvzt.onrender.com/api/stripe/checkout",
+        "http://localhost:8800/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -212,7 +212,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/services",
+        "http://localhost:8800/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -244,9 +244,9 @@ const AppointmentPage = () => {
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
+
     // Combine appointment data
     const appointmentData = new FormData();
-    // appointmentData.append('id', selectValue.id);
     appointmentData.append('name', name);
     appointmentData.append('email', email);
     appointmentData.append('emergencyContact', emergencyContact);
@@ -255,72 +255,38 @@ const AppointmentPage = () => {
     appointmentData.append('gender', gender);
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
-    // appointmentData.append('slotId', selectValue.slotId);
-    // appointmentData.append('selectedStartDate', selectedSlot.startDateTime);
-    // appointmentData.append('selectedEndDate', selectedSlot.endDateTime);
-    // console.log("image and others", selectValue, atta);
-    // appointmentData.append("patientInfo", other);
     attachments.map((attachment) => {
-      appointmentData.append("files", attachment);
-
+        appointmentData.append("files", attachment);
     })
-
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-    // appointmentData.append('servicePrice', selectedService.price);
-    // {
-    //   patientInfo: selectValue, // Personal information
-    //   selectedSlot: selectedSlot, // Selected appointment slot
-    //   selectedService: selectedService, // Selected service
-    // };
 
-    // Retrieve token from localStorage
     const token = localStorage.getItem("token");
 
-    // Include ID in the appointment data
-    // appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
-
-    // Make a POST request to store the appointment data with token included in headers
-    await axios
-      .post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
+    try {
+        // Make a POST request to store the appointment data
+        const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         console.log("Appointment created successfully:", response);
         // Display a success toast message after appointment creation
         toast.success("Appointment scheduled successfully!");
         // Navigate to the success page or do any further actions
         setShowModal(true); // Show the modal after confirming the appointment
         setShowAppointmentDetails(true);
-        // Send notification after successful appointment
-        // Frontend code to send notifications
-        // axios.post('https://server-yvzt.onrender.com/api/web/notifications', {
-        //   email: selectValue.email,
-        //   message: "Your appointment has been successfully scheduled. Thank you!",
 
-        // })
-        //   .then((notificationResponse) => {
-        //     console.log("Notification sent successfully:", notificationResponse.data);
-
-
-        //   })
-        //   .catch((notificationError) => {
-        //     console.error("Error sending notification:", notificationError);
-        //   });
-
-
-        // // After sending notification, delete the selected slot
-        // axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
-      })
-      .catch((error) => {
+        // Delete the selected slot after successful appointment creation
+        await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
+    } catch (error) {
         console.error("Error creating appointment:", error);
         // Handle error, e.g., show an error message to the user
-      });
-  };
+    }
+};
+
 
 
 

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import log from '../../images/doc/info.svg';
-import register from '../../images/doc/register.svg';
+import register from '../../images/doc/dr.jpg';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 import { useNavigate } from 'react-router-dom';
@@ -39,12 +38,12 @@ const SignInForm = () => {
                 <div className="panel left-panel">
                     <div className="content">
                         <h3 className='text-white'>New here ?</h3>
-                        <p><b>Note:</b><br/ >
+                        <p><b>Note:</b><br />
                             New User please first registration then go to Login Page !
                         </p>
                         <button className="iBtn transparent" onClick={() => setSignUp(true)}>Sign Up</button>
                     </div>
-                    <img src={`${log}`} alt="" className="pImg" />
+                    <img src={`${register}`} alt=""  className="pImg rounded-circle shadow-lg"  style={{ width: '50%', height: '40%', objectFit: 'cover', marginRight:'30%' }}/>
                 </div>
 
                 <div className="panel right-panel">
@@ -53,7 +52,7 @@ const SignInForm = () => {
                         <p> New User please first registration then  Login !</p>
                         <button className="iBtn transparent" onClick={() => setSignUp(false)}>Sign In</button>
                     </div>
-                    <img src={`${register}`} alt="" className="pImg" />
+                    <img src={`${register}`} alt=""  className="pImg rounded-circle shadow-lg"  style={{ width: '50%', height: '40%', objectFit: 'cover' }}/>
                 </div>
             </div>
         </div>

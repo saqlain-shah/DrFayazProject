@@ -28,6 +28,8 @@ const Header = ({ clientId }) => {
         }
     };
 
+   
+
     return (
         <>
             <div className={`navbar navbar-expand-lg navbar-light ${!show && "hideTopHeader"}`} expand="lg">
@@ -59,8 +61,15 @@ const Header = ({ clientId }) => {
                         <span className="d-none d-md-inline">Make an</span> Appointment
                     </button>
 
-                    {/* Dropdown Menu for Small Screens */}
-                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%' }}>
+
+                       {/* Right side button for small screens */}
+                    <button className="appointment-btn  d-lg-none "  style={{ float: 'right',marginRight:'100px' }} 
+                    onClick={handleMakeAppointment}>
+                    <span className="d-none d-md-inline">Make an</span> Appointment
+                    </button>
+
+                       {/* Dropdown Menu for Small Screens */}
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '20%',marginLeft:'100px'}}>
                         <div
                             className="toggle-menu"
                             onClick={() => setMenuOpen(!menuOpen)}
@@ -75,6 +84,13 @@ const Header = ({ clientId }) => {
                             <button className="dropdown-item" onClick={handleMakeAppointment}>Make an Appointment</button>
                         </div>
                     </div>
+
+
+                  
+                    
+
+                   
+                   
                 </div>
             </header>
         </>
