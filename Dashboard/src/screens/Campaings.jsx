@@ -7,7 +7,7 @@ import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
 import { HiOutlineMail } from 'react-icons/hi';
 import { FaShare, FaEdit } from "react-icons/fa";
 import axios from 'axios';
-import ContactSelectionDialog from './ContactSelectionDialog'; // Import the ContactSelectionDialog component
+import ContactSelectionDialog from './ContactSelectionDialog';
 import CampaignModal from '../components/Modals/AddCampagnModal';
 import { FiTrash } from 'react-icons/fi';
 
@@ -45,7 +45,14 @@ function Campaigns() {
 
 
   const shareViaWhatsApp = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nMessage: ${campaign.message}`);
+    const { title, description, link, message, image } = campaign;
+    let whatsappMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
+    // Append image if available
+    if (image) {
+      whatsappMessage += `\nImage: ${image}`;
+    }
+  
+    setMessage(whatsappMessage);
     const token = localStorage.getItem('token');
     await axios.get('http://localhost:8800/api/patients/', {
       headers: { Authorization: `Bearer ${token}` }
@@ -55,39 +62,52 @@ function Campaigns() {
           setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
         }
       });
-      setIsDialogOpen(true);
-      handleCloseDialog();
+      setShowShareOptions(true);
     });
   };
-
+  
   const shareViaEmail = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nMessage: ${campaign.message}`);
+    const { title, description, link, message, image } = campaign;
+    let emailMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
+    // Append image if available
+    if (image) {
+      emailMessage += `\nImage: ${image}`;
+    }
+  
+    setMessage(emailMessage);
     const token = localStorage.getItem('token');
     await axios.get('http://localhost:8800/api/patients/', {
-        headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     }).then((res) => {
-        res.data.forEach((patient) => {
-            if (!contacts.some(contact => contact.email === patient.email)) {
-                setContacts(prevContacts => [...prevContacts, { name: patient.fullName, email: patient.email }]);
-            }
-        });
-        setIsDialogOpen(true); // Set isDialogOpen to true
-        setShowShareOptions(true); // Ensure share options are shown
-        handleCloseDialog();
+      res.data.forEach((patient) => {
+        if (!contacts.some(contact => contact.email === patient.email)) {
+          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, email: patient.email }]);
+        }
+      });
+      setShowShareOptions(false);
     });
-};
-
-useEffect(() => {
-    console.log("isDialogOpen after setting:", isDialogOpen);
-}, [isDialogOpen]); // Add isDialogOpen as a dependency
-
-
-
-
+  };
+  
+  
+  
 
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
+
+
+  const actions = [
+    {
+      title: "Share",
+      icon: FaShare,
+      onClick: toggleShareOptions,
+    },
+    {
+      title: "Delete",
+      icon: FiTrash,
+      onClick: (campaign) => deleteCampaign(campaign._id),
+    }
+  ];
 
   useEffect(() => {
     const fetchEmailCampaigns = async () => {
@@ -117,18 +137,7 @@ useEffect(() => {
       console.error('Error deleting campaign:', error);
     }
   };
-  const actions = [
-    {
-      title: "Share",
-      icon: FaShare,
-      onClick: toggleShareOptions,
-    },
-    {
-      title: "Delete",
-      icon: FiTrash,
-      onClick: (campaign) => deleteCampaign(campaign._id),
-    }
-  ];
+
   return (
     <Layout>
       <ToastContainer />
@@ -140,13 +149,14 @@ useEffect(() => {
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-          <Button
-            label="Add New"
-            Icon={BiPlus}
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          />
+        <Button
+  label="Add New"
+  Icon={BiPlus}
+  onClick={() => {
+    setIsOpen(true);
+  }}
+/>
+
         </div>
       </div>
 
@@ -194,19 +204,19 @@ useEffect(() => {
             </div>
             {showShareOptions && (
               <div className="mt-4 flex gap-4">
-                <Button label="Share via Email" onClick={() => shareViaEmail(campaign)} />
-                <Button label="Share via WhatsApp" onClick={() => shareViaWhatsApp(campaign)} />
+               <Button label="Share via Email" onClick={() => { shareViaEmail(campaign); setIsDialogOpen(true); }} />
+<Button label="Share via WhatsApp" onClick={() => { shareViaWhatsApp(campaign); setIsDialogOpen(true); }} />
               </div>
             )}
           </div>
         ))}
       </div>
       <ContactSelectionDialog
-    contacts={contacts} // Pass the contacts data
-    isOpen={isDialogOpen}
-    onClose={handleCloseDialog}
-    message={message}
-/>
+        contacts={contacts}
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        message={message}
+      />
     </Layout>
   );
 }

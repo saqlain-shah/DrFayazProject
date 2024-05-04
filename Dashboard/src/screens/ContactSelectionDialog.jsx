@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 
 const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
+    const [selectedContact, setSelectedContact] = useState({
+        name: "",
+        phoneNumber: "", // Updated to empty string
+        email: ""
+    });
+
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleContactSelect = (contact) => {
@@ -20,12 +26,16 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
     };
 
     const handleClose = () => {
-        onClose(); // Close the dialog
+        setSelectedContact({
+            name: "",
+            phoneNumber: 0,
+            email: ""
+        });
+        onClose();
     };
 
-    // Filter contacts based on searchQuery
     const filteredContacts = contacts.filter(contact =>
-        contact.fullName?.toLowerCase().includes(searchQuery.toLowerCase())
+        contact.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -49,9 +59,9 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
             <div>
                 {filteredContacts.map((contact, index) => (
                     <div key={index} onClick={() => handleContactSelect(contact)} className="cursor-pointer hover:bg-gray-100 rounded-lg p-2 mb-2">
-                        <p className="text-gray-800">{contact.fullName}</p>
-                        {contact.phoneNumber && <p className="text-gray-600 text-sm">Phone: {contact.phoneNumber}</p>}
-                        <p className="text-gray-600 text-sm">Email: {contact.email}</p>
+                        <p className="text-gray-800">{contact.name}</p>
+                        {contact.phoneNumber && <p className="text-gray-600 text-sm">{contact.phoneNumber}</p>}
+                        {contact.email && <p className="text-gray-600 text-sm">{contact.email}</p>}
                     </div>
                 ))}
             </div>
@@ -63,8 +73,3 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
 };
 
 export default ContactSelectionDialog;
-
-
-
-
-
