@@ -1,11 +1,11 @@
-import img2 from '../../../images/features/CC.jpg';
-import img3 from '../../../images/features/WHC.jpg';
-import img4 from '../../../images/features/AC.jpg';
-import img5 from '../../../images/features/MenHC.jpg';
-import img from '../../../images/features/EA.jpg';
+import img2 from '../../../images/features/2.jpeg';
+import img3 from '../../../images/features/3.jpeg';
+import img4 from '../../../images/features/4.jpeg';
+import img5 from '../../../images/features/5.jpeg';
+import img from '../../../images/features/1.jpeg';
 
-import img6 from '../../../images/features/MHC.jpg';
-import img7 from '../../../images/features/DC.jpg';
+import img6 from '../../../images/features/6.jpeg';
+import img7 from '../../../images/features/7.jpeg';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 

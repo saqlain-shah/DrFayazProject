@@ -16,11 +16,11 @@ export default function App() {
                 <MDBContainer className='text-center text-md-start mt-150'>
                     <MDBRow className='mt-5'>
                         <MDBCol md='3' lg='4' xl='3' className='mx-auto mb-100'>
-                            <h6 className='text-uppercase fw-bold mb-4'>
+                            <h4 className='text-uppercase fw-bold mt-5'>
                                 <MDBIcon color='secondary' icon='gem' className='me-3' />
                                 Avicena Health Care
-                            </h6>
-                            <img src={`${log}`} alt=""    style={{ width: '80%', height: '50%', objectFit: 'cover' }}/>
+                            </h4>
+                           
 
                         </MDBCol>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import img from '../../../images/features/AC.jpg';
+import img from '../../../images/features/8.jpeg';
 import './index.css';
 import AvailableServiceContent from './AvailableServiceContent';
 
