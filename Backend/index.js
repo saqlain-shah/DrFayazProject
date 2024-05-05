@@ -28,7 +28,7 @@ import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
-
+import EmailSent from './routes/ConfirmEmail.js'
 
 
 
@@ -104,6 +104,7 @@ app.use('/api/otp', otpRoutes);
 app.use('/api/otps', otpDashRoutes);
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
+app.use('/api/',EmailSent)
 
 
 

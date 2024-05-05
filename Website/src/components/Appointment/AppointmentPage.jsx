@@ -239,6 +239,8 @@ const AppointmentPage = () => {
 
 
   const handleConfirmAppointment = async () => {
+
+    
     console.log("Confirming appointment...");
     setSelectValue({ ...selectValue, id: userId });
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
@@ -283,43 +285,34 @@ const AppointmentPage = () => {
     // appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
 
     // Make a POST request to store the appointment data with token included in headers
-    await axios
-      .post("http://localhost:8800/api/web/", appointmentData, {
+    try {
+      // Make a POST request to create the appointment
+      const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      })
-      .then((response) => {
-        console.log("Appointment created successfully:", response);
-        // Display a success toast message after appointment creation
-        toast.success("Appointment scheduled successfully!");
-        // Navigate to the success page or do any further actions
-        setShowModal(true); // Show the modal after confirming the appointment
-        setShowAppointmentDetails(true);
-        // Send notification after successful appointment
-        // Frontend code to send notifications
-        // axios.post('http://localhost:8800/api/web/notifications', {
-        //   email: selectValue.email,
-        //   message: "Your appointment has been successfully scheduled. Thank you!",
-
-        // })
-        //   .then((notificationResponse) => {
-        //     console.log("Notification sent successfully:", notificationResponse.data);
-
-
-        //   })
-        //   .catch((notificationError) => {
-        //     console.error("Error sending notification:", notificationError);
-        //   });
-
-
-        // // After sending notification, delete the selected slot
-        // axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
-      })
-      .catch((error) => {
-        console.error("Error creating appointment:", error);
-        // Handle error, e.g., show an error message to the user
       });
+  
+      console.log("Appointment created successfully:", response.data);
+  
+      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email,name,bloodGroup,emergencyContact,gender }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    
+      console.log("Email confirmation sent successfully:", emailResponse.data);
+  
+      // Display a success toast message after appointment creation
+      toast.success("Appointment scheduled successfully!");
+  
+      // Show the modal after confirming the appointment
+      setShowModal(true);
+      setShowAppointmentDetails(true);
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      // Handle error, e.g., show an error message to the user
+    }
   };
 
 
