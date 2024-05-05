@@ -246,9 +246,9 @@ const AppointmentPage = () => {
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
+
     // Combine appointment data
     const appointmentData = new FormData();
-    // appointmentData.append('id', selectValue.id);
     appointmentData.append('name', name);
     appointmentData.append('email', email);
     appointmentData.append('emergencyContact', emergencyContact);
@@ -257,28 +257,14 @@ const AppointmentPage = () => {
     appointmentData.append('gender', gender);
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
-    // appointmentData.append('slotId', selectValue.slotId);
-    // appointmentData.append('selectedStartDate', selectedSlot.startDateTime);
-    // appointmentData.append('selectedEndDate', selectedSlot.endDateTime);
-    // console.log("image and others", selectValue, atta);
-    // appointmentData.append("patientInfo", other);
     attachments.map((attachment) => {
-      appointmentData.append("files", attachment);
-
+        appointmentData.append("files", attachment);
     })
-
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-    // appointmentData.append('servicePrice', selectedService.price);
-    // {
-    //   patientInfo: selectValue, // Personal information
-    //   selectedSlot: selectedSlot, // Selected appointment slot
-    //   selectedService: selectedService, // Selected service
-    // };
 
-    // Retrieve token from localStorage
     const token = localStorage.getItem("token");
 
     // Include ID in the appointment data

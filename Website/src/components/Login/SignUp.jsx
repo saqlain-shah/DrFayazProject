@@ -5,6 +5,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import log from '../../images/doc/dr.png';
 
 import './SignInForm.css';
 
@@ -84,6 +85,7 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     return (
         <form className="sign-up-form" onSubmit={handleSubmit}>
+             <img src={`${log}`} alt=""    style={{ width: '30%', height: '30%', objectFit: 'cover' }}/>
             <h2 className="title">Sign Up</h2>
             <div className="input-field">
                 <span className="fIcon"><FaUser /></span>
