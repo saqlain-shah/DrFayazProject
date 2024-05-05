@@ -239,6 +239,8 @@ const AppointmentPage = () => {
 
 
   const handleConfirmAppointment = async () => {
+
+    
     console.log("Confirming appointment...");
     setSelectValue({ ...selectValue, id: userId });
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
@@ -286,6 +288,39 @@ const AppointmentPage = () => {
         // Handle error, e.g., show an error message to the user
     }
 };
+    // Include ID in the appointment data
+    // appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
+
+    // Make a POST request to store the appointment data with token included in headers
+    try {
+      // Make a POST request to create the appointment
+      const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      console.log("Appointment created successfully:", response.data);
+  
+      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email,name,bloodGroup,emergencyContact,gender }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    
+      console.log("Email confirmation sent successfully:", emailResponse.data);
+  
+      // Display a success toast message after appointment creation
+      toast.success("Appointment scheduled successfully!");
+  
+      // Show the modal after confirming the appointment
+      setShowModal(true);
+      setShowAppointmentDetails(true);
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      // Handle error, e.g., show an error message to the user
+    }
+  };
 
 
 
