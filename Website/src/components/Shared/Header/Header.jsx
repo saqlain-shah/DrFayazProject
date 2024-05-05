@@ -36,7 +36,7 @@ const Header = ({ clientId }) => {
             <header id="header" className={`fixed-top ${!show && "stickyHeader"}`}>
                 <div className="container d-flex align-items-center">
                     <Link to={'/'} className="logo me-auto">
-                        <img src="/logo.jpg" alt="" className="img-fluid w-42 h-25" /> 
+                        <img src="/logo.jpg" alt="" className="img-fluid w-42 h-25" />
                         {/* change the logo */}
                     </Link>
 
@@ -59,6 +59,8 @@ const Header = ({ clientId }) => {
                         <span className="d-none d-md-inline">Make an</span> Appointment
                     </button>
 
+               
+
                     {/* Dropdown Menu for Small Screens */}
                     <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%' }}>
                         <div
@@ -72,9 +74,10 @@ const Header = ({ clientId }) => {
                             <NavLink to={'/'} className="dropdown-item">Home</NavLink>
                             <NavLink to={'/contact'} className="dropdown-item">Contact</NavLink>
                             {!isLoggedIn && <Link to={'/login'} className="dropdown-item">Login</Link>}
-                            <button className="dropdown-item" onClick={handleMakeAppointment}>Make an Appointment</button>
+                            {/* <button className="dropdown-item" onClick={handleMakeAppointment}>Appointment</button> */}
                         </div>
                     </div>
+
                 </div>
             </header>
         </>
