@@ -14,7 +14,7 @@ import axios from 'axios';
 import { PatientTableArray } from '../../components/Tables';
 import { Dialog, Transition } from '@headlessui/react';
 import { FaTimes } from 'react-icons/fa';
-
+import PatientDetails from '../../components/PatientDetail/Detail';
 function PatientProfile() {
   const { id } = useParams();
   const [profileData, setProfileData] = useState({});
@@ -25,7 +25,7 @@ function PatientProfile() {
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [error, setError] = useState(null); // Define error state
-
+  const [attachments, setAttachments] = useState([]);
   // Inside PatientProfile component
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -47,6 +47,10 @@ function PatientProfile() {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
+        // Set attachments when webPatientData is fetched
+        if (response.data.patientInfo && response.data.patientInfo.attachment) {
+          setAttachments(response.data.patientInfo.attachment);
+        }
       } catch (error) {
         console.error('Error fetching web patient data:', error);
       }
@@ -55,6 +59,8 @@ function PatientProfile() {
     fetchProfileData();
     fetchWebPatientData();
   }, [id]);
+
+
 
   useEffect(() => {
     const fetchMedicalRecords = async () => {
@@ -156,7 +162,7 @@ function PatientProfile() {
       case 4:
         // return <PaymentsUsed doctor={false} />;
       case 5:
-        return <PatientImages medicalRecords={medicalRecords} token={localStorage.getItem('token')} />
+        return  <PatientImages medicalRecords={medicalRecords} webPatientAttachments={attachments} token={localStorage.getItem('token')}  />
   
       case 6:
         console.log("Rendering DentalChart...");
@@ -166,6 +172,8 @@ function PatientProfile() {
   
       case 8:
         return <HealthInfomation />;
+        case 9:
+          return <PatientDetails  patientId={id}/>;
       default:
         return null;
     }

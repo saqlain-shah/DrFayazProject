@@ -19,6 +19,7 @@ import {
   RiUserHeartLine,
   RiUserLine,
 } from "react-icons/ri";
+import { FaUser } from 'react-icons/fa'; 
 import {
   MdListAlt,
   MdOutlineAttachMoney,
@@ -1171,6 +1172,12 @@ export const patientTab = [
     title: "Health Information",
     icon: RiHeartLine,
   },
+  {
+    id: 9,
+    title: "Patient Details",
+    icon: RiStethoscopeLine ,
+  },
+  
 ];
 
 export const doctorTab = [
