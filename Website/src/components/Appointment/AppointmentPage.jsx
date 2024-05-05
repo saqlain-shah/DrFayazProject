@@ -267,27 +267,6 @@ const AppointmentPage = () => {
 
     const token = localStorage.getItem("token");
 
-    try {
-        // Make a POST request to store the appointment data
-        const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        console.log("Appointment created successfully:", response);
-        // Display a success toast message after appointment creation
-        toast.success("Appointment scheduled successfully!");
-        // Navigate to the success page or do any further actions
-        setShowModal(true); // Show the modal after confirming the appointment
-        setShowAppointmentDetails(true);
-
-        // Delete the selected slot after successful appointment creation
-        await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
-    } catch (error) {
-        console.error("Error creating appointment:", error);
-        // Handle error, e.g., show an error message to the user
-    }
-};
     // Include ID in the appointment data
     // appointmentData.patientInfo.id = userId; // Assuming userId holds the ID
 
@@ -321,7 +300,6 @@ const AppointmentPage = () => {
       // Handle error, e.g., show an error message to the user
     }
   };
-
 
 
 
