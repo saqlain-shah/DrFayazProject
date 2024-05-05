@@ -102,7 +102,7 @@ app.use('/api/otps', otpDashRoutes);
 
 app.use('/api/otp', otpRoutes);
 app.use('/api/otps', otpDashRoutes);
-app.use('/api/',appointmentmail );
+
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
 app.use('/api/',EmailSent)

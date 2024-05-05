@@ -60,7 +60,7 @@ const Prescription = () => {
             title: 'Service',
             dataIndex: 'selectedService',
             key: 'selectedService',
-            render: selectedService => selectedService.name
+            render: selectedService => selectedService.serviceName
         },
         {
             title: 'Service Price',

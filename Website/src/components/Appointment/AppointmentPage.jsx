@@ -8,7 +8,7 @@ import { Link, json, useParams } from "react-router-dom"; // Import useParams
 // import axiosBaseQuery from "./axiosBaseQuery";
 import { Button, Steps, message, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
-import Footer from "../Shared/Footer/Footer";
+
 import Header from "../Shared/Header/Header";
 import SelectAppointment from "./SelectApppointment";
 import PersonalInformation from "../Booking/PersonalInformation"; // Import PersonalInformation component
@@ -455,7 +455,7 @@ const AppointmentPage = () => {
         <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
 
-      <Footer />
+    
     </>
   );
 };
