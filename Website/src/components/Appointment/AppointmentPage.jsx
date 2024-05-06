@@ -101,7 +101,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8800/api/userauth/${params.clientId}`,
+        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -167,7 +167,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "http://localhost:8800/api/stripe/checkout",
+        "https://server-yvzt.onrender.com/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -212,7 +212,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:8800/api/services",
+        "https://server-yvzt.onrender.com/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -267,7 +267,7 @@ const AppointmentPage = () => {
 
     try {
         // Make a POST request to store the appointment data
-        const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
+        const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -280,7 +280,7 @@ const AppointmentPage = () => {
         setShowAppointmentDetails(true);
 
         // Delete the selected slot after successful appointment creation
-        await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
+        await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
     } catch (error) {
         console.error("Error creating appointment:", error);
         // Handle error, e.g., show an error message to the user

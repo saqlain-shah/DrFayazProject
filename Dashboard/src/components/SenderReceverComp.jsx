@@ -23,7 +23,7 @@ function SenderReceverComp({
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "http://localhost:8800/api/patients",
+        "https://server-yvzt.onrender.com/api/patients",
         {
           headers: {
             Authorization: `Bearer ${token}`

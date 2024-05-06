@@ -94,7 +94,7 @@ function CreateInvoice() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await axios.post('http://localhost:8800/api/invoices', {
+      const response = await axios.post('https://server-yvzt.onrender.com/api/invoices', {
         selectedPatient,
         invoiceItems,
         tax,

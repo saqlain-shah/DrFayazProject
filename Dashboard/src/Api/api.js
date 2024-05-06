@@ -2,7 +2,7 @@
 export const fetchTotalPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/patients/total-count', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/patients/total-count', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -26,7 +26,7 @@ export const fetchTotalPatientCount = async () => {
 export const fetchwebsitePatient = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/web/', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/web/', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -46,7 +46,7 @@ export const fetchwebsitePatient = async () => {
 export const fetchRecentPatients = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/patients/recent', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/patients/recent', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -63,7 +63,7 @@ export const fetchRecentPatients = async () => {
 export const fetchWebPatientTodayAppointments = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/web/today-appointments', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/web/today-appointments', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -83,7 +83,7 @@ export const fetchTotalWebPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
         console.log('Fetching total web patient count...');
-        const response = await fetch('http://localhost:8800/api/web/total-count', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/web/total-count', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
