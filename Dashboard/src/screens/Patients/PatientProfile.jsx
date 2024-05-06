@@ -173,7 +173,11 @@ function PatientProfile() {
       case 8:
         return <HealthInfomation />;
         case 9:
-          return <PatientDetails  patientId={id}/>;
+          return  <PatientDetails
+          medicalRecords={medicalRecords}
+          profileData={profileData}
+          webPatientData={webPatientData}
+        />
       default:
         return null;
     }
