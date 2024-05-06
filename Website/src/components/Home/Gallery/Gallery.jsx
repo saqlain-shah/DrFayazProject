@@ -1,12 +1,12 @@
 import React from 'react';
-import img2 from '../../../images/features/CC.jpg';
-import img3 from '../../../images/doc/doc4.jpg';
-import img4 from '../../../images/doc/doctor 5.jpg';
-import img5 from '../../../images/doc/doc1.jpg';
-import img6 from '../../../images/doc/doctor chair 2.jpg';
-import img7 from '../../../images/features/3.jpg';
-import img8 from '../../../images/doc/doctor 5.jpg';
-import img9 from '../../../images/doc/doctor chair 2.jpg';
+import img2 from '../../../images/features/9.jpeg';
+import img3 from '../../../images/features/10.jpeg';
+import img4 from '../../../images/features/14.jpeg';
+import img5 from '../../../images/features/13.jpeg';
+import img6 from '../../../images/features/1.jpeg';
+import img7 from '../../../images/features/4.jpeg';
+import img8 from '../../../images/features/3.jpeg';
+import img9 from '../../../images/features/6.jpeg';
 import './index.css';
 import { Image } from 'antd';
 

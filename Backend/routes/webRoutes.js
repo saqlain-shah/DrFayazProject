@@ -15,7 +15,7 @@ router.get('/notifications', getNotifications);
 
 router.put('/notifications/mark-all-read', markAllNotificationsAsRead);
 // Route for fetching a Web by its ID
-router.get('/:id', getWebById);
+
 router.get('/:id', getWebById); // Route for getting a web by ID
 router.post('/', upload.array('files'), createWeb); // Route for creating a web
 
