@@ -9,6 +9,7 @@ import CustomTable from '../../UI/component/CustomTable';
 import { useDeletePrescriptionMutation } from '../../../redux/api/prescriptionApi';
 
 const Prescription = () => {
+    
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [deleteBlog] = useDeletePrescriptionMutation();

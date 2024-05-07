@@ -1,7 +1,6 @@
-
-
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { LoadingOutlined } from '@ant-design/icons';
 // import moment from "moment";
 import axios from "axios";
 import { Link, json, useParams } from "react-router-dom"; // Import useParams
@@ -239,6 +238,7 @@ const AppointmentPage = () => {
 
 
   const handleConfirmAppointment = async () => {
+    setLoading(true);
     console.log("Confirming appointment...");
     setSelectValue({ ...selectValue, id: userId });
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
@@ -256,7 +256,7 @@ const AppointmentPage = () => {
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
     attachments.map((attachment) => {
-        appointmentData.append("files", attachment);
+      appointmentData.append("files", attachment);
     })
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
@@ -271,19 +271,19 @@ const AppointmentPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-  
+
       console.log("Appointment created successfully:", response.data);
-  
-      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email,name,bloodGroup,emergencyContact,gender }, {
+
+      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-    
+
       console.log("Email confirmation sent successfully:", emailResponse.data);
-  
+
       toast.success("Appointment scheduled successfully!");
-     
+
       // Remove the selected slot from appointmentSlots state
       setAppointmentSlots(prevSlots => prevSlots.filter(slot => slot._id !== selectedSlot._id));
 
@@ -291,8 +291,10 @@ const AppointmentPage = () => {
       setShowAppointmentDetails(true);
     } catch (error) {
       console.error("Error creating appointment:", error);
+    }finally {
+      setLoading(false); // Set loading state to false once the request is completed
     }
-};
+  };
 
 
 
@@ -408,15 +410,19 @@ const AppointmentPage = () => {
             {current === steps.length - 1 && (
               <>
                 {/* Payment section */}
-                  <Button
-                    type="primary"
-                    size="large"
-                    style={{ marginRight: "8px" }}
-                    disabled={isConfirmDisable}
-                    onClick={() => handleConfirmAppointment()}
-                  >
-                    Confirm
-                  </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  style={{ marginRight: "8px" }}
+                  disabled={isConfirmDisable || loading}
+                  onClick={() => handleConfirmAppointment()}
+                >
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Confirm</span>
+                  )}
+                </Button>
                 {/* Previous button */}
                 <Button size="large" onClick={() => prev()}>
                   Previous
@@ -432,10 +438,23 @@ const AppointmentPage = () => {
         onCancel={() => setShowModal(false)} // Handle close event
         footer={[
           <div>
-            {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
+            <Button
+                  type="primary"
+                  size="large"
+                  style={{ marginRight: "8px" }}
+                  disabled={isConfirmDisable || loading}
+                  onClick={() => makePayment()}
+                >
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Confirm</span>
+                  )}
+                </Button>
+            {/* {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
             <Button key="back" onClick={makePayment} disabled={loading}>
               {loading ? 'Processing...' : 'Checkout'}
-            </Button>
+            </Button> */}
           </div>
         ]}
       >
@@ -449,7 +468,7 @@ const AppointmentPage = () => {
         <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
 
-    
+
     </>
   );
 };
