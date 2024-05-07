@@ -16,7 +16,7 @@ import PrivateRoute from './Private';
 import { ToastContainer } from 'react-toastify';
 import Success from './StripeSuccess/Success';
 import Cancel from './StripeSuccess/Cancel';
-
+import NotFound from './Notfound';
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -36,6 +36,7 @@ function AppRoutes() {
       <Route path="/dashboard/prescription/:id" element={<PrescriptionView />} />
       <Route path="/dashboard/profile-setting/:clientId" element={<ProfileSetting />} />
       <Route path="/dashboard/change-password/:clientId" element={<ChangePassword />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
