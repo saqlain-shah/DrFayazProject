@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingOutlined } from '@ant-design/icons';
 
+
 const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -77,7 +78,7 @@ const ChangePassword = () => {
                   {loading ? (
                     <LoadingOutlined style={{ fontSize: '24px' }} />
                   ) : (
-                    <span>Confirm</span>
+                    <span>Save</span>
                   )}
                 </Button>
                         {/* <Button onClick={handleChangePassword} type="primary" size='large'>Save Changes</Button> */}

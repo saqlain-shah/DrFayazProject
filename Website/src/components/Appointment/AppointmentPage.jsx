@@ -77,7 +77,7 @@ const AppointmentPage = () => {
     setSelectedSlot(slots);
     fetchData(); // Here the fetchData is called, so the clientId is passed here
   };
-  
+
 
   const fetchData = async () => {
     const token = localStorage.getItem("token");
@@ -86,9 +86,9 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       },
     };
-  
+
     console.log("clientId:", params.clientId); // Log clientId here
-  
+
     try {
       const response = await axios.get(
         `http://localhost:8800/api/userauth/${params.clientId}`,
@@ -104,8 +104,8 @@ const AppointmentPage = () => {
     }
     next();
   };
-  
-  
+
+
 
   const next = (e) => {
     e.preventDefault();
@@ -223,7 +223,7 @@ const AppointmentPage = () => {
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
-  
+
     const appointmentData = new FormData();
     appointmentData.append('name', name);
     appointmentData.append('email', email);
@@ -240,9 +240,9 @@ const AppointmentPage = () => {
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-  
+
     const token = localStorage.getItem("token");
-  
+
     try {
       const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
@@ -262,16 +262,19 @@ const AppointmentPage = () => {
 
       toast.success("Appointment scheduled successfully!");
 
-      // Remove the selected slot from appointmentSlots state
-      setAppointmentSlots(prevSlots => prevSlots.filter(slot => slot._id !== selectedSlot._id));
+     // Remove the selected slot from appointmentSlots state
+    console.log("Previous appointmentSlots:", appointmentSlots);
+    const updatedSlots = appointmentSlots.filter(slot => slot._id !== selectedSlot._id);
+    console.log("Updated appointmentSlots:", updatedSlots);
+    setAppointmentSlots(updatedSlots);
 
       setShowModal(true);
       setShowAppointmentDetails(true);
-  
+
       console.log("clientId after confirm appointment:", params.clientId); // Log clientId after confirming the appointment
     } catch (error) {
       console.error("Error creating appointment:", error);
-    }finally {
+    } finally {
       setLoading(false); // Set loading state to false once the request is completed
     }
   };
@@ -415,18 +418,18 @@ const AppointmentPage = () => {
         footer={[
           <div>
             <Button
-                  type="primary"
-                  size="large"
-                  style={{ marginRight: "8px" }}
-                  disabled={isConfirmDisable || loading}
-                  onClick={() => makePayment()}
-                >
-                  {loading ? (
-                    <LoadingOutlined style={{ fontSize: '24px' }} />
-                  ) : (
-                    <span>Confirm</span>
-                  )}
-                </Button>
+              type="primary"
+              size="large"
+              style={{ marginRight: "8px" }}
+              disabled={isConfirmDisable || loading}
+              onClick={() => makePayment()}
+            >
+              {loading ? (
+                <LoadingOutlined style={{ fontSize: '24px' }} />
+              ) : (
+                <span>checkout</span>
+              )}
+            </Button>
             {/* {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
             <Button key="back" onClick={makePayment} disabled={loading}>
               {loading ? 'Processing...' : 'Checkout'}
