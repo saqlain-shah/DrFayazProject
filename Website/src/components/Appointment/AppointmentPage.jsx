@@ -3,25 +3,18 @@ import { toast } from "react-hot-toast";
 import { LoadingOutlined } from '@ant-design/icons';
 // import moment from "moment";
 import axios from "axios";
-import { Link, json, useParams } from "react-router-dom"; // Import useParams
-// import axiosBaseQuery from "./axiosBaseQuery";
 import { Button, Steps, message, Modal } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Header from "../Shared/Header/Header";
 import SelectAppointment from "./SelectApppointment";
-import PersonalInformation from "../Booking/PersonalInformation"; // Import PersonalInformation component
-//import CheckoutPage from "../Booking/BookingCheckout/CheckoutPage";
-//import useAuthCheck from "../../redux/hooks/useAuthCheck";
+import PersonalInformation from "../Booking/PersonalInformation";
 import { useCreateAppointmentByUnauthenticateUserMutation } from "../../redux/api/appointmentApi";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../../redux/feature/invoiceSlice";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Define the initial form values
 const initialValue = {
-  // paymentMethod: 'paypal',
-  // paymentType: 'creditCard',
   name: "",
   email: "",
   attachments: [],
@@ -34,7 +27,6 @@ const initialValue = {
 const AppointmentPage = () => {
   const dispatch = useDispatch();
   const [userId, setUserId] = useState(null);
-  // const { data, role } = useAuthCheck();
   const [current, setCurrent] = useState(0);
   const params = useParams();
   const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -44,12 +36,12 @@ const AppointmentPage = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
-  const [serviceDetails, setServiceDetails] = useState([]); // State to store service details
+  const [serviceDetails, setServiceDetails] = useState([]);
   const [selectedService, setSelectedService] = useState({
     serviceName: "",
     price: 0,
-  }); // State to store service details
-  const [totalAmount, setTotalAmount] = useState(0); // State to store total amount
+  });
+  const [totalAmount, setTotalAmount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -63,9 +55,11 @@ const AppointmentPage = () => {
   const handleChange = (e) => {
     setSelectValue({ ...selectValue, [e.target.name]: e.target.value });
   };
+
   const handleFileChange = (files) => {
     setSelectValue({ ...selectValue, attachments: files });
   };
+
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
   const handleSelectAppointment = (slots, patientId, profileSettingId) => {
@@ -74,30 +68,27 @@ const AppointmentPage = () => {
       console.error("No appointment slots available");
       return;
     }
-    // const selectedSlotId = slots._id;
     setSelectValue({ ...selectValue, slotId: slots._id });
-    // const selectedSlot = slots.find(slot => slot._id === selectedSlotId);
     if (slots) {
       setSelectedStartDate(slots.startDateTime);
-      setSelectedEndDate(slots.endDateTime); // Update SelectedEndDate with the endDateTime of the selected slot
+      setSelectedEndDate(slots.endDateTime);
     }
-
-    console.log("Selected Slot:", slots); // Log selected slot
-    // Here you can fetch the profile setting ID using the profileSettingId parameter
-    setSelectedSlot(slots); // Set the selected slot
+    console.log("Selected Slot:", slots);
+    setSelectedSlot(slots);
+    fetchData(); // Here the fetchData is called, so the clientId is passed here
   };
+  
 
-  // Before fetching user data
-  console.log("Fetching user data...");
-
-  const fetchData = async (params) => {
+  const fetchData = async () => {
     const token = localStorage.getItem("token");
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-
+  
+    console.log("clientId:", params.clientId); // Log clientId here
+  
     try {
       const response = await axios.get(
         `http://localhost:8800/api/userauth/${params.clientId}`,
@@ -105,26 +96,22 @@ const AppointmentPage = () => {
       );
       if (response) {
         console.log("Response:", response);
-        // Log the entire response
-        setUserId(response.data._id); // Update state with the fetched user ID
+        setUserId(response.data._id);
         setSelectValue(response.data);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-    // Directly move to the next step/page
-    next(); // This will move to the next step/page
+    next();
   };
-
-  // useEffect(() => {
-  //   // fetchData(params);
-  // }, []);
+  
+  
 
   const next = (e) => {
     e.preventDefault();
     setCurrent(current + 1);
     if (current === 0) {
-      fetchData(params);
+      fetchData();
     }
     console.log("selectedService", selectedService);
     console.log("selected values", selectValue)
@@ -149,7 +136,7 @@ const AppointmentPage = () => {
     } = selectValue;
     const isInputEmpty = !name || !reasonForVisit;
     setIsDisable(isInputEmpty);
-  }, [selectValue, isCheck, selectedEndDate]); // Include selectedEndDate in the dependency array
+  }, [selectValue, isCheck, selectedEndDate]);
 
   const makePayment = async () => {
     setLoading(true);
@@ -158,7 +145,7 @@ const AppointmentPage = () => {
         "pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz"
       );
       const body = {
-        products: [{ ...selectedService }], // Assuming selectedService contains name and price properties
+        products: [{ ...selectedService }],
       };
       const token = localStorage.getItem("token");
       const headers = {
@@ -180,11 +167,9 @@ const AppointmentPage = () => {
 
       if (result.error) {
         console.error("Error redirecting to checkout:", result.error);
-        // Handle error, e.g., show an error message to the user
       }
     } catch (error) {
       console.error("Error making payment:", error);
-      // Handle error, e.g., show an error message to the user
     }
     setLoading(false);
   };
@@ -201,7 +186,6 @@ const AppointmentPage = () => {
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
 
-  // Fetch service details from the backend API
   const fetchServiceDetails = async () => {
     const token = localStorage.getItem("token");
     const config = {
@@ -215,8 +199,6 @@ const AppointmentPage = () => {
         config
       );
       setServiceDetails(response.data);
-      console.log("serviceDetails", response.data);
-      console.log("serviceDetails", serviceDetails);
     } catch (error) {
       console.error("Error fetching service details:", error);
     }
@@ -234,9 +216,6 @@ const AppointmentPage = () => {
     }
   }, [serviceDetails]);
 
-
-
-
   const handleConfirmAppointment = async () => {
     setLoading(true);
     console.log("Confirming appointment...");
@@ -244,8 +223,7 @@ const AppointmentPage = () => {
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
-
-    // Combine appointment data
+  
     const appointmentData = new FormData();
     appointmentData.append('name', name);
     appointmentData.append('email', email);
@@ -262,9 +240,9 @@ const AppointmentPage = () => {
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-
+  
     const token = localStorage.getItem("token");
-
+  
     try {
       const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
@@ -289,6 +267,8 @@ const AppointmentPage = () => {
 
       setShowModal(true);
       setShowAppointmentDetails(true);
+  
+      console.log("clientId after confirm appointment:", params.clientId); // Log clientId after confirming the appointment
     } catch (error) {
       console.error("Error creating appointment:", error);
     }finally {
@@ -311,10 +291,6 @@ const AppointmentPage = () => {
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
 
-  // console.log("data:", data); // Log the value of data
-  // const patientId = data && data.id; // Check if data exists before accessing its id property
-  // console.log("patientId:", patientId);
-
   const steps = [
     {
       title: "Select Appointment Date & Time",
@@ -333,8 +309,8 @@ const AppointmentPage = () => {
           handleChange={handleChange}
           handleFileChange={handleFileChange}
           selectValue={selectValue}
-          handleConfirmAppointment={handleConfirmAppointment} // Pass the function here
-          selectedSlot={selectedSlot} // Pass the selected slot information
+          handleConfirmAppointment={handleConfirmAppointment}
+          selectedSlot={selectedSlot}
         />
       ),
     },
@@ -434,8 +410,8 @@ const AppointmentPage = () => {
       </div>
       <Modal
         title="Appointment Details"
-        open={showModal} // Control modal visibility
-        onCancel={() => setShowModal(false)} // Handle close event
+        open={showModal}
+        onCancel={() => setShowModal(false)}
         footer={[
           <div>
             <Button
@@ -464,7 +440,6 @@ const AppointmentPage = () => {
           <b>Service Charge:</b> {" "}
           {selectedService ? selectedService.price : "Loading..."} USD
         </p>
-        {/* <p>Service Tax: 5 USD</p> */}
         <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
 

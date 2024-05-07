@@ -32,7 +32,7 @@ function AppRoutes() {
       <Route path="/track-appointment" element={<TrackAppointment />} />
       <Route path="/doctors" element={<SearchDoctor />} />
       <Route path="/dashboard/:clientId" element={<Dashboard />} />
-      <Route path="/dashboard/prescription/:clientId" element={<Prescription />} />
+      <Route path="/dashboard/prescription/:id" element={<Prescription />} />
       <Route path="/dashboard/prescription/:id" element={<PrescriptionView />} />
       <Route path="/dashboard/profile-setting/:clientId" element={<ProfileSetting />} />
       <Route path="/dashboard/change-password/:clientId" element={<ChangePassword />} />
