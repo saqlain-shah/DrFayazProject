@@ -30,15 +30,18 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
     const handleSaveAppointment = () => {
         // Check if endDateTime is before startDateTime (i.e., the end time is before the start time)
-        const isInvalidTimeRange = endDateTime < startDateTime  || 
-        (endDateTime.getHours() === startDateTime.getHours() && 
-         endDateTime.getMinutes() === startDateTime.getMinutes());
+        const isInvalidTimeRange = endDateTime < startDateTime ||
+            (endDateTime.getHours() === startDateTime.getHours() &&
+                endDateTime.getMinutes() === startDateTime.getMinutes());
     
         if (isInvalidTimeRange) {
             // If the time range is invalid, display a message and return without saving
             toast.error('Invalid time range. Please select a valid time range.');
             return;
         }
+    
+        // Calculate the duration of the appointment in milliseconds
+        const duration = endDateTime.getTime() - startDateTime.getTime();
     
         // Here you can handle saving the appointment
         // You can use startDateTime, endDateTime, and shares state values
@@ -62,6 +65,13 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
                 // Handle success
                 toast.success('Appointment saved successfully');
                 closeModal();
+    
+                // Automatically delete the appointment after the duration
+                setTimeout(() => {
+                    setAppointments(prevAppointments =>
+                        prevAppointments.filter(appointment => appointment.id !== response.data._id)
+                    );
+                }, duration);
             })
             .catch(error => {
                 // Handle error
@@ -71,6 +81,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     
         console.log("appointment date", appointmentPayload)
     };
+    
     
     
 

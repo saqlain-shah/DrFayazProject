@@ -258,7 +258,10 @@ const AppointmentPage = () => {
       console.log("Email confirmation sent successfully:", emailResponse.data);
   
       toast.success("Appointment scheduled successfully!");
-  
+     
+      // Remove the selected slot from appointmentSlots state
+      setAppointmentSlots(prevSlots => prevSlots.filter(slot => slot._id !== selectedSlot._id));
+
       setShowModal(true);
       setShowAppointmentDetails(true);
   
@@ -267,7 +270,6 @@ const AppointmentPage = () => {
       console.error("Error creating appointment:", error);
     }
   };
-  
 
   useEffect(() => {
     if (isSuccess) {
@@ -375,6 +377,7 @@ const AppointmentPage = () => {
             )}
             {current === steps.length - 1 && (
               <>
+                {/* Payment section */}
                 <Button
                   type="primary"
                   size="large"
@@ -384,6 +387,7 @@ const AppointmentPage = () => {
                 >
                   Confirm
                 </Button>
+                {/* Previous button */}
                 <Button size="large" onClick={() => prev()}>
                   Previous
                 </Button>
