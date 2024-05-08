@@ -28,7 +28,7 @@ const Prescription = () => {
         },
       };
       const response = await axios.get(
-        `https://server-yvzt.onrender.com /api/web/web/${id}`,
+        `https://server-yvzt.onrender.com/api/web/web/${id}`,
         config
       );
       console.log("response", response);

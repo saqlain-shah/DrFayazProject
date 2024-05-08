@@ -58,7 +58,7 @@ function NewMedicalRecord() {
     const fetchPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com /api/patients/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPatientData(response.data);
@@ -71,7 +71,7 @@ function NewMedicalRecord() {
     const fetchWebPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com /api/web/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
@@ -156,7 +156,7 @@ function NewMedicalRecord() {
 
     const token = localStorage.getItem('token');
     axios
-      .post('https://server-yvzt.onrender.com /api/medical-records', formData, {
+      .post('https://server-yvzt.onrender.com/api/medical-records', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -219,9 +219,9 @@ function NewMedicalRecord() {
             <img
               src={
                 webPatientData.patientInfo?.image
-                  ? `https://server-yvzt.onrender.com /${webPatientData.patientInfo.image}`
+                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
                   : patientData.profilePicture
-                    ? `https://server-yvzt.onrender.com /${patientData.profilePicture}`
+                    ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
                     : ''
               }
               alt="profile"

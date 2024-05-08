@@ -55,7 +55,7 @@ const PatientDetails = ({ medicalRecords, profileData, webPatientData }) => {
                   <ul>
                     {record.attachments.map(attachment => (
                       <li key={attachment._id}>
-                        <Image src={`https://server-yvzt.onrender.com /uploads/${attachment.filename}`} alt={attachment.filename} style={{ width: '200px', height: '200px' }} />
+                        <Image src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`} alt={attachment.filename} style={{ width: '200px', height: '200px' }} />
                       </li>
                     ))}
                   </ul>
@@ -84,7 +84,7 @@ const renderProfileData = (profileData) => (
       <div>
         <ul className="list-disc pl-4">
         <Image
-                      src={`https://server-yvzt.onrender.com /${profileData.profilePicture}`}
+                      src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
                       alt={profileData.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -107,7 +107,7 @@ const renderWebPatientData = (webPatientData) => (
       <div>
         <ul className="list-disc pl-4">
         <Image
-                      src={`https://server-yvzt.onrender.com /${webPatientData.patientInfo.image}`}
+                      src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
                       alt={webPatientData.name}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />

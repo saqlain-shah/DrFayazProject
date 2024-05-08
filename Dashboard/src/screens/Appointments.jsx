@@ -116,7 +116,7 @@ function Appointments({ events }) {
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com /api/web/`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

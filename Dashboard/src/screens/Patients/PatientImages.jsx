@@ -14,7 +14,7 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
         <div key={index} className="m-4">
           <div className="flex flex-wrap justify-center gap-4">
             {record.attachments && record.attachments.map((attachment, attachmentIndex) => {
-              const imageUrl = `https://server-yvzt.onrender.com /uploads/${attachment.filename}`;
+              const imageUrl = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
               return (
                 <div key={attachmentIndex} className="flex flex-col items-center">
                   {attachment.filename && (
@@ -47,7 +47,7 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
 
       {/* Render attachments from web patient */}
       {webPatientAttachments && webPatientAttachments.map((attachment, index) => {
-        const imageUrl = `https://server-yvzt.onrender.com /${attachment}`;
+        const imageUrl = `https://server-yvzt.onrender.com/${attachment}`;
         return (
           <div key={index} className="flex flex-col items-center">
             <div className="mb-2">

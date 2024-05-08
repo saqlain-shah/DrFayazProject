@@ -23,7 +23,7 @@ function Payments() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('https://server-yvzt.onrender.com /api/web/', {
+    fetch('https://server-yvzt.onrender.com/api/web/', {
       headers: {
         'Authorization': `Bearer ${token}`
       }

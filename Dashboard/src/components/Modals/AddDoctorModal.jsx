@@ -27,7 +27,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
 
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://server-yvzt.onrender.com /api/doctors',
+        'https://server-yvzt.onrender.com/api/doctors',
         formData,
         {
           headers: {

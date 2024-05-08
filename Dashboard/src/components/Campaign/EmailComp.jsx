@@ -24,7 +24,7 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
       formData.append('link', link);
 
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://server-yvzt.onrender.com /api/email-campaigns', formData, {
+      const response = await axios.post('https://server-yvzt.onrender.com/api/email-campaigns', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

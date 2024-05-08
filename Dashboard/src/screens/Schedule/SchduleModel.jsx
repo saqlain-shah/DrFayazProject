@@ -56,7 +56,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
             shares
         };
     
-        axios.post('https://server-yvzt.onrender.com /api/schedule', appointmentPayload, {
+        axios.post('https://server-yvzt.onrender.com/api/schedule', appointmentPayload, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

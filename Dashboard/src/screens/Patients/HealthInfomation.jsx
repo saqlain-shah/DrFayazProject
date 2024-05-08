@@ -21,7 +21,7 @@ function HealthInformation() {
     try {
       const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       const response = await axios.post(
-        'https://server-yvzt.onrender.com /api/health-information',
+        'https://server-yvzt.onrender.com/api/health-information',
         {
           bloodType: bloodType.name,
           weight,

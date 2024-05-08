@@ -36,7 +36,7 @@ function PersonalInfo({ titles, onSave }) {
 
       console.log('Data to be sent:', data);
 
-      await axios.post('https://server-yvzt.onrender.com /api/patients', data, {
+      await axios.post('https://server-yvzt.onrender.com/api/patients', data, {
 
         headers: {
           'Content-Type': 'multipart/form-data',

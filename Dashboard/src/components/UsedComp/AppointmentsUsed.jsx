@@ -15,7 +15,7 @@ function AppointmentsUsed({ token }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://server-yvzt.onrender.com /api/appointments', {
+      const response = await fetch('https://server-yvzt.onrender.com/api/appointments', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
