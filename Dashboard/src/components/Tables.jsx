@@ -762,7 +762,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               {/* <td className={tdClass}>
                 <img
-                  src={`https://server-yvzt.onrender.com /${patient.profilePicture}`}
+                  src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />

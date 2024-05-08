@@ -275,7 +275,7 @@ export default AddAppointmentModal;
 //   const fetchDoctors = async () => {
 //     try {
 //       const token = localStorage.getItem('token');
-//       const response = await axios.get('https://server-yvzt.onrender.com /api/doctors', {
+//       const response = await axios.get('https://server-yvzt.onrender.com/api/doctors', {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //         },
@@ -329,7 +329,7 @@ export default AddAppointmentModal;
 //       patientId: patientId,
 //     };
 
-//     const apiUrl = 'https://server-yvzt.onrender.com /api/appointments';
+//     const apiUrl = 'https://server-yvzt.onrender.com/api/appointments';
 //     const token = localStorage.getItem('token');
 
 //     axios.post(apiUrl, data, {
