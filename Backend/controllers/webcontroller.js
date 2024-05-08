@@ -2,9 +2,8 @@ import WebPatient from '../models/webModels.js'
 import mongoose from 'mongoose';
 
 export const createWeb = async (req, res) => {
-  const { id } = req.params; // Get the ID from the route parameters
-  const { name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, endDateTime, startDateTime, serviceName, price } = req.body;
-  let patientInfo = { name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup }
+  const { id, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, endDateTime, startDateTime, serviceName, price } = req.body;
+  let patientInfo = { id, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup }
   const selectedSlot = { endDateTime, startDateTime }
   const selectedService = { serviceName, price }
   const files = req.files;
@@ -16,7 +15,7 @@ export const createWeb = async (req, res) => {
       const images = files.map(file => file.path)
       patientInfo = { ...patientInfo, attachment: images }
     }
-    const Web = await WebPatient.create({ id: id, patientInfo: patientInfo, selectedSlot: selectedSlot, selectedService: selectedService });
+    const Web = await WebPatient.create({ patientInfo: patientInfo, selectedSlot: selectedSlot, selectedService: selectedService });
     res.status(201).json(Web);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -38,14 +37,15 @@ export const getAllWebs = async (req, res) => {
 
 export const getWebById = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     console.log("Fetching web with ID:", id); // Log the id here
-    const web = await WebPatient.findById(id);
+    const web = await WebPatient.find();
+    const data=web.filter((item)=>item.patientInfo.id===id)
     console.log('Web found by ID:', web);
-    if (!web) {
+    if (!data) {
       return res.status(404).json({ message: 'Web not found' });
     }
-    res.status(200).json(web);
+    res.status(200).json(data);
   } catch (error) {
     console.error('Error fetching Web by id:', error); // Log the error here
     res.status(500).json({ message: 'Server Error' });

@@ -225,6 +225,7 @@ const AppointmentPage = () => {
     const { serviceName, price } = selectedService
 
     const appointmentData = new FormData();
+    appointmentData.append('id', userId);
     appointmentData.append('name', name);
     appointmentData.append('email', email);
     appointmentData.append('emergencyContact', emergencyContact);
@@ -262,16 +263,17 @@ const AppointmentPage = () => {
 
       toast.success("Appointment scheduled successfully!");
 
-     // Remove the selected slot from appointmentSlots state
-    console.log("Previous appointmentSlots:", appointmentSlots);
-    const updatedSlots = appointmentSlots.filter(slot => slot._id !== selectedSlot._id);
-    console.log("Updated appointmentSlots:", updatedSlots);
-    setAppointmentSlots(updatedSlots);
+      // Now, make a request to delete the selected slot
+   const appdelete = await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
+    console.log("selected slot delete successfully:", appdelete.data);
 
       setShowModal(true);
       setShowAppointmentDetails(true);
 
-      console.log("clientId after confirm appointment:", params.clientId); // Log clientId after confirming the appointment
     } catch (error) {
       console.error("Error creating appointment:", error);
     } finally {

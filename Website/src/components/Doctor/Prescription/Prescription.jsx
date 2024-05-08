@@ -24,7 +24,7 @@ const Prescription = () => {
       const token = localStorage.getItem("token");
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       };
       const response = await axios.get(
