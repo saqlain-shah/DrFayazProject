@@ -10,7 +10,7 @@ function PatientList({ onSelectPatient, setSearchValue }) {
         const fetchPatients = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8800/api/patients', {
+                const response = await axios.get('https://server-yvzt.onrender.com /api/patients', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPatients(response.data);

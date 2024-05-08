@@ -11,7 +11,7 @@ function PatientsUsed() {
   const fetchData = async () => {
     try {
       // Make an HTTP request to fetch data
-      const response = await fetch('http://localhost:8800/api/patients', {
+      const response = await fetch('https://server-yvzt.onrender.com /api/patients', {
         headers: {
           'Authorization': `Bearer ${token}`, // Add token to the request header
         },

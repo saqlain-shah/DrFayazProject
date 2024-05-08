@@ -13,7 +13,7 @@ function Invoices() {
     const fetchInvoices = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8800/api/invoices', {
+        const response = await axios.get('https://server-yvzt.onrender.com /api/invoices', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -31,7 +31,7 @@ function Invoices() {
   const deleteInvoice = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/invoices/${id}`, {
+      await axios.delete(`https://server-yvzt.onrender.com /api/invoices/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

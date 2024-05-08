@@ -18,7 +18,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8800/api/schdule');
+      const response = await axios.get('https://server-yvzt.onrender.com /api/schdule');
       setAppointmentSlots(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -40,7 +40,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       }
     };
 
-    axios.post('http://localhost:8800/api/schdule', appointmentPayload, config)
+    axios.post('https://server-yvzt.onrender.com /api/schdule', appointmentPayload, config)
       .then(response => {
         // Handle success
         toast.success('Appointment saved successfully');
