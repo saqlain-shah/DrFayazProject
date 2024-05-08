@@ -255,7 +255,7 @@ const AppointmentPage = () => {
 
       const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
