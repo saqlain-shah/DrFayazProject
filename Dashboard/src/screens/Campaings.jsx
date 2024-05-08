@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Layout from '../Layout';
-import { Button, MenuSelect } from '../components/Form';
-import { BiDotsVerticalRounded, BiPlus } from 'react-icons/bi';
-import { HiOutlineMail } from 'react-icons/hi';
+import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Layout from "../Layout";
+import { Button, MenuSelect } from "../components/Form";
+import { BiDotsVerticalRounded, BiPlus } from "react-icons/bi";
+import { HiOutlineMail } from "react-icons/hi";
 import { FaShare, FaEdit } from "react-icons/fa";
-import axios from 'axios';
-import ContactSelectionDialog from './ContactSelectionDialog';
-import CampaignModal from '../components/Modals/AddCampagnModal';
-import { FiTrash } from 'react-icons/fi';
+import axios from "axios";
+import ContactSelectionDialog from "./ContactSelectionDialog";
+import CampaignModal from "../components/Modals/AddCampagnModal";
+import { FiTrash } from "react-icons/fi";
 
 function Campaigns() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState({});
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [contacts, setContacts] = useState([]);
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
 
@@ -35,7 +35,7 @@ function Campaigns() {
   };
 
   const updateCampaignsState = (newCampaign) => {
-    setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
+    setCampaigns((prevCampaigns) => [...prevCampaigns, newCampaign]);
   };
 
   const editCampaign = (campaign) => {
@@ -44,48 +44,61 @@ function Campaigns() {
   };
 
   const shareViaWhatsApp = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
-    const token = localStorage.getItem('token');
-    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
-        if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
-          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
-        }
+    setMessage(
+      `Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`
+    );
+    const token = localStorage.getItem("token");
+    await axios
+      .get("https://server-yvzt.onrender.com/api/patients/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        res.data.forEach((patient) => {
+          if (
+            !contacts.some(
+              (contact) => contact.phoneNumber === patient.emergencyContact
+            )
+          ) {
+            setContacts((prevContacts) => [
+              ...prevContacts,
+              { name: patient.fullName, phoneNumber: patient.emergencyContact },
+            ]);
+          }
+        });
+
+        setShowShareOptions(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
       });
-  
-      setShowShareOptions(true);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
-  
+
   const shareViaEmail = async (campaign) => {
-    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
-    const token = localStorage.getItem('token');
-    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
-        if (!contacts.some(contact => contact.email === patient.email)) {
-          setContacts(prevContacts => [...prevContacts, { ...patient }]);
-        }
+    setMessage(
+      `Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`
+    );
+    const token = localStorage.getItem("token");
+    await axios
+      .get("https://server-yvzt.onrender.com/api/patients/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        res.data.forEach((patient) => {
+          if (!contacts.some((contact) => contact.email === patient.email)) {
+            setContacts((prevContacts) => [...prevContacts, { ...patient }]);
+          }
+        });
+
+        setShowShareOptions(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
       });
-  
-      setShowShareOptions(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
-  
-  
-  
-  
+
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
-
 
   const actions = [
     {
@@ -97,19 +110,22 @@ function Campaigns() {
       title: "Delete",
       icon: FiTrash,
       onClick: (campaign) => deleteCampaign(campaign._id),
-    }
+    },
   ];
 
   useEffect(() => {
     const fetchEmailCampaigns = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/email-campaigns', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "https://server-yvzt.onrender.com/api/email-campaigns",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setCampaigns(response.data);
       } catch (error) {
-        console.error('Error fetching email campaigns:', error);
+        console.error("Error fetching email campaigns:", error);
       }
     };
 
@@ -118,14 +134,19 @@ function Campaigns() {
 
   const deleteCampaign = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/email-campaigns/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCampaigns(prevCampaigns => prevCampaigns.filter(campaign => campaign._id !== id));
-      toast.success('Campaign deleted successfully');
+      const token = localStorage.getItem("token");
+      await axios.delete(
+        `https://server-yvzt.onrender.com/api/email-campaigns/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setCampaigns((prevCampaigns) =>
+        prevCampaigns.filter((campaign) => campaign._id !== id)
+      );
+      toast.success("Campaign deleted successfully");
     } catch (error) {
-      console.error('Error deleting campaign:', error);
+      console.error("Error deleting campaign:", error);
     }
   };
 
@@ -134,8 +155,11 @@ function Campaigns() {
       <ToastContainer />
       {isOpen && (
         <CampaignModal
-          isOpen={isOpen} closeModal={closeModal} data={data}
-          updateCampaignsState={updateCampaignsState} />
+          isOpen={isOpen}
+          closeModal={closeModal}
+          data={data}
+          updateCampaignsState={updateCampaignsState}
+        />
       )}
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
@@ -160,16 +184,20 @@ function Campaigns() {
               <div className="col-span-2">
                 <div
                   className={`
-            ${campaign.type === 'email' && 'bg-orange-500 text-orange-500'}
+            ${campaign.type === "email" && "bg-orange-500 text-orange-500"}
             w-full h-12 text-lg rounded flex-colo bg-opacity-10`}
                 >
-                  {campaign.type === 'email' && <HiOutlineMail />}
+                  {campaign.type === "email" && <HiOutlineMail />}
                 </div>
               </div>
               <div className="col-span-8">
                 <h1 className="text-sm font-light">{campaign.title}</h1>
                 {campaign.image && (
-                  <img src={`https://server-yvzt.onrender.com/${campaign.image}`} alt="Campaign" className="mt-2 w-full h-auto rounded" />
+                  <img
+                    src={`https://server-yvzt.onrender.com/${campaign.image}`}
+                    alt="Campaign"
+                    className="mt-2 w-full h-auto rounded"
+                  />
                 )}
               </div>
               <div className="col-span-2">
@@ -194,8 +222,20 @@ function Campaigns() {
             </div>
             {showShareOptions && (
               <div className="mt-4 flex gap-4">
-                <Button label="Share via Email" onClick={() => { shareViaEmail(campaign); setIsDialogOpen(true); }} />
-                <Button label="Share via WhatsApp" onClick={() => { shareViaWhatsApp(campaign); setIsDialogOpen(true); }} />
+                <Button
+                  label="Share via Email"
+                  onClick={() => {
+                    shareViaEmail(campaign);
+                    setIsDialogOpen(true);
+                  }}
+                />
+                <Button
+                  label="Share via WhatsApp"
+                  onClick={() => {
+                    shareViaWhatsApp(campaign);
+                    setIsDialogOpen(true);
+                  }}
+                />
               </div>
             )}
           </div>
