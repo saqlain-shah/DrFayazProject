@@ -44,40 +44,14 @@ function Campaigns() {
   };
 
   const shareViaWhatsApp = async (campaign) => {
-    const { title, description, link, message, image } = campaign;
-    let whatsappMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
-    // Append image if available
-    if (image) {
-      whatsappMessage += `\nImage: ${image}`;
-    }
-  
-    setMessage(whatsappMessage);
-  
-    try {
-      const token = localStorage.getItem('token');
-      const [patientsResponse, webResponse] = await Promise.all([
-        axios.get('https://server-yvzt.onrender.com/api/patients/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get('https://server-yvzt.onrender.com/api/web/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
-  
-      const combinedPatients = [
-        ...patientsResponse.data.map(patient => ({
-          name: patient.fullName,
-          phoneNumber: patient.emergencyContact
-        })),
-        ...webResponse.data.map(patient => ({
-          name: patient.patientInfo.name,
-          phoneNumber: patient.patientInfo.emergencyContact
-        }))
-      ];
-  
-      combinedPatients.forEach((patient) => {
-        if (!contacts.some(contact => contact.phoneNumber === patient.phoneNumber)) {
-          setContacts(prevContacts => [...prevContacts, { ...patient }]);
+    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => {
+      res.data.forEach((patient) => {
+        if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
+          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
         }
       });
   
@@ -88,38 +62,12 @@ function Campaigns() {
   };
   
   const shareViaEmail = async (campaign) => {
-    const { title, description, link, message, image } = campaign;
-    let emailMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
-    // Append image if available
-    if (image) {
-      emailMessage += `\nImage: ${image}`;
-    }
-  
-    setMessage(emailMessage);
-  
-    try {
-      const token = localStorage.getItem('token');
-      const [patientsResponse, webResponse] = await Promise.all([
-        axios.get('https://server-yvzt.onrender.com/api/patients/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get('https://server-yvzt.onrender.com/api/web/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
-  
-      const combinedPatients = [
-        ...patientsResponse.data.map(patient => ({
-          name: patient.fullName,
-          email: patient.email
-        })),
-        ...webResponse.data.map(patient => ({
-          name: patient.patientInfo.name,
-          email: patient.patientInfo.email
-        }))
-      ];
-  
-      combinedPatients.forEach((patient) => {
+    setMessage(`Title: ${campaign.title}\nSend To: ${campaign.sendTo}\nMessage: ${campaign.action.message}`)
+    const token = localStorage.getItem('token');
+    await axios.get('https://server-yvzt.onrender.com/api/patients/', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then((res) => {
+      res.data.forEach((patient) => {
         if (!contacts.some(contact => contact.email === patient.email)) {
           setContacts(prevContacts => [...prevContacts, { ...patient }]);
         }

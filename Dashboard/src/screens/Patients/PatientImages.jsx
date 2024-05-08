@@ -4,7 +4,26 @@ import { Image, Button } from 'antd';
 
 function PatientImages({ medicalRecords, webPatientAttachments, token }) {
   useEffect(() => {
-    if (!medicalRecords) return;
+    const fetchImages = async () => {
+      try {
+        medicalRecords && medicalRecords.data && medicalRecords.data.forEach(record => {
+          record.attachments && record.attachments.forEach(attachment => {
+            const imageUrl = `https://server-yvzt.onrender.com/${attachment.filename}`;
+            axios.get(imageUrl)
+              .then(response => {
+                console.log('Image loaded successfully:', response);
+              })
+              .catch(error => {
+                console.error('Error fetching image:', error);
+              });
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+
+    fetchImages();
   }, [medicalRecords]);
 
   return (
