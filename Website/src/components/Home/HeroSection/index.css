@@ -51,20 +51,15 @@
   }
 }
 
-@media (max-width: 300px) {
+@media (max-width: 992px) {
   #hero {
     margin-bottom: 0;
     height: 100vh;
-    background: url("../../../images/img/doctors-bg.jpg") center center; /* Center the background image */
-    background-size: contain; /* Ensure the entire image is visible */
-    background-size: contain; /* Adjust background size for small screens */
-    background-position: center; /* Center the background image */
+    background-position: center;
   }
 
   #hero .container {
     padding-bottom: 63px;
-    margin: 0 auto; /* Center the container */
-    max-width: 90%; /* Adjust max width for better display */
   }
 
   #hero h1 {
@@ -79,11 +74,34 @@
   }
 }
 
-
-
-
 @media (max-height: 600px) {
   #hero {
     height: 110vh;
+  }
+}
+
+/* Additional Styles for Full Responsiveness */
+@media (max-width: 480px) {
+  #hero {
+    background: url("../../../images/img/hero-bg1.jpg") top center;
+    background-size: cover;
+    margin-right: 20px; /* Add margin to the right */
+  }
+
+  #hero h1 {
+    font-size: 24px;
+    line-height: 32px;
+  }
+
+  #hero h2 {
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 20px;
+  }
+
+  #hero .btn-get-started {
+    font-size: 12px;
+    padding: 10px 25px;
+    margin-top: 20px;
   }
 }

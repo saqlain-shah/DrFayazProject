@@ -3,6 +3,7 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 import { useForm } from "react-hook-form";
 import Spinner from 'react-bootstrap/Spinner';
 import { useNavigate } from 'react-router-dom';
+import log from '../../images/doc/dr.png';
 import { message } from 'antd';
 import axios from 'axios';
 
@@ -15,7 +16,7 @@ const SignIn = ({ handleResponse }) => {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:8800/api/userauth/login', data);
+            const response = await axios.post('https://server-yvzt.onrender.com/api/userauth/login', data);
             const { token, _id } = response.data; // Assuming token and _id are returned from the API
             if (token && _id) {
                 localStorage.setItem('token', token); // Store token in local storage
@@ -36,6 +37,7 @@ const SignIn = ({ handleResponse }) => {
 
     return (
         <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
+             <img src={`${log}`} alt=""    style={{ width: '30%', height: '30%', objectFit: 'cover' }}/>
             <h2 className="title">Sign in</h2>
             <div className="input-field">
                 <span className="fIcon"><FaEnvelope /></span>

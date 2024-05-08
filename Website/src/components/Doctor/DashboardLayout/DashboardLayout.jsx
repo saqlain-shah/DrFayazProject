@@ -1,6 +1,7 @@
 import React from 'react'
 import DashboardSidebar from '../../UI/DashboardSidebar';
 import Header from '../../Shared/Header/Header';
+import Footer from "../../Shared/Footer/Footer";
 const DashboardLayout = ({ children }) => {
 	return (
 		<>
@@ -15,6 +16,7 @@ const DashboardLayout = ({ children }) => {
 					</div>
 				</div>
 			</div>
+			<Footer />
 		</>
 	)
 }

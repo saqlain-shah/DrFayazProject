@@ -2,7 +2,7 @@
 export const fetchTotalPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/patients/total-count', {
+        const response = await fetch('https://server-yvzt.onrender.com/api/patients/total-count', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -26,7 +26,7 @@ export const fetchTotalPatientCount = async () => {
 export const fetchwebsitePatient = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/web/', {
+        const response = await fetch('https://server-yvzt.onrender.com /api/web/', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -46,7 +46,7 @@ export const fetchwebsitePatient = async () => {
 export const fetchRecentPatients = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/patients/recent', {
+        const response = await fetch('https://server-yvzt.onrender.com /api/patients/recent', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -63,7 +63,7 @@ export const fetchRecentPatients = async () => {
 export const fetchWebPatientTodayAppointments = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8800/api/web/today-appointments', {
+        const response = await fetch('https://server-yvzt.onrender.com /api/web/today-appointments', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -83,7 +83,7 @@ export const fetchTotalWebPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
         console.log('Fetching total web patient count...');
-        const response = await fetch('http://localhost:8800/api/web/total-count', {
+        const response = await fetch('https://server-yvzt.onrender.com /api/web/total-count', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -93,12 +93,49 @@ export const fetchTotalWebPatientCount = async () => {
         }
         const data = await response.json();
         console.log('Total web patient count data:', data);
-        return data;
+        const totalCount = data.totalCount;
+        const percentage = data.percentage;
+        console.log('Total Count:', totalCount);
+        console.log('Percentage:', percentage);
+        return { totalCount, percentage };
     } catch (error) {
         console.error('Error fetching total web patient count:', error);
         throw new Error('Error fetching total web patient count:', error);
     }
 };
+
+
+
+export const fetchTotalEarnings = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('https://server-yvzt.onrender.com /api/web/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch web patients');
+        }
+        const data = await response.json();
+        // Calculate total earnings by summing up the prices of all services
+        const totalEarnings = data.reduce((total, patient) => {
+            return total + parseFloat(patient.selectedService.price);
+        }, 0);
+
+        // Assuming totalEarningsTarget is a fixed value
+        const totalEarningsTarget = 10000; // Update this with your target value
+
+        // Calculate the percentage
+        const percent = (totalEarnings / totalEarningsTarget) * 100;
+
+        return { totalEarnings, percent };
+    } catch (error) {
+        throw new Error('Error fetching total earnings:', error);
+    }
+};
+
+
 
 
 

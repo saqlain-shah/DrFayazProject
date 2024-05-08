@@ -27,7 +27,7 @@ const clientSchema = new mongoose.Schema({
 //   }
 // });
 
-
+// Hash password before saving to the database
 clientSchema.pre('save', async function (next) {
   try {
     if (!this.isModified('password')) return next();

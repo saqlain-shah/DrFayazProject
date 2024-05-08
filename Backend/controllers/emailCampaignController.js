@@ -6,20 +6,20 @@ import EmailCampaign from '../models/EmailCampaign.js';
 export const createEmailCampaign = async (req, res) => {
     try {
         // Extract form fields and uploaded image from the request
-        const { title, subject, header, subHeader, message } = req.body;
+        const { title, description, link, message } = req.body;
         const image = req.file; // Access the uploaded image
 
         // Check if required fields are provided
-        if (!title || !subject || !message) {
-            return res.status(400).json({ message: 'Title, subject, and message are required fields.' });
+        if (!title || !description || !message) {
+            return res.status(400).json({ message: 'Title, description, and message are required fields.' });
         }
 
         // Create a new email campaign with form fields and image
         const newEmailCampaign = new EmailCampaign({
             title,
-            subject,
-            header,
-            subHeader,
+            description,
+            
+            link,
             message,
             image: image ? image.path : null // Store the image path in the database
         });

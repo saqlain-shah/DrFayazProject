@@ -5,7 +5,7 @@ const SocialSignUp = () => {
     const handleGoogleSignIn = () => {
         try {
             // Redirect the user to Google OAuth authentication
-            window.location.href = 'http://localhost:8800/api/auth/google';
+            window.location.href = 'https://server-yvzt.onrender.com /api/auth/google';
         } catch (error) {
             console.error('Failed to initiate Google sign-in:', error);
             // Handle error

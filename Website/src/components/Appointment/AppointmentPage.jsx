@@ -2,27 +2,21 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { LoadingOutlined } from '@ant-design/icons';
 // import moment from "moment";
 import axios from "axios";
-import { Link, json, useParams } from "react-router-dom"; // Import useParams
-// import axiosBaseQuery from "./axiosBaseQuery";
 import { Button, Steps, message, Modal } from "antd";
-import { useNavigate } from "react-router-dom";
-import Footer from "../Shared/Footer/Footer";
+import { useNavigate, useParams } from "react-router-dom";
+
 import Header from "../Shared/Header/Header";
 import SelectAppointment from "./SelectApppointment";
-import PersonalInformation from "../Booking/PersonalInformation"; // Import PersonalInformation component
-//import CheckoutPage from "../Booking/BookingCheckout/CheckoutPage";
-//import useAuthCheck from "../../redux/hooks/useAuthCheck";
+import PersonalInformation from "../Booking/PersonalInformation";
 import { useCreateAppointmentByUnauthenticateUserMutation } from "../../redux/api/appointmentApi";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../../redux/feature/invoiceSlice";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Define the initial form values
 const initialValue = {
-  // paymentMethod: 'paypal',
-  // paymentType: 'creditCard',
   name: "",
   email: "",
   attachments: [],
@@ -35,7 +29,6 @@ const initialValue = {
 const AppointmentPage = () => {
   const dispatch = useDispatch();
   const [userId, setUserId] = useState(null);
-  // const { data, role } = useAuthCheck();
   const [current, setCurrent] = useState(0);
   const params = useParams();
   const [selectedStartDate, setSelectedStartDate] = useState("");
@@ -45,12 +38,12 @@ const AppointmentPage = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [appointmentSlots, setAppointmentSlots] = useState([]);
-  const [serviceDetails, setServiceDetails] = useState([]); // State to store service details
+  const [serviceDetails, setServiceDetails] = useState([]);
   const [selectedService, setSelectedService] = useState({
     serviceName: "",
     price: 0,
-  }); // State to store service details
-  const [totalAmount, setTotalAmount] = useState(0); // State to store total amount
+  });
+  const [totalAmount, setTotalAmount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -64,9 +57,11 @@ const AppointmentPage = () => {
   const handleChange = (e) => {
     setSelectValue({ ...selectValue, [e.target.name]: e.target.value });
   };
+
   const handleFileChange = (files) => {
     setSelectValue({ ...selectValue, attachments: files });
   };
+
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
   const handleSelectAppointment = (slots, patientId, profileSettingId) => {
@@ -75,23 +70,18 @@ const AppointmentPage = () => {
       console.error("No appointment slots available");
       return;
     }
-    // const selectedSlotId = slots._id;
     setSelectValue({ ...selectValue, slotId: slots._id });
-    // const selectedSlot = slots.find(slot => slot._id === selectedSlotId);
     if (slots) {
       setSelectedStartDate(slots.startDateTime);
-      setSelectedEndDate(slots.endDateTime); // Update SelectedEndDate with the endDateTime of the selected slot
+      setSelectedEndDate(slots.endDateTime);
     }
-
-    console.log("Selected Slot:", slots); // Log selected slot
-    // Here you can fetch the profile setting ID using the profileSettingId parameter
-    setSelectedSlot(slots); // Set the selected slot
+    console.log("Selected Slot:", slots);
+    setSelectedSlot(slots);
+    fetchData(); // Here the fetchData is called, so the clientId is passed here
   };
 
-  // Before fetching user data
-  console.log("Fetching user data...");
 
-  const fetchData = async (params) => {
+  const fetchData = async () => {
     const token = localStorage.getItem("token");
     const config = {
       headers: {
@@ -99,33 +89,31 @@ const AppointmentPage = () => {
       },
     };
 
+    console.log("clientId:", params.clientId); // Log clientId here
+
     try {
       const response = await axios.get(
-        `http://localhost:8800/api/userauth/${params.clientId}`,
+        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
         console.log("Response:", response);
-        // Log the entire response
-        setUserId(response.data._id); // Update state with the fetched user ID
+        setUserId(response.data._id);
         setSelectValue(response.data);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-    // Directly move to the next step/page
-    next(); // This will move to the next step/page
+    next();
   };
 
-  // useEffect(() => {
-  //   // fetchData(params);
-  // }, []);
+
 
   const next = (e) => {
     e.preventDefault();
     setCurrent(current + 1);
     if (current === 0) {
-      fetchData(params);
+      fetchData();
     }
     console.log("selectedService", selectedService);
     console.log("selected values", selectValue)
@@ -150,7 +138,7 @@ const AppointmentPage = () => {
     } = selectValue;
     const isInputEmpty = !name || !reasonForVisit;
     setIsDisable(isInputEmpty);
-  }, [selectValue, isCheck, selectedEndDate]); // Include selectedEndDate in the dependency array
+  }, [selectValue, isCheck, selectedEndDate]);
 
   const makePayment = async () => {
     setLoading(true);
@@ -159,7 +147,7 @@ const AppointmentPage = () => {
         "pk_live_51OtqzOLau0CG7PIQDrIbt4tfqWZqrbZAsVMtebsCrkfGUcrV2n4fvojNtisvZUznjCc8Igj5iVq4xuCfvSuOJvBO00avLXRVpz"
       );
       const body = {
-        products: [{ ...selectedService }], // Assuming selectedService contains name and price properties
+        products: [{ ...selectedService }],
       };
       const token = localStorage.getItem("token");
       const headers = {
@@ -167,7 +155,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "http://localhost:8800/api/stripe/checkout",
+        "https://server-yvzt.onrender.com/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -181,11 +169,9 @@ const AppointmentPage = () => {
 
       if (result.error) {
         console.error("Error redirecting to checkout:", result.error);
-        // Handle error, e.g., show an error message to the user
       }
     } catch (error) {
       console.error("Error making payment:", error);
-      // Handle error, e.g., show an error message to the user
     }
     setLoading(false);
   };
@@ -202,7 +188,6 @@ const AppointmentPage = () => {
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
 
-  // Fetch service details from the backend API
   const fetchServiceDetails = async () => {
     const token = localStorage.getItem("token");
     const config = {
@@ -212,12 +197,10 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:8800/api/services",
+        "https://server-yvzt.onrender.com/api/services",
         config
       );
       setServiceDetails(response.data);
-      console.log("serviceDetails", response.data);
-      console.log("serviceDetails", serviceDetails);
     } catch (error) {
       console.error("Error fetching service details:", error);
     }
@@ -235,18 +218,16 @@ const AppointmentPage = () => {
     }
   }, [serviceDetails]);
 
-
-
-
   const handleConfirmAppointment = async () => {
+    setLoading(true);
     console.log("Confirming appointment...");
     setSelectValue({ ...selectValue, id: userId });
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
 
-    // Combine appointment data
     const appointmentData = new FormData();
+    appointmentData.append('id', userId);
     appointmentData.append('name', name);
     appointmentData.append('email', email);
     appointmentData.append('emergencyContact', emergencyContact);
@@ -256,7 +237,7 @@ const AppointmentPage = () => {
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
     attachments.map((attachment) => {
-        appointmentData.append("files", attachment);
+      appointmentData.append("files", attachment);
     })
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
@@ -266,26 +247,41 @@ const AppointmentPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-        // Make a POST request to store the appointment data
-        const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        console.log("Appointment created successfully:", response);
-        // Display a success toast message after appointment creation
-        toast.success("Appointment scheduled successfully!");
-        // Navigate to the success page or do any further actions
-        setShowModal(true); // Show the modal after confirming the appointment
-        setShowAppointmentDetails(true);
+      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-        // Delete the selected slot after successful appointment creation
-        await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`);
+      console.log("Appointment created successfully:", response.data);
+
+      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("Email confirmation sent successfully:", emailResponse.data);
+
+      toast.success("Appointment scheduled successfully!");
+
+      // Now, make a request to delete the selected slot
+   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
+    console.log("selected slot delete successfully:", appdelete.data);
+
+      setShowModal(true);
+      setShowAppointmentDetails(true);
+
     } catch (error) {
-        console.error("Error creating appointment:", error);
-        // Handle error, e.g., show an error message to the user
+      console.error("Error creating appointment:", error);
+    } finally {
+      setLoading(false); // Set loading state to false once the request is completed
     }
-};
+  };
 
 
 
@@ -301,10 +297,6 @@ const AppointmentPage = () => {
       message.error(error?.data?.message);
     }
   }, [isSuccess, isError, isLoading, appointmentData]);
-
-  // console.log("data:", data); // Log the value of data
-  // const patientId = data && data.id; // Check if data exists before accessing its id property
-  // console.log("patientId:", patientId);
 
   const steps = [
     {
@@ -324,8 +316,8 @@ const AppointmentPage = () => {
           handleChange={handleChange}
           handleFileChange={handleFileChange}
           selectValue={selectValue}
-          handleConfirmAppointment={handleConfirmAppointment} // Pass the function here
-          selectedSlot={selectedSlot} // Pass the selected slot information
+          handleConfirmAppointment={handleConfirmAppointment}
+          selectedSlot={selectedSlot}
         />
       ),
     },
@@ -405,10 +397,14 @@ const AppointmentPage = () => {
                   type="primary"
                   size="large"
                   style={{ marginRight: "8px" }}
-                  disabled={isConfirmDisable}
+                  disabled={isConfirmDisable || loading}
                   onClick={() => handleConfirmAppointment()}
                 >
-                  Confirm
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Confirm</span>
+                  )}
                 </Button>
                 {/* Previous button */}
                 <Button size="large" onClick={() => prev()}>
@@ -421,14 +417,27 @@ const AppointmentPage = () => {
       </div>
       <Modal
         title="Appointment Details"
-        open={showModal} // Control modal visibility
-        onCancel={() => setShowModal(false)} // Handle close event
+        open={showModal}
+        onCancel={() => setShowModal(false)}
         footer={[
           <div>
-            {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
+            <Button
+              type="primary"
+              size="large"
+              style={{ marginRight: "8px" }}
+              disabled={isConfirmDisable || loading}
+              onClick={() => makePayment()}
+            >
+              {loading ? (
+                <LoadingOutlined style={{ fontSize: '24px' }} />
+              ) : (
+                <span>checkout</span>
+              )}
+            </Button>
+            {/* {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
             <Button key="back" onClick={makePayment} disabled={loading}>
               {loading ? 'Processing...' : 'Checkout'}
-            </Button>
+            </Button> */}
           </div>
         ]}
       >
@@ -438,11 +447,10 @@ const AppointmentPage = () => {
           <b>Service Charge:</b> {" "}
           {selectedService ? selectedService.price : "Loading..."} USD
         </p>
-        {/* <p>Service Tax: 5 USD</p> */}
         <p><b>Total Amount:</b> {selectedService.price} USD</p>
       </Modal>
 
-      <Footer />
+
     </>
   );
 };

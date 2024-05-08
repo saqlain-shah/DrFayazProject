@@ -19,6 +19,7 @@ import {
   RiUserHeartLine,
   RiUserLine,
 } from "react-icons/ri";
+import { FaUser } from 'react-icons/fa'; 
 import {
   MdListAlt,
   MdOutlineAttachMoney,
@@ -68,7 +69,7 @@ export const MenuDatas = [
   },
 
   {
-    title: "Campaigns",
+    title: "Library",
     path: "/campaigns",
     icon: MdOutlineCampaign,
   },
@@ -1171,6 +1172,12 @@ export const patientTab = [
     title: "Health Information",
     icon: RiHeartLine,
   },
+  {
+    id: 9,
+    title: "Patient Details",
+    icon: RiStethoscopeLine ,
+  },
+  
 ];
 
 export const doctorTab = [
@@ -1179,36 +1186,36 @@ export const doctorTab = [
     title: "Personal Information",
     icon: RiUserLine,
   },
-  {
-    id: 2,
-    title: "Patients",
-    icon: BiUserPlus,
-  },
-  {
-    id: 3,
-    title: "Appointments",
-    icon: BiCalendar,
-  },
-  {
-    id: 4,
-    title: "Payments",
-    icon: RiMoneyDollarCircleLine,
-  },
-  {
-    id: 5,
-    title: "Invoices",
-    icon: RiFileList3Line,
-  },
-  {
-    id: 6,
-    title: "Access Control",
-    icon: TbLockAccess,
-  },
-  {
-    id: 7,
-    title: "Change Password",
-    icon: RiLockPasswordLine,
-  },
+  // {
+  //   id: 2,
+  //   title: "Patients",
+  //   icon: BiUserPlus,
+  // },
+  // {
+  //   id: 3,
+  //   title: "Appointments",
+  //   icon: BiCalendar,
+  // },
+  // {
+  //   id: 4,
+  //   title: "Payments",
+  //   icon: RiMoneyDollarCircleLine,
+  // },
+  // {
+  //   id: 5,
+  //   title: "Invoices",
+  //   icon: RiFileList3Line,
+  // },
+  // {
+  //   id: 6,
+  //   title: "Access Control",
+  //   icon: TbLockAccess,
+  // },
+  // {
+  //   id: 7,
+  //   title: "Change Password",
+  //   icon: RiLockPasswordLine,
+  // },
 ];
 
 export const medicalRecodData = [

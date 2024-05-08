@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../DashboardLayout/DashboardLayout';
 import { Button, message } from 'antd';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const params = useParams(); // Get URL parameters using useParams
     const [passwordError, setPasswordError] = useState('');
+    const [userId, setUserId] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { clientId } = useParams();
+
+    useEffect(() => {
+        // Fetch user ID from localStorage
+        const userId = localStorage.getItem('clientId');
+        setUserId(userId);
+    }, []);
 
     const handleChangePassword = async () => {
         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=.*[^\w\d]).{8,}$/;
@@ -23,8 +33,10 @@ const ChangePassword = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
+        setLoading(true);
+           
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/change-password/${params.clientId}`, { oldPassword, newPassword }, config);
+            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/change-password/${clientId}`, { userId, oldPassword, newPassword }, config);
             message.success(response.data.message);
             setOldPassword('');
             setNewPassword('');
@@ -32,6 +44,9 @@ const ChangePassword = () => {
         } catch (error) {
             console.error('Error changing password:', error);
             message.error('Failed to change password');
+        }finally {
+            // Set loading back to false after the API call completes
+            setLoading(false);
         }
     };
 
@@ -54,7 +69,19 @@ const ChangePassword = () => {
                         </div>
                     </div>
                     <div className='mt-5 text-end'>
-                        <Button onClick={handleChangePassword} type="primary" size='large'>Save Changes</Button>
+                    <Button
+                  type="primary"
+                  size="large"
+                  style={{ marginRight: "8px" }}
+                  onClick={() => handleChangePassword()}
+                >
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Save</span>
+                  )}
+                </Button>
+                        {/* <Button onClick={handleChangePassword} type="primary" size='large'>Save Changes</Button> */}
                     </div>
                 </form>
             </div>

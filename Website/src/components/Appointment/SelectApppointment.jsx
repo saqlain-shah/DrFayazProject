@@ -10,21 +10,39 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         const fetchSchedule = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8800/api/schedule', {
+                const response = await axios.get('https://server-yvzt.onrender.com /api/schedule', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-
+    
                 const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(slot.startDateTime));
                 setAppointmentSlots(filteredSlots);
+    
+                // Automatically delete expired slots after the timeout
+                setTimeout(() => {
+                    const expiredSlots = appointmentSlots.filter(slot => moment(slot.endDateTime).isBefore(moment()));
+                    expiredSlots.forEach(async (slot) => {
+                        try {
+                            await axios.delete(`https://server-yvzt.onrender.com /api/schedule/${slot._id}`, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
+                        } catch (error) {
+                            console.error('Error deleting expired slot:', error);
+                        }
+                    });
+                }); // Removing comment here
+    
             } catch (error) {
                 console.error('Error fetching schedule:', error);
             }
         };
-
+    
         fetchSchedule();
-    }, []);
+    }, [appointmentSlots]);
+    
 
     const handleSlotSelection = (slotId) => {
         const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);

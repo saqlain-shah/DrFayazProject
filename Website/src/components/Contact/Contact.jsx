@@ -4,6 +4,7 @@ import { FaLocationArrow, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import axios from 'axios';
 import Header from "../Shared/Header/Header";
 import SubHeader from "../Shared/SubHeader";
+import Footer from "../Shared/Footer/Footer";
 
 const Contact = () => {
   const { handleSubmit, register, formState: { errors } } = useForm(); // Update destructuring to include formState
@@ -19,7 +20,7 @@ const Contact = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.post("http://localhost:8800/api/userauth/send-email", {
+      const response = await axios.post("https://server-yvzt.onrender.com/api/userauth/send-email", {
         email: data.email,
         subject: "New Contact Form Submission",
         body: `
@@ -160,8 +161,8 @@ const Contact = () => {
                       <textarea
                         {...register("message", { required: "Message is required" })}
                         name="message"
-                        cols="30"
-                        rows="10"
+                        cols="10"
+                        rows="5"
                         placeholder="Enter your message"
                         className="form-control mb-3"
                       />
@@ -189,6 +190,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
+      <Footer/>
     </>
   );
 };

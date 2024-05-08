@@ -7,8 +7,9 @@ import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 import { FaBars } from 'react-icons/fa';
 
-const Header = ({ clientId }) => {
+const Header = () => {
     const params = useParams();
+    const clientId = params.clientId;
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [show, setShow] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false); // State to control the dropdown
@@ -18,7 +19,7 @@ const Header = ({ clientId }) => {
     useEffect(() => {
         const authToken = localStorage.getItem('token');
         setIsLoggedIn(!!authToken); // Convert authToken to a boolean
-    }, []);
+    }, [clientId]);
 
     const handleMakeAppointment = () => {
         if (!isLoggedIn) {
@@ -38,7 +39,7 @@ const Header = ({ clientId }) => {
             <header id="header" className={`fixed-top ${!show && "stickyHeader"}`}>
                 <div className="container d-flex align-items-center">
                     <Link to={'/'} className="logo me-auto">
-                        <img src="/logo.jpg" alt="" className="img-fluid w-42 h-25" /> 
+                        <img src="/logo.jpg" alt="" className="img-fluid w-42 h-25" />
                         {/* change the logo */}
                     </Link>
 
@@ -61,16 +62,10 @@ const Header = ({ clientId }) => {
                         <span className="d-none d-md-inline">Make an</span> Appointment
                     </button>
 
+               
 
-                        {/* Right side button for small screens */}
-            <button className="appointment-btn  d-lg-none "  style={{ float: 'right',marginRight:'50%' }} 
-                    onClick={handleMakeAppointment}>
-                    <span className="d-none d-md-inline">Make an</span> Appointment
-                    </button>
-                  
-
-                       {/* Dropdown Menu for Small Screens */}
-                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%'}}>
+                    {/* Dropdown Menu for Small Screens */}
+                    <div className="dropdown d-lg-none ml-auto " style={{ marginRight: '100%' }}>
                         <div
                             className="toggle-menu"
                             onClick={() => setMenuOpen(!menuOpen)}
@@ -82,15 +77,10 @@ const Header = ({ clientId }) => {
                             <NavLink to={'/'} className="dropdown-item">Home</NavLink>
                             <NavLink to={'/contact'} className="dropdown-item">Contact</NavLink>
                             {!isLoggedIn && <Link to={'/login'} className="dropdown-item">Login</Link>}
-                            <button className="dropdown-item" onClick={handleMakeAppointment}>Appointment</button>
+                            {/* <button className="dropdown-item" onClick={handleMakeAppointment}>Appointment</button> */}
                         </div>
                     </div>
 
-            
-                    
-
-                   
-                   
                 </div>
             </header>
         </>

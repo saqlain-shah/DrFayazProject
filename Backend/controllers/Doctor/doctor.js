@@ -4,7 +4,7 @@ import Doctor from "../../models/doctor/doctor.js";
 export const createDoctor = async (req, res) => {
     try {
         const { fullName, email, phone, address } = req.body;
-        if (!fullName || !email || !phone || !address || !req.file) {
+        if ( !email  || !req.file) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 

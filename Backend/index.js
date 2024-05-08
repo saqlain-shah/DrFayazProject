@@ -28,7 +28,7 @@ import cors from 'cors';
 import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
-
+import EmailSent from './routes/ConfirmEmail.js'
 
 
 
@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 
 
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5174', 'http://localhost:5173',],
+    origin: ['http://localhost:5174', 'http://localhost:5173', ],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
@@ -102,8 +102,10 @@ app.use('/api/otps', otpDashRoutes);
 
 app.use('/api/otp', otpRoutes);
 app.use('/api/otps', otpDashRoutes);
+
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
+app.use('/api/',EmailSent)
 
 
 
