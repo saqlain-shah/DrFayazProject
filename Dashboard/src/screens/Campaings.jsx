@@ -43,7 +43,6 @@ function Campaigns() {
     setData(campaign);
   };
 
-
   const shareViaWhatsApp = async (campaign) => {
     const { title, description, link, message, image } = campaign;
     let whatsappMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
@@ -53,17 +52,39 @@ function Campaigns() {
     }
   
     setMessage(whatsappMessage);
-    const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
-        if (!contacts.some(contact => contact.phoneNumber === patient.emergencyContact)) {
-          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, phoneNumber: patient.emergencyContact }]);
+  
+    try {
+      const token = localStorage.getItem('token');
+      const [patientsResponse, webResponse] = await Promise.all([
+        axios.get('http://localhost:8800/api/patients/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get('http://localhost:8800/api/web/', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+  
+      const combinedPatients = [
+        ...patientsResponse.data.map(patient => ({
+          name: patient.fullName,
+          phoneNumber: patient.emergencyContact
+        })),
+        ...webResponse.data.map(patient => ({
+          name: patient.patientInfo.name,
+          phoneNumber: patient.patientInfo.emergencyContact
+        }))
+      ];
+  
+      combinedPatients.forEach((patient) => {
+        if (!contacts.some(contact => contact.phoneNumber === patient.phoneNumber)) {
+          setContacts(prevContacts => [...prevContacts, { ...patient }]);
         }
       });
+  
       setShowShareOptions(true);
-    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
   
   const shareViaEmail = async (campaign) => {
@@ -75,22 +96,44 @@ function Campaigns() {
     }
   
     setMessage(emailMessage);
-    const token = localStorage.getItem('token');
-    await axios.get('http://localhost:8800/api/patients/', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then((res) => {
-      res.data.forEach((patient) => {
+  
+    try {
+      const token = localStorage.getItem('token');
+      const [patientsResponse, webResponse] = await Promise.all([
+        axios.get('http://localhost:8800/api/patients/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get('http://localhost:8800/api/web/', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+  
+      const combinedPatients = [
+        ...patientsResponse.data.map(patient => ({
+          name: patient.fullName,
+          email: patient.email
+        })),
+        ...webResponse.data.map(patient => ({
+          name: patient.patientInfo.name,
+          email: patient.patientInfo.email
+        }))
+      ];
+  
+      combinedPatients.forEach((patient) => {
         if (!contacts.some(contact => contact.email === patient.email)) {
-          setContacts(prevContacts => [...prevContacts, { name: patient.fullName, email: patient.email }]);
+          setContacts(prevContacts => [...prevContacts, { ...patient }]);
         }
       });
+  
       setShowShareOptions(false);
-    });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
   
   
   
-
+  
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);
   };
@@ -149,14 +192,13 @@ function Campaigns() {
       <div className="flex-btn flex-wrap gap-4 items-center">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
-        <Button
-  label="Add New"
-  Icon={BiPlus}
-  onClick={() => {
-    setIsOpen(true);
-  }}
-/>
-
+          <Button
+            label="Add New"
+            Icon={BiPlus}
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
         </div>
       </div>
 
@@ -204,8 +246,8 @@ function Campaigns() {
             </div>
             {showShareOptions && (
               <div className="mt-4 flex gap-4">
-               <Button label="Share via Email" onClick={() => { shareViaEmail(campaign); setIsDialogOpen(true); }} />
-<Button label="Share via WhatsApp" onClick={() => { shareViaWhatsApp(campaign); setIsDialogOpen(true); }} />
+                <Button label="Share via Email" onClick={() => { shareViaEmail(campaign); setIsDialogOpen(true); }} />
+                <Button label="Share via WhatsApp" onClick={() => { shareViaWhatsApp(campaign); setIsDialogOpen(true); }} />
               </div>
             )}
           </div>
