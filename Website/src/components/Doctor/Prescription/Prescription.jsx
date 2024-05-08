@@ -28,7 +28,7 @@ const Prescription = () => {
         },
       };
       const response = await axios.get(
-        `http://localhost:8800/api/web/${id}`,
+        `http://localhost:8800/api/web/web/${id}`,
         config
       );
       console.log("response", response);
