@@ -247,18 +247,34 @@ const AppointmentPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-        // Make a POST request to store the appointment data
-        const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        console.log("Appointment created successfully:", response);
-        // Display a success toast message after appointment creation
-        toast.success("Appointment scheduled successfully!");
-        // Navigate to the success page or do any further actions
-        setShowModal(true); // Show the modal after confirming the appointment
-        setShowAppointmentDetails(true);
+      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("Appointment created successfully:", response.data);
+
+      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Email confirmation sent successfully:", emailResponse.data);
+
+      toast.success("Appointment scheduled successfully!");
+
+      // Now, make a request to delete the selected slot
+   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
+    console.log("selected slot delete successfully:", appdelete.data);
+
+      setShowModal(true);
+      setShowAppointmentDetails(true);
 
         // Delete the selected slot after successful appointment creation
         await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
