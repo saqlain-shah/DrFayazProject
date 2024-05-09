@@ -36,7 +36,7 @@ const ChangePassword = () => {
         setLoading(true);
            
         try {
-            const response = await axios.put(`http://localhost:8800/api/userauth/change-password/${clientId}`, { userId, oldPassword, newPassword }, config);
+            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/change-password/${clientId}`, { userId, oldPassword, newPassword }, config);
             message.success(response.data.message);
             setOldPassword('');
             setNewPassword('');

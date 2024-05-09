@@ -1,5 +1,5 @@
 import React from 'react';
-// import Blog from '../Blog/Blog';
+//import Blog from '../Blog/Blog';
 import Footer from '../../Shared/Footer/Footer';
 // import Testimonial from '../Testimonial/Testimonial';
 //import ClinicAndSpecialities from '../ClinicAndSpecialities/ClinicAndSpecialities';

@@ -29,11 +29,11 @@ function AppRoutes() {
       <Route path="/success" element={<Success />} />
       <Route path="/cancel" element={<Cancel />} />
       <Route path="/appointment" element={<AppointmentPage />} />
-      <Route path="/track-appointment" element={<TrackAppointment />} />
-      <Route path="/doctors" element={<SearchDoctor />} />
+      {/* <Route path="/track-appointment" element={<TrackAppointment />} /> */}
+      {/* <Route path="/doctors" element={<SearchDoctor />} /> */}
       <Route path="/dashboard/:clientId" element={<Dashboard />} />
       <Route path="/dashboard/prescription/:id" element={<Prescription />} />
-      <Route path="/dashboard/prescription/:id" element={<PrescriptionView />} />
+     {/* <Route path="/dashboard/prescription/:id" element={<PrescriptionView />} /> */}
       <Route path="/dashboard/profile-setting/:clientId" element={<ProfileSetting />} />
       <Route path="/dashboard/change-password/:clientId" element={<ChangePassword />} />
       <Route path="*" element={<NotFound />} />

@@ -91,7 +91,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8800/api/userauth/${params.clientId}`,
+        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -153,7 +153,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "http://localhost:8800/api/stripe/checkout",
+        "https://server-yvzt.onrender.com/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -195,7 +195,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "http://localhost:8800/api/services",
+        "https://server-yvzt.onrender.com/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -225,6 +225,7 @@ const AppointmentPage = () => {
     const { serviceName, price } = selectedService
 
     const appointmentData = new FormData();
+    appointmentData.append('id', userId);
     appointmentData.append('name', name);
     appointmentData.append('email', email);
     appointmentData.append('emergencyContact', emergencyContact);
@@ -244,7 +245,7 @@ const AppointmentPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
+      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -252,9 +253,9 @@ const AppointmentPage = () => {
 
       console.log("Appointment created successfully:", response.data);
 
-      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -262,16 +263,17 @@ const AppointmentPage = () => {
 
       toast.success("Appointment scheduled successfully!");
 
-     // Remove the selected slot from appointmentSlots state
-    console.log("Previous appointmentSlots:", appointmentSlots);
-    const updatedSlots = appointmentSlots.filter(slot => slot._id !== selectedSlot._id);
-    console.log("Updated appointmentSlots:", updatedSlots);
-    setAppointmentSlots(updatedSlots);
+      // Now, make a request to delete the selected slot
+   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+    });
+    console.log("selected slot delete successfully:", appdelete.data);
 
       setShowModal(true);
       setShowAppointmentDetails(true);
 
-      console.log("clientId after confirm appointment:", params.clientId); // Log clientId after confirming the appointment
     } catch (error) {
       console.error("Error creating appointment:", error);
     } finally {

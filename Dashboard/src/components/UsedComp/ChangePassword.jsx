@@ -40,7 +40,7 @@ function ChangePassword() {
       console.log('Token:', token);
 
       const response = await axios.put(
-        'http://localhost:8800/api/auth/change-password',
+        'https://server-yvzt.onrender.com/api/auth/change-password',
         {
           userId: user.id,
           oldPassword,

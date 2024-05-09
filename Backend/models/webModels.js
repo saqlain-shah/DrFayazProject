@@ -4,6 +4,7 @@ import mongoose, { Schema } from 'mongoose';
 const WebPatientSchema = new mongoose.Schema({
   // Define your Web schema here
   patientInfo: {
+    id: { type: String, required: true },
     name: { type: String, required: true },
     gender: { type: String, required: true },
     bloodGroup: { type: String, required: true },
