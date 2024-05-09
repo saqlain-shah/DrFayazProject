@@ -6,10 +6,12 @@ import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 //import useAuthCheck from '../../../redux/hooks/useAuthCheck';
-import { message } from 'antd';
+
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg'
 import axios from 'axios';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Button, message } from 'antd';
 
 const PatientProfileSetting = () => {
     const params = useParams();
@@ -22,6 +24,7 @@ const PatientProfileSetting = () => {
     const [value, setValue] = useState(undefined);
     const [showCalendar, setShowCalendar] = useState(false);
     const buttonRef = useRef(null);
+    const [loading, setLoading] = useState(false);
     const [updatePatient, { isSuccess, isError, error, isLoading }] = useUpdatePatientMutation();
 
     const [selectedImage, setSelectedImage] = useState('');
@@ -104,6 +107,7 @@ const PatientProfileSetting = () => {
 
 
     const handleSubmit = async () => {
+        setLoading(true);
         const token = localStorage.getItem('token');
         const config = {
             headers: {
@@ -136,6 +140,9 @@ const PatientProfileSetting = () => {
         } catch (error) {
             console.error('Error updating profile:', error);
             message.error(error?.response?.data?.message || 'Failed to update profile');
+        }
+        finally {
+            setLoading(false); // Set loading back to false after the API call is completed
         }
     };
 
@@ -240,7 +247,19 @@ const PatientProfileSetting = () => {
                         </div>
                     </div>
                     <div className='text-end'>
-                        <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
+                    <Button
+                  type="primary"
+                  size="large"
+                  style={{ marginRight: "8px" }}
+                  onClick={() => handleSubmit()}
+                >
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Save</span>
+                  )}
+                </Button>
+                        {/* <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button> */}
                     </div>
                 </div>
             </div>
