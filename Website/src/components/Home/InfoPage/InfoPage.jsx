@@ -12,23 +12,12 @@ const InfoPage = () => {
             <div className="content">
               <h3>About Us</h3>
               <p>
-                <b>Dr Fayaz Sarwar</b> <br />
-                MBBS, MRCGP Int. Trained and working in UK Founder of Healthline
-                Your health, our responsibility
+                <b>Dr. Fayaz Sarwar MBBS,</b> <br />
+                 MRCGP Int. Trained and working in the UK, Founder of Healthline: Your health, our responsibility.
                 <br />
                 <b>Expertise:</b> <br />
-                I am a consultant in family health. I have
-                distinct expertise and experience in providing whole-person
-                medical care while managing the complexity, uncertainty, and
-                risk associated with continuous care. “To make it simple,  I am your family doctor
-                and will look after each member of your family from even before
-                birth till death.” <br />I strive to provide comprehensive and
-                equitable care for everyone, taking into account their
-                healthcare needs, stage of life, and background. I work in,
-                connect with, and lead multidisciplinary teams that care for
-                people and their families, respecting the context in which they
-                live, aiming to ensure all of their physical and mental health
-                needs are met.
+                I am a consultant in family health with distinct expertise and experience in providing whole-person medical care while managing the complexity, uncertainty, and risk associated with continuous care. To simplify, I am your family doctor and will look after each member of your family from before birth to death. 
+                <br />I strive to provide comprehensive and equitable care for everyone, taking into account their healthcare needs, stage of life, and background. I work in, connect with, and lead multidisciplinary teams that care for people and their families, respecting the context in which they live, aiming to ensure all of their physical and mental health needs are met.
               </p>
             
             </div>

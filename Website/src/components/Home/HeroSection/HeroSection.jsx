@@ -3,10 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './index.css';
 import { Link } from 'react-router-dom';
 
-const HeroSection = () => {
+const HeroSection = ({clientId }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const Navigate = useNavigate();
+
+    useEffect(() => {
+        const authToken = localStorage.getItem('token');
+        setIsLoggedIn(!!authToken); // Convert authToken to a boolean
+    }, []);
 
     const handleMakeAppointment = () => {
         if (!isLoggedIn) {

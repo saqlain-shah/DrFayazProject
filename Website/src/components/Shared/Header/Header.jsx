@@ -7,8 +7,9 @@ import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 import { FaBars } from 'react-icons/fa';
 
-const Header = ({ clientId }) => {
+const Header = () => {
     const params = useParams();
+    const clientId = params.clientId;
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [show, setShow] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false); // State to control the dropdown
@@ -18,7 +19,7 @@ const Header = ({ clientId }) => {
     useEffect(() => {
         const authToken = localStorage.getItem('token');
         setIsLoggedIn(!!authToken); // Convert authToken to a boolean
-    }, []);
+    }, [clientId]);
 
     const handleMakeAppointment = () => {
         if (!isLoggedIn) {

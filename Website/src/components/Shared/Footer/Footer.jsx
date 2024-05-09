@@ -58,12 +58,21 @@ export default function App() {
                     </MDBRow>
                 </MDBContainer>
             </section>
-
-            <div className='text-center p-4' style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-                © 2024 Copyright:
-                <a className='text-reset fw-bold' href='https://www.avicenahealthcare.com/'>
-                    Avicena Health Care
+            
+            <div className=' p-4' style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)',display: 'flex', justifyContent: 'space-between'}}>
+               <span>
+               © 2024 Copyright: 
+                <a className='text-reset fw-bold ' href='https://www.avicenahealthcare.com/'>
+               Avicena Health Care
                 </a>
+                </span>
+               <span>
+               Developed By :  
+                <a className='text-reset fw-bold ' style={{marginRight:"30px"}} href='https://netbots.tech/'>
+               NetBots
+                </a>
+                </span>
+               
             </div>
         </MDBFooter>
     );
