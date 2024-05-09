@@ -18,24 +18,28 @@ const Prescription = () => {
     fetchData();
   }, [id]); // Refetch data when ID changes
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            };
-            const response = await axios.get("https://server-yvzt.onrender.com/api/web/", config);
-            setData(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            // Handle error, e.g., show an error message to the user
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+      const response = await axios.get(
+        `https://server-yvzt.onrender.com/api/web/web/${id}`,
+        config
+      );
+      console.log("response", response);
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      // Handle error, e.g., show an error message to the user
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deleteHandler = async (id) => {
     message.loading("Deleting ...");

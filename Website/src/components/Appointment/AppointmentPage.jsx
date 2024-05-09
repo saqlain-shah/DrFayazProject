@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { LoadingOutlined } from '@ant-design/icons';
@@ -276,8 +274,6 @@ const AppointmentPage = () => {
       setShowModal(true);
       setShowAppointmentDetails(true);
 
-        // Delete the selected slot after successful appointment creation
-        await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`);
     } catch (error) {
       console.error("Error creating appointment:", error);
     } finally {
