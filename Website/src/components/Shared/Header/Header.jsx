@@ -29,8 +29,6 @@ const Header = () => {
         }
     };
 
-   
-
     return (
         <>
             <div className={`navbar navbar-expand-lg navbar-light ${!show && "hideTopHeader"}`} expand="lg">
