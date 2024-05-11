@@ -1,224 +1,494 @@
-import React from 'react';
-import { Image } from 'antd';
-import { useTable } from 'react-table';
-import jsPDF from 'jspdf';
+import React from "react";
+import { Image, Table, Button } from "antd";
+import dayjs from "dayjs";
+import jsPDF from "jspdf";
+import "./Detail.css";
+import html2canvas from "html2canvas";
+import ImageGallery from "react-image-gallery";
+import axios from "axios";
 
-const PatientDetails = ({ medicalRecords, profileData, webPatientData }) => {
-
-  const generatePDF = () => {
+const PatientDetails = ({
+  medicalRecords,
+  profileData,
+  webPatientData,
+  InvoiceData,
+  healthInfoData,
+}) => {
+  console.log("healthInfoData ", healthInfoData);
+  console.log("medicalRecords ", medicalRecords);
+  const generatePDF = async () => {
     const doc = new jsPDF();
-    const content = document.getElementById('patientDetails');
-    doc.html(content, {
-      callback: function (doc) {
-        doc.save('patient_details.pdf');
+    const content = document.getElementById("patientDetails");
+    const attachmentGallery = document.querySelector(".attachment-gallery"); // Add this line
+
+    // Check if content exists
+    if (!content) {
+      console.error("Content element not found");
+      return;
+    }
+
+    // Hide export button before generating PDF
+    const exportButton = document.querySelector(".export-button");
+    if (exportButton) {
+      exportButton.style.display = "none";
+    }
+
+    const attachmentImages = document.querySelectorAll(
+      ".attachment-gallery img"
+    );
+    console.log("images", attachmentImages);
+    for (let i = 0; i < attachmentImages.length; i++) {
+      const imageUrl = attachmentImages[i].src;
+      console.log("imageUrl", imageUrl);
+      try {
+        // const token = localStorage.getItem("token");
+        // const response = await axios.get(imageUrl, {
+        //   withCredentials: true,
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //     "Content-Type": "application/json",
+        //   },
+        //   crossOrigin: "anonymous"
+        // });
+        // console.log("res", response);
+        // const blob = await response.blob();
+        // doc.addImage(await blobToBase64(imageUrl), "PNG", 10, 10, 100, 100);
+        // doc.imageLoadFromUrl(imageUrl);
+        // // place this mage at given X, Y coordinates on the page
+        // doc.imagePlace(20, 40);
+        // doc.image(imageUrl, {
+        //   x: 20,
+        //   y: 40,
+        //   width: 100, // Adjust width as needed
+        //   height: 100 // Adjust height as needed
+        // });
+
+        function getDataUri(url, callback) {
+          var image = new Image();
+          image.onload = function () {
+            var canvas = document.createElement("canvas");
+            canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+            canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+
+            canvas.getContext("2d").drawImage(this, 0, 0);
+
+            // Get raw image data
+            callback(canvas.toDataURL("image/png"));
+          };
+
+          image.src = url;
+        }
+
+        // Usage:
+        getDataUri(imageUrl, function (dataUri) {
+          // Add image to PDF
+          doc.addImage(dataUri, "JPEG", 20, 40, 50, 50); // Adjust width and height as needed
+        });
+        if (i !== attachmentImages.length - 1) {
+          doc.addPage();
+        }
+      } catch (error) {
+        console.error("Error adding image:", error);
       }
+    }
+
+    // Convert HTML content to canvas
+    html2canvas(content)
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 400; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Add image to PDF
+        doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+
+        // Handle multiple pages
+        heightLeft -= pageHeight;
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        // Add attachment gallery to PDF
+        if (attachmentGallery) {
+          attachmentGallery.childNodes.forEach((child) => {
+            doc.addImage(child.src, "JPEG", 10, position + 10, 100, 100);
+            position += 110; // Adjust position for the next image
+            if (position >= pageHeight) {
+              doc.addPage();
+              position = 0;
+            }
+          });
+        }
+
+        // Save PDF
+        doc.save("patient_details.pdf");
+
+        // Restore export button after generating PDF
+        if (exportButton) {
+          exportButton.style.display = "block";
+        }
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+        // Restore export button if an error occurs
+        if (exportButton) {
+          exportButton.style.display = "block";
+        }
+      });
+  };
+
+  const blobToBase64 = (blob) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(blob);
     });
   };
 
-  const MedicalRecordsTable = ({ medicalRecords }) => {
-    const data = React.useMemo(
-      () =>
-        medicalRecords && medicalRecords.success && medicalRecords.data && medicalRecords.data.length > 0
-          ? medicalRecords.data.flatMap(record => {
-              return record.prescription && record.prescription.medicines
-                ? record.prescription.medicines.map(medicine => ({
-                    id: record._id,
-                    complaints: record.complaints.join(', '),
-                    diagnosis: record.diagnosis,
-                    treatment: record.treatment.map(item => item.name).join(', '),
-                    vitalSigns: record.vitalSigns.join(', '),
-                    prescriptionName: medicine.name,
-                    dosage: medicine.dosage,
-                    instructions: medicine.instructions,
-                    amount: medicine.amount,
-                    attachments: record.attachments
-                  }))
-                : [];
-            })
-          : [],
-      [medicalRecords]
-    );
-
-    const columns = React.useMemo(
-      () => [
-        {
-          Header: 'Complaints',
-          accessor: 'complaints',
-        },
-        {
-          Header: 'Diagnosis',
-          accessor: 'diagnosis',
-        },
-        {
-          Header: 'Treatment',
-          accessor: 'treatment',
-        },
-        {
-          Header: 'Vital Signs',
-          accessor: 'vitalSigns',
-        },
-        {
-          Header: 'Prescription Name',
-          accessor: 'prescriptionName',
-        },
-        {
-          Header: 'Dosage',
-          accessor: 'dosage',
-        },
-        {
-          Header: 'Instructions',
-          accessor: 'instructions',
-        },
-        {
-          Header: 'Amount',
-          accessor: 'amount',
-        },
-      ],
-      []
-    );
-
-    const {
-      getTableProps,
-      getTableBodyProps,
-      headerGroups,
-      rows,
-      prepareRow,
-    } = useTable({ columns, data });
-
-    return (
-      <table {...getTableProps()} className="table-auto w-full">
-        <thead>
-          {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()} className="bg-gray-200">
-              {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()} className="px-4 py-2 text-left font-semibold">
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} className="border-b border-gray-300 hover:bg-gray-100">
-                {row.cells.map(cell => {
-                  return (
-                    <td {...cell.getCellProps()} className="px-4 py-2">
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  };
+  if (
+    (!profileData || Object.keys(profileData).length === 0) &&
+    (!webPatientData || Object.keys(webPatientData).length === 0)
+  ) {
+    return <div className="text-center mt-8">No patient data available.</div>;
+  }
+ 
 
   return (
-    <div>
-      <button onClick={generatePDF} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 mb-4">
-        Generate PDF
-      </button>
-      {/* Render medical records */}
-      <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-md mb-6">
-        <h2 className="text-xl font-semibold mb-4">Medical Records</h2>
-        {medicalRecords && medicalRecords.success && medicalRecords.data && medicalRecords.data.length > 0 ? (
-          medicalRecords.data.map(record => (
-            <div key={record._id}>
-              <h3 className="text-lg font-semibold mb-2">Record ID: {record._id}</h3>
-              <p>Complaints: {record.complaints.join(', ')}</p>
-              <p>Diagnosis: {record.diagnosis}</p>
-              <p>Treatment: {record.treatment.map(item => item.name).join(', ')}</p>
-              {/* Render vital signs */}
-              <p>Vital Signs: {record.vitalSigns.join(', ')}</p>
-              {/* Render prescription details if available */}
-              {record.prescription && record.prescription.medicines && record.prescription.medicines.length > 0 && (
-                <div>
-                  <h4>Prescription:</h4>
-                  <ul>
-                    {record.prescription.medicines.map(medicine => (
-                      <li key={medicine._id}>
-                        <p>Name: {medicine.name}</p>
-                        <p>Dosage: {medicine.dosage}</p>
-                        <p>Instructions: {medicine.instructions}</p>
-                        <p>Amount: {medicine.amount}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+    <div id="patientDetails" className="patient-details-container">
+      <div className="patient-details-header">
+        <h1 className="patient-details-title">Patient Details Sheet</h1>
+        <Button className="export-button" onClick={generatePDF} type="primary">
+          Export as PDF
+        </Button>
+      </div>
+
+      <div className="flex-container">
+        <div className="patient-details-section">
+          <h2 className="section-title">Medical Records</h2>
+          {medicalRecords &&
+          medicalRecords.success &&
+          medicalRecords.data &&
+          medicalRecords.data.length > 0 ? (
+            <Table
+              dataSource={medicalRecords.data}
+              columns={medicalRecordColumns}
+              pagination={false}
+            />
+          ) : (
+            <p>No medical records found.</p>
+          )}
+        </div>
+        <br />
+        <div className="patient-details-section">
+          <h2 className="section-title" style={{ marginBottom: "5px" }}>
+            Patient Information
+          </h2>
+          {profileData && Object.keys(profileData).length > 0 && (
+            <ProfileDataTable profileData={profileData} />
+          )}
+        </div>
+
+        <div className="patient-details-section">
+          {webPatientData && Object.keys(webPatientData).length > 0 && (
+            <WebPatientDataTable webPatientData={webPatientData} />
+          )}
+        </div>
+
+        <div className="patient-details-section">
+          <h2 className="section-title">Health Information</h2>
+          {healthInfoData && healthInfoData.length > 0 ? (
+            <Table
+              dataSource={healthInfoData}
+              columns={healthInfoColumns}
+              pagination={false}
+            />
+          ) : (
+            <p>No health information found.</p>
+          )}
+        </div>
+
+        <div className="patient-details-section invoice">
+          <h2 className="section-title">Invoices</h2>
+          {InvoiceData && InvoiceData.length > 0 ? (
+            <Table
+              dataSource={InvoiceData}
+              columns={invoiceColumns}
+              pagination={false}
+            />
+          ) : (
+            <p>No invoices found.</p>
+          )}
+        </div>
+        {/* Rendering attachments outside the table */}
+        <div className="attachment-section">
+          <h2 className="section-title">Attachments</h2>
+          <div className="attachment-gallery">
+            {medicalRecords &&
+              medicalRecords.data &&
+              medicalRecords.data.map(
+                (record) =>
+                  record.attachments &&
+                  record.attachments.length > 0 &&
+                  record.attachments.map((attachment, index) => (
+                    <Image
+                      key={index}
+                      src={`http://localhost:8800/uploads/${attachment.filename}`}
+                      alt={attachment.originalname}
+                      width={250}
+                      height={250}
+                      style={{ margin: 5, padding: 10 }}
+                    />
+                  ))
               )}
-              {record.attachments && record.attachments.length > 0 && (
-                <div>
-                  <h4>Attachments:</h4>
-                  <ul>
-                    {record.attachments.map(attachment => (
-                      <li key={attachment._id}>
-                        <Image src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`} alt={attachment.filename} style={{ width: '200px', height: '200px' }} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p>No medical records found.</p>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-const renderProfileData = (profileData) => (
-  <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-md mb-6">
-    <h2 className="text-xl font-semibold mb-4">Patient Details</h2>
-    <div className="grid grid-cols-2 gap-6">
-      <div>
-        <ul className="list-disc pl-4">
-        <Image
-                      src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
-                      alt={profileData.fullName}
-                      className="w-full h-11 rounded-full object-cover border border-border"
-                    />
-          <li><span className="font-semibold">Full Name:</span> {profileData.fullName}</li>
-          <li><span className="font-semibold">Gender:</span> {profileData.gender}</li>
-          <li><span className="font-semibold">Blood Group:</span> {profileData.bloodGroup}</li>
-          <li><span className="font-semibold">Address:</span> {profileData.address}</li>
-          <li><span className="font-semibold">Email:</span> {profileData.email}</li>
-          <li><span className="font-semibold">Emergency Contact:</span> {profileData.emergencyContact}</li>
-        </ul>
-      </div>
+const ProfileDataTable = ({ profileData }) => {
+  return (
+    <div className="custom-table-container">
+      <Table
+        className="custom-table"
+        dataSource={[profileData]}
+        columns={renderProfileDataColumns}
+        pagination={false}
+        bordered
+      />
     </div>
-  </div>
-);
+  );
+};
 
-const renderWebPatientData = (webPatientData) => (
-  <div className="bg-white p-6 rounded-xl border border-gray-300 shadow-md mb-6">
-    <h2 className="text-xl font-semibold mb-4"> Patient Details</h2>
-    <div className="grid grid-cols-2 gap-6">
-      <div>
-        <ul className="list-disc pl-4">
-        <Image
-                      src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
-                      alt={webPatientData.name}
-                      className="w-full h-11 rounded-full object-cover border border-border"
-                    />
-          <li><span className="font-semibold">Full Name:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.name : ''}</li>
-          <li><span className="font-semibold">Gender:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.gender : ''}</li>
-          <li><span className="font-semibold">Blood Group:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.bloodGroup : ''}</li>
-          <li><span className="font-semibold">Address:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.address : ''}</li>
-          <li><span className="font-semibold">Email:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.email : ''}</li>
-          <li><span className="font-semibold">Emergency Contact:</span> {webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : ''}</li>         
-               
-        </ul>
-      </div>
-      
+const WebPatientDataTable = ({ webPatientData }) => {
+  return (
+    <div className="custom-table-container">
+      <Table
+        className="custom-table"
+        dataSource={[webPatientData.patientInfo]}
+        columns={renderWebPatientDataColumns}
+        pagination={false}
+        bordered
+      />
     </div>
-  </div>
-);
+  );
+};
+
+// Define columns for medical records table
+const medicalRecordColumns = [
+  {
+    title: "Complaints",
+    dataIndex: "complaints",
+    key: "complaints",
+    render: (complaints) => complaints.join(", "),
+  },
+  {
+    title: "Diagnosis",
+    dataIndex: "diagnosis",
+    key: "diagnosis",
+  },
+  {
+    title: "Treatment",
+    dataIndex: "treatment",
+    key: "treatment",
+    render: (treatment) => treatment.map((item) => item.name).join(", "),
+  },
+  {
+    title: "Vital Signs",
+    dataIndex: "vitalSigns",
+    key: "vitalSigns",
+    render: (vitalSigns) => (
+      <ul>
+        {vitalSigns.map((sign, index) => (
+          <li key={index}>
+            <p>{sign}</p>
+            {/* Add styling here as needed */}
+          </li>
+        ))}
+      </ul>
+    ),
+  },
+  {
+    title: "Prescription",
+    dataIndex: "prescription",
+    key: "prescription",
+    render: (prescription) =>
+      prescription &&
+      prescription.medicines &&
+      prescription.medicines.length > 0 ? (
+        <ul>
+          {prescription.medicines.map((medicine) => (
+            <li
+              key={medicine._id}
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <p>Name: {medicine.name}</p>
+              <p>Dosage: {medicine.dosage}</p>
+              <p>Instructions: {medicine.instructions}</p>
+              <p>Amount: {medicine.amount}</p>
+            </li>
+          ))}
+        </ul>
+      ) : null,
+  },
+];
+
+// Define columns for rendering profile data
+const renderProfileDataColumns = [
+  {
+    title: "Full Name",
+    dataIndex: "fullName",
+    key: "fullName",
+  },
+  {
+    title: "Gender",
+    dataIndex: "gender",
+    key: "gender",
+  },
+  {
+    title: "Blood Group",
+    dataIndex: "bloodGroup",
+    key: "bloodGroup",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: "Emergency Contact",
+    dataIndex: "emergencyContact",
+    key: "emergencyContact",
+  },
+];
+
+// Define columns for rendering web patient data
+const renderWebPatientDataColumns = [
+  {
+    title: "Full Name",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "Gender",
+    dataIndex: "gender",
+    key: "gender",
+  },
+  {
+    title: "Blood Group",
+    dataIndex: "bloodGroup",
+    key: "bloodGroup",
+  },
+  {
+    title: "Address",
+    dataIndex: "address",
+    key: "address",
+  },
+  {
+    title: "Email",
+    dataIndex: "email",
+    key: "email",
+  },
+  {
+    title: "Emergency Contact",
+    dataIndex: "emergencyContact",
+    key: "emergencyContact",
+  },
+];
+
+// Define columns for rendering invoice data
+const invoiceColumns = [
+  {
+    title: "Created Date",
+    dataIndex: "createdDate",
+    key: "createdDate",
+    render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
+  },
+  {
+    title: "Due Date",
+    dataIndex: "dueDate",
+    key: "dueDate",
+    render: (text) => dayjs(text).format("YYYY-MM-DD HH:mm:ss"),
+  },
+  {
+    title: "Total",
+    dataIndex: "total",
+    key: "total",
+    render: (text, record) => <span>${record.total}</span>,
+  },
+  {
+    title: "Patient Name",
+    dataIndex: ["patient", "fullName"],
+    key: "patientName",
+  },
+  {
+    title: "Patient Email",
+    dataIndex: ["patient", "email"],
+    key: "patientEmail",
+  },
+  {
+    title: "Invoice Items",
+    dataIndex: "invoiceItems",
+    key: "invoiceItems",
+    render: (invoiceItems) => (
+      <ul>
+        {invoiceItems.map((item, index) => (
+          <li key={index}>
+            {`${item.name} - $${item.price} x ${item.quantity}`}
+          </li>
+        ))}
+      </ul>
+    ),
+  },
+  // Add other columns as needed
+];
+
+const healthInfoColumns = [
+  {
+    title: "Blood Type",
+    dataIndex: "bloodType",
+    key: "bloodType",
+  },
+  {
+    title: "Height",
+    dataIndex: "height",
+    key: "height",
+  },
+  {
+    title: "Weight",
+    dataIndex: "weight",
+    key: "weight",
+  },
+  {
+    title: "Allergies",
+    dataIndex: "allergies",
+    key: "allergies",
+  },
+  {
+    title: "Habits",
+    dataIndex: "habits",
+    key: "habits",
+  },
+  {
+    title: "Medical History",
+    dataIndex: "medicalHistory",
+    key: "medicalHistory",
+  },
+];
 
 export default PatientDetails;

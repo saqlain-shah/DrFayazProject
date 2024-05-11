@@ -11,7 +11,7 @@ function InvoiceUsed({ token, patientId }) {
     const fetchInvoices = async () => {
       try {
         if (patientId) { // Check if patientId is defined
-          const response = await axios.get(`https://server-yvzt.onrender.com/api/invoices/patient/${patientId}`, {
+          const response = await axios.get(`http://localhost:8800/api/invoices/patient/${patientId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -40,7 +40,7 @@ function InvoiceUsed({ token, patientId }) {
   return (
     <div className="w-full">
       <h1 className="text-sm font-medium mb-6">Invoices</h1>
-      <div className="w-full overflow-x-scroll">
+      <div className="w-full overflow-x-hidden">
         <InvoiceUsedTable
           data={invoices}
           functions={{

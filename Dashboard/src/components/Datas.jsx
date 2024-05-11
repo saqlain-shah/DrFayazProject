@@ -1162,11 +1162,11 @@ export const patientTab = [
     title: "Mental Health",
     icon: RiStethoscopeLine,
   },
-  {
-    id: 7,
-    title: "Patient Information",
-    icon: RiUserLine,
-  },
+  // {
+  //   id: 7,
+  //   title: "Patient Information",
+  //   icon: RiUserLine,
+  // },
   {
     id: 8,
     title: "Health Information",
@@ -1174,8 +1174,8 @@ export const patientTab = [
   },
   {
     id: 9,
-    title: "Patient Details",
-    icon: RiStethoscopeLine ,
+    title: "Patient Information",
+    icon: RiUserLine ,
   },
   
 ];

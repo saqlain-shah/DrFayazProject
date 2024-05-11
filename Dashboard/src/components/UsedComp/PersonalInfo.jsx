@@ -36,7 +36,7 @@ function PersonalInfo({ titles, onSave }) {
 
       console.log('Data to be sent:', data);
 
-      await axios.post('https://server-yvzt.onrender.com/api/patients', data, {
+      await axios.post('http://localhost:8800/api/patients', data, {
 
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -166,13 +166,13 @@ function PersonalInfo({ titles, onSave }) {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-        <Button
+        {/* <Button
           label={'Delete Account'}
           Icon={RiDeleteBin5Line}
           onClick={() => {
             toast.error('This feature is not available yet');
           }}
-        />
+        /> */}
         <Button
           label={'Save Changes'}
           Icon={HiOutlineCheckCircle}

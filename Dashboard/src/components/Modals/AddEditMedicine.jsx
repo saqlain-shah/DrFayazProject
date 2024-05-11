@@ -58,7 +58,7 @@ function AddEditMedicineModal({ closeModal, isOpen, onClose, selectedItem }) {
     try {
       // If editing an existing medicine, delete the previous entry
       if (selectedItem) {
-        const deleteResponse = await fetch(`https://server-yvzt.onrender.com/api/medicine/${selectedItem._id}`, {
+        const deleteResponse = await fetch(`http://localhost:8800/api/medicine/${selectedItem._id}`, {
           method: 'DELETE',
         });
 
@@ -71,7 +71,7 @@ function AddEditMedicineModal({ closeModal, isOpen, onClose, selectedItem }) {
       const inStock = formData.stock > 0;
 
       // Create a new medicine entry with the updated information
-      const createResponse = await fetch('https://server-yvzt.onrender.com/api/medicine', {
+      const createResponse = await fetch('http://localhost:8800/api/medicine', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
