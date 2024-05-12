@@ -1,75 +1,152 @@
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import { BiPlus, BiTrash } from 'react-icons/bi';
+import { Button, Checkbox, Input } from '../../components/Form';
+import axios from 'axios';
+import DentalChartTable from './DentalChartTable';
+import { useParams } from 'react-router-dom';
 function DentalChart() {
-
   const [seriousDisease, setSeriousDisease] = useState('');
-  const [dentalConditions, setDentalConditions] = useState({
-    cavity: false,
-    gumDisease: false,
-    toothDecay: false,
-    // Add more dental condition fields as needed
-  });
-  const [lastCheckup, setLastCheckup] = useState('');
-  const [nextCheckup, setNextCheckup] = useState('');
-  const [mentalHealthIssues, setMentalHealthIssues] = useState([]);
+  const [dentalConditions, setDentalConditions] = useState([
+    { name: 'cavity', checked: false },
+    { name: 'gumDisease', checked: false },
+    { name: 'toothDecay', checked: false },
+    { name: 'gingivitis', checked: false },
+    { name: 'halitosis', checked: false },
+    { name: 'oralCancer', checked: false }
+  ]);
+  const [mentalHealthIssues, setMentalHealthIssues] = useState(['Anxiety', 'Depression', 'Bipolar Disorder']);
   const [otherFields, setOtherFields] = useState({
-    age: '',
-    gender: '',
-    bloodType: '',
     allergies: '',
     medications: ''
-    // Add more fields as needed
   });
-  const [errors, setErrors] = useState({});
+  const [newDentalCondition, setNewDentalCondition] = useState('');
+  const [newMentalHealthIssue, setNewMentalHealthIssue] = useState('');
+  const [submittedData, setSubmittedData] = useState([]);
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setSubmittedData([response.data]);
+      } catch (error) {
+        console.error('Error:', error);
+        console.error('Error message:', error.response.data);
+      }
+    };
+  
+    fetchData();
+  }, [id]);
+  
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);
   };
 
-  const handleCheckboxChange = (event) => {
-    const { name, checked } = event.target;
-    setDentalConditions(prevState => ({
-      ...prevState,
-      [name]: checked
-    }));
+  const handleCheckboxChange = (index) => {
+    const newConditions = [...dentalConditions];
+    newConditions[index].checked = !newConditions[index].checked;
+    setDentalConditions(newConditions);
   };
 
   const handleMentalHealthChange = (event) => {
     const { value } = event.target;
-    setMentalHealthIssues(prevState => [...prevState, value]);
+    setMentalHealthIssues((prevState) => [...prevState, value]);
   };
 
   const handleOtherFieldChange = (event) => {
     const { name, value } = event.target;
-    setOtherFields(prevState => ({
+    setOtherFields((prevState) => ({
       ...prevState,
       [name]: value
     }));
   };
 
-  const handleLastCheckupChange = (event) => {
-    setLastCheckup(event.target.value);
+  const handleSubmit = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://server-yvzt.onrender.com/api/dental-chart/',
+        {
+          patientId: id, // Include patientId in the request body
+          seriousDisease,
+          dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
+          mentalHealthIssues,
+          ...otherFields
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      setSubmittedData((prevData) => [...prevData, response.data]);
+      // Clear the form after submission
+      setSeriousDisease('');
+      setDentalConditions([
+        { name: 'cavity', checked: false },
+        { name: 'gumDisease', checked: false },
+        { name: 'toothDecay', checked: false },
+        { name: 'gingivitis', checked: false },
+        { name: 'halitosis', checked: false },
+        { name: 'oralCancer', checked: false }
+      ]);
+      setMentalHealthIssues(['Anxiety', 'Depression', 'Bipolar Disorder']);
+      setOtherFields({
+        allergies: '',
+        medications: ''
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setSubmittedData((prevData) => prevData.filter(data => data._id !== id));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+
+  const addNewCondition = () => {
+    if (newDentalCondition.trim() === '') return;
+    setDentalConditions((prevState) => [
+      ...prevState,
+      { name: newDentalCondition.toLowerCase(), checked: true }
+    ]);
+    setNewDentalCondition('');
   };
 
-  const handleNextCheckupChange = (event) => {
-    setNextCheckup(event.target.value);
+  const removeCondition = (index) => {
+    const newConditions = [...dentalConditions];
+    newConditions.splice(index, 1);
+    setDentalConditions(newConditions);
   };
 
-  const handleSubmit = () => {
-    // Validation
-    const errors = {};
-    if (!lastCheckup) {
-      errors.lastCheckup = 'Last checkup date is required';
-    }
-    if (!nextCheckup) {
-      errors.nextCheckup = 'Next checkup date is required';
-    }
-    setErrors(errors);
+  const addNewMentalHealthIssue = () => {
+    if (newMentalHealthIssue.trim() === '') return;
+    setMentalHealthIssues((prevState) => [...prevState, newMentalHealthIssue]);
+    setNewMentalHealthIssue('');
+  };
 
-    if (Object.keys(errors).length === 0) {
-      // Proceed with form submission
-      console.log('Submitting Dental Chart data:', { seriousDisease, dentalConditions, lastCheckup, nextCheckup, mentalHealthIssues, otherFields });
-    }
+  const removeMentalHealthIssue = (index) => {
+    const newIssues = [...mentalHealthIssues];
+    newIssues.splice(index, 1);
+    setMentalHealthIssues(newIssues);
   };
 
   return (
@@ -77,81 +154,136 @@ function DentalChart() {
       <h2 className="text-lg font-semibold mb-4">Dental Chart</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="seriousDisease" className="block text-sm font-medium text-gray-700">Serious Disease (if any)</label>
-          <input type="text" id="seriousDisease" name="seriousDisease" value={seriousDisease} onChange={handleInputChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+          <label htmlFor="seriousDisease" className="block text-sm font-medium text-gray-700">
+            Serious Disease (if any)
+          </label>
+          <input
+            type="text"
+            id="seriousDisease"
+            name="seriousDisease"
+            value={seriousDisease}
+            onChange={handleInputChange}
+            className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">Dental Conditions</label>
           <div className="mt-1 grid grid-cols-1 gap-4">
+            {dentalConditions.map((condition, index) => (
+              <div className="flex items-start" key={index}>
+                <Checkbox
+                  id={condition.name}
+                  name={condition.name}
+                  checked={condition.checked}
+                  onChange={() => handleCheckboxChange(index)}
+                />
+                <label htmlFor={condition.name} className="ml-3 text-sm font-medium text-gray-700">
+                  {condition.name.charAt(0).toUpperCase() + condition.name.slice(1)}
+                </label>
+                <button onClick={() => removeCondition(index)} className="ml-2 text-red-500">
+                  <BiTrash />
+                </button>
+              </div>
+            ))}
             <div className="flex items-start">
-              <input id="cavity" name="cavity" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-              <label htmlFor="cavity" className="ml-3 text-sm font-medium text-gray-700">Cavity</label>
+              <input
+                type="text"
+                value={newDentalCondition}
+                onChange={(e) => setNewDentalCondition(e.target.value)}
+                placeholder="Add new condition"
+                className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+              <button
+                onClick={addNewCondition}
+                className="ml-2 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
+              >
+                <BiPlus />
+              </button>
             </div>
-            <div className="flex items-start">
-              <input id="gumDisease" name="gumDisease" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-              <label htmlFor="gumDisease" className="ml-3 text-sm font-medium text-gray-700">Gum Disease</label>
-            </div>
-            <div className="flex items-start">
-              <input id="toothDecay" name="toothDecay" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-              <label htmlFor="toothDecay" className="ml-3 text-sm font-medium text-gray-700">Tooth Decay</label>
-            </div>
-            <div className="flex items-start">
-    <input id="gingivitis" name="gingivitis" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-    <label htmlFor="gingivitis" className="ml-3 text-sm font-medium text-gray-700">Gingivitis</label>
-  </div>
-  <div className="flex items-start">
-    <input id="halitosis" name="halitosis" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-    <label htmlFor="halitosis" className="ml-3 text-sm font-medium text-gray-700">Halitosis</label>
-  </div>
-  <div className="flex items-start">
-    <input id="oralCancer" name="oralCancer" type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:border-indigo-500" onChange={handleCheckboxChange} />
-    <label htmlFor="oralCancer" className="ml-3 text-sm font-medium text-gray-700">Oral Cancer</label>
-  </div>
-            {/* Add similar blocks for other dental conditions */}
           </div>
         </div>
       </div>
       <div className="mt-4">
-        <label htmlFor="lastCheckup" className="block text-sm font-medium text-gray-700">Last Checkup</label>
-        <input type="date" id="lastCheckup" name="lastCheckup" value={lastCheckup} onChange={handleLastCheckupChange} className={`mt-1 p-2 border ${errors.lastCheckup ? 'border-red-500' : 'border-gray-300'} block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`} />
-        {errors.lastCheckup && <p className="text-red-500 text-sm mt-1">{errors.lastCheckup}</p>}
+        <label htmlFor="mentalHealth" className="block text-sm font-medium text-gray-700">
+          Mental Health Issues
+        </label>
+        <table className="mt-1 w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 text-left">Issue</th>
+              <th className="px-4 py-2 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mentalHealthIssues.map((issue, index) => (
+              <tr key={index}>
+                <td className="border px-4 py-2">{issue}</td>
+                <td className="border px-4 py-2 text-right">
+                  <button onClick={() => removeMentalHealthIssue(index)} className="text-red-500">
+                    <BiTrash />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            <tr>
+              <td className="border px-4 py-2">
+                <input
+                  type="text"
+                  value={newMentalHealthIssue}
+                  onChange={(e) => setNewMentalHealthIssue(e.target.value)}
+                  placeholder="Add new issue"
+                  className="p-1 border border-gray-300 w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </td>
+              <td className="border px-4 py-2 text-right">
+                <button
+                  onClick={addNewMentalHealthIssue}
+                  className="bg-indigo-600 text-white py-1 px-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                >
+                  <BiPlus />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div className="mt-4">
-        <label htmlFor="nextCheckup" className="block text-sm font-medium text-gray-700">Next Checkup</label>
-        <input type="date" id="nextCheckup" name="nextCheckup" value={nextCheckup} onChange={handleNextCheckupChange} className={`mt-1 p-2 border ${errors.nextCheckup ? 'border-red-500' : 'border-gray-300'} block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500`} />
-        {errors.nextCheckup && <p className="text-red-500 text-sm mt-1">{errors.nextCheckup}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">
+            Allergies
+          </label>
+          <input
+            type="text"
+            id="allergies"
+            name="allergies"
+            value={otherFields.allergies}
+            onChange={handleOtherFieldChange}
+            className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="medications" className="block text-sm font-medium text-gray-700">
+            Current Medications
+          </label>
+          <input
+            type="text"
+            id="medications"
+            name="medications"
+            value={otherFields.medications}
+            onChange={handleOtherFieldChange}
+            className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
       </div>
-      <div className="mt-4">
-        <label htmlFor="mentalHealth" className="block text-sm font-medium text-gray-700">Mental Health Issues</label>
-        <select id="mentalHealth" name="mentalHealth" onChange={handleMentalHealthChange} multiple className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-          <option value="Anxiety">Anxiety</option>
-          <option value="Depression">Depression</option>
-          <option value="Bipolar Disorder">Bipolar Disorder</option>
-          {/* Add more mental health issues as options */}
-        </select>
-      </div>
-      <div className="mt-4">
-        <label htmlFor="age" className="block text-sm font-medium text-gray-700">Age</label>
-        <input type="text" id="age" name="age" value={otherFields.age} onChange={handleOtherFieldChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div className="mt-4">
-        <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-        <input type="text" id="gender" name="gender" value={otherFields.gender} onChange={handleOtherFieldChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div className="mt-4">
-        <label htmlFor="bloodType" className="block text-sm font-medium text-gray-700">Blood Type</label>
-        <input type="text" id="bloodType" name="bloodType" value={otherFields.bloodType} onChange={handleOtherFieldChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div className="mt-4">
-        <label htmlFor="allergies" className="block text-sm font-medium text-gray-700">Allergies</label>
-        <input type="text" id="allergies" name="allergies" value={otherFields.allergies} onChange={handleOtherFieldChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div className="mt-4">
-        <label htmlFor="medications" className="block text-sm font-medium text-gray-700">Current Medications</label>
-        <input type="text" id="medications" name="medications" value={otherFields.medications} onChange={handleOtherFieldChange} className="mt-1 p-2 border border-gray-300 block w-full rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      {/* Add more fields as necessary */}
-      <button onClick={handleSubmit} className="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300">Submit</button>
+      <button
+        onClick={handleSubmit}
+        className="mt-4 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
+      >
+        Submit
+      </button>
+      {submittedData.map((data) => (
+        <DentalChartTable key={data._id} id={data._id} onDelete={handleDelete} />
+      ))}
     </div>
   );
 }

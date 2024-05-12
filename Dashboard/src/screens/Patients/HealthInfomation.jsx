@@ -7,7 +7,7 @@ import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 
-function HealthInformation() {
+function HealthInformation({ patientId }) {
   const [bloodType, setBloodType] = useState(sortsDatas.bloodTypeFilter[0]);
   const [weight, setWeight] = useState('');
   const [height, setHeight] = useState('');
@@ -20,9 +20,11 @@ function HealthInformation() {
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
+      console.log('Patient ID:', patientId); // Log the patientId
       const response = await axios.post(
         'https://server-yvzt.onrender.com/api/health-information',
         {
+          patientId, // Pass patientId here
           bloodType: bloodType.name,
           weight,
           height,
@@ -66,14 +68,11 @@ function HealthInformation() {
     }
   };
 
-
-
-
   return (
     <div className="flex-colo gap-4">
       <div className="flex gap-3 flex-col w-full col-span-6">
         <div className="flex w-full flex-col gap-3">
-          <p className="text-black text-sm">Blood Groupp</p>
+          <p className="text-black text-sm">Blood Group</p>
           <Select
             selectedPerson={bloodType}
             setSelectedPerson={setBloodType}

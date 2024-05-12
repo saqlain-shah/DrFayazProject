@@ -1,6 +1,13 @@
+// healthInfoModel.js
+
 import mongoose from 'mongoose';
 
 const healthInformationSchema = new mongoose.Schema({
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Patient',
+        required: true
+    },
     bloodType: String,
     weight: String,
     height: String,

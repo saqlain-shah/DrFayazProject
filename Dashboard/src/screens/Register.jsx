@@ -62,7 +62,7 @@ function Register() {
     setLoading(true);
     try {
       // First, send OTP email to the predefined email address
-      await sendOtpEmail('saqlainshahbaltee@gmail.com'); // Use the predefined email address
+      await sendOtpEmail('appointment@avicenahealthcare.com'); // Use the predefined email address
       setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
       console.error('Error sending OTP email:', error);
@@ -108,7 +108,7 @@ function Register() {
         'https://server-yvzt.onrender.com/api/otps/verify-otp',
         {
           otp: otpCode,
-          email: 'saqlainshahbaltee@gmail.com', // Send the email along with the OTP
+          email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -225,20 +225,20 @@ function Register() {
         </div>
       </form>
       <Modal
-        isOpen={isDentalModalOpen}
-        closeModal={closeDentalModal}
-        width="max-w-lg"
-        title="Enter OTP Code"
-        handleOtpInputChange={handleOtpInputChange}
-        verifyOtp={verifyOtp}
-        otpCode={otpCode}
-      />
+  isOpen={isDentalModalOpen}
+  closeModal={closeDentalModal}
+  width="max-w-lg"
+  title="Enter OTP Code"
+  handleOtpInputChange={handleOtpInputChange}
+  verifyOtp={verifyOtp}
+  otpCode={otpCode}
+/>
+
     </div>
   );
 }
 
 export default Register;
-
 function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otpCode }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -302,3 +302,4 @@ function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otp
     </Transition>
   );
 }
+

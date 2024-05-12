@@ -330,15 +330,15 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
     updateInvoiceData(editedInvoice);
   };
   const DropDown1 = [
-    {
-      title: 'Edit',
-      icon: FiEdit,
-      onClick: (item) => {
-        // Check if 'id' property is accessible in 'item'
-        console.log(item); // Check the console for the structure of 'item'
-        navigate(`/invoices/edit/${item._id}`); // Navigate using '_id'
-      },
-    },
+    // {
+    //   title: 'Edit',
+    //   icon: FiEdit,
+    //   onClick: (item) => {
+    //     // Check if 'id' property is accessible in 'item'
+    //     console.log(item); // Check the console for the structure of 'item'
+    //     navigate(`/invoices/edit/${item._id}`); // Navigate using '_id'
+    //   },
+    // },
 
     {
       title: 'View',

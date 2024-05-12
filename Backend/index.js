@@ -29,7 +29,7 @@ import otpRoutes from './routes/Opt.js';
 import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js'
 import EmailSent from './routes/ConfirmEmail.js'
-
+import dentalChartRoutes from './routes/dentalChartRoutes.js';
 
 
 
@@ -71,6 +71,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 
+
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 
 // Google OAuth routes
@@ -106,7 +107,7 @@ app.use('/api/otps', otpDashRoutes);
 app.use('/api/stripe', stripe);
 app.use('/api/', emailCampaignRoutes)
 app.use('/api/',EmailSent)
-
+app.use('/api/dental-chart', dentalChartRoutes);
 
 
 const PORT = process.env.PORT || 8800;

@@ -40,7 +40,7 @@ function InvoiceUsed({ token, patientId }) {
   return (
     <div className="w-full">
       <h1 className="text-sm font-medium mb-6">Invoices</h1>
-      <div className="w-full overflow-x-scroll">
+      <div className="w-full overflow-x-hidden">
         <InvoiceUsedTable
           data={invoices}
           functions={{
