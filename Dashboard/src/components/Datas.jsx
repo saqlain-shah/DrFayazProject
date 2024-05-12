@@ -1172,11 +1172,13 @@ export const patientTab = [
     title: "Health Information",
     icon: RiHeartLine,
   },
+
   {
     id: 9,
     title: "Patient Information",
     icon: RiUserLine ,
   },
+
   
 ];
 

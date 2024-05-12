@@ -79,7 +79,7 @@ function Login() {
         <img
           src={pic}
           alt="logo"
-          className="w-48 h-16 object-contain mb-4"
+          className="w-48 h-26 object-contain mb-4"
         />
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input

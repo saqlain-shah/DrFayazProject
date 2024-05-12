@@ -179,7 +179,7 @@ function Register() {
   return (
     <div className="w-full h-screen flex-colo bg-dry">
       <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleSubmit}>
-        <img src={pic} alt="logo" className="w-48 h-16 object-contain" />
+        <img src={pic} alt="logo" className="w-48 h-26 object-contain" />
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input
             label="Name"
@@ -225,20 +225,20 @@ function Register() {
         </div>
       </form>
       <Modal
-        isOpen={isDentalModalOpen}
-        closeModal={closeDentalModal}
-        width="max-w-lg"
-        title="Enter OTP Code"
-        handleOtpInputChange={handleOtpInputChange}
-        verifyOtp={verifyOtp}
-        otpCode={otpCode}
-      />
+  isOpen={isDentalModalOpen}
+  closeModal={closeDentalModal}
+  width="max-w-lg"
+  title="Enter OTP Code"
+  handleOtpInputChange={handleOtpInputChange}
+  verifyOtp={verifyOtp}
+  otpCode={otpCode}
+/>
+
     </div>
   );
 }
 
 export default Register;
-
 function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otpCode }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -302,3 +302,4 @@ function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otp
     </Transition>
   );
 }
+

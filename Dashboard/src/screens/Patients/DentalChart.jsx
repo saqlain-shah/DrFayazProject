@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiPlus, BiTrash } from 'react-icons/bi';
 import { Button, Checkbox, Input } from '../../components/Form';
 import axios from 'axios';
 import DentalChartTable from './DentalChartTable';
-
+import { useParams } from 'react-router-dom';
 function DentalChart() {
   const [seriousDisease, setSeriousDisease] = useState('');
   const [dentalConditions, setDentalConditions] = useState([
@@ -21,7 +21,27 @@ function DentalChart() {
   });
   const [newDentalCondition, setNewDentalCondition] = useState('');
   const [newMentalHealthIssue, setNewMentalHealthIssue] = useState('');
-  const [submittedData, setSubmittedData] = useState(null);
+  const [submittedData, setSubmittedData] = useState([]);
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8800/api/dental-chart/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setSubmittedData([response.data]);
+      } catch (error) {
+        console.error('Error:', error);
+        console.error('Error message:', error.response.data);
+      }
+    };
+  
+    fetchData();
+  }, [id]);
+  
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);
@@ -52,6 +72,7 @@ function DentalChart() {
       const response = await axios.post(
         'http://localhost:8800/api/dental-chart/',
         {
+          patientId: id, // Include patientId in the request body
           seriousDisease,
           dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
           mentalHealthIssues,
@@ -63,11 +84,27 @@ function DentalChart() {
           }
         }
       );
-      setSubmittedData(response.data);
+      setSubmittedData((prevData) => [...prevData, response.data]);
+      // Clear the form after submission
+      setSeriousDisease('');
+      setDentalConditions([
+        { name: 'cavity', checked: false },
+        { name: 'gumDisease', checked: false },
+        { name: 'toothDecay', checked: false },
+        { name: 'gingivitis', checked: false },
+        { name: 'halitosis', checked: false },
+        { name: 'oralCancer', checked: false }
+      ]);
+      setMentalHealthIssues(['Anxiety', 'Depression', 'Bipolar Disorder']);
+      setOtherFields({
+        allergies: '',
+        medications: ''
+      });
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  
   
 
   const handleDelete = async (id) => {
@@ -78,11 +115,12 @@ function DentalChart() {
           Authorization: `Bearer ${token}`
         }
       });
-      setSubmittedData(null);
+      setSubmittedData((prevData) => prevData.filter(data => data._id !== id));
     } catch (error) {
       console.error('Error:', error);
     }
   };
+  
 
   const addNewCondition = () => {
     if (newDentalCondition.trim() === '') return;
@@ -243,7 +281,9 @@ function DentalChart() {
       >
         Submit
       </button>
-      {submittedData && <DentalChartTable id={submittedData._id} />}
+      {submittedData.map((data) => (
+        <DentalChartTable key={data._id} id={data._id} onDelete={handleDelete} />
+      ))}
     </div>
   );
 }

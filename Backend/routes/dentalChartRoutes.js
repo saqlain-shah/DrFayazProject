@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post('/', create);
 router.delete('/:id', remove);
-router.get('/dental-chart/', list);
+router.get('/', list);
 
 // Route to get a specific dental chart record by ID
 router.get('/:id', getById);

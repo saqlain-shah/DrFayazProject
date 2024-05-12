@@ -3,8 +3,9 @@ import mongoose from 'mongoose';
 
 export const create = async (req, res) => {
   try {
-    const { seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
+    const { patientId, seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
     const dentalChart = new DentalChart({
+      patientId,
       seriousDisease,
       dentalConditions,
       mentalHealthIssues,
