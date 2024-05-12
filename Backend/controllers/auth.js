@@ -10,14 +10,14 @@ export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: 'Invalid email or ' });
     }
     console.log("user", user)
     // Compare trimmed password using bcrypt
     const isValidPassword = await bcrypt.compare(password, user.password);
     console.log("vlidate", isValidPassword)
     if (!isValidPassword) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: 'Invalid  or password' });
     }
 
     // Generate token upon successful login
