@@ -43,16 +43,18 @@ export const sendOTP = async (req, res) => {
     try {
         // Create a nodemailer transporter using SMTP transport
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtpout.secureserver.net', // GoDaddy SMTP host
+            port: 587, // Port for secure SMTP
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
-                pass: 'qfonuissqspipwtq' // Replace with your Gmail App Password
+              user: 'appointment@avicenahealthcare.com', // Replace with your email address
+              pass: 'Godaay2024' // Replace with your email password
             }
-        });
+          });
 
         // Email content
         const mailOptions = {
-            from: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
+            from: 'appointment@avicenahealthcare.com', // Replace with your Gmail email address
             to: email,
             subject: 'OTP for Verification',
             html: htmlContent

@@ -9,7 +9,7 @@ function DentalChartTable({ id }) {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8800/api/dental-chart/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -28,7 +28,7 @@ function DentalChartTable({ id }) {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8800/api/dental-chart/${id}`);
+      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id}`);
       setData(null);
     } catch (error) {
       console.error('Error:', error);

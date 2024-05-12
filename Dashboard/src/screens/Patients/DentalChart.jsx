@@ -27,7 +27,7 @@ function DentalChart() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8800/api/dental-chart/${id}`, {
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -70,7 +70,7 @@ function DentalChart() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:8800/api/dental-chart/',
+        'https://server-yvzt.onrender.com/api/dental-chart/',
         {
           patientId: id, // Include patientId in the request body
           seriousDisease,
@@ -110,7 +110,7 @@ function DentalChart() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8800/api/dental-chart/${id}`, {
+      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

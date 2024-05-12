@@ -241,7 +241,7 @@ const PatientDetails = ({
                   record.attachments.map((attachment, index) => (
                     <Image
                       key={index}
-                      src={`http://localhost:8800/uploads/${attachment.filename}`}
+                      src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`}
                       alt={attachment.originalname}
                       width={250}
                       height={250}

@@ -12,11 +12,13 @@ export const sendOTP = async (req, res) => {
 
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      host: 'smtpout.secureserver.net', // GoDaddy SMTP host
+      port: 587, // Port for secure SMTP
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail address
-        pass: 'qfonuissqspipwtq' // Replace with your Gmail password
-      },
+        user: 'appointment@avicenahealthcare.com', // Replace with your email address
+        pass: 'Godaay2024' // Replace with your email password
+      }
     });
 
     // Generate a random OTP (e.g., a 6-digit number)
@@ -28,6 +30,7 @@ export const sendOTP = async (req, res) => {
 
     // Send OTP email
     const info = await transporter.sendMail({
+      from: 'appointment@avicenahealthcare.com', // Sender address
       to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
       html: `
