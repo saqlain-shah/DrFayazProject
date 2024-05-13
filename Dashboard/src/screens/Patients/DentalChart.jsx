@@ -3,8 +3,10 @@ import { BiPlus, BiTrash } from 'react-icons/bi';
 import { Button, Checkbox, Input } from '../../components/Form';
 import axios from 'axios';
 import DentalChartTable from './DentalChartTable';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom'; // Add this import
+
 function DentalChart() {
+  const { id } = useParams();
   const [seriousDisease, setSeriousDisease] = useState('');
   const [dentalConditions, setDentalConditions] = useState([
     { name: 'cavity', checked: false },
@@ -22,7 +24,7 @@ function DentalChart() {
   const [newDentalCondition, setNewDentalCondition] = useState('');
   const [newMentalHealthIssue, setNewMentalHealthIssue] = useState('');
   const [submittedData, setSubmittedData] = useState([]);
-  const { id } = useParams();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -38,10 +40,12 @@ function DentalChart() {
         console.error('Error message:', error.response.data);
       }
     };
-  
-    fetchData();
-  }, [id]);
-  
+
+    // Fetch data only if submittedData is empty
+    if (submittedData.length === 0) {
+      fetchData();
+    }
+  }, [id, submittedData]); // Include submittedData in dependency array
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);
@@ -72,7 +76,6 @@ function DentalChart() {
       const response = await axios.post(
         'https://server-yvzt.onrender.com/api/dental-chart/',
         {
-          patientId: id, // Include patientId in the request body
           seriousDisease,
           dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
           mentalHealthIssues,
@@ -85,7 +88,6 @@ function DentalChart() {
         }
       );
       setSubmittedData((prevData) => [...prevData, response.data]);
-      // Clear the form after submission
       setSeriousDisease('');
       setDentalConditions([
         { name: 'cavity', checked: false },
@@ -104,13 +106,11 @@ function DentalChart() {
       console.error('Error:', error);
     }
   };
-  
-  
 
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
+      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -120,7 +120,6 @@ function DentalChart() {
       console.error('Error:', error);
     }
   };
-  
 
   const addNewCondition = () => {
     if (newDentalCondition.trim() === '') return;
@@ -151,6 +150,7 @@ function DentalChart() {
 
   return (
     <div className="p-4 border border-gray-200 rounded-md shadow-md">
+
       <h2 className="text-lg font-semibold mb-4">Dental Chart</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -281,9 +281,23 @@ function DentalChart() {
       >
         Submit
       </button>
-      {submittedData.map((data) => (
-        <DentalChartTable key={data._id} id={data._id} onDelete={handleDelete} />
-      ))}
+      <table className="table-auto w-full mt-4">
+        <thead className="bg-dry rounded-md overflow-hidden">
+          <tr>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Serious Disease</th>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Dental Conditions</th>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Mental Health Issues</th>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Allergies</th>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Medications</th>
+            <th className="text-start text-xs font-medium py-3 px-2 whitespace-nowrap">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {submittedData.map((data) => (
+            <DentalChartTable key={data._id} data={data} onDelete={handleDelete} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

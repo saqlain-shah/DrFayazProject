@@ -1,11 +1,10 @@
-import DentalChart from '../models/DentalChart.js';
+import { DentalChart } from '../models/DentalChart.js';
 import mongoose from 'mongoose';
 
 export const create = async (req, res) => {
   try {
-    const { patientId, seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
+    const {  seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
     const dentalChart = new DentalChart({
-      patientId,
       seriousDisease,
       dentalConditions,
       mentalHealthIssues,
@@ -22,7 +21,7 @@ export const create = async (req, res) => {
 export const remove = async (req, res) => {
   const { id } = req.params;
   try {
-    await DentalChart.findByIdAndRemove(mongoose.Types.ObjectId(id));
+    await DentalChart.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: 'Dental chart data deleted successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });
