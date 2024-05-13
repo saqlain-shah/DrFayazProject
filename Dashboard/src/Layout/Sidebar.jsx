@@ -14,15 +14,15 @@ function Sidebar() {
   };
   // object-contain
   return (
-    <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-screen w-full border-r border-border">
+    <div className="bg-white xl:shadow-lg py-6 px-4 xl:h-100% w-full border-r border-border">
       <Link to="/">
         <img
           src={pic}
           alt="logo"
-          className="w-56 h-26 ml-2  rounded-lg "
+          className="w-56 h-25 ml-2  rounded-lg "
         />
       </Link>
-      <div className="flex-colo gap-2">
+      <div className="flex-colo gap-1.5">
         {MenuDatas.map((item, index) => (
           <Link
             to={item.path}

@@ -1,12 +1,10 @@
-import React from "react";
-import { Image, Table, Button } from "antd";
+import React, { useRef } from "react";
+import { Image, Table } from "antd";
 import dayjs from "dayjs";
-import jsPDF from "jspdf";
-import "./Detail.css";
+import './Detail.css'
 import html2canvas from "html2canvas";
-import ImageGallery from "react-image-gallery";
-import axios from "axios";
-
+import { Button } from "antd";
+import jsPDF from "jspdf";
 const PatientDetails = ({
   medicalRecords,
   profileData,
@@ -16,159 +14,82 @@ const PatientDetails = ({
 }) => {
   console.log("healthInfoData ", healthInfoData);
   console.log("medicalRecords ", medicalRecords);
-  const generatePDF = async () => {
-    const doc = new jsPDF();
-    const content = document.getElementById("patientDetails");
-    const attachmentGallery = document.querySelector(".attachment-gallery"); // Add this line
 
-    // Check if content exists
-    if (!content) {
-      console.error("Content element not found");
-      return;
-    }
+  const pdfRef = useRef();
 
-    // Hide export button before generating PDF
-    const exportButton = document.querySelector(".export-button");
-    if (exportButton) {
-      exportButton.style.display = "none";
-    }
+  const handleGeneratePDF = () => {
+    console.log("medicalRecords in handleGeneratePDF:", medicalRecords); 
+    console.log("Type of medicalRecords:", typeof medicalRecords);
+    console.log("medicalRecords:", medicalRecords);
 
-    const attachmentImages = document.querySelectorAll(
-      ".attachment-gallery img"
-    );
-    console.log("images", attachmentImages);
-    for (let i = 0; i < attachmentImages.length; i++) {
-      const imageUrl = attachmentImages[i].src;
-      console.log("imageUrl", imageUrl);
-      try {
-        // const token = localStorage.getItem("token");
-        // const response = await axios.get(imageUrl, {
-        //   withCredentials: true,
-        //   headers: {
-        //     Authorization: `Bearer ${token}`,
-        //     "Content-Type": "application/json",
-        //   },
-        //   crossOrigin: "anonymous"
-        // });
-        // console.log("res", response);
-        // const blob = await response.blob();
-        // doc.addImage(await blobToBase64(imageUrl), "PNG", 10, 10, 100, 100);
-        // doc.imageLoadFromUrl(imageUrl);
-        // // place this mage at given X, Y coordinates on the page
-        // doc.imagePlace(20, 40);
-        // doc.image(imageUrl, {
-        //   x: 20,
-        //   y: 40,
-        //   width: 100, // Adjust width as needed
-        //   height: 100 // Adjust height as needed
-        // });
+    const input = document.getElementById("patientDetails");
 
-        function getDataUri(url, callback) {
-          var image = new Image();
-          image.onload = function () {
-            var canvas = document.createElement("canvas");
-            canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
-            canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+    const options = {
+      width: 900,
+      height: 1100,
+    };
 
-            canvas.getContext("2d").drawImage(this, 0, 0);
+    html2canvas(input, options).then((canvas) => {
+      const pdf = new jsPDF();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const aspectRatio = canvas.width / canvas.height;
+      const pdfHeightAdjusted = pdfWidth / aspectRatio;
+      const offsetY = (pdfHeight - pdfHeightAdjusted) / 2;
 
-            // Get raw image data
-            callback(canvas.toDataURL("image/png"));
-          };
+      // Add main content as image
+      const imgData = canvas.toDataURL("image/png");
+      pdf.addImage(imgData, "PNG", 0, offsetY, pdfWidth, pdfHeightAdjusted);
 
-          image.src = url;
-        }
-
-        // Usage:
-        getDataUri(imageUrl, function (dataUri) {
-          // Add image to PDF
-          doc.addImage(dataUri, "JPEG", 20, 40, 50, 50); // Adjust width and height as needed
+      // Add attachments
+      if (Array.isArray(medicalRecords.data)) {
+        const promises = medicalRecords.data.map((record) => {
+          if (record.attachments && record.attachments.length > 0) {
+            return Promise.all(record.attachments.map((attachment) => {
+              return new Promise((resolve, reject) => {
+                const img = document.createElement('img');
+                img.crossOrigin = "anonymous";
+                img.onload = function () {
+                  const attachmentCanvas = document.createElement("canvas");
+                  attachmentCanvas.width = img.width;
+                  attachmentCanvas.height = img.height;
+                  const ctx = attachmentCanvas.getContext("2d");
+                  ctx.drawImage(img, 0, 0);
+                  const attachmentImgData = attachmentCanvas.toDataURL("image/png");
+                  pdf.addPage();
+                  pdf.addImage(
+                    attachmentImgData,
+                    "PNG",
+                    10,
+                    10,
+                    180,
+                    150
+                  );
+                  resolve();
+                };
+                img.src = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
+              });
+            }));
+          }
         });
-        if (i !== attachmentImages.length - 1) {
-          doc.addPage();
-        }
-      } catch (error) {
-        console.error("Error adding image:", error);
+        Promise.all(promises.flat()).then(() => {
+          pdf.save("patient_details.pdf");
+        }).catch((error) => {
+          console.error("Error adding attachment images to PDF:", error);
+        });
+      } else {
+        console.error("medicalRecords.data is not an array.");
       }
-    }
-
-    // Convert HTML content to canvas
-    html2canvas(content)
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const imgWidth = 210; // A4 width in mm
-        const pageHeight = 400; // A4 height in mm
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        // Add image to PDF
-        doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-
-        // Handle multiple pages
-        heightLeft -= pageHeight;
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          doc.addPage();
-          doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
-        // Add attachment gallery to PDF
-        if (attachmentGallery) {
-          attachmentGallery.childNodes.forEach((child) => {
-            doc.addImage(child.src, "JPEG", 10, position + 10, 100, 100);
-            position += 110; // Adjust position for the next image
-            if (position >= pageHeight) {
-              doc.addPage();
-              position = 0;
-            }
-          });
-        }
-
-        // Save PDF
-        doc.save("patient_details.pdf");
-
-        // Restore export button after generating PDF
-        if (exportButton) {
-          exportButton.style.display = "block";
-        }
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-        // Restore export button if an error occurs
-        if (exportButton) {
-          exportButton.style.display = "block";
-        }
-      });
-  };
-
-  const blobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.readAsDataURL(blob);
     });
   };
-
-  if (
-    (!profileData || Object.keys(profileData).length === 0) &&
-    (!webPatientData || Object.keys(webPatientData).length === 0)
-  ) {
-    return <div className="text-center mt-8">No patient data available.</div>;
-  }
- 
 
   return (
     <div id="patientDetails" className="patient-details-container">
       <div className="patient-details-header">
         <h1 className="patient-details-title">Patient Details Sheet</h1>
-        <Button className="export-button" onClick={generatePDF} type="primary">
-          Export as PDF
-        </Button>
+        <div className="patient-details-section">
+          <Button className="export-button" onClick={handleGeneratePDF}>Generate PDF</Button>
+        </div>
       </div>
 
       <div className="flex-container">
