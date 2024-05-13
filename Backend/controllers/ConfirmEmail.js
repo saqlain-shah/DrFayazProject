@@ -3,18 +3,22 @@
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false,
   auth: {
-    user: "saqlainshahbaltee@gmail.com", // Replace with your email
-    pass: "vehcdityutwcutzh", // Replace with your password
+    user: 'appointment@avicenahealthcare.com',
+    pass: 'Godaay2024'
   },
+  tls: {
+    ciphers: 'SSLv3'
+  }
 });
 
 const sendAppointmentConfirmationEmail = async (selectValue) => {
   try {
     const { name, email, appointmentDetails } = selectValue;
 
-    // HTML content for the email with dynamic data
     const htmlContent = `
       <p>Hi ${name},</p>
       <p>Your appointment has been successfully scheduled.</p>
@@ -27,10 +31,10 @@ const sendAppointmentConfirmationEmail = async (selectValue) => {
     `;
 
     await transporter.sendMail({
-      from: "saqlainshahbaltee@gmail.com",
-      to: email, // Send email to the provided email address
+      from: "appointment@avicenahealthcare.com",
+      to: email,
       subject: "Appointment Confirmation",
-      html: htmlContent, // Use the dynamically generated HTML content
+      html: htmlContent,
     });
     console.log("Appointment confirmation email sent to patient successfully");
   } catch (error) {
@@ -39,13 +43,10 @@ const sendAppointmentConfirmationEmail = async (selectValue) => {
   }
 };
 
-const sendDoctorAppointmentEmail = async (selectValue,handleConfirmAppointment) => {
-    console.log("handleConfirmAppointment",handleConfirmAppointment)
-    console.log("selectValue",selectValue)
+const sendDoctorAppointmentEmail = async (selectValue) => {
   try {
-    const { name, email,bloodGroup,emergencyContact,gender } = selectValue;
+    const { name, email, bloodGroup, emergencyContact, gender } = selectValue;
 
-    // HTML content for the email with dynamic data
     const htmlContent = `
       <p>Hi Doctor,</p>
       <p>A new appointment has been scheduled.</p>
@@ -60,10 +61,10 @@ const sendDoctorAppointmentEmail = async (selectValue,handleConfirmAppointment) 
     `;
 
     await transporter.sendMail({
-      from: "saqlainshahbaltee@gmail.com",
-      to: email, // Send email to the doctor's email address
+      from: "appointment@avicenahealthcare.com",
+      to: "appointment@avicenahealthcare.com",
       subject: "New Appointment Scheduled",
-      html: htmlContent, // Use the dynamically generated HTML content
+      html: htmlContent,
     });
     console.log("Appointment notification email sent to doctor successfully");
   } catch (error) {

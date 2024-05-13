@@ -149,29 +149,43 @@ export const logout = async (req, res, next) => {
 
 
 
-// Create a transporter object using SMTP transport
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
-    user: 'davbabu1122@gmail.com',
-    pass: 'ndbpwhkdnajteass'
+    user: 'appointment@avicenahealthcare.com', // Replace with your email address
+    pass: 'Godaay2024' // Replace with your password
   }
 });
 
-// Export transporter and sendEmail function together
 export const sendEmail = (req, res) => {
   const { email, subject, body } = req.body;
 
-  // Extract sender name and email from the provided email address
-  const senderName = email.substring(0, email.indexOf('@'));
-  const senderEmail = email;
+  // Add <br> tags to preserve line breaks
+  const formattedBody = body.replace(/\n/g, '<br>');
+
+  // Create email body
+  const emailBody = `
+    <div class="bg-gray-100 p-6 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">Message from Patient</h2>
+      <div class="border-t border-gray-300 pt-4">
+        <p class="text-gray-700 font-semibold">Sender's Email:</p>
+        <p class="mt-2 text-gray-600">${email}</p>
+      </div>
+      <div class="border-t border-gray-300 pt-4 mt-4">
+        <p class="text-gray-700 font-semibold">Message:</p>
+        <p class="mt-2 text-gray-600 whitespace-pre-line">${formattedBody}</p>
+      </div>
+    </div>
+  `;
 
   // Create email options
   const mailOptions = {
-    from: `${senderName} <${senderEmail}>`,
-    to: 'davbabu1122@gmail.com', // Change this to your recipient email address
+    from: 'appointment@avicenahealthcare.com', // Use the email address you have permission to send from
+    to: 'appointment@avicenahealthcare.com', // Change this to your recipient email address
     subject: subject,
-    text: body // Use the email body received from the client
+    html: emailBody // Use HTML for formatted email body
   };
 
   // Send email using transporter
@@ -187,3 +201,5 @@ export const sendEmail = (req, res) => {
     }
   });
 };
+
+

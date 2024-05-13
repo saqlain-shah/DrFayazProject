@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 
 const dentalChartSchema = new mongoose.Schema({
-  patientId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Patient',
-    required: true
-  },
   seriousDisease: String,
   dentalConditions: [String],
   mentalHealthIssues: [String],
@@ -15,4 +10,4 @@ const dentalChartSchema = new mongoose.Schema({
 
 const DentalChart = mongoose.model('DentalChart', dentalChartSchema);
 
-export default DentalChart;
+export { DentalChart }; // Correct export

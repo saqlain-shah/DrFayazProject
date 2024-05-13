@@ -36,7 +36,7 @@ import { useAuth } from './AuthContext'; // Import useAuth
 import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
 import { NotificationProvider } from './components/NotificationContext';
-
+import { ToastContainer } from 'react-toastify'; 
 
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
@@ -52,6 +52,7 @@ function App() {
     <>
       {/* Toaster */}
       <Toast />
+      <ToastContainer /> 
       {/* Routes */}
       <BrowserRouter>
       <NotificationProvider>
