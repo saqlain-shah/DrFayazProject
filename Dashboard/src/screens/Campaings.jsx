@@ -189,7 +189,7 @@ function Campaigns() {
           isOpen={isOpen} closeModal={closeModal} data={data}
           updateCampaignsState={updateCampaignsState} />
       )}
-      <div className="flex-btn flex-wrap gap-4 items-center">
+      <div className="flex-btn flex-wrap gap-4 items-center mt-20">
         <h1 className="text-xl font-semibold">Library</h1>
         <div className="xs:w-56">
           <Button
