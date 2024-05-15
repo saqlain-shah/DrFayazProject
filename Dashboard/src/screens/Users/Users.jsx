@@ -46,6 +46,7 @@ const Users = () => {
               <th className={thClass} style={{ width: '15%' }}>#</th>
               <th className={thClass} style={{ width: '15%' }}>Name</th>
               <th className={thClass} style={{ width: '15%' }}>Email</th>
+              <th className={thClass} style={{ width: '15%' }}>Created At</th>
               {/* Add more table headings as needed */}
              
             </tr>
@@ -56,6 +57,7 @@ const Users = () => {
                 <td className={tdClass}>{index + 1}</td>
                 <td className={tdClass}>{user.name}</td>
                 <td className={tdClass}>{user.email}</td>
+                <td className={tdClass}>{new Date(user.createdAt).toLocaleString()}</td>
                 {/* Render more user data as needed */}
                 <td className={tdClass} style={{ position: 'relative' }}>
                   {/* You can add action buttons or menu similar to the patient table */}
