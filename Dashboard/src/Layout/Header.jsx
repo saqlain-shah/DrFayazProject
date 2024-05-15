@@ -113,7 +113,7 @@ function Header() {
 
                       {/* Display user's name */}
                       <p className="text-sm text-textGray font-medium">
-                        {name} {/* Display user's full name */}
+                        {name} 
                       </p>
                     </div>
                   </MenuSelect>
