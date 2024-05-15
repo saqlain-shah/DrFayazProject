@@ -1,38 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { LoadingOutlined } from '@ant-design/icons';
-//import Calendar from 'react-calendar';
-//import 'react-calendar/dist/Calendar.css';
-//import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
+import { LoadingOutlined, Button, message } from 'antd';
 import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
-//import useAuthCheck from '../../../redux/hooks/useAuthCheck';
-import { message ,Button} from 'antd';
+import { message, Button } from 'antd';
 import ImageUpload from '../../UI/form/ImageUpload';
-import pImage from '../../../images/avatar.jpg'
+import pImage from '../../../images/avatar.jpg';
 import axios from 'axios';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
 
 const PatientProfileSetting = () => {
     const params = useParams();
-    // const { data } = useAuthCheck();
     const [data, setData] = useState();
-    // const { register, handleSubmit } = useForm({});
     const [userId, setUserId] = useState('');
     const [selectBloodGroup, setSelectBloodGroup] = useState('');
-    const [selectValue, setSelectValue] = useState({})
+    const [selectValue, setSelectValue] = useState({});
     const [value, setValue] = useState(undefined);
     const [showCalendar, setShowCalendar] = useState(false);
     const buttonRef = useRef(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // Removed duplicate declaration
     const [updatePatient, { isSuccess, isError, error, isLoading }] = useUpdatePatientMutation();
     const [isConfirmDisable, setIsConfirmDisable] = useState(true);
     const [isDisable, setIsDisable] = useState(true);
-    const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [file, setFile] = useState(null);
-
     const handleDateChange = (date) => {
         setValue(date);
     };
