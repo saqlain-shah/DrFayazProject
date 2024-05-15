@@ -23,7 +23,7 @@ const EditAppointmentModal = ({ isOpen, closeModal, appointment, onUpdateAppoint
     };
 
     const saveAppointment = () => {
-        const apiUrl = `https://server-yvzt.onrender.com/api/appointments/${_id}`;
+        const apiUrl = `http://localhost:8800/api/appointments/${_id}`;
 
         // Format date and time values to strings
         const formattedDateOfVisit = editedDateOfVisit.toISOString();

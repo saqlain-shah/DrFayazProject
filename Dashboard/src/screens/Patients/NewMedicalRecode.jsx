@@ -217,7 +217,7 @@ function NewMedicalRecord() {
             <img
               src={
                 webPatientData.patientInfo?.image
-                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
+                  ? `http://localhost:8800/${webPatientData.patientInfo.image}`
                   : patientData.profilePicture
                   ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
                   : ""
