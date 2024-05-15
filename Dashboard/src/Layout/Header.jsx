@@ -43,13 +43,13 @@ function Header() {
       },
     },
   ];
-  const profileImageURL = profileImagePath ? `http://localhost:8800/${profileImagePath}` : null;
+  const profileImageURL = profileImagePath ? `https://server-yvzt.onrender.com/${profileImagePath}` : null;
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8800/api/web/notifications', {
+        const response = await axios.get('https://server-yvzt.onrender.com/api/web/notifications', {
           headers: {
             Authorization: `Bearer ${token}`
           }

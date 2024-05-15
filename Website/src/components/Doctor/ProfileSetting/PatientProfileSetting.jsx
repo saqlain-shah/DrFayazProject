@@ -51,7 +51,7 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
+        await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
             .then(response => {
     
                 const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
