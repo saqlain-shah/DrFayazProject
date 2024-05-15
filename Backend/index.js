@@ -45,12 +45,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'https://dashboard.avicenahealthcare.com','https://www.avicenahealthcare.com');
+    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com'];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 }
+
 
 
 // Middleware to disable caching
@@ -63,7 +68,7 @@ app.use((req, res, next) => {
 
 
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com' ],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', ],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
@@ -123,3 +128,6 @@ app.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 });
+
+
+

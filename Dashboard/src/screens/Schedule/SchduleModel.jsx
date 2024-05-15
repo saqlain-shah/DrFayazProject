@@ -31,10 +31,11 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     const handleSaveAppointment = () => {
         // Check if endDateTime is before startDateTime or if the appointment already exists
         const isInvalidTimeRange = endDateTime <= startDateTime ||
-            appointments.some(appointment =>
-                (startDateTime >= new Date(appointment.start) && startDateTime <= new Date(appointment.end)) ||
-                (endDateTime >= new Date(appointment.start) && endDateTime <= new Date(appointment.end))
-            );
+        (appointmentData && appointmentData.some(appointment =>
+            (startDateTime >= new Date(appointment.start) && startDateTime <= new Date(appointment.end)) ||
+            (endDateTime >= new Date(appointment.start) && endDateTime <= new Date(appointment.end))
+        ));
+
     
         if (isInvalidTimeRange) {
             // If the time range is invalid or appointment already exists, display a message and return without saving
