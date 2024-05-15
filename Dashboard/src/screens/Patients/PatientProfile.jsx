@@ -33,7 +33,7 @@ function PatientProfile() {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const profileResponse = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
+        const profileResponse = await axios.get(`http://localhost:8800/api/patients/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProfileData(profileResponse.data);
@@ -45,7 +45,7 @@ function PatientProfile() {
     const fetchWebPatientData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
+        const response = await axios.get(`http://localhost:8800/api/web/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setWebPatientData(response.data);
@@ -66,15 +66,14 @@ function PatientProfile() {
     const fetchMedicalRecords = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log('Token in PatientProfile component:', token);
-        console.log('Fetching medical records...');
+      
         const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
           }
         });
-        console.log('Medical records response:', response.data);
+       
         setMedicalRecords(response.data);
       } catch (error) {
         console.error('Error fetching medical records:', error);
@@ -137,24 +136,23 @@ function PatientProfile() {
 
   const verifyOtp = async (otpType) => {
     const email = 'appointment@avicenahealthcare.com'; // Set your desired email address here
-  
-    console.log('Verifying OTP...');
+ 
   
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otp/verify-otp',
+        'http://localhost:8800/api/otp/verify-otp',
         { email: email, otp: otpCode, otpType: otpType }, // Pass otpType along with other data
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' } }
       );
   
-      console.log('OTP Verification Response:', response);
+     
   
       if (response.status === 200 && response.data.success) { // Check if response is successful
-        console.log('OTP Verified!');
+    
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
       } else {
-        console.log('Failed to verify OTP:', response.data.message);
+      
         alert('Invalid OTP code. Please try again.');
         setIsOtpValid(false);
       }
@@ -177,7 +175,7 @@ function PatientProfile() {
       );
   
       if (response.status === 200) {
-        console.log('OTP sent successfully');
+      
         openDentalModal();
         setActiveTab(6); // Set the activeTab to 6 after successful OTP sending
       }
@@ -192,7 +190,7 @@ function PatientProfile() {
 
   
   const tabPanel = () => {
-    console.log("Active Tab:", activeTab);
+   
   
     switch (activeTab) {
       case 1:
@@ -207,7 +205,7 @@ function PatientProfile() {
         return  <PatientImages medicalRecords={medicalRecords} webPatientAttachments={attachments} token={localStorage.getItem('token')}  />
   
       case 6:
-        console.log("Rendering DentalChart...");
+       
         return isOtpValid ? <DentalChart  /> : null; // Render DentalChart only if OTP is valid
       case 7:
         // return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
@@ -279,7 +277,7 @@ function PatientProfile() {
           {profileData.fullName ? ( // Check if profileData is available
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
+                src={`http://localhost:8800/${profileData.profilePicture}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
@@ -293,7 +291,7 @@ function PatientProfile() {
           {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
+                src={`http://localhost:8800/${webPatientData.patientInfo.image}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />

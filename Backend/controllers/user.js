@@ -7,7 +7,6 @@ import nodemailer from 'nodemailer';
 
 export const login = async (req, res, next) => {
   try {
-    console.log('Request Body:', req.body); // Log request body
 
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -94,7 +93,7 @@ export const changePassword = async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;
 
   try {
-    console.log('Change Password Request Body:', req.body);
+
 
     if (!userId) {
       console.log('User ID is missing');
@@ -112,7 +111,7 @@ export const changePassword = async (req, res, next) => {
     const isPasswordValid = await bcrypt.compare(oldPassword.trim(), user.password.trim());
 
     if (!isPasswordValid) {
-      console.log('Invalid old password');
+ 
       return res.status(400).json({ message: 'Invalid old password' });
     }
 
@@ -132,6 +131,15 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({}, { password: 0 }); // Exclude password field
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 export const logout = async (req, res, next) => {
   try {

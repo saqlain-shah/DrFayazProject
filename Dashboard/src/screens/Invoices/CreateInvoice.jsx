@@ -94,7 +94,7 @@ function CreateInvoice() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await axios.post('https://server-yvzt.onrender.com/api/invoices', {
+      const response = await axios.post('http://localhost:8800/api/invoices', {
         selectedPatient,
         invoiceItems,
         tax,
@@ -116,7 +116,7 @@ function CreateInvoice() {
       setGrandTotal(0);
       setNotes("Thank you for your business. We hope to work with you again soon.");
 
-      console.log('Invoice sent successfully:', response.data);
+     
       toast.success('Invoice saved and sent successfully');
     } catch (error) {
       console.error('Error sending invoice:', error);

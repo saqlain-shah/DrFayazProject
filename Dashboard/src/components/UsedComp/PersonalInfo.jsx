@@ -34,9 +34,9 @@ function PersonalInfo({ titles, onSave }) {
       data.append('address', address);
       data.append('bloodGroup', bloodGroup);
 
-      console.log('Data to be sent:', data);
+    
 
-      await axios.post('https://server-yvzt.onrender.com/api/patients', data, {
+      await axios.post('http://localhost:8800/api/patients', data, {
 
         headers: {
           'Content-Type': 'multipart/form-data',

@@ -63,7 +63,7 @@ const AppointmentPage = () => {
   const [showAppointmentDetails, setShowAppointmentDetails] = useState(false);
 
   const handleSelectAppointment = (slots, patientId, profileSettingId) => {
-    console.log("aponitment details", slots);
+    
     if (!slots || slots.length === 0) {
       console.error("No appointment slots available");
       return;
@@ -73,7 +73,7 @@ const AppointmentPage = () => {
       setSelectedStartDate(slots.startDateTime);
       setSelectedEndDate(slots.endDateTime);
     }
-    console.log("Selected Slot:", slots);
+
     setSelectedSlot(slots);
     fetchData(); // Here the fetchData is called, so the clientId is passed here
   };
@@ -87,15 +87,14 @@ const AppointmentPage = () => {
       },
     };
 
-    console.log("clientId:", params.clientId); // Log clientId here
 
     try {
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
+        `http://localhost:8800/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
-        console.log("Response:", response);
+   
         setUserId(response.data._id);
         setSelectValue(response.data);
       }
@@ -113,13 +112,12 @@ const AppointmentPage = () => {
     if (current === 0) {
       fetchData();
     }
-    console.log("selectedService", selectedService);
-    console.log("selected values", selectValue)
+   
   };
 
   const prev = () => {
     setCurrent(current - 1);
-    console.log(current);
+    
   };
 
   useEffect(() => {
@@ -153,7 +151,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "https://server-yvzt.onrender.com/api/stripe/checkout",
+        "http://localhost:8800/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -195,7 +193,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/services",
+        "http://localhost:8800/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -218,7 +216,7 @@ const AppointmentPage = () => {
 
   const handleConfirmAppointment = async () => {
     setLoading(true);
-    console.log("Confirming appointment...");
+   
     setSelectValue({ ...selectValue, id: userId });
     const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
@@ -245,31 +243,31 @@ const AppointmentPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+      const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      console.log("Appointment created successfully:", response.data);
+    
 
-      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log("Email confirmation sent successfully:", emailResponse.data);
+   
 
       toast.success("Appointment scheduled successfully!");
 
       // Now, make a request to delete the selected slot
-   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+   const appdelete = await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         }
     });
-    console.log("selected slot delete successfully:", appdelete.data);
+
 
       setShowModal(true);
       setShowAppointmentDetails(true);
@@ -324,9 +322,10 @@ const AppointmentPage = () => {
       content: (
         <>
           {serviceDetails && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div style={{display:'flex',justifyContent:'space-around',alignItems:'center',flexWrap:'wrap'}}>
               {serviceDetails.map((service, index) => (
                 <div
+                style={{cursor:'pointer'}}
                   key={index}
                   onClick={() => {
                     setSelectedService({
@@ -338,7 +337,7 @@ const AppointmentPage = () => {
                   className={`p-4 border rounded-md cursor-pointer transform transition duration-300 hover:scale-105 ${selectedService && selectedService.serviceName === service.name ? 'bg-blue-500 text-black' : 'bg-white text-black'
                     }`}
                 >
-                  <p className="border bg-gray-800 text-base p-2 rounded-md">
+                  <p className="border bg-blue-4s00 text-base p-2 rounded-md">
                     <span className="font-bold">Service Name:</span> {service.name}<br />
                     <span className="font-bold">Service Price:</span> {service.price}
                   </p>

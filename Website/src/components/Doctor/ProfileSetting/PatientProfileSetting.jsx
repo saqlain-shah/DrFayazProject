@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { LoadingOutlined } from '@ant-design/icons';
 //import Calendar from 'react-calendar';
 //import 'react-calendar/dist/Calendar.css';
 //import moment from 'moment';
@@ -6,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 //import useAuthCheck from '../../../redux/hooks/useAuthCheck';
-
+import { message ,Button} from 'antd';
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg'
 import axios from 'axios';
@@ -26,7 +27,9 @@ const PatientProfileSetting = () => {
     const buttonRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [updatePatient, { isSuccess, isError, error, isLoading }] = useUpdatePatientMutation();
-
+    const [isConfirmDisable, setIsConfirmDisable] = useState(true);
+    const [isDisable, setIsDisable] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [file, setFile] = useState(null);
 
@@ -48,9 +51,9 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
+        await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
             .then(response => {
-                console.log(response)
+    
                 const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
                 response.data.image = imagePath;
                 setData(response.data);
@@ -97,16 +100,16 @@ const PatientProfileSetting = () => {
     };
 
     const handleFileChange = (e) => {
-        console.log('File input changed');
-        console.log('Event object:', e);
+      
         const selectedFile = e.target.files[0];
-        console.log('Selected File:', selectedFile); // Log the selected file
+     
         setSelectedImage(URL.createObjectURL(selectedFile)); // Update the preview of the selected image
         setFile(selectedFile); // Set the file state with the selected file
     };
 
 
     const handleSubmit = async () => {
+         
         setLoading(true);
         const token = localStorage.getItem('token');
         const config = {
@@ -128,22 +131,21 @@ const PatientProfileSetting = () => {
             formData.append(key, data[key]);
         }
 
-        console.log('FormData:', formData);
+    
 
         try {
             // Send PUT request with FormData
             const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
-            console.log('Response:', response);
+        
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
             fetchData(params);
         } catch (error) {
             console.error('Error updating profile:', error);
             message.error(error?.response?.data?.message || 'Failed to update profile');
-        }
-        finally {
-            setLoading(false); // Set loading back to false after the API call is completed
-        }
+        }finally {
+      setLoading(false); // Set loading state to false once the request is completed
+    }
     };
 
 
@@ -251,6 +253,7 @@ const PatientProfileSetting = () => {
                   type="primary"
                   size="large"
                   style={{ marginRight: "8px" }}
+                 
                   onClick={() => handleSubmit()}
                 >
                   {loading ? (

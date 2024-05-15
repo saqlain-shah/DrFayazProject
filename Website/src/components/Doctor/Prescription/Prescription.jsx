@@ -14,7 +14,7 @@ const Prescription = () => {
   const [deleteBlog] = useDeletePrescriptionMutation();
 
   useEffect(() => {
-    console.log("ID:", id);
+   
     fetchData();
   }, [id]); // Refetch data when ID changes
 
@@ -28,10 +28,10 @@ const Prescription = () => {
         },
       };
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/web/web/${id}`,
+        `http://localhost:8800/api/web/web/${id}`,
         config
       );
-      console.log("response", response);
+   
       setData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);

@@ -37,6 +37,7 @@ import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
 import { NotificationProvider } from './components/NotificationContext';
 import { ToastContainer } from 'react-toastify'; 
+import Users from './screens/Users/Users';
 
 function PrivateRoute({ element, ...props }) {
   const { user } = useAuth();
@@ -72,6 +73,10 @@ function App() {
           <Route path="/payments" element={<PrivateRoute element={<Payments />} />} />
           <Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
           <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
+
+          {/* Users */}
+          <Route path="/users" element={<PrivateRoute element={<Users />} />} />
+
           {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />

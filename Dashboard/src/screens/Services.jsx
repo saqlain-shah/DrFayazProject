@@ -17,7 +17,7 @@ function Services() {
     async function fetchData() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/services', {
+        const response = await axios.get('http://localhost:8800/api/services', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -46,7 +46,7 @@ function Services() {
   const onDelete = async (item) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/services/${item._id}`, {
+      await axios.delete(`http://localhost:8800/api/services/${item._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -66,8 +66,8 @@ function Services() {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
+      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('http://localhost:8800/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -79,13 +79,13 @@ function Services() {
   const createService = async (serviceData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://server-yvzt.onrender.com/api/services', serviceData, {
+      const response = await axios.post('http://localhost:8800/api/services', serviceData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log('Service created:', response.data);
+     
       onCloseModal();
       toast.success('Service created successfully.');
 
