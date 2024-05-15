@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LoadingOutlined, Button, message } from 'antd';
+import {  Button, message } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
