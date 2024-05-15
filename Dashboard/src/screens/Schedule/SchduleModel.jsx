@@ -29,14 +29,16 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
 
     const handleSaveAppointment = () => {
-        // Check if endDateTime is before startDateTime (i.e., the end time is before the start time)
-        const isInvalidTimeRange = endDateTime < startDateTime ||
-            (endDateTime.getHours() === startDateTime.getHours() &&
-                endDateTime.getMinutes() === startDateTime.getMinutes());
+        // Check if endDateTime is before startDateTime or if the appointment already exists
+        const isInvalidTimeRange = endDateTime <= startDateTime ||
+            appointments.some(appointment =>
+                (startDateTime >= new Date(appointment.start) && startDateTime <= new Date(appointment.end)) ||
+                (endDateTime >= new Date(appointment.start) && endDateTime <= new Date(appointment.end))
+            );
     
         if (isInvalidTimeRange) {
-            // If the time range is invalid, display a message and return without saving
-            toast.error('Invalid time range. Please select a valid time range.');
+            // If the time range is invalid or appointment already exists, display a message and return without saving
+            toast.error('Invalid time range or appointment already exists. Please select a valid time range.');
             return;
         }
     
@@ -79,8 +81,9 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
                 toast.error('Failed to save appointment');
             });
     
-        console.log("appointment date", appointmentPayload)
+        console.log("appointment date", appointmentPayload);
     };
+    
     
     
     
