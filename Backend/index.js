@@ -45,11 +45,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.setHeader('Access-Control-Allow-Origin', 'https://dashboard.avicenahealthcare.com','https://www.avicenahealthcare.com');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', true);
-    res.removeHeader("Connection"); 
     next();
 }
 
@@ -64,7 +63,7 @@ app.use((req, res, next) => {
 
 
 const corsOptions = {
-    origin: ['http://localhost:5174', 'http://localhost:5173', 'https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com' ],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com' ],
     credentials: true, // You may need to include this if your requests include credentials (e.g., cookies)
 };
 
