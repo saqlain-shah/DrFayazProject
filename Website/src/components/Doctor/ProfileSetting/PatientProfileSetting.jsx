@@ -3,7 +3,6 @@ import { LoadingOutlined, Button, message } from 'antd';
 import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
-import { message, Button } from 'antd';
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg';
 import axios from 'axios';
