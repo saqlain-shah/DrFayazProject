@@ -46,7 +46,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     };
 
     const handleSignUpSuccess = () => {
-        console.log('Sign-up successful!yyyy');
+       
         toast.success('Registration successful');
         onSignUpSuccess();  // Invoke the callback function passed as prop
     };

@@ -8,7 +8,7 @@ const Dashboard = () => {
     const clientId = localStorage.getItem('clientId'); // Retrieve clientId from local storage
 
     useEffect(() => {
-        console.log("ClientId in useEffect:", clientId);
+     
         // Check for changes in clientId
     }, [clientId]);
 

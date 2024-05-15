@@ -13,7 +13,10 @@ const clientSchema = new mongoose.Schema({
   emergencyContact: { type: Number, default: 0 },
   address: { type: String, default: "" },
   image: { type: String, default: "" }
+}, {
+  timestamps: true 
 });
+
 
 // Hash password before saving to the database
 // clientSchema.pre('save', async function (next) {

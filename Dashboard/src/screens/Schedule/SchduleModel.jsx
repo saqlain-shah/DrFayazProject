@@ -18,6 +18,26 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         sms: false,
         whatsapp: false,
     });
+    const [existingAppointments, setExistingAppointments] = useState([]);
+
+    useEffect(() => {
+        // Fetch token from localStorage
+        const token = localStorage.getItem('token');
+    
+        // Fetch existing appointments from the API
+        axios.get('https://server-yvzt.onrender.com/api/schedule', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            setExistingAppointments(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching existing appointments:', error);
+        });
+    }, []);
+    
 
     useEffect(() => {
         if (appointmentData?.title) {
@@ -29,16 +49,31 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
 
     const handleSaveAppointment = () => {
-        // Check if endDateTime is before startDateTime (i.e., the end time is before the start time)
         const isInvalidTimeRange = endDateTime < startDateTime ||
-            (endDateTime.getHours() === startDateTime.getHours() &&
-                endDateTime.getMinutes() === startDateTime.getMinutes());
-    
-        if (isInvalidTimeRange) {
-            // If the time range is invalid, display a message and return without saving
-            toast.error('Invalid time range. Please select a valid time range.');
-            return;
-        }
+        (endDateTime.getHours() === startDateTime.getHours() &&
+            endDateTime.getMinutes() === startDateTime.getMinutes());
+
+    if (isInvalidTimeRange) {
+        // If the time range is invalid, display a message and return without saving
+        toast.error('Invalid time range. Please select a valid time range.');
+        return;
+    }
+
+    // Check if both startDateTime and endDateTime are already booked
+    const isAlreadyBooked = existingAppointments.some(appointment => {
+        const appointmentStart = new Date(appointment.startDateTime);
+        const appointmentEnd = new Date(appointment.endDateTime);
+        return (
+            (startDateTime >= appointmentStart && startDateTime < appointmentEnd) &&
+            (endDateTime > appointmentStart && endDateTime <= appointmentEnd)
+        );
+    });
+
+    if (isAlreadyBooked) {
+        // If both start time and end time are already booked, display an error message and return without saving
+        toast.error('Appointment time is already booked. Please select a different time.');
+        return;
+    }
     
         // Calculate the duration of the appointment in milliseconds
         const duration = endDateTime.getTime() - startDateTime.getTime();
@@ -79,8 +114,9 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
                 toast.error('Failed to save appointment');
             });
     
-        console.log("appointment date", appointmentPayload)
+       
     };
+    
     
     
     

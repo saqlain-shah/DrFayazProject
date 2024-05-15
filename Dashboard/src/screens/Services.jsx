@@ -85,7 +85,7 @@ function Services() {
         },
       });
 
-      console.log('Service created:', response.data);
+     
       onCloseModal();
       toast.success('Service created successfully.');
 

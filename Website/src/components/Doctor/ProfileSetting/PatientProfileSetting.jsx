@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { LoadingOutlined } from '@ant-design/icons';
 //import Calendar from 'react-calendar';
 //import 'react-calendar/dist/Calendar.css';
 //import moment from 'moment';
@@ -6,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Await, Link, useParams } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 //import useAuthCheck from '../../../redux/hooks/useAuthCheck';
-import { message } from 'antd';
+import { message ,Button} from 'antd';
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg'
 import axios from 'axios';
@@ -23,7 +24,9 @@ const PatientProfileSetting = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const buttonRef = useRef(null);
     const [updatePatient, { isSuccess, isError, error, isLoading }] = useUpdatePatientMutation();
-
+    const [isConfirmDisable, setIsConfirmDisable] = useState(true);
+    const [isDisable, setIsDisable] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [file, setFile] = useState(null);
 
@@ -47,7 +50,7 @@ const PatientProfileSetting = () => {
         };
         await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
             .then(response => {
-                console.log(response)
+    
                 const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
                 response.data.image = imagePath;
                 setData(response.data);
@@ -94,16 +97,17 @@ const PatientProfileSetting = () => {
     };
 
     const handleFileChange = (e) => {
-        console.log('File input changed');
-        console.log('Event object:', e);
+      
         const selectedFile = e.target.files[0];
-        console.log('Selected File:', selectedFile); // Log the selected file
+     
         setSelectedImage(URL.createObjectURL(selectedFile)); // Update the preview of the selected image
         setFile(selectedFile); // Set the file state with the selected file
     };
 
 
     const handleSubmit = async () => {
+         
+        setLoading(true);
         const token = localStorage.getItem('token');
         const config = {
             headers: {
@@ -124,19 +128,21 @@ const PatientProfileSetting = () => {
             formData.append(key, data[key]);
         }
 
-        console.log('FormData:', formData);
+    
 
         try {
             // Send PUT request with FormData
             const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
-            console.log('Response:', response);
+        
             message.success('Successfully Profile Updated');
             // Refetch data after successful update
             fetchData(params);
         } catch (error) {
             console.error('Error updating profile:', error);
             message.error(error?.response?.data?.message || 'Failed to update profile');
-        }
+        }finally {
+      setLoading(false); // Set loading state to false once the request is completed
+    }
     };
 
 
@@ -240,7 +246,20 @@ const PatientProfileSetting = () => {
                         </div>
                     </div>
                     <div className='text-end'>
-                        <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button>
+                    <Button
+                  type="primary"
+                  size="large"
+                  style={{ marginRight: "8px" }}
+                 
+                  onClick={() => handleSubmit()}
+                >
+                  {loading ? (
+                    <LoadingOutlined style={{ fontSize: '24px' }} />
+                  ) : (
+                    <span>Save</span>
+                  )}
+                </Button>
+                        {/* <button onClick={handleSubmit} className="btn btn-primary my-3" disabled={isLoading ? true : false}>{isLoading ? 'Updating..' : 'Save Changes'}</button> */}
                     </div>
                 </div>
             </div>

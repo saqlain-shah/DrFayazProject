@@ -116,7 +116,7 @@ function CreateInvoice() {
       setGrandTotal(0);
       setNotes("Thank you for your business. We hope to work with you again soon.");
 
-      console.log('Invoice sent successfully:', response.data);
+     
       toast.success('Invoice saved and sent successfully');
     } catch (error) {
       console.error('Error sending invoice:', error);

@@ -54,36 +54,48 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
 
     return (
         <div className="container">
-            <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
-            <div className="flex justify-center flex-wrap m-8 ">
-                {appointmentSlots && appointmentSlots.length > 0 ? (
-                    appointmentSlots.map((slot, index) => (
-                        <div
-                            key={slot._id}
-                            className={`p-4 border rounded-md shadow-md cursor-pointer ${selectedSlot && selectedSlot._id === slot._id ? 'bg-green-100' : 'bg-white'}`}
-                            style={{ minWidth: '200px', maxWidth: '300px', margin: '10px' }}
-                            onClick={() => handleSlotSelection(slot._id)}
-                        >
-                            <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
-                            <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
-                            <label className="flex items-center mt-2">
-                                <input
-                                    type="radio"
-                                    name="appointmentSlot"
-                                    value={slot._id}
-                                    checked={selectedSlot && selectedSlot._id === slot._id}
-                                    onChange={() => handleSlotSelection(slot._id)}
-                                    className="mr-2"
-                                />
-                                <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
-                            </label>
-                        </div>
-                    ))
-                ) : (
-                    <div>No appointment slots available.</div>
-                )}
-            </div>
+        <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
+        <div style={{display:'flex',justifyContent:'space-around',flexWrap:'wrap',alignItems:'center'}}>
+            {appointmentSlots && appointmentSlots.length > 0 ? (
+                appointmentSlots.map((slot, index) => (
+                    <div
+                        key={slot._id}
+                        className="custom-slot"
+                        style={{ 
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '0.375rem',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                            cursor: 'pointer',
+                            minWidth: '200px',
+                            maxWidth: '300px',
+                            background:'white',
+                            margin: '10px',
+                            padding:'10px',
+                            backgroundColor: selectedSlot && selectedSlot._id === slot._id ? '#d1fae5' : '#ffffff'
+                        }}
+                        onClick={() => handleSlotSelection(slot._id)}
+                    >
+                        <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
+                        <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
+                        <label className="flex items-center mt-2">
+                            <input
+                                type="radio"
+                                name="appointmentSlot"
+                                value={slot._id}
+                                checked={selectedSlot && selectedSlot._id === slot._id}
+                                onChange={() => handleSlotSelection(slot._id)}
+                                style={{ marginRight: '0.5rem' }}
+                            />
+                            <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
+                        </label>
+                    </div>
+                ))
+            ) : (
+                <div>No appointment slots available.</div>
+            )}
         </div>
+    </div>
+    
     );
 };
 

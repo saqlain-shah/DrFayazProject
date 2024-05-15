@@ -10,17 +10,17 @@ const SignInForm = () => {
     const [isSignUp, setSignUp] = useState(false);
     const Navigate = useNavigate();
     const handleSignUpSuccess = () => {
-        console.log('Switching to Sign In mode...');
+       
         setSignUp(false); // Change the mode to sign-in
         Navigate(`/dashboard/${clientId}`);
     };
 
     const handleSignInMode = () => {
-        console.log('Switching to Sign Up mode...');
+       
         setSignUp(true); // Change the mode to sign-up
     };
     useEffect(() => {
-        console.log('Component rendered with sign-in mode:', isSignUp);
+      
     }, [isSignUp]);
 
     return (

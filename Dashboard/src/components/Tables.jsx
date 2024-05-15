@@ -56,7 +56,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
       });
   };
   const handleDelete = (itemId) => {
-    console.log('Deleting item with ID:', itemId);
+  
   
     // Ensure itemId is in the correct format
     const id = itemId._id.toString(); // Assuming _id is an ObjectId
@@ -193,7 +193,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
 
 export function Transactiontables({ data, action, updatedData, setUpdatedData }) {
   // Ensure data contains items with various status values
-  console.log("Data:", data);
+
 
   const handleStatusChange = (e, itemId) => {
     const updatedItems = data.map((item) => {
@@ -417,7 +417,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
 
 // MedicineTable component
 export function MedicineTable({ data, onEdit, onDelete }) {
-  console.log("responsive", data)
+
   const thclass = "border-b border-border py-2 px-4 text-left text-sm font-medium text-main";
   const tdclass = "border-b border-border py-2 px-4 text-sm text-main";
 
@@ -727,7 +727,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
 
 
 export function PatientTableArray({ data, onEdit }) {
-  console.log("data", data)
+
   if (!Array.isArray(data)) {
     console.error('Data is not an array:', data);
     return <div>Error: Data is not an array</div>;
@@ -963,7 +963,7 @@ export function InvoiceUsedTable({ data, functions }) {
 }
 
 export function InvoiceProductsTable({ data, functions, button, selectedCurrency, discount, tax }) {
-  console.log("selectedCurrency", selectedCurrency); // For debugging purposes
+
 
   // CSS classes for table header and table data cells
   const thclass = "p-3 text-left font-medium text-gray-700 border-b border-gray-200";
@@ -1054,7 +1054,7 @@ export function InvoiceProductsTable({ data, functions, button, selectedCurrency
 // medicine Dosage table
 
 export function MedicineDosageTable({ data, functions, button }) {
-  console.log("MedicineDosageTable data:", data);
+  
   const thClass = 'text-start text-xs font-medium py-3 px-2 whitespace-nowrap';
   const tdClass = 'text-start text-xs py-4 px-2 whitespace-nowrap';
 

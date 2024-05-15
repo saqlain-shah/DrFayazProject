@@ -68,15 +68,14 @@ function PatientProfile() {
     const fetchMedicalRecords = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log('Token in PatientProfile component:', token);
-        console.log('Fetching medical records...');
+      
         const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
           }
         });
-        console.log('Medical records response:', response.data);
+       
         setMedicalRecords(response.data);
       } catch (error) {
         console.error('Error fetching medical records:', error);
@@ -139,8 +138,7 @@ function PatientProfile() {
 
   const verifyOtp = async (otpType) => {
     const email = 'appointment@avicenahealthcare.com'; // Set your desired email address here
-  
-    console.log('Verifying OTP...');
+ 
   
     try {
       const response = await axios.post(
@@ -149,14 +147,14 @@ function PatientProfile() {
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' } }
       );
   
-      console.log('OTP Verification Response:', response);
+     
   
       if (response.status === 200 && response.data.success) { // Check if response is successful
-        console.log('OTP Verified!');
+    
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
       } else {
-        console.log('Failed to verify OTP:', response.data.message);
+      
         alert('Invalid OTP code. Please try again.');
         setIsOtpValid(false);
       }
@@ -179,7 +177,7 @@ function PatientProfile() {
       );
   
       if (response.status === 200) {
-        console.log('OTP sent successfully');
+      
         openDentalModal();
         setActiveTab(6); // Set the activeTab to 6 after successful OTP sending
       }
@@ -194,7 +192,7 @@ function PatientProfile() {
 
   
   const tabPanel = () => {
-    console.log("Active Tab:", activeTab);
+   
   
     switch (activeTab) {
       case 1:
@@ -209,7 +207,7 @@ function PatientProfile() {
         return  <PatientImages medicalRecords={medicalRecords} webPatientAttachments={attachments} token={localStorage.getItem('token')}  />
   
       case 6:
-        console.log("Rendering DentalChart...");
+       
         return isOtpValid ? <DentalChart  /> : null; // Render DentalChart only if OTP is valid
       case 7:
         // return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
