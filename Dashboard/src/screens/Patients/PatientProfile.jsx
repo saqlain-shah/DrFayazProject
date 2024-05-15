@@ -19,6 +19,8 @@ function PatientProfile() {
   const { id } = useParams();
   const [profileData, setProfileData] = useState({});
   const [webPatientData, setWebPatientData] = useState({});
+  const [InvoiceData, setInvoiceData] = useState({});
+  const [healthInfoData, setHealthInfoData] = useState({});
   const [activeTab, setActiveTab] = useState(1);
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
   const [otpCode, setOtpCode] = useState('');
@@ -85,6 +87,43 @@ function PatientProfile() {
     fetchMedicalRecords();
   }, [id]);
 
+  useEffect(() => {
+    const fetchInvoiceData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/invoices/patient/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setInvoiceData(response.data);
+      } catch (error) {
+        console.error('Error fetching invoice data:', error);
+      }
+    };
+  
+    fetchInvoiceData();
+  }, [id]);
+  
+  useEffect(() => {
+    const fetchHealthInformation = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`https://server-yvzt.onrender.com/api/health-information/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setHealthInfoData(response.data);
+      } catch (error) {
+        console.error('Error fetching health information:', error);
+      }
+    };
+  
+    fetchHealthInformation();
+  }, [id]);
+  
+
   const openDentalModal = () => {
     setIsDentalModalOpen(true);
   };
@@ -99,7 +138,7 @@ function PatientProfile() {
   };
 
   const verifyOtp = async (otpType) => {
-    const email = 'saqlainshahbaltee@gmail.com'; // Set your desired email address here
+    const email = 'appointment@avicenahealthcare.com'; // Set your desired email address here
   
     console.log('Verifying OTP...');
   
@@ -128,16 +167,17 @@ function PatientProfile() {
     }
   };
   
+  
 
   const handleMentalHealthTabClick = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:8800/api/otp/send-otp-to-doctor',
-        { email: 'saqlainshahbaltee@gmail.com', otpType: 'dental' }, // Pass otpType
+        'https://server-yvzt.onrender.com/api/otp/send-otp-to-doctor',
+        { email: 'appointment@avicenahealthcare.com', otpType: 'dental' }, // Pass otpType
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
       if (response.status === 200) {
         console.log('OTP sent successfully');
         openDentalModal();
@@ -145,8 +185,12 @@ function PatientProfile() {
       }
     } catch (error) {
       console.error('Error sending OTP to doctor:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
     }
-};
+  };
+  
 
   
   const tabPanel = () => {
@@ -166,17 +210,19 @@ function PatientProfile() {
   
       case 6:
         console.log("Rendering DentalChart...");
-        return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is valid
+        return isOtpValid ? <DentalChart  /> : null; // Render DentalChart only if OTP is valid
       case 7:
-        return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
+        // return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
   
       case 8:
-        return <HealthInfomation />;
+        return <HealthInfomation patientId={id} setHealthInfoData={setHealthInfoData}  />;
         case 9:
           return  <PatientDetails
           medicalRecords={medicalRecords}
           profileData={profileData}
           webPatientData={webPatientData}
+          InvoiceData={InvoiceData}
+          healthInfoData={healthInfoData}
         />
       default:
         return null;
@@ -184,9 +230,9 @@ function PatientProfile() {
   };
   
 
-  const formatProfileData = (profileData, webPatientData) => {
+  const formatProfileData = (profileData, webPatientData, healthInfoData) => {
     const formattedData = [];
-
+  
     if (profileData && profileData._id) {
       formattedData.push({
         _id: profileData._id,
@@ -198,10 +244,11 @@ function PatientProfile() {
         emergencyContact: profileData.emergencyContact,
         createdAt: profileData.createdAt,
         updatedAt: profileData.updatedAt,
-        profilePicture: profileData.profilePicture
+        profilePicture: profileData.profilePicture,
+        healthInfoData: healthInfoData // Add healthInfoData here
       });
     }
-
+  
     if (webPatientData && webPatientData._id) {
       formattedData.push({
         _id: webPatientData._id,
@@ -211,12 +258,14 @@ function PatientProfile() {
         address: webPatientData.patientInfo ? webPatientData.patientInfo.address : '',
         email: webPatientData.patientInfo ? webPatientData.patientInfo.email : '',
         emergencyContact: webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : '',
-        createdAt: webPatientData.createdAt
+        createdAt: webPatientData.createdAt,
+        healthInfoData: healthInfoData // Add healthInfoData here
       });
     }
-
+  
     return formattedData;
   };
+  
 
 
   return (

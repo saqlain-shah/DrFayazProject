@@ -55,7 +55,7 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
                 src={imageUrl}
                 alt={`Attachment ${index}`}
                 className="rounded-lg shadow-md"
-                style={{ width: "200px", height: "200px", maxWidth: "100%" }}
+                style={{ width: "200px", height: "200px", maxWidth: "100%",margin:'10px' }}
                 onError={(e) => {
                   console.error('Error loading image:', e.target.src);
                 }}

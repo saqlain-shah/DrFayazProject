@@ -120,7 +120,7 @@ function Services() {
       <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
 
 
-        <div className="mt-8 w-full overflow-x-scroll">
+        <div className="mt-8 w-full overflow-x-hidden">
           <ServiceTable
             data={servicesData}
             onEdit={onEdit}

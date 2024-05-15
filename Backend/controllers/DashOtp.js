@@ -1,4 +1,3 @@
-// Import nodemailer
 import nodemailer from 'nodemailer';
 
 // Object to store OTPs for each user
@@ -6,17 +5,18 @@ const otpStore = {};
 
 // Method to send OTP to the provided email address
 export const sendOTP = async (req, res) => {
-  // Logic to generate and send OTP via email
   try {
     const { email } = req.body; // Extract email from request body
 
     // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      host: 'smtp.office365.com',
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail address
-        pass: 'qfonuissqspipwtq' // Replace with your Gmail password
-      },
+        user: 'appointment@avicenahealthcare.com', // Replace with your email address
+        pass: 'Godaay2024' // Replace with your password
+      }
     });
 
     // Generate a random OTP (e.g., a 6-digit number)
@@ -28,6 +28,7 @@ export const sendOTP = async (req, res) => {
 
     // Send OTP email
     const info = await transporter.sendMail({
+      from: 'appointment@avicenahealthcare.com', // Sender address
       to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
       html: `
@@ -36,7 +37,7 @@ export const sendOTP = async (req, res) => {
       <p>Please use this OTP to complete your verification process.</p>
       <p><strong>Warning:</strong> It seems there was an attempt to access your dashboard. If this was not you, please disregard this message. If you suspect unauthorized access, please contact support immediately.</p>
       <p>Thank you!</p>
-    ` // Plain text body
+    ` // HTML body
     });
 
     console.log('Message sent: %s', info.messageId);
@@ -50,7 +51,6 @@ export const sendOTP = async (req, res) => {
 // Method to verify the provided OTP
 export const verifyOTP = async (req, res) => {
   const { otp, email } = req.body; // Extract email and OTP from request body
-  console.log("email", email);
 
   // Retrieve the stored OTP for the user
   const storedOTP = otpStore[email]; // Retrieve stored OTP using the provided email
@@ -69,6 +69,7 @@ export const verifyOTP = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error verifying OTP' });
   }
 };
+
 
 
 

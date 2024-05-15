@@ -32,7 +32,7 @@ export const sendOTP = async (req, res) => {
 
     // HTML content for OTP email
     const htmlContent = `
-    <p>Dear Dentist,</p>
+    <p>Dear Doctor,</p>
     <p>Your OTP for verification is: <strong>${generatedOTP}</strong></p>
     <p>Please use this OTP to complete your access to the dental chart.</p>
     <p><strong>Warning:</strong> It appears there was an attempt to access your patient records. If this was not initiated by you, please disregard this message. If you suspect unauthorized access, please contact support immediately.</p>
@@ -43,16 +43,18 @@ export const sendOTP = async (req, res) => {
     try {
         // Create a nodemailer transporter using SMTP transport
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.office365.com',
+            port: 587,
+            secure: false, // true for 465, false for other ports
             auth: {
-                user: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
-                pass: 'qfonuissqspipwtq' // Replace with your Gmail App Password
+              user: 'appointment@avicenahealthcare.com', // Replace with your email address
+              pass: 'Godaay2024' // Replace with your email password
             }
-        });
+          });
 
         // Email content
         const mailOptions = {
-            from: 'saqlainshahbaltee@gmail.com', // Replace with your Gmail email address
+            from: 'appointment@avicenahealthcare.com', // Replace with your email address
             to: email,
             subject: 'OTP for Verification',
             html: htmlContent
