@@ -11,7 +11,7 @@ const fetchData = async (clientId) => {
   };
 
   try {
-    const response = await axios.get(`http://localhost:8800/api/userauth/${clientId}`, config);
+    const response = await axios.get(`https://server-yvzt.onrender.com/api/userauth/${clientId}`, config);
     return response.data; // Return the fetched data
   } catch (error) {
     console.error('Error fetching user data:', error);

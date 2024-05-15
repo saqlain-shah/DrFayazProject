@@ -39,13 +39,14 @@ const Users = () => {
 
   return (
     <Layout>
-      <div className="overflow-x-auto border rounded-md border-gray-200 mt-10">
+      <div className="overflow-x-auto border rounded-md border-gray-200 mt-20">
         <table className="table-auto">
           <thead className="bg-dry rounded-md overflow-hidden">
             <tr>
-              <th className={thClass} style={{ width: '15%' }}>#</th>
+              <th className={thClass} style={{ width: '15%',fontSize:'bold' }}>#</th>
               <th className={thClass} style={{ width: '15%' }}>Name</th>
               <th className={thClass} style={{ width: '15%' }}>Email</th>
+              <th className={thClass} style={{ width: '15%' }}>Updated At</th>
               {/* Add more table headings as needed */}
              
             </tr>
@@ -56,6 +57,7 @@ const Users = () => {
                 <td className={tdClass}>{index + 1}</td>
                 <td className={tdClass}>{user.name}</td>
                 <td className={tdClass}>{user.email}</td>
+                <td className={tdClass}>{user.updatedAt}</td> 
                 {/* Render more user data as needed */}
                 <td className={tdClass} style={{ position: 'relative' }}>
                   {/* You can add action buttons or menu similar to the patient table */}
