@@ -12,8 +12,8 @@ const InfoPage = () => {
             <div className="content">
               <h3>About Us</h3>
               <p>
-                <b>Dr. Fayaz Sarwar MBBS,</b> <br />
-                 MRCGP Int. Trained and working in the UK, Founder of Healthline: Your health, our responsibility.
+                <b>Dr. Fayaz Sarwar</b> <br />
+                MBBS,MRCGP Int.(Trained and working in the UK) <br /> Founder of Avicena Health Care<br/> Your health, our responsibility.
                 <br />
                 <b>Expertise:</b> <br />
                 I am a consultant in family health with distinct expertise and experience in providing whole-person medical care while managing the complexity, uncertainty, and risk associated with continuous care. To simplify, I am your family doctor and will look after each member of your family from before birth to death. 

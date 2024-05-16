@@ -15,7 +15,8 @@ const SignUp = ({ onSignUpSuccess }) => {
     const [user, setUser] = useState({
         name: '',
         email: '',
-        password: ''
+        password: '',
+        isAdmin: false
     });
     const [passwordValidation, setPasswordValidation] = useState({
         carLength: false,

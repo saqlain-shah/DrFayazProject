@@ -37,7 +37,7 @@ export const login = async (req, res, next) => {
 
 
 export const register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, isAdmin } = req.body; // Add isAdmin field from req.body
 
   try {
     const existingUser = await User.findOne({ email });
@@ -45,7 +45,7 @@ export const register = async (req, res, next) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const newUser = new User({ name, email, password });
+    const newUser = new User({ name, email, password, isAdmin }); // Include isAdmin field in the user creation
     await newUser.save();
 
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
