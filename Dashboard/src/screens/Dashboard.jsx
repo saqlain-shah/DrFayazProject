@@ -211,7 +211,7 @@ function Dashboard() {
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={`http://localhost:8800/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
+                    src={`https://server-yvzt.onrender.com/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
                     alt="patient"
                     className="w-10 h-10 rounded-md object-cover"
                   />
