@@ -48,10 +48,10 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
+        await axios.get(`http://localhost:8800/api/userauth/${params.clientId}`, config)
             .then(response => {
     
-                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
+                const imagePath = `http://localhost:8800/${response.data.image}`
                 response.data.image = imagePath;
                 setData(response.data);
             })
@@ -132,7 +132,7 @@ const PatientProfileSetting = () => {
 
         try {
             // Send PUT request with FormData
-            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
+            const response = await axios.put(`http://localhost:8800/api/userauth/${params.clientId}`, formData, config);
         
             message.success('Successfully Profile Updated');
             // Refetch data after successful update

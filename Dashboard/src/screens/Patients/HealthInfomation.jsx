@@ -22,7 +22,7 @@ function HealthInformation({ patientId }) {
       const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       console.log('Patient ID:', patientId); // Log the patientId
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/health-information',
+        'http://localhost:8800/api/health-information',
         {
           patientId, // Pass patientId here
           bloodType: bloodType.name,

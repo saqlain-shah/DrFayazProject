@@ -25,7 +25,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
         const token = localStorage.getItem('token');
     
         // Fetch existing appointments from the API
-        axios.get('https://server-yvzt.onrender.com/api/schedule', {
+        axios.get('http://localhost:8800/api/schedule', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -91,7 +91,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
             shares
         };
     
-        axios.post('https://server-yvzt.onrender.com/api/schedule', appointmentPayload, {
+        axios.post('http://localhost:8800/api/schedule', appointmentPayload, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
