@@ -564,6 +564,24 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
 export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatient, onEdit }) {
   const navigate = useNavigate();
 
+  // Function to filter out duplicate email addresses
+  const filterUniqueEmails = (data) => {
+    const uniqueEmails = new Set();
+    return data.filter((item) => {
+      if (!uniqueEmails.has(item.email)) {
+        uniqueEmails.add(item.email);
+        return true;
+      }
+      return false;
+    });
+  };
+
+  // Filter patients to ensure unique email addresses
+  const uniquePatients = filterUniqueEmails(patients);
+
+  // Filter webPatients to ensure unique email addresses
+  const uniqueWebPatients = filterUniqueEmails(webPatients);
+
   const handleEdit = (item) => {
     onEdit(item);
   };
@@ -601,11 +619,6 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
   ];
 
   const webPatientMenuOptions = [
-    // {
-    //   title: 'Edit',
-    //   icon: FiEdit,
-    //   onClick: handleWebPatientEdit,
-    // },
     {
       title: 'View',
       icon: FiEye,
@@ -641,7 +654,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
           </tr>
         </thead>
         <tbody>
-          {patients.map((item, index) => (
+          {uniquePatients.map((item, index) => (
             <React.Fragment key={item._id}>
               <tr className="border-b border-border hover:bg-greyed transitions">
                 <td className={tdClass}>{index + 1}</td>
@@ -679,7 +692,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
             </React.Fragment>
           ))}
           {/* Display webPatients */}
-          {webPatients.map((webPatient, index) => (
+          {uniqueWebPatients.map((webPatient, index) => (
             <React.Fragment key={webPatient._id}>
               <tr className="border-b border-border hover:bg-greyed transitions">
                 <td className={tdClass}>{index + 1}</td>

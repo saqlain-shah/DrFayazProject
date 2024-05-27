@@ -1,12 +1,13 @@
 export const authenticate = (req, res, next) => {
-    // Check if user is trying to access login or register routes
+    // Check if user is trying to access login, register, or schedule routes
     if (
         req.path === '/api/auth/login' ||
         req.path === '/api/auth/register' ||
-        req.path === '/api/userauth/login' || // Corrected path
-        req.path === '/api/userauth/register' // Corrected path
+        req.path === '/api/userauth/login' ||
+        req.path === '/api/userauth/register' ||
+        req.path === '/api/schedule'
     ) {
-        return next(); // Bypass authentication middleware for login and register routes
+        return next(); // Bypass authentication middleware for these routes
     }
 
     // Check if user is authenticated, for example, by checking if a token is present in the request header
