@@ -9,40 +9,34 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     useEffect(() => {
         const fetchSchedule = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('https://server-yvzt.onrender.com/api/schedule', {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
+                const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
     
-                const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(slot.startDateTime));
+                // Filter out expired slots and set the remaining slots
+                const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(moment()));
                 setAppointmentSlots(filteredSlots);
     
-                // Automatically delete expired slots after the timeout
-                setTimeout(() => {
-                    const expiredSlots = appointmentSlots.filter(slot => moment(slot.endDateTime).isBefore(moment()));
-                    expiredSlots.forEach(async (slot) => {
-                        try {
-                            await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${slot._id}`, {
-                                headers: {
-                                    Authorization: `Bearer ${token}`
-                                }
-                            });
-                        } catch (error) {
-                            console.error('Error deleting expired slot:', error);
-                        }
-                    });
-                }); // Removing comment here
-    
+                // Delete expired slots after a timeout
+                filteredSlots.forEach(slot => {
+                    if (moment(slot.endDateTime).isBefore(moment())) {
+                        deleteExpiredSlot(slot._id);
+                    }
+                });
             } catch (error) {
                 console.error('Error fetching schedule:', error);
             }
         };
     
         fetchSchedule();
-    }, [appointmentSlots]);
-    
+    }, []);
+
+    const deleteExpiredSlot = async (slotId) => {
+        try {
+            await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${slotId}`);
+            console.log('Expired slot deleted:', slotId);
+        } catch (error) {
+            console.error('Error deleting expired slot:', error);
+        }
+    };
 
     const handleSlotSelection = (slotId) => {
         const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);
@@ -52,25 +46,30 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         }
     };
 
+    // Conditional rendering to prevent rendering when appointmentSlots is null
+    if (!appointmentSlots || appointmentSlots.length === 0) {
+        return <div>No appointments available at this time.</div>;
+    }
+  
+
     return (
         <div className="container">
-        <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
-        <div style={{display:'flex',justifyContent:'space-around',flexWrap:'wrap',alignItems:'center'}}>
-            {appointmentSlots && appointmentSlots.length > 0 ? (
-                appointmentSlots.map((slot, index) => (
+            <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
+            <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', alignItems: 'center' }}>
+                {appointmentSlots.slice(0, 3).map((slot, index) => (
                     <div
                         key={slot._id}
                         className="custom-slot"
-                        style={{ 
+                        style={{
                             border: '1px solid #e2e8f0',
                             borderRadius: '0.375rem',
                             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                             cursor: 'pointer',
                             minWidth: '200px',
                             maxWidth: '300px',
-                            background:'white',
+                            background: 'white',
                             margin: '10px',
-                            padding:'10px',
+                            padding: '10px',
                             backgroundColor: selectedSlot && selectedSlot._id === slot._id ? '#d1fae5' : '#ffffff'
                         }}
                         onClick={() => handleSlotSelection(slot._id)}
@@ -89,13 +88,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                             <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
                         </label>
                     </div>
-                ))
-            ) : (
-                <div>No appointment slots available.</div>
-            )}
+                ))}
+            </div>
         </div>
-    </div>
-    
     );
 };
 
