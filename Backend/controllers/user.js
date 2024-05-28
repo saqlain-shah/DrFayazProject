@@ -74,10 +74,21 @@ export const getClientById = async (req, res, next) => {
 export const updateClientById = async (req, res, next) => {
   const { clientId } = req.params;
   const { name, email, gender, bloodGroup, emergencyContact, address } = req.body;
-  const image = req.file.path;
 
   try {
-    const updatedClient = await User.findByIdAndUpdate(clientId, { name, image, email, gender, bloodGroup, emergencyContact, address });
+    let image;
+    // Check if a file is uploaded
+    if (req.file) {
+      image = req.file.path;
+    }
+
+    const updatedClientData = { name, email, gender, bloodGroup, emergencyContact, address };
+    // Only add image field to updatedClientData if it's provided
+    if (image) {
+      updatedClientData.image = image;
+    }
+
+    const updatedClient = await User.findByIdAndUpdate(clientId, updatedClientData, { new: true });
     if (!updatedClient) {
       return res.status(404).json({ message: 'Client not found' });
     }
@@ -88,6 +99,24 @@ export const updateClientById = async (req, res, next) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// export const updateClientById = async (req, res, next) => {
+//   const { clientId } = req.params;
+//   const { name, email, gender, bloodGroup, emergencyContact, address } = req.body;
+//   const image = req.file.path;
+
+//   try {
+//     const updatedClient = await User.findByIdAndUpdate(clientId, { name, image, email, gender, bloodGroup, emergencyContact, address });
+//     if (!updatedClient) {
+//       return res.status(404).json({ message: 'Client not found' });
+//     }
+//     const { password: omit, ...clientData } = updatedClient._doc;
+//     return res.status(200).json(clientData);
+//   } catch (error) {
+//     console.error('Error updating client:', error);
+//     return res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
 
 export const changePassword = async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;

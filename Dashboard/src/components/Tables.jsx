@@ -580,7 +580,12 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
   const uniquePatients = filterUniqueEmails(patients);
 
   // Filter webPatients to ensure unique email addresses
-  const uniqueWebPatients = filterUniqueEmails(webPatients);
+  const uniqueWebPatients = webPatients.filter((patient, index, self) =>
+    index === self.findIndex((p) => (
+      p.patientInfo.email === patient.patientInfo.email
+    ))
+  );
+  
 
   const handleEdit = (item) => {
     onEdit(item);
@@ -669,12 +674,17 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 </td>
                 <td className={tdClass}>{item.fullName}</td>
                 <td className={tdClass}>
-                  <span
-                    className={`py-1 px-2 ${item.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
-                      } bg-opacity-10 text-xs rounded-xl`}
-                  >
-                    {item.gender}
-                  </span>
+                <span
+  className={`py-1 px-2 ${
+    item.gender.toLowerCase() === 'male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+    } bg-opacity-10 text-xs rounded-xl`}
+>
+  {item.gender}
+</span>
+
+
+
+
                 </td>
                 <td className={tdClass}>{item.bloodGroup}</td>
                 <td className={tdClass}>{item.address}</td>
@@ -692,43 +702,43 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
             </React.Fragment>
           ))}
           {/* Display webPatients */}
-          {uniqueWebPatients.map((webPatient, index) => (
-            <React.Fragment key={webPatient._id}>
-              <tr className="border-b border-border hover:bg-greyed transitions">
-                <td className={tdClass}>{index + 1}</td>
-                <td className={tdClass}>
-                  {webPatient.patientInfo && (
-                    <img
-                      src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
-                      alt={webPatient.name}
-                      className="w-full h-11 rounded-full object-cover border border-border"
-                    />
-                  )}
-                </td>
-                <td className={tdClass}>{webPatient.patientInfo.name}</td>
-                <td className={tdClass}>
-                  <span
-                    className={`py-1 px-2 ${webPatient.patientInfo.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
-                      } bg-opacity-10 text-xs rounded-xl`}
-                  >
-                    {webPatient.patientInfo.gender}
-                  </span>
-                </td>
-                <td className={tdClass}>{webPatient.patientInfo.bloodGroup}</td>
-                <td className={tdClass}>{webPatient.patientInfo.address}</td>
-                <td className={tdClass}>{webPatient.patientInfo.email}</td>
-                <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
-                <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
-                <td className={tdClass} style={{ position: 'relative' }}>
-                  <MenuSelectss datas={webPatientMenuOptions} item={webPatient}>
-                    <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
-                      <BiDotsHorizontalRounded />
-                    </div>
-                  </MenuSelectss>
-                </td>
-              </tr>
-            </React.Fragment>
-          ))}
+          {webPatients.map((webPatient, index) => (
+  <React.Fragment key={webPatient._id}>
+    <tr className="border-b border-border hover:bg-greyed transitions">
+      <td className={tdClass}>{index + 1}</td>
+      <td className={tdClass}>
+        {webPatient.patientInfo && (
+          <img
+            src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
+            alt={webPatient.patientInfo.name}
+            className="w-full h-11 rounded-full object-cover border border-border"
+          />
+        )}
+      </td>
+      <td className={tdClass}>{webPatient.patientInfo.name}</td>
+      <td className={tdClass}>
+        <span
+          className={`py-1 px-2 ${webPatient.patientInfo.gender === 'Male' ? 'bg-subMain text-subMain' : 'bg-orange-500 text-orange-500'
+            } bg-opacity-10 text-xs rounded-xl`}
+        >
+          {webPatient.patientInfo.gender}
+        </span>
+      </td>
+      <td className={tdClass}>{webPatient.patientInfo.bloodGroup}</td>
+      <td className={tdClass}>{webPatient.patientInfo.address}</td>
+      <td className={tdClass}>{webPatient.patientInfo.email}</td>
+      <td className={tdClass}>{webPatient.patientInfo.emergencyContact}</td>
+      <td className={tdClass}>{new Date(webPatient.createdAt).toLocaleString()}</td>
+      <td className={tdClass} style={{ position: 'relative' }}>
+        <MenuSelectss datas={webPatientMenuOptions} item={webPatient}>
+          <div className="bg-dry border text-main text-xl py-2 px-4 rounded-lg">
+            <BiDotsHorizontalRounded />
+          </div>
+        </MenuSelectss>
+      </td>
+    </tr>
+  </React.Fragment>
+))}
         </tbody>
       </table>
     </div>

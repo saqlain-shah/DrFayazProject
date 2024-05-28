@@ -34,19 +34,26 @@ function Patients() {
       toast.error('Failed to fetch patients');
     }
   };
-
-  const fetchWebPatients = async () => { // Renamed fetchAppointments to fetchWebPatients
+  
+  const fetchWebPatients = async () => {
     try {
       const token = localStorage.getItem('token');
       const webPatientsResponse = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
+        params: { gender: genderFilter }, // Add gender filter parameter
         headers: { Authorization: `Bearer ${token}` }
       });
-      setWebPatients(webPatientsResponse.data); // Changed appointments to webPatients
+      const uniqueWebPatients = webPatientsResponse.data.filter((patient, index, self) =>
+        index === self.findIndex((p) => (
+          p.patientInfo.email === patient.patientInfo.email
+        ))
+      );
+      setWebPatients(uniqueWebPatients);
     } catch (error) {
-      console.error('Error fetching webPatients:', error); // Changed appointments to webPatients
-      toast.error('Failed to fetch webPatients'); // Changed appointments to webPatients
+      console.error('Error fetching webPatients:', error);
+      toast.error('Failed to fetch webPatients');
     }
   };
+  
 
   useEffect(() => {
     fetchPatients();
@@ -117,10 +124,18 @@ function Patients() {
     setSelectedPatient(null);
   };
 
-  const handleGenderFilterChange = (event) => {
-    const selectedValue = event.target.value;
-    setGenderFilter(selectedValue);
-  };
+// Inside the Patients component
+
+const handleGenderFilterChange = (event) => {
+  const selectedValue = event.target.value.toLowerCase(); // Convert to lowercase
+  console.log('Selected gender filter:', selectedValue); // Log the selected value
+  setGenderFilter(selectedValue);
+};
+
+
+// Select component in the render method
+
+
 
   return (
     <Layout>
@@ -143,15 +158,15 @@ function Patients() {
             />
           </div>
           <div className="flex-grow md:w-auto w-full">
-            <select
-              value={genderFilter}
-              onChange={handleGenderFilterChange}
-              className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
-            >
-              <option value="all">All</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
+          <select
+  value={genderFilter}
+  onChange={handleGenderFilterChange}
+  className="h-14 text-sm text-main rounded-md bg-dry border border-border px-20 w-full"
+>
+  <option value="all">All</option>
+  <option value="male">Male</option>
+  <option value="female">Female</option>
+</select>
           </div>
           <div className="flex-grow w-full md:w-auto">
             <DatePicker

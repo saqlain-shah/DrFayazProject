@@ -38,41 +38,79 @@ export const createPatient = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
 export const getAllPatients = async (req, res, next) => {
     try {
-        const { search, gender, startDate } = req.query;
-        let patients = [];
-        let query = {};
-
-        if (search) {
-            query.fullName = { $regex: search, $options: 'i' };
-        }
-
-        // Modify the query to include gender filter
-        if (gender && gender !== 'all') { // Check if gender is provided and not 'all'
-            let genderValue = gender.toLowerCase(); // Convert to lowercase for consistency
-            // If the selected gender is 'male', directly set the query field to 'Male'
-            // Otherwise, use a case-insensitive regular expression to match any case of the provided gender value
-            query.gender = (genderValue === 'male') ? 'Male' : { $regex: new RegExp(genderValue, 'i') };
-        }
-
-        if (startDate) {
-            const selectedDate = new Date(startDate);
-            selectedDate.setHours(0, 0, 0, 0);
-            const nextDay = new Date(selectedDate);
-            nextDay.setDate(nextDay.getDate() + 1);
-            query.createdAt = { $gte: selectedDate, $lt: nextDay };
-        }
-
-        console.log('Generated MongoDB query:', query); // Add this line to log the query
-
-        patients = await Patient.find(query);
-        res.status(200).json(patients);
+      const { search, gender, startDate } = req.query;
+      console.log('Received query parameters:', { search, gender, startDate }); // Log received parameters
+      let query = {};
+  
+      if (search) {
+        query.fullName = { $regex: search, $options: 'i' };
+      }
+  
+      if (gender && gender !== 'all') {
+        // Convert gender to lowercase for consistency
+        const genderValue = gender.toLowerCase();
+        console.log('Gender filter applied:', genderValue); // Log the applied gender filter
+        query['gender'] = genderValue; // Modify to directly set the 'gender' field
+      }
+  
+      if (startDate) {
+        const selectedDate = new Date(startDate);
+        selectedDate.setHours(0, 0, 0, 0);
+        const nextDay = new Date(selectedDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        query.createdAt = { $gte: selectedDate, $lt: nextDay };
+      }
+  
+      console.log('Generated MongoDB query:', query); // Log the generated query
+  
+      const patients = await Patient.find(query);
+      res.status(200).json(patients);
     } catch (err) {
-        next(err);
+      console.error('Error fetching patients:', err); // Log any errors
+      next(err);
     }
-};
+  };
+  
+  
+  
+
+// export const getAllPatients = async (req, res, next) => {
+//     try {
+//         const { search, gender, startDate } = req.query;
+//         let patients = [];
+//         let query = {};
+
+//         if (search) {
+//             query.fullName = { $regex: search, $options: 'i' };
+//         }
+
+//         // Modify the query to include gender filter
+//         if (gender && gender !== 'all') { // Check if gender is provided and not 'all'
+//             let genderValue = gender.toLowerCase(); // Convert to lowercase for consistency
+//             // If the selected gender is 'male', directly set the query field to 'Male'
+//             // Otherwise, use a case-insensitive regular expression to match any case of the provided gender value
+//             query.gender = (genderValue === 'male') ? 'Male' : { $regex: new RegExp(genderValue, 'i') };
+//         }
+
+//         if (startDate) {
+//             const selectedDate = new Date(startDate);
+//             selectedDate.setHours(0, 0, 0, 0);
+//             const nextDay = new Date(selectedDate);
+//             nextDay.setDate(nextDay.getDate() + 1);
+//             query.createdAt = { $gte: selectedDate, $lt: nextDay };
+//         }
+
+//         console.log('Generated MongoDB query:', query); // Add this line to log the query
+
+//         patients = await Patient.find(query);
+//         res.status(200).json(patients);
+//     } catch (err) {
+//         next(err);
+//     }
+// };
+
 export const getMedicalRecordsByPatientId = async (req, res) => {
     try {
         const patientId = req.params.id;

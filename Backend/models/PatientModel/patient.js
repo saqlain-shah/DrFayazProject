@@ -27,7 +27,7 @@ const PatientSchema = new Schema({
         type: String,
         required: true
     },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+    gender: { type: String, enum: ['male', 'female', 'Other'], required: true },
     medicalRecords: [{
         type: Schema.Types.ObjectId,
         ref: 'HealthInfo'
