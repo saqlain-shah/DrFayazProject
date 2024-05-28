@@ -10,53 +10,36 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         const fetchSchedule = async () => {
             try {
                 const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
-    
-                // Filter out expired slots and set the remaining slots
                 const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(moment()));
                 setAppointmentSlots(filteredSlots);
-    
-                // Delete expired slots after a timeout
-                filteredSlots.forEach(slot => {
-                    if (moment(slot.endDateTime).isBefore(moment())) {
-                        deleteExpiredSlot(slot._id);
-                    }
-                });
             } catch (error) {
                 console.error('Error fetching schedule:', error);
             }
         };
-    
+
         fetchSchedule();
     }, []);
-
-    const deleteExpiredSlot = async (slotId) => {
-        try {
-            await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${slotId}`);
-            console.log('Expired slot deleted:', slotId);
-        } catch (error) {
-            console.error('Error deleting expired slot:', error);
-        }
-    };
 
     const handleSlotSelection = (slotId) => {
         const selectedSlot = appointmentSlots.find(slot => slot._id === slotId);
         if (selectedSlot) {
             setSelectedSlot(selectedSlot);
-            handleSelectAppointment(selectedSlot, patientId); // Pass patientId
+            handleSelectAppointment(selectedSlot, patientId);
         }
     };
 
-    // Conditional rendering to prevent rendering when appointmentSlots is null
-    if (!appointmentSlots || appointmentSlots.length === 0) {
+    // Ensure expired slots are not included in rendering
+    const validSlots = appointmentSlots.filter(slot => moment(slot.endDateTime).isAfter(moment()));
+
+    if (validSlots.length === 0) {
         return <div>No appointments available at this time.</div>;
     }
-  
 
     return (
         <div className="container">
             <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
             <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', alignItems: 'center' }}>
-                {appointmentSlots.slice(0, 3).map((slot, index) => (
+                {validSlots.slice(0, 3).map((slot, index) => (
                     <div
                         key={slot._id}
                         className="custom-slot"
