@@ -28,7 +28,7 @@ function PersonalInfo({ titles, onSave }) {
       data.append('firstName', firstName);
       data.append('email', email);
       // data.append('phone', phone);
-      data.append('gender', gender.name);
+      data.append('gender', gender.name.toLowerCase());
       // data.append('dateOfBirth', date.toISOString());
       data.append('emergencyContact', emergencyContact);
       data.append('address', address);

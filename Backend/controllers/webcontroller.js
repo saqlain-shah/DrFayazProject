@@ -202,16 +202,47 @@ export const createWeb = async (req, res) => {
   }
 };
 
+// export const getAllWebs = async (req, res) => {
+//   try {
+//     const { id } = req.params; // Get the ID from the route parameters
+//     const Webs = await WebPatient.find({ id: id }); // Change this line
+
+//     res.status(200).json(Webs);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 export const getAllWebs = async (req, res) => {
   try {
-    const { id } = req.params; // Get the ID from the route parameters
-    const Webs = await WebPatient.find({ id: id }); // Change this line
+    const { id, gender } = req.params;
+    console.log('Received parameters for webs:', { id, gender }); // Log received parameters
+    let query = {};
 
-    res.status(200).json(Webs);
+    // Modify to use req.query instead of req.params for gender filter
+    const { gender: genderQuery } = req.query;
+
+    if (genderQuery && genderQuery !== 'all') {
+      // Convert gender to lowercase for consistency
+      const genderValue = genderQuery.toLowerCase();
+      console.log('Gender filter applied for webs:', genderValue); // Log the applied gender filter
+      query['patientInfo.gender'] = genderValue;
+    }
+
+    if (id) {
+      query['patientInfo.id'] = id;
+    }
+
+    console.log('Generated MongoDB query for webs:', query); // Log the generated query
+
+    const webs = await WebPatient.find(query);
+    res.status(200).json(webs);
   } catch (error) {
+    console.error('Error fetching webs:', error); // Log any errors
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 
 
