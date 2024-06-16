@@ -120,18 +120,18 @@ app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Schedule to start the task every day at 11:00 PM Pakistan Standard Time
-    cron.schedule('0 23 * * *', () => {
+    cron.schedule('0 22 * * *', () => {
         console.log('Task started at:', new Date());
         manageSlots();
     });
 
     const manageSlots = async () => {
         const slots = [
-            { start: '23:00', end: '23:20' },
-            { start: '23:20', end: '23:40' },
-            { start: '23:40', end: '00:00' }
+            { start: '03:00', end: '03:20' },
+            { start: '03:20', end: '03:40' },
+            { start: '03:40', end: '04:00' }
         ];
-
+    
         for (const slot of slots) {
             const startDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.start.split(':')[0]), minute: parseInt(slot.start.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
             const endDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.end.split(':')[0]), minute: parseInt(slot.end.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
@@ -140,19 +140,20 @@ app.listen(PORT, async () => {
                 startDateTime,
                 endDateTime
             };
-
+    
             try {
                 const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', requestData);
                 console.log(`Slot created: ${JSON.stringify(response.data)}`);
-
+    
                 // Wait for the duration of the slot before creating the next one
                 const duration = moment(endDateTime).diff(moment(startDateTime));
                 await new Promise(resolve => setTimeout(resolve, duration));
-
+    
                 console.log(`Slot ended: ${response.data._id}`);
             } catch (error) {
                 console.error('Error managing slot:', error);
             }
         }
     };
+    
 });
