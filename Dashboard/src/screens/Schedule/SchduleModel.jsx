@@ -17,7 +17,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     const [existingAppointments, setExistingAppointments] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8800/api/schedule')
+        axios.get('https://server-yvzt.onrender.com/api/schedule')
         .then(response => {
             setExistingAppointments(response.data);
         })
@@ -65,7 +65,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
             shares
         };
 
-        axios.post('http://localhost:8800/api/schedule', appointmentPayload)
+        axios.post('https://server-yvzt.onrender.com/api/schedule', appointmentPayload)
         .then(response => {
             toast.success('Appointment saved successfully');
             closeModal();

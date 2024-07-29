@@ -14,7 +14,7 @@ function NotificationComp({ children,unreadCount }) {
  const fetchNotifications = async () => {
  try {
  const token = localStorage.getItem('token');
- const response = await axios.get('http://localhost:8800/api/web/notifications', {
+ const response = await axios.get('https://server-yvzt.onrender.com/api/web/notifications', {
  headers: {
  Authorization: `Bearer ${token}`
  }
@@ -42,7 +42,7 @@ function NotificationComp({ children,unreadCount }) {
  const handleMarkAllRead = async () => {
  try {
  const token = localStorage.getItem('token');
- await axios.put('http://localhost:8800/api/web/notifications/mark-all-read', null, {
+ await axios.put('https://server-yvzt.onrender.com/api/web/notifications/mark-all-read', null, {
  headers: {
  Authorization: `Bearer ${token}`
  }
