@@ -67,7 +67,7 @@ const PatientDetails = ({
                   );
                   resolve();
                 };
-                img.src = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
+                img.src = `http://localhost:8800/uploads/${attachment.filename}`;
               });
             }));
           }
@@ -162,7 +162,7 @@ const PatientDetails = ({
                   record.attachments.map((attachment, index) => (
                     <Image
                       key={index}
-                      src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`}
+                      src={`http://localhost:8800/uploads/${attachment.filename}`}
                       alt={attachment.originalname}
                       width={250}
                       height={250}

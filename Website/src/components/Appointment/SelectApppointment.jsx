@@ -13,7 +13,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     useEffect(() => {
         const fetchSchedule = async () => {
             try {
-                const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
+                const response = await axios.get('http://localhost:8800/api/schedule');
                 const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(moment()));
                 setAppointmentSlots(filteredSlots);
 
@@ -32,7 +32,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
 
     const deleteExpiredSlot = async (slotId) => {
         try {
-            await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${slotId}`);
+            await axios.delete(`http://localhost:8800/api/schedule/${slotId}`);
             console.log('Expired slot deleted:', slotId);
         } catch (error) {
             console.error('Error deleting expired slot:', error);

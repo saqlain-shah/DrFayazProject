@@ -92,7 +92,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
+        `http://localhost:8800/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -153,7 +153,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "https://server-yvzt.onrender.com/api/stripe/checkout",
+        "http://localhost:8800/api/stripe/checkout",
         {
           method: "POST",
           headers: headers,
@@ -195,7 +195,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/services",
+        "http://localhost:8800/api/services",
         config
       );
       setServiceDetails(response.data);
@@ -245,7 +245,7 @@ const AppointmentPage = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+      const response = await axios.post("http://localhost:8800/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -253,7 +253,7 @@ const AppointmentPage = () => {
 
     
 
-      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+      const emailResponse = await axios.post("http://localhost:8800/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -264,7 +264,7 @@ const AppointmentPage = () => {
       toast.success("Appointment scheduled successfully!");
 
       // Now, make a request to delete the selected slot
-   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+   const appdelete = await axios.delete(`http://localhost:8800/api/schedule/${selectedSlot._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         }

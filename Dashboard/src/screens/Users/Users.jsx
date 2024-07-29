@@ -13,7 +13,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('https://server-yvzt.onrender.com/api/userauth/users', {
+        const response = await fetch('http://localhost:8800/api/userauth/users', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

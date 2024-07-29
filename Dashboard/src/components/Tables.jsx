@@ -32,7 +32,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
 
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
     const id = itemId._id.toString(); // Assuming _id is an ObjectId
   
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${id}`, { // Use id instead of itemId
+    fetch(`http://localhost:8800/api/web/${id}`, { // Use id instead of itemId
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -139,7 +139,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -213,7 +213,7 @@ export function Transactiontables({ data, action, updatedData, setUpdatedData })
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
 
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+    fetch(`http://localhost:8800/api/web/${itemToUpdate._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -273,7 +273,7 @@ export function Transactiontables({ data, action, updatedData, setUpdatedData })
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`http://localhost:8800/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -383,7 +383,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`http://localhost:8800/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -507,8 +507,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
+      await axios.put(`http://localhost:8800/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get('http://localhost:8800/api/services');
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -666,7 +666,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {item.profilePicture && (
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profilePicture}`}
+                      src={`http://localhost:8800/${item.profilePicture}`}
                       alt={item.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -709,7 +709,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
       <td className={tdClass}>
         {webPatient.patientInfo && (
           <img
-            src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
+            src={`http://localhost:8800/${webPatient.patientInfo.image}`}
             alt={webPatient.patientInfo.name}
             className="w-full h-11 rounded-full object-cover border border-border"
           />
@@ -785,7 +785,7 @@ export function PatientTableArray({ data, onEdit }) {
               <td className={tdClass}>{patient.emergencyContact}</td>
               {/* <td className={tdClass}>
                 <img
-                  src={`https://server-yvzt.onrender.com/${patient.profilePicture}`}
+                  src={`http://localhost:8800/${patient.profilePicture}`}
                   alt="Profile"
                   className="w-10 h-10 rounded-full object-cover border border-dashed border-subMain"
                 />
@@ -842,7 +842,7 @@ export function DoctorsTable({ data, functions, doctor }) {
                 <div className="flex gap-4 items-center">
                   <span className="w-12">
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profileImage}`}
+                      src={`http://localhost:8800/${item.profileImage}`}
                       className="w-full h-12 rounded-full object-cover border border-border"
                     />
                   </span>
