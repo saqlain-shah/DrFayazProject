@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import axios from 'axios';
+import { Button, Card, Typography, Space } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
 
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
@@ -12,6 +16,12 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
                 const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(moment()));
                 setAppointmentSlots(filteredSlots);
+
+                filteredSlots.forEach(slot => {
+                    if (moment(slot.endDateTime).isBefore(moment())) {
+                        deleteExpiredSlot(slot._id);
+                    }
+                });
             } catch (error) {
                 console.error('Error fetching schedule:', error);
             }
@@ -28,50 +38,52 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         }
     };
 
-    // Ensure expired slots are not included in rendering
-    const validSlots = appointmentSlots.filter(slot => moment(slot.endDateTime).isAfter(moment()));
-
-    if (validSlots.length === 0) {
+    if (!appointmentSlots || appointmentSlots.length === 0) {
         return <div>No appointments available at this time.</div>;
     }
 
     return (
-        <div className="container">
-            <h5 className="text-2xl font-bold mb-4">Select Appointment</h5>
-            <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', alignItems: 'center' }}>
-                {validSlots.slice(0, 3).map((slot, index) => (
-                    <div
-                        key={slot._id}
-                        className="custom-slot"
-                        style={{
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '0.375rem',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                            cursor: 'pointer',
-                            minWidth: '200px',
-                            maxWidth: '300px',
-                            background: 'white',
-                            margin: '10px',
-                            padding: '10px',
-                            backgroundColor: selectedSlot && selectedSlot._id === slot._id ? '#d1fae5' : '#ffffff'
-                        }}
-                        onClick={() => handleSlotSelection(slot._id)}
-                    >
-                        <div className="font-bold">{moment(slot.startDateTime).format('YYYY-MM-DD')}</div>
-                        <div>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</div>
-                        <label className="flex items-center mt-2">
-                            <input
-                                type="radio"
-                                name="appointmentSlot"
-                                value={slot._id}
-                                checked={selectedSlot && selectedSlot._id === slot._id}
-                                onChange={() => handleSlotSelection(slot._id)}
-                                style={{ marginRight: '0.5rem' }}
-                            />
-                            <span className="font-semibold">{selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}</span>
-                        </label>
-                    </div>
-                ))}
+        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%', maxWidth: '1200px' }}>
+                <Title level={4}>Select Appointment</Title>
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                }}>
+                    {appointmentSlots.slice(0, 3).map((slot) => (
+                        <Card
+                            key={slot._id}
+                            bordered
+                            style={{
+                                borderRadius: '8px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                                cursor: 'pointer',
+                                backgroundColor: selectedSlot && selectedSlot._id === slot._id ? '#d1fae5' : '#ffffff',
+                                transition: 'transform 0.3s, box-shadow 0.3s',
+                                flex: '1 1 calc(33.333% - 1rem)',
+                                marginBottom: '1rem',
+                            }}
+                            onClick={() => handleSlotSelection(slot._id)}
+                        >
+                            <div style={{ marginBottom: '1rem' }}>
+                                <Text strong>{moment(slot.startDateTime).format('YYYY-MM-DD')}</Text>
+                                <br />
+                                <Text>{moment(slot.startDateTime).format('hh:mm A')} - {moment(slot.endDateTime).format('hh:mm A')}</Text>
+                            </div>
+                            <Button
+                                type={selectedSlot && selectedSlot._id === slot._id ? 'primary' : 'default'}
+                                icon={<CalendarOutlined />}
+                                size="small"
+                                style={{
+                                    transition: 'background-color 0.3s, color 0.3s',
+                                }}
+                            >
+                                {selectedSlot && selectedSlot._id === slot._id ? 'Selected' : 'Select'}
+                            </Button>
+                        </Card>
+                    ))}
+                </div>
             </div>
         </div>
     );

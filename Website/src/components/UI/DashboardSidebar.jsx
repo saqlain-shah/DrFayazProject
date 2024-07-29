@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
-
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
-import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt } from "react-icons/fa";
+import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt, FaPaperclip } from "react-icons/fa";
 import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
 
@@ -31,8 +30,6 @@ const DashboardSidebar = () => {
             });
 
     }, [clientId]);
-
-
 
     const handleLogout = () => {
         // Clear client ID and token from local storage
@@ -82,6 +79,12 @@ const DashboardSidebar = () => {
                             <span>Change Password</span>
                         </NavLink>
                     </li>
+                    {/* <li>
+                        <NavLink to={`/dashboard/attachments/${clientId}`} activeClassName="active">
+                            <FaPaperclip className="icon" />
+                            <span>Attachments</span>
+                        </NavLink>
+                    </li> */}
                     <li>
                         <NavLink to={'/'} onClick={handleLogout}>
                             <FaSignOutAlt className="icon" />
@@ -91,7 +94,7 @@ const DashboardSidebar = () => {
                 </ul>
             </nav>
         </div>
-    )
+    );
 }
 
 export default DashboardSidebar;

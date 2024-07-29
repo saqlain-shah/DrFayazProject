@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import Dropzone from '../DropZone';
 import { useState } from 'react';
-
+// import Attachments from '../Attachment';
 const PersonalInformation = ({handleFileChange, handleChange, selectValue, selectedSlot }) => {
     const { name, reasonForVisit, bloodGroup, attachments, gender, emergencyContact, email, address } = selectValue;
     const [files, setFiles] = useState([])
