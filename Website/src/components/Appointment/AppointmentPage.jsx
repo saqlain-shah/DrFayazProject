@@ -45,6 +45,7 @@ const AppointmentPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [appointmentSelected, setAppointmentSelected] = useState(false); 
   const navigation = useNavigate();
 
   const [
@@ -76,6 +77,7 @@ const AppointmentPage = () => {
 
     setSelectedSlot(slots);
     fetchData(); // Here the fetchData is called, so the clientId is passed here
+    setAppointmentSelected(true); 
   };
 
 
@@ -357,7 +359,7 @@ const AppointmentPage = () => {
 
   return (
     <>
-      <Header />
+      <Header appointmentSelected={appointmentSelected}/>
       <div className="container" style={{ marginTop: '-10%', bottom: "5rem" }}>
         <div
           className="container"
@@ -431,10 +433,7 @@ const AppointmentPage = () => {
                 <span>checkout</span>
               )}
             </Button>
-            {/* {loading ? <i className="fas fa-spinner fa-spin"></i> : null}
-            <Button key="back" onClick={makePayment} disabled={loading}>
-              {loading ? 'Processing...' : 'Checkout'}
-            </Button> */}
+          
           </div>
         ]}
       >

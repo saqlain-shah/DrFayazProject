@@ -1,3 +1,4 @@
+
 import express from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
@@ -116,17 +117,41 @@ app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Schedule to start the task every day at 11:00 PM Pakistan Standard Time
-    cron.schedule('0 22 * * *', () => {
+    cron.schedule('*/20 23-23,0-2 * * *', async () => {
         console.log('Task started at:', new Date());
-        manageSlots();
+        await manageSlots();
     });
 
     const manageSlots = async () => {
-        const slots = [
-            { start: '03:00', end: '03:20' },
-            { start: '03:20', end: '03:40' },
-            { start: '03:40', end: '04:00' }
-        ];
+        const startHour = 23; // 11 PM
+        const endHour = 3; // 3 AM
+    
+        // Define the number of minutes for each slot
+        const slotDuration = 20;
+    
+        // Function to get the start and end time for each slot
+        const getSlots = (startHour, endHour, duration) => {
+            const slots = [];
+            let startTime = moment().utcOffset('+05:00').set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
+    
+            const endOfDay = moment().utcOffset('+05:00').set({ hour: 23, minute: 59, second: 59, millisecond: 999 });
+            const endTime = moment().utcOffset('+05:00').add(endHour + 24, 'hours').set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
+    
+            while (startTime.isBefore(endTime)) {
+                const endSlotTime = startTime.clone().add(duration, 'minutes');
+                if (endSlotTime.isAfter(endOfDay)) {
+                    break;
+                }
+                slots.push({
+                    start: startTime.format('HH:mm'),
+                    end: endSlotTime.format('HH:mm')
+                });
+                startTime = endSlotTime;
+            }
+            return slots;
+        };
+    
+        const slots = getSlots(startHour, endHour, slotDuration);
     
         for (const slot of slots) {
             const startDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.start.split(':')[0]), minute: parseInt(slot.start.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
@@ -151,5 +176,4 @@ app.listen(PORT, async () => {
             }
         }
     };
-    
 });

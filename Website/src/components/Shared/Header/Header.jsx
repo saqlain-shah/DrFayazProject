@@ -7,7 +7,7 @@ import avatar from '../../../images/avatar.jpg';
 import { Button, Popover, message } from 'antd';
 import { FaBars } from 'react-icons/fa';
 
-const Header = () => {
+const Header = ({ appointmentSelected }) => {
     const params = useParams();
     const clientId = params.clientId;
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -56,9 +56,12 @@ const Header = () => {
                     </nav>
 
                     {/* Button for making an appointment */}
-                    <button className="appointment-btn scrollto d-none d-lg-block" onClick={handleMakeAppointment}>
-                        <span className="d-none d-md-inline">Make an</span> Appointment
-                    </button>
+                    
+                    {!appointmentSelected && (
+                        <button className="appointment-btn scrollto d-none d-lg-block" onClick={handleMakeAppointment}>
+                            <span className="d-none d-md-inline">Make an</span> Appointment
+                        </button>
+                    )}
 
                
 

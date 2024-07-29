@@ -13,6 +13,7 @@ import Gallery from '../Gallery/Gallery';
 //import OurDoctors from '../OurDoctor/OurDoctors';
 
 const Home = ({ clientid }) => {
+    
     return (
         <>
             <Header clientId={clientid} />
