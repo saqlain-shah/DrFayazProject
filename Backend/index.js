@@ -119,7 +119,7 @@ app.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 
-    cron.schedule('55 12 * * *', async () => {
+    cron.schedule('10 16 * * *', async () => {
         console.log('Task started at:', new Date());
         await manageSlots();
     });
@@ -130,7 +130,7 @@ app.listen(PORT, async () => {
 const manageSlots = async () => {
     const startHour = 23; // 11:00 PM
     const endHour = 3; // 3:00 AM next day
-    const slotDuration = 20; // Slot duration in minutes
+    const slotDuration = 30; // Slot duration in minutes
 
     // Function to get the start and end time for each slot
     const getSlots = (startHour, endHour, duration) => {
@@ -155,6 +155,7 @@ const manageSlots = async () => {
     };
 
     const slots = getSlots(startHour, endHour, slotDuration);
+    console.log(`Generated slots: ${JSON.stringify(slots)}`); // Log generated slots
 
     for (const slot of slots) {
         const startDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.start.split(':')[0]), minute: parseInt(slot.start.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
@@ -173,4 +174,6 @@ const manageSlots = async () => {
         }
     }
 };
+
+
 
