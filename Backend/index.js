@@ -119,20 +119,22 @@ app.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 
-    cron.schedule('10 16 * * *', async () => {
-        console.log('Task started at:', new Date());
-        await manageSlots();
+    cron.schedule('40 16 * * *', async () => {
+        console.log('Cron job started at:', new Date());
+        try {
+            await manageSlots();
+        } catch (error) {
+            console.error('Error executing cron job:', error);
+        }
     });
-    
-    
 });
+
 
 const manageSlots = async () => {
     const startHour = 23; // 11:00 PM
     const endHour = 3; // 3:00 AM next day
-    const slotDuration = 30; // Slot duration in minutes
+    const slotDuration = 20; // Slot duration in minutes
 
-    // Function to get the start and end time for each slot
     const getSlots = (startHour, endHour, duration) => {
         const slots = [];
         let startTime = moment().utcOffset('+05:00').set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
@@ -144,7 +146,7 @@ const manageSlots = async () => {
 
         while (startTime.isBefore(endTime)) {
             const endSlotTime = startTime.clone().add(duration, 'minutes');
-            if (endSlotTime.isAfter(endTime)) break; // Don't create slots beyond end time
+            if (endSlotTime.isAfter(endTime)) break;
             slots.push({
                 start: startTime.format('HH:mm'),
                 end: endSlotTime.format('HH:mm')
@@ -155,7 +157,7 @@ const manageSlots = async () => {
     };
 
     const slots = getSlots(startHour, endHour, slotDuration);
-    console.log(`Generated slots: ${JSON.stringify(slots)}`); // Log generated slots
+    console.log(`Generated slots: ${JSON.stringify(slots)}`);
 
     for (const slot of slots) {
         const startDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.start.split(':')[0]), minute: parseInt(slot.start.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
@@ -174,6 +176,7 @@ const manageSlots = async () => {
         }
     }
 };
+
 
 
 
