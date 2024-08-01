@@ -119,10 +119,11 @@ app.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 
-    cron.schedule('02 11 * * *', async () => {
+    cron.schedule('55 12 * * *', async () => {
         console.log('Task started at:', new Date());
         await manageSlots();
     });
+    
     
 });
 
