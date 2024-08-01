@@ -1,4 +1,3 @@
-
 import express from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
@@ -120,30 +119,31 @@ app.listen(PORT, async () => {
     await connectToDatabase();
     console.log(`Server is running on port ${PORT}`);
 
-  // Schedule to start the task every 20 minutes
-  cron.schedule('*/20 * * * *', async () => {
-    console.log('Task started at:', new Date());
-    await manageSlots();
+    cron.schedule('02 11 * * *', async () => {
+        console.log('Task started at:', new Date());
+        await manageSlots();
+    });
+    
 });
 
 const manageSlots = async () => {
-    const startHour = 0; // Start at 00:00
-    const endHour = 23; // End at 23:59
-
-    // Define the number of minutes for each slot
-    const slotDuration = 20;
+    const startHour = 23; // 11:00 PM
+    const endHour = 3; // 3:00 AM next day
+    const slotDuration = 20; // Slot duration in minutes
 
     // Function to get the start and end time for each slot
     const getSlots = (startHour, endHour, duration) => {
         const slots = [];
         let startTime = moment().utcOffset('+05:00').set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
-        const endTime = moment().utcOffset('+05:00').set({ hour: endHour, minute: 59, second: 59, millisecond: 999 });
+        let endTime = moment().utcOffset('+05:00').set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
+
+        if (endHour < startHour) { // If end hour is on the next day
+            endTime.add(1, 'day');
+        }
 
         while (startTime.isBefore(endTime)) {
             const endSlotTime = startTime.clone().add(duration, 'minutes');
-            if (endSlotTime.isAfter(endTime)) {
-                break;
-            }
+            if (endSlotTime.isAfter(endTime)) break; // Don't create slots beyond end time
             slots.push({
                 start: startTime.format('HH:mm'),
                 end: endSlotTime.format('HH:mm')
@@ -167,15 +167,9 @@ const manageSlots = async () => {
         try {
             const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', requestData);
             console.log(`Slot created: ${JSON.stringify(response.data)}`);
-
-            // Wait for the duration of the slot before creating the next one
-            const duration = moment(endDateTime).diff(moment(startDateTime));
-            await new Promise(resolve => setTimeout(resolve, duration));
-
-            console.log(`Slot ended: ${response.data._id}`);
         } catch (error) {
             console.error('Error managing slot:', error);
         }
     }
 };
-});
+
