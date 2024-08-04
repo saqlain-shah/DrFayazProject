@@ -74,6 +74,12 @@ const DashboardSidebar = () => {
                         </NavLink>
                     </li>
                     <li>
+                        <NavLink to={`/dashboard/attachments/${clientId}`}>
+                            <FaPaperclip className="icon" />
+                            <span>Attachments</span>
+                        </NavLink>
+                    </li>
+                    <li>
                         <NavLink to={`/dashboard/change-password/${clientId}`} activeClassName="active">
                             <FaLock className="icon" />
                             <span>Change Password</span>

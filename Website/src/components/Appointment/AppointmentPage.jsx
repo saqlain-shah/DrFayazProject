@@ -218,12 +218,12 @@ const AppointmentPage = () => {
 
   const handleConfirmAppointment = async () => {
     setLoading(true);
-   
+    
     setSelectValue({ ...selectValue, id: userId });
-    const { attachments, name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
+    const { attachments = [], name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService
-
+  
     const appointmentData = new FormData();
     appointmentData.append('id', userId);
     appointmentData.append('name', name);
@@ -234,52 +234,55 @@ const AppointmentPage = () => {
     appointmentData.append('gender', gender);
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
-    attachments.map((attachment) => {
-      appointmentData.append("files", attachment);
-    })
+    
+    // Ensure attachments is an array before mapping
+    if (Array.isArray(attachments)) {
+      attachments.forEach((attachment) => {
+        console.log("Appending file:", attachment);
+        appointmentData.append("files", attachment);
+      });
+    }
+    
+    
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-
+  
     const token = localStorage.getItem("token");
-
+  
     try {
       const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-
-    
-
+  
       const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-   
-
+  
       toast.success("Appointment scheduled successfully!");
-
+  
       // Now, make a request to delete the selected slot
-   const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+      const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         }
-    });
-
-
+      });
+  
       setShowModal(true);
       setShowAppointmentDetails(true);
-
+  
     } catch (error) {
       console.error("Error creating appointment:", error);
     } finally {
       setLoading(false); // Set loading state to false once the request is completed
     }
   };
+  
 
 
 
