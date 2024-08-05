@@ -99,7 +99,7 @@ agenda.define('manage slots', async job => {
 
 agenda.on('ready', () => {
     console.log('Agenda is ready. Scheduling jobs...');
-    agenda.every('45 14 * * *', 'manage slots'); // Runs daily at 11:05 AM
+    agenda.every('5 11 * * *', 'manage slots'); // Runs daily at 11:05 AM
     agenda.start();
 });
 

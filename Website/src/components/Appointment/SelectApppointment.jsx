@@ -13,13 +13,13 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         const fetchSchedule = async () => {
             try {
                 const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
-                // No filtering on the slots here
-                const filteredSlots = response.data.filter(slot => moment(slot.endDateTime).isAfter(moment()));
-                setAppointmentSlots(filteredSlots);
+                // No filtering applied, show all slots
+                setAppointmentSlots(response.data);
             } catch (error) {
                 console.error('Error fetching schedule:', error);
             }
         };
+        
 
         fetchSchedule();
     }, []);
