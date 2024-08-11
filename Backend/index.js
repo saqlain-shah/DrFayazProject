@@ -104,7 +104,7 @@ agenda.define('manage slots', async job => {
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('45 15 * * *', 'manage slots'); // Schedule to run every day at 13:13 (1:13 PM)
+        await agenda.every('0 16 * * *', 'manage slots');        // Schedule to run every day at 13:13 (1:13 PM)
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
