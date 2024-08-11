@@ -21,10 +21,14 @@ export const login = async (req, res, next) => {
     }
 
     // Generate token upon successful login
-    const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '90d' });
+    const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
     // Set token as an HTTP cookie
-    res.cookie('access_token', token, { httpOnly: true, maxAge: 90 * 24 * 60 * 60 * 1000 }); // Expires in 90 days
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days in milliseconds
+  });
+  // Expires in 90 days
 
     // Set token in response body
     res.status(200).json({ message: 'Login successful', token, id: user._id });

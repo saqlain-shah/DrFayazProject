@@ -249,10 +249,10 @@ export const getAllWebs = async (req, res) => {
 export const getWebByIds = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Fetching web with ID:", id); // Log the id here
+   
     const web = await WebPatient.find();
     const data=web.filter((item)=>item.patientInfo.id===id)
-    console.log('Web found by ID:', web);
+   
     if (!data) {
       return res.status(404).json({ message: 'Web not found' });
     }
@@ -267,9 +267,9 @@ export const getWebByIds = async (req, res) => {
 export const updateWeb = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('Params:', req.params);
+   
     const { status, method } = req.body;
-    console.log('Received request to update web with ID:', id);
+   
 
     const updatedWeb = await WebPatient.findByIdAndUpdate(id, { status, method }, { new: true });
 
@@ -348,9 +348,9 @@ export const markAllNotificationsAsRead = async (req, res) => {
 export const getWebById = async (req, res) => {
   try {
     const { id } = req.params; 
-    console.log("Fetching web with ID:", id); // Log the id here
+   
     const web = await WebPatient.findById(id);
-    console.log('Web found by ID:', web);
+
     if (!web) {
       return res.status(404).json({ message: 'Web not found' });
     }

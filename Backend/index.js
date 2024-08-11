@@ -30,7 +30,7 @@ import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js';
 import EmailSent from './routes/ConfirmEmail.js';
 import dentalChartRoutes from './routes/dentalChartRoutes.js';
-import moment from 'moment';
+import moment from 'moment-timezone'; 
 import Agenda from 'agenda';
 
 // Load environment variables
@@ -45,67 +45,78 @@ const __dirname = dirname(__filename);
 // Logging the MongoDB URI
 console.log('MongoDB URI:', process.env.MONGO_URL);
 
-// Set up Agenda
+// Updated function to generate slots
+const getSlotsForSpecificPeriod = (startHour, endHour, duration) => {
+    const slots = [];
+    const now = moment().tz('Asia/Karachi');
+
+    let startTime = now.clone().set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
+    let endTime = now.clone().set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
+
+    // If the endHour is before the startHour, it means the period goes past midnight
+    if (endHour < startHour) {
+        endTime.add(1, 'days'); // Move endTime to the next day
+    }
+
+    while (startTime.isBefore(endTime)) {
+        const endSlotTime = startTime.clone().add(duration, 'minutes');
+        if (endSlotTime.isAfter(endTime)) break;
+        slots.push({
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        });
+        startTime = endSlotTime;
+    }
+
+    return slots;
+};
+
+// Agenda setup
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
-// Define Agenda job for managing slots
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
+
     const startHour = 23; // 11:00 PM
-    const endHour = 3; // 3:00 AM next day
-    const slotDuration = 20; // Slot duration in minutes
+    const endHour = 3; // 3:00 AM (next day)
+    const slotDuration = 30; // 30 minutes
 
-    const getSlots = (startHour, endHour, duration) => {
-        const slots = [];
-        let startTime = moment().utcOffset('+05:00').set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
-        let endTime = moment().utcOffset('+05:00').set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
+    const slots = getSlotsForSpecificPeriod(startHour, endHour, slotDuration);
 
-        if (endHour < startHour) { // If end hour is on the next day
-            endTime.add(1, 'day');
-        }
+    console.log('Generated Slots:', slots);
 
-        while (startTime.isBefore(endTime)) {
-            const endSlotTime = startTime.clone().add(duration, 'minutes');
-            if (endSlotTime.isAfter(endTime)) break;
-            slots.push({
-                start: startTime.format('HH:mm'),
-                end: endSlotTime.format('HH:mm')
-            });
-            startTime = endSlotTime;
-        }
-        return slots;
-    };
-
-    const slots = getSlots(startHour, endHour, slotDuration);
-    console.log(`Generated slots: ${JSON.stringify(slots)}`);
+    await axios.delete('https://server-yvzt.onrender.com/api/schedule/past', { data: { now: moment().tz('Asia/Karachi').toDate() } });
 
     for (const slot of slots) {
-        const startDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.start.split(':')[0]), minute: parseInt(slot.start.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
-        const endDateTime = moment().utcOffset('+05:00').set({ hour: parseInt(slot.end.split(':')[0]), minute: parseInt(slot.end.split(':')[1]), second: 0, millisecond: 0 }).toISOString();
-        
-        const requestData = {
-            startDateTime,
-            endDateTime
-        };
-
         try {
-            const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', requestData);
+            // Map slot fields correctly
+            const payload = {
+                startDateTime: slot.start,
+                endDateTime: slot.end
+            };
+            const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', payload);
             console.log(`Slot created: ${JSON.stringify(response.data)}`);
         } catch (error) {
             console.error('Error managing slot:', error);
         }
     }
 });
-
-agenda.on('ready', () => {
+agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
-    agenda.every('5 11 * * *', 'manage slots'); // Runs daily at 11:05 AM
-    agenda.start();
+    try {
+        await agenda.every('45 15 * * *', 'manage slots'); // Schedule to run every day at 13:13 (1:13 PM)
+        await agenda.start();
+        console.log('Agenda started and job scheduled.');
+    } catch (error) {
+        console.error('Error scheduling job with Agenda:', error);
+    }
 });
 
 agenda.on('error', error => {
     console.error('Agenda error:', error);
 });
+
+
 
 // MongoDB connection
 connectToDatabase().then(() => {
@@ -117,7 +128,7 @@ connectToDatabase().then(() => {
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5174'];
+    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5173'];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -160,12 +171,15 @@ app.use(authenticate);
 
 // Apply setupMiddleware() only to routes other than /api/schedule
 app.use((req, res, next) => {
-    if (req.path !== '/api/schedule') {
+    if (req.path !== '/api/schedule' && req.path !== '/api/schedule/past') {
         authenticate(req, res, next);
     } else {
         next();
     }
 });
+
+
+
 
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
