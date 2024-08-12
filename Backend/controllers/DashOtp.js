@@ -14,8 +14,8 @@ export const sendOTP = async (req, res) => {
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        // user: 'davbabu1122@gmail.com', // Replace with your email address
-        user: 'davbabu1122@gmail.com', 
+        // user: 'appointment@avicenahealthcare.com', // Replace with your email address
+        user: 'appointment@avicenahealthcare.com', 
         pass: 'Godaay2024' // Replace with your password
       }
     });
@@ -29,8 +29,8 @@ export const sendOTP = async (req, res) => {
 
     // Send OTP email
     const info = await transporter.sendMail({
-      // from: 'davbabu1122@gmail.com', // Sender address
-      from: 'davbabu1122@gmail.com',
+      // from: 'appointment@avicenahealthcare.com', // Sender address
+      from: 'appointment@avicenahealthcare.com',
       to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
       html: `
@@ -92,7 +92,7 @@ export const verifyOTP = async (req, res) => {
 
 //     // Send OTP email using SendGrid
 //     await sgMail.send({
-//       to: 'davbabu1122@gmail.com',
+//       to: 'appointment@avicenahealthcare.com',
 //       from: 'your_email@example.com',
 //       subject: 'OTP Verification',
 //       text: `Your OTP for verification is: ${OTP}`,
@@ -100,7 +100,7 @@ export const verifyOTP = async (req, res) => {
 
 //     console.log('OTP sent successfully');
 //     // Store the OTP for the user
-//     otpStore['davbabu1122@gmail.com'] = OTP;
+//     otpStore['appointment@avicenahealthcare.com'] = OTP;
 
 //     res.status(200).json({ success: true, message: 'OTP sent successfully' });
 //   } catch (error) {
@@ -112,7 +112,7 @@ export const verifyOTP = async (req, res) => {
 // // Method to verify the provided OTP
 // export const verifyOTP = async (req, res) => {
 //   const { otp } = req.body;
-//   const targetEmail = 'davbabu1122@gmail.com'; // Assuming email is included in the request user object
+//   const targetEmail = 'appointment@avicenahealthcare.com'; // Assuming email is included in the request user object
 
 //   // Retrieve the stored OTP for the user
 //   const storedOTP = otpStore[targetEmail];

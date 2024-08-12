@@ -47,14 +47,14 @@ export const sendOTP = async (req, res) => {
             port: 587,
             secure: false, // true for 465, false for other ports
             auth: {
-              user: 'davbabu1122@gmail.com', // Replace with your email address
+              user: 'appointment@avicenahealthcare.com', // Replace with your email address
               pass: 'Godaay2024' // Replace with your email password
             }
           });
 
         // Email content
         const mailOptions = {
-            from: 'davbabu1122@gmail.com', // Replace with your email address
+            from: 'appointment@avicenahealthcare.com', // Replace with your email address
             to: email,
             subject: 'OTP for Verification',
             html: htmlContent

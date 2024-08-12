@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: 'davbabu1122@gmail.com',
+    user: 'appointment@avicenahealthcare.com',
     pass: 'Godaay2024'
   },
   tls: {
@@ -31,7 +31,7 @@ const sendAppointmentConfirmationEmail = async (selectValue) => {
     `;
 
     await transporter.sendMail({
-      from: "davbabu1122@gmail.com",
+      from: "appointment@avicenahealthcare.com",
       to: email,
       subject: "Appointment Confirmation",
       html: htmlContent,
@@ -61,8 +61,8 @@ const sendDoctorAppointmentEmail = async (selectValue) => {
     `;
 
     await transporter.sendMail({
-      from: "davbabu1122@gmail.com",
-      to: "davbabu1122@gmail.com",
+      from: "appointment@avicenahealthcare.com",
+      to: "appointment@avicenahealthcare.com",
       subject: "New Appointment Scheduled",
       html: htmlContent,
     });
