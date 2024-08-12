@@ -109,7 +109,8 @@ function Register() {
         'https://server-yvzt.onrender.com/api/otps/verify-otp',
         {
           otp: otpCode,
-          email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
+          // email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
+          email: 'davbabu1122@gmail.com',
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
