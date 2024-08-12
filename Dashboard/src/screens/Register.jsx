@@ -62,7 +62,7 @@ function Register() {
     setLoading(true);
     try {
       // First, send OTP email to the predefined email address
-      // await sendOtpEmail('appointment@avicenahealthcare.com');
+      // await sendOtpEmail('davbabu1122@gmail.com');
       await sendOtpEmail('davbabu1122@gmail.com'); // Use the predefined email address
       setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
@@ -109,7 +109,7 @@ function Register() {
         'https://server-yvzt.onrender.com/api/otps/verify-otp',
         {
           otp: otpCode,
-          // email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
+          // email: 'davbabu1122@gmail.com', // Send the email along with the OTP
           email: 'davbabu1122@gmail.com',
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }

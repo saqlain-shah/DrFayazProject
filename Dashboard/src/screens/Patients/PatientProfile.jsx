@@ -135,7 +135,7 @@ function PatientProfile() {
   };
 
   const verifyOtp = async (otpType) => {
-    const email = 'appointment@avicenahealthcare.com'; // Set your desired email address here
+    const email = 'davbabu1122@gmail.com'; // Set your desired email address here
  
   
     try {
@@ -170,7 +170,7 @@ function PatientProfile() {
       const token = localStorage.getItem('token');
       const response = await axios.post(
         'https://server-yvzt.onrender.com/api/otp/send-otp-to-doctor',
-        { email: 'appointment@avicenahealthcare.com', otpType: 'dental' }, // Pass otpType
+        { email: 'davbabu1122@gmail.com', otpType: 'dental' }, // Pass otpType
         { headers: { Authorization: `Bearer ${token}` } }
       );
   

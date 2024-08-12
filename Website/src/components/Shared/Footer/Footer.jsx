@@ -51,7 +51,7 @@ export default function App() {
                         <MDBCol md='4' lg='3' xl='3' className='mx-auto mb-md-0 mb-4'>
                             <h6 className='text-uppercase fw-bold mb-2'>Contact</h6>
                             <p><FontAwesomeIcon icon={faMapMarkerAlt} /> 123 Street Name, City</p>
-                            <p><FontAwesomeIcon icon={faEnvelope} /> appointment@avicenahealthcare.com</p>
+                            <p><FontAwesomeIcon icon={faEnvelope} /> davbabu1122@gmail.com</p>
                             <p><FontAwesomeIcon icon={faPhone} /> +44 7579 389649</p>
 
                         </MDBCol>

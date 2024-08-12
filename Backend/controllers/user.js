@@ -191,7 +191,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: 'appointment@avicenahealthcare.com', // Replace with your email address
+    user: 'davbabu1122@gmail.com', // Replace with your email address
     pass: 'Godaay2024' // Replace with your password
   }
 });
@@ -219,8 +219,8 @@ export const sendEmail = (req, res) => {
 
   // Create email options
   const mailOptions = {
-    from: 'appointment@avicenahealthcare.com', // Use the email address you have permission to send from
-    to: 'appointment@avicenahealthcare.com', // Change this to your recipient email address
+    from: 'davbabu1122@gmail.com', // Use the email address you have permission to send from
+    to: 'davbabu1122@gmail.com', // Change this to your recipient email address
     subject: subject,
     html: emailBody // Use HTML for formatted email body
   };
