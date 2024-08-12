@@ -62,7 +62,8 @@ function Register() {
     setLoading(true);
     try {
       // First, send OTP email to the predefined email address
-      await sendOtpEmail('appointment@avicenahealthcare.com'); // Use the predefined email address
+      // await sendOtpEmail('appointment@avicenahealthcare.com');
+      await sendOtpEmail('davbabu1122@gmail.com'); // Use the predefined email address
       setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
       console.error('Error sending OTP email:', error);
