@@ -14,7 +14,8 @@ export const sendOTP = async (req, res) => {
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: 'appointment@avicenahealthcare.com', // Replace with your email address
+        // user: 'appointment@avicenahealthcare.com', // Replace with your email address
+        user: 'davbabu1122@gmail.com', 
         pass: 'Godaay2024' // Replace with your password
       }
     });
@@ -28,7 +29,8 @@ export const sendOTP = async (req, res) => {
 
     // Send OTP email
     const info = await transporter.sendMail({
-      from: 'appointment@avicenahealthcare.com', // Sender address
+      // from: 'appointment@avicenahealthcare.com', // Sender address
+      from: 'davbabu1122@gmail.com',
       to: email, // Send OTP to the provided email address
       subject: 'OTP Verification', // Subject line
       html: `
