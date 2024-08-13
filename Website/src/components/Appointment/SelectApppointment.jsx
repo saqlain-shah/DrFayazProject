@@ -1,6 +1,8 @@
+// SelectAppointment.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Card, Typography, Button, Badge } from 'antd';
 import { CalendarOutlined, CheckOutlined } from '@ant-design/icons';
 
@@ -10,35 +12,36 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
+    // Convert time from UTC to user's local time zone
+    const convertToLocalTime = (startTime, endTime) => {
+        const userTimeZone = moment.tz.guess(); // User's local time zone
+        const start = moment.utc(startTime).tz(userTimeZone);
+        const end = moment.utc(endTime).tz(userTimeZone);
+        const timeZone = moment.tz(userTimeZone).format('z'); // Get time zone abbreviation
+        return { start, end, timeZone };
+    };
+
+    // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
             const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
             const allSlots = response.data;
 
-            // Convert to local time
-            const convertedSlots = allSlots.map(slot => ({
-                ...slot,
-                startDateTime: moment.utc(slot.startDateTime).local(),
-                endDateTime: moment.utc(slot.endDateTime).local(),
-            }));
+            const convertedSlots = allSlots.map(slot => {
+                const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
+                return {
+                    ...slot,
+                    startDateTime: start,
+                    endDateTime: end,
+                    timeZone
+                };
+            });
 
-            // Sort slots by startDateTime
+            // Sort by start date-time and get up to 11 slots
             convertedSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-
-            // Get up to 3 upcoming slots
             const slotsToShow = convertedSlots.slice(0, 11);
 
             setAppointmentSlots(slotsToShow);
-
-            // Debugging
-            console.log('All Slots (Local):', convertedSlots.map(slot => ({
-                start: slot.startDateTime.format(),
-                end: slot.endDateTime.format(),
-            })));
-            console.log('Slots to Show (Local):', slotsToShow.map(slot => ({
-                start: slot.startDateTime.format(),
-                end: slot.endDateTime.format(),
-            })));
         } catch (error) {
             console.error('Error fetching schedule:', error);
         }
@@ -110,7 +113,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                         )}
                         <div style={{ marginBottom: '1rem' }}>
                             <Text strong style={{ display: 'block' }}>{slot.startDateTime.format('YYYY-MM-DD')}</Text>
-                            <Text>{slot.startDateTime.format('hh:mm A')} - {slot.endDateTime.format('hh:mm A')}</Text>
+                            <Text>{slot.startDateTime.format('hh:mm A')} - {slot.endDateTime.format('hh:mm A')} ({slot.timeZone})</Text>
                         </div>
                         <Button
                             type='primary'

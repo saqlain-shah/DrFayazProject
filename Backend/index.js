@@ -45,25 +45,26 @@ const __dirname = dirname(__filename);
 // Logging the MongoDB URI
 console.log('MongoDB URI:', process.env.MONGO_URL);
 
-// Updated function to generate slots
+
+// Updated function to generate slots in GMT/UTC
 const getSlotsForSpecificPeriod = (startHour, endHour, duration) => {
     const slots = [];
-    const now = moment().tz('Asia/Karachi');
+    const now = moment().utc(); // Use UTC time
 
     let startTime = now.clone().set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
 
-    // If the endHour is before the startHour, it means the period goes past midnight
+    // If endHour is before startHour, adjust endTime to the next day
     if (endHour < startHour) {
-        endTime.add(1, 'days'); // Move endTime to the next day
+        endTime.add(1, 'days');
     }
 
     while (startTime.isBefore(endTime)) {
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'), // Use [Z] for UTC offset
+            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
         });
         startTime = endSlotTime;
     }
@@ -71,25 +72,26 @@ const getSlotsForSpecificPeriod = (startHour, endHour, duration) => {
     return slots;
 };
 
+
 // Agenda setup
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 23; // 11:00 PM
-    const endHour = 3; // 3:00 AM (next day)
+    const startHour = 8;  // 8:00 AM GMT
+    const endHour = 12;   // 12:00 PM GMT
     const slotDuration = 30; // 30 minutes
 
     const slots = getSlotsForSpecificPeriod(startHour, endHour, slotDuration);
 
     console.log('Generated Slots:', slots);
 
-    await axios.delete('https://server-yvzt.onrender.comapi/schedule/past', { data: { now: moment().tz('Asia/Karachi').toDate() } });
+    // Delete past schedules
+    await axios.delete('https://server-yvzt.onrender.com/api/schedule/past', { data: { now: moment().utc().toDate() } });
 
     for (const slot of slots) {
         try {
-            // Map slot fields correctly
             const payload = {
                 startDateTime: slot.start,
                 endDateTime: slot.end
@@ -101,10 +103,11 @@ agenda.define('manage slots', async job => {
         }
     }
 });
+
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('10 15 * * *', 'manage slots');
+        await agenda.every('0 19 * * *', 'manage slots');
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {

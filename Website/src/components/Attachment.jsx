@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Dropzone from './DropZone'; // Adjust the path if necessary
+import Dropzone from './Drpozone2'; // Adjust the path if necessary
 import { Button, notification, Card, Upload, Modal, List } from 'antd';
 import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import DashboardLayout from './Doctor/DashboardLayout/DashboardLayout';
@@ -23,6 +23,7 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
       reader.readAsDataURL(file);
     });
   };
+  
 
   const handleFileChange = async (files) => {
     const fileArray = Array.from(files);
@@ -32,6 +33,7 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
     localStorage.setItem('attachments', JSON.stringify(updatedAttachments));
     onFileChange(fileArray);
   };
+  
 
   const handleDone = () => {
     notification.success({

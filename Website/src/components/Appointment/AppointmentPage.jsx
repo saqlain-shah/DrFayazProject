@@ -238,7 +238,6 @@ const AppointmentPage = () => {
     // Ensure attachments is an array before mapping
     if (Array.isArray(attachments)) {
       attachments.forEach((attachment) => {
-        console.log("Appending file:", attachment);
         appointmentData.append("files", attachment);
       });
     }
@@ -248,7 +247,7 @@ const AppointmentPage = () => {
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-  
+    console.log("Sending data:", appointmentData); // Debugging
     const token = localStorage.getItem("token");
   
     try {
