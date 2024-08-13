@@ -21,7 +21,7 @@ export const login = async (req, res, next) => {
     }
 
     // Generate token upon successful login
-    const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '2d' });
+    const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     // Set token as an HTTP cookie
     res.cookie('access_token', token, {
@@ -51,7 +51,7 @@ export const register = async (req, res, next) => {
     const newUser = new User(req.body);
     await newUser.save();
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '90d' });
+    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     res.cookie('access_token', token, { httpOnly: true }).status(201).json({ message: 'Registration successful', token });
   } catch (error) {
     console.error('Error registering user:', error);

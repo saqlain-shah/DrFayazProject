@@ -104,7 +104,7 @@ agenda.define('manage slots', async job => {
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('59 23 * * *', 'manage slots');
+        await agenda.every('20 10 * * *', 'manage slots');
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
@@ -128,7 +128,7 @@ connectToDatabase().then(() => {
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5173'];
+    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5174'];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);

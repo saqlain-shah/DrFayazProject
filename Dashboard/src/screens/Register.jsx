@@ -305,3 +305,5 @@ function Modal({ closeModal, isOpen, width, handleOtpInputChange, verifyOtp, otp
   );
 }
 
+
+
