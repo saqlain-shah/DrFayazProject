@@ -12,35 +12,38 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
   useEffect(() => {
     // Load attachments from local storage on component mount
     const savedAttachments = JSON.parse(localStorage.getItem('attachments')) || [];
-    setAttachments(savedAttachments);
+    console.log('Files retrieved from local storage:', savedAttachments);
+    if (savedAttachments.length > 0) {
+      setAttachments(savedAttachments);
+    } else {
+      console.log('No files found in local storage.');
+    }
   }, []);
 
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
+      reader.onloadend = () => resolve({ name: file.name, base64: reader.result });
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   };
-  
 
   const handleFileChange = async (files) => {
     const fileArray = Array.from(files);
-    const base64Files = await Promise.all(fileArray.map(file => fileToBase64(file)));
+    const base64Files = await Promise.all(fileArray.map(fileToBase64));
     const updatedAttachments = [...attachments, ...base64Files];
     setAttachments(updatedAttachments);
     localStorage.setItem('attachments', JSON.stringify(updatedAttachments));
     onFileChange(fileArray);
   };
-  
 
-  const handleDone = () => {
-    notification.success({
-      message: 'Success',
-      description: 'Attachments have been saved successfully!',
+  const handleUpdate = (index, newFile) => {
+    fileToBase64(newFile).then(({ base64 }) => {
+      const updatedAttachments = attachments.map((item, i) => i === index ? { ...item, base64 } : item);
+      setAttachments(updatedAttachments);
+      localStorage.setItem('attachments', JSON.stringify(updatedAttachments));
     });
-    onDone(attachments);
   };
 
   const handleDelete = (index) => {
@@ -54,12 +57,12 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
     });
   };
 
-  const handleUpdate = (index, newFile) => {
-    fileToBase64(newFile).then(base64 => {
-      const updatedAttachments = attachments.map((item, i) => i === index ? base64 : item);
-      setAttachments(updatedAttachments);
-      localStorage.setItem('attachments', JSON.stringify(updatedAttachments));
+  const handleDone = () => {
+    notification.success({
+      message: 'Success',
+      description: 'Attachments have been saved successfully!',
     });
+    onDone(attachments);
   };
 
   return (
@@ -71,8 +74,8 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
               <label>Attachments</label>
               <Dropzone
                 handleChange={(files) => handleFileChange(files)}
-                files={attachments.map(base64 => ({
-                  name: base64.split(',')[1], // Use the base64 data as a placeholder for the filename
+                files={attachments.map(({ name, base64 }) => ({
+                  name, // Use the original name of the file
                   size: 0,
                   type: 'application/octet-stream',
                 }))}
@@ -85,14 +88,14 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
               <List
                 grid={{ gutter: 16, column: 3 }}
                 dataSource={attachments}
-                renderItem={(item, index) => (
+                renderItem={({ base64 }, index) => (
                   <List.Item>
                     <Card
                       hoverable
                       cover={
                         <img
                           alt={`Attachment ${index}`}
-                          src={item}
+                          src={base64} // Use the base64 data as the image source
                           style={{ height: '150px', objectFit: 'cover' }}
                         />
                       }

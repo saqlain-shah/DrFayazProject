@@ -19,17 +19,12 @@ export default function AdvancedDropzoneDemo({ handleChange, files }) {
     useEffect(() => {
     }, [files])
 
-    const updateFiles = (incommingFiles) => {
-        console.log("incomming files", incommingFiles);
-        setExtFiles(incommingFiles);
-        incommingFiles.map((image, i) => {
-
-            images.push(image.file)
-        })
-        handleChange(images);
-        console.log("files", images)
-        images = [];
-    };
+    const updateFiles = (incomingFiles) => {
+        console.log("Incoming files:", incomingFiles);
+        setExtFiles(incomingFiles);
+        handleChange(incomingFiles.map(file => file.file)); // Ensure you pass the correct file format
+      };
+      
     const onDelete = (id) => {
         setExtFiles(extFiles.filter((x) => x.id !== id));
         extFiles.map((ext) => {

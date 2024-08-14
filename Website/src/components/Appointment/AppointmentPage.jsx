@@ -219,11 +219,16 @@ const AppointmentPage = () => {
   const handleConfirmAppointment = async () => {
     setLoading(true);
     
+    // Prepare the appointment data
     setSelectValue({ ...selectValue, id: userId });
-    const { attachments = [], name, email, emergencyContact, reasonForVisit, gender, address, bloodGroup, image } = selectValue
+    const {
+      attachments = [], name, email, emergencyContact, reasonForVisit,
+      gender, address, bloodGroup, image
+    } = selectValue;
     const { endDateTime, startDateTime } = selectedSlot;
-    const { serviceName, price } = selectedService
-  
+    const { serviceName, price } = selectedService;
+    
+    // Create FormData instance
     const appointmentData = new FormData();
     appointmentData.append('id', userId);
     appointmentData.append('name', name);
@@ -234,29 +239,51 @@ const AppointmentPage = () => {
     appointmentData.append('gender', gender);
     appointmentData.append('address', address);
     appointmentData.append('bloodGroup', bloodGroup);
-    
-    // Ensure attachments is an array before mapping
-    if (Array.isArray(attachments)) {
-      attachments.forEach((attachment) => {
-        appointmentData.append("files", attachment);
-      });
-    }
-    
-    
     appointmentData.append("endDateTime", endDateTime);
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-    console.log("Sending data:", appointmentData); // Debugging
+    
+    // Retrieve attachments from local storage
+    const savedAttachments = JSON.parse(localStorage.getItem("attachments")) || [];
+    
+    // Convert base64 attachments to File objects and append to FormData
+    if (Array.isArray(savedAttachments) && savedAttachments.length > 0) {
+      savedAttachments.forEach((attachment, index) => {
+        if (attachment.base64 && typeof attachment.base64 === 'string' && attachment.base64.includes(',')) {
+          const [header, data] = attachment.base64.split(',');
+          const mimeMatch = header.match(/:(.*?);/);
+          if (mimeMatch) {
+            const mime = mimeMatch[1];
+            const blob = new Blob([new Uint8Array(atob(data).split('').map(char => char.charCodeAt(0)))], { type: mime });
+            const file = new File([blob], attachment.name || `file${index}`, { type: mime });
+            appointmentData.append("files", file);
+          } else {
+            console.error('Invalid MIME type');
+          }
+        } else {
+          console.error('Invalid base64 format or missing base64 string');
+        }
+      });
+    } else {
+      console.warn('No attachments found in local storage or they are empty');
+    }
+  
+    // Log FormData contents
+    console.log("Sending data:", [...appointmentData.entries()]);
+  
     const token = localStorage.getItem("token");
   
     try {
+      // Send the appointment data
       const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
   
+      // Send confirmation email
       const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -281,6 +308,9 @@ const AppointmentPage = () => {
       setLoading(false); // Set loading state to false once the request is completed
     }
   };
+  
+  
+  
   
 
 
