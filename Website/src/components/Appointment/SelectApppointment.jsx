@@ -35,9 +35,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 };
             });
 
-            // Filter out past slots
-            const currentLocalTime = moment(); // Current local time
-            const futureSlots = convertedSlots.filter(slot => slot.startDateTime.isAfter(currentLocalTime));
+            // Filter out slots that are in the past
+            const now = moment();
+            const futureSlots = convertedSlots.filter(slot => slot.startDateTime.isAfter(now));
 
             // Sort by start date-time and get up to 11 slots
             futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));

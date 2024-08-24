@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import {  Button, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useForm } from 'react-hook-form';
-import { Await, Link, useParams } from 'react-router-dom';
+import { Await, Link, useParams,useNavigate } from 'react-router-dom';
 import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg';
 import axios from 'axios';
 
 const PatientProfileSetting = () => {
+    const navigate = useNavigate();
     const params = useParams();
     const [data, setData] = useState();
     const [userId, setUserId] = useState('');
@@ -128,6 +129,7 @@ const PatientProfileSetting = () => {
             const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
         
             message.success('Successfully Profile Updated');
+            navigate(`/dashboard/${params.clientId}`);
             // Refetch data after successful update
             fetchData(params);
         } catch (error) {
