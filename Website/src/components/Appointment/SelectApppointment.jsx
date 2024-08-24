@@ -1,5 +1,3 @@
-// SelectAppointment.jsx
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -37,9 +35,13 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 };
             });
 
+            // Filter out past slots
+            const currentLocalTime = moment(); // Current local time
+            const futureSlots = convertedSlots.filter(slot => slot.startDateTime.isAfter(currentLocalTime));
+
             // Sort by start date-time and get up to 11 slots
-            convertedSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-            const slotsToShow = convertedSlots.slice(0, 11);
+            futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
+            const slotsToShow = futureSlots.slice(0, 11);
 
             setAppointmentSlots(slotsToShow);
         } catch (error) {
