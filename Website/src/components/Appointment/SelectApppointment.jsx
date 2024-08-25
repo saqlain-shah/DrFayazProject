@@ -35,9 +35,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 };
             });
 
-            // Filter out slots that are in the past
-            const now = moment();
-            const futureSlots = convertedSlots.filter(slot => slot.startDateTime.isAfter(now));
+            // Use current UTC time for filtering out past slots
+            const nowUTC = moment.utc();
+            const futureSlots = convertedSlots.filter(slot => moment.utc(slot.startDateTime).isAfter(nowUTC));
 
             // Sort by start date-time and get up to 11 slots
             futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
