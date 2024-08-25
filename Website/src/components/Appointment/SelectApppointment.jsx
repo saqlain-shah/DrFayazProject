@@ -12,11 +12,20 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
 
     // Convert time from UTC to user's local time zone
     const convertToLocalTime = (startTime, endTime) => {
-        const userTimeZone = moment.tz.guess(); // User's local time zone
+        const userTimeZone = getCurrentTimeZone(); // Get the user's time zone
         const start = moment.utc(startTime).tz(userTimeZone);
         const end = moment.utc(endTime).tz(userTimeZone);
         const timeZone = moment.tz(userTimeZone).format('z'); // Get time zone abbreviation
+    
+        console.log(`System Time Zone: ${userTimeZone}`);
+        console.log(`Converted Slot Time - Start: ${start.format('YYYY-MM-DDTHH:mm:ss.SSSZ')}, End: ${end.format('YYYY-MM-DDTHH:mm:ss.SSSZ')}`);
+    
         return { start, end, timeZone };
+    };
+    
+    // Get the current time zone using Intl.DateTimeFormat
+    const getCurrentTimeZone = () => {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
     };
 
     // Fetch slots and update state
@@ -24,9 +33,12 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         try {
             const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
             const allSlots = response.data;
-
+    
+            console.log('Fetched Slots Data:', allSlots);
+    
             const convertedSlots = allSlots.map(slot => {
                 const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
+                console.log('Converted Slot Time - Start:', start.format(), 'End:', end.format());
                 return {
                     ...slot,
                     startDateTime: start,
@@ -34,15 +46,20 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                     timeZone
                 };
             });
-
-            // Use current UTC time for filtering out past slots
-            const nowUTC = moment.utc();
-            const futureSlots = convertedSlots.filter(slot => moment.utc(slot.startDateTime).isAfter(nowUTC));
-
-            // Sort by start date-time and get up to 11 slots
+    
+            const nowUTC = moment.utc(); // Ensure current time is in UTC
+            console.log('Current UTC Time:', nowUTC.format());
+    
+            const futureSlots = convertedSlots.filter(slot => {
+                console.log('Slot Start Time (UTC):', moment.utc(slot.startDateTime).format());
+                return moment.utc(slot.startDateTime).isAfter(nowUTC);
+            });
+    
+            console.log('Future Slots:', futureSlots);
+    
             futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
             const slotsToShow = futureSlots.slice(0, 11);
-
+    
             setAppointmentSlots(slotsToShow);
         } catch (error) {
             console.error('Error fetching schedule:', error);
