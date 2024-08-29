@@ -33,7 +33,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             }
     
             const convertedSlots = allSlots.map(slot => {
-                const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
+                const { startDateTime, endDateTime, timeZone } = slot;
+                const start = moment.tz(startDateTime, timeZone);
+                const end = moment.tz(endDateTime, timeZone);
                 return {
                     ...slot,
                     startDateTime: start,
@@ -54,6 +56,13 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 console.log('Generated Next Day Slots:', futureSlots);
             }
     
+            // Convert startDateTime and endDateTime back to moment objects for sorting
+            futureSlots = futureSlots.map(slot => ({
+                ...slot,
+                startDateTime: moment(slot.startDateTime),
+                endDateTime: moment(slot.endDateTime)
+            }));
+    
             // Sort and limit the slots
             futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
             setAppointmentSlots(futureSlots.slice(0, 11));
@@ -62,31 +71,35 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         }
     };
     
+    
 
     // Generate slots for the next day
     const generateNextDaySlots = () => {
-        // Get the local time zone dynamically
+        // Get the current local time zone dynamically
         const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         
-        // Use moment-timezone to handle time zone conversions
-        const nowUTC = moment.utc();
+        // Use moment to handle current system time
+        const now = moment(); // Current local time
+        const nowUTC = now.clone().utc(); // Current UTC time
     
-        // Calculate the start of the next day in UTC
-        const nextDayStartUTC = nowUTC.clone().add(1, 'days').startOf('day').set({ hour: 13, minute: 0, second: 0 });
-        const nextDayEndUTC = nowUTC.clone().add(1, 'days').startOf('day').set({ hour: 17, minute: 0, second: 0 });
+        // Calculate the start and end of the next day in local time
+        const nextDayStartLocal = now.clone().add(1, 'days').startOf('day').set({ hour: 13, minute: 0, second: 0 });
+        const nextDayEndLocal = now.clone().add(1, 'days').startOf('day').set({ hour: 17, minute: 0, second: 0 });
     
-        // Convert start and end times to local time zone
-        const nextDayStart = moment.tz(nextDayStartUTC, localTimeZone);
-        const nextDayEnd = moment.tz(nextDayEndUTC, localTimeZone);
+        // Convert start and end times to UTC for consistent comparison
+        const nextDayStartUTC = moment.tz(nextDayStartLocal, localTimeZone).utc();
+        const nextDayEndUTC = moment.tz(nextDayEndLocal, localTimeZone).utc();
     
         // Check if the times are correctly set
-        console.log('Next Day Start Time (Local TZ):', nextDayStart.format());
-        console.log('Next Day End Time (Local TZ):', nextDayEnd.format());
+        console.log('Next Day Start Time (Local TZ):', nextDayStartLocal.format());
+        console.log('Next Day End Time (Local TZ):', nextDayEndLocal.format());
+        console.log('Next Day Start Time (UTC):', nextDayStartUTC.format());
+        console.log('Next Day End Time (UTC):', nextDayEndUTC.format());
     
-        // Assuming slots are 30 minutes each
+        // Generate slots between nextDayStartUTC and nextDayEndUTC
         const nextDaySlots = [];
-        let start = nextDayStart.clone();
-        while (start.isBefore(nextDayEnd)) {
+        let start = nextDayStartUTC.clone();
+        while (start.isBefore(nextDayEndUTC)) {
             const end = start.clone().add(30, 'minutes');
             nextDaySlots.push({
                 _id: `nextDaySlot${nextDaySlots.length}`,
@@ -99,6 +112,10 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
         return nextDaySlots;
     };
+    
+    
+    
+    
     
 
     
