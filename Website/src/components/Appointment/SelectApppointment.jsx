@@ -10,35 +10,30 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
-    // Convert time from UTC to user's local time zone
+    // Convert time from UTC to Pakistan Standard Time (PKT)
     const convertToLocalTime = (startTime, endTime) => {
-        const userTimeZone = getCurrentTimeZone(); // Get the user's time zone
-        const start = moment.utc(startTime).tz(userTimeZone);
-        const end = moment.utc(endTime).tz(userTimeZone);
-        const timeZone = moment.tz(userTimeZone).format('z'); // Get time zone abbreviation
-    
-        console.log(`System Time Zone: ${userTimeZone}`);
-        console.log(`Converted Slot Time - Start: ${start.format('YYYY-MM-DDTHH:mm:ss.SSSZ')}, End: ${end.format('YYYY-MM-DDTHH:mm:ss.SSSZ')}`);
-    
+        const timeZone = 'Asia/Karachi'; // PKT Time Zone
+        const start = moment.utc(startTime).tz(timeZone);
+        const end = moment.utc(endTime).tz(timeZone);
         return { start, end, timeZone };
-    };
-    
-    // Get the current time zone using Intl.DateTimeFormat
-    const getCurrentTimeZone = () => {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone;
     };
 
     // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
+            console.log('Fetching slots...');
             const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
             const allSlots = response.data;
     
             console.log('Fetched Slots Data:', allSlots);
     
+            if (!Array.isArray(allSlots)) {
+                console.error('Unexpected data format:', allSlots);
+                return;
+            }
+    
             const convertedSlots = allSlots.map(slot => {
                 const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                console.log('Converted Slot Time - Start:', start.format(), 'End:', end.format());
                 return {
                     ...slot,
                     startDateTime: start,
@@ -47,24 +42,67 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 };
             });
     
-            const nowUTC = moment.utc(); // Ensure current time is in UTC
-            console.log('Current UTC Time:', nowUTC.format());
+            console.log('Converted Slots:', convertedSlots);
     
-            const futureSlots = convertedSlots.filter(slot => {
-                console.log('Slot Start Time (UTC):', moment.utc(slot.startDateTime).format());
-                return moment.utc(slot.startDateTime).isAfter(nowUTC);
-            });
+            const nowUTC = moment.utc();
+            let futureSlots = convertedSlots.filter(slot => moment.utc(slot.startDateTime).isAfter(nowUTC));
+            
+            // Check if futureSlots is empty
+            if (futureSlots.length === 0) {
+                console.log('No slots available for today, generating slots for the next day...');
+                futureSlots = generateNextDaySlots();
+                console.log('Generated Next Day Slots:', futureSlots);
+            }
     
-            console.log('Future Slots:', futureSlots);
-    
+            // Sort and limit the slots
             futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-            const slotsToShow = futureSlots.slice(0, 11);
-    
-            setAppointmentSlots(slotsToShow);
+            setAppointmentSlots(futureSlots.slice(0, 11));
         } catch (error) {
             console.error('Error fetching schedule:', error);
         }
     };
+    
+
+    // Generate slots for the next day
+    const generateNextDaySlots = () => {
+        // Get the local time zone dynamically
+        const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        
+        // Use moment-timezone to handle time zone conversions
+        const nowUTC = moment.utc();
+    
+        // Calculate the start of the next day in UTC
+        const nextDayStartUTC = nowUTC.clone().add(1, 'days').startOf('day').set({ hour: 13, minute: 0, second: 0 });
+        const nextDayEndUTC = nowUTC.clone().add(1, 'days').startOf('day').set({ hour: 17, minute: 0, second: 0 });
+    
+        // Convert start and end times to local time zone
+        const nextDayStart = moment.tz(nextDayStartUTC, localTimeZone);
+        const nextDayEnd = moment.tz(nextDayEndUTC, localTimeZone);
+    
+        // Check if the times are correctly set
+        console.log('Next Day Start Time (Local TZ):', nextDayStart.format());
+        console.log('Next Day End Time (Local TZ):', nextDayEnd.format());
+    
+        // Assuming slots are 30 minutes each
+        const nextDaySlots = [];
+        let start = nextDayStart.clone();
+        while (start.isBefore(nextDayEnd)) {
+            const end = start.clone().add(30, 'minutes');
+            nextDaySlots.push({
+                _id: `nextDaySlot${nextDaySlots.length}`,
+                startDateTime: start,
+                endDateTime: end,
+                timeZone: localTimeZone
+            });
+            start = end; // Move to the next slot
+        }
+    
+        return nextDaySlots;
+    };
+    
+
+    
+
 
     useEffect(() => {
         fetchAndUpdateSlots();
