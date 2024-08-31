@@ -47,17 +47,32 @@ console.log('MongoDB URI:', process.env.MONGO_URL);
 
 
 // Updated function to generate slots in GMT/UTC
-const getSlotsForSpecificPeriod = (startHour, endHour, duration) => {
+const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, duration) => {
     const slots = [];
     const now = moment().utc(); // Use UTC time
 
-    let startTime = now.clone().set({ hour: startHour, minute: 0, second: 0, millisecond: 0 });
-    let endTime = now.clone().set({ hour: endHour, minute: 0, second: 0, millisecond: 0 });
+    // Generate slots for today
+    let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+    let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
     // If endHour is before startHour, adjust endTime to the next day
-    if (endHour < startHour) {
+    if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
     }
+
+    while (startTime.isBefore(endTime)) {
+        const endSlotTime = startTime.clone().add(duration, 'minutes');
+        if (endSlotTime.isAfter(endTime)) break;
+        slots.push({
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'), // Use [Z] for UTC offset
+            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+        });
+        startTime = endSlotTime;
+    }
+
+    // Generate slots for the next day
+    startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+    endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
     while (startTime.isBefore(endTime)) {
         const endSlotTime = startTime.clone().add(duration, 'minutes');
@@ -72,23 +87,31 @@ const getSlotsForSpecificPeriod = (startHour, endHour, duration) => {
     return slots;
 };
 
-
 // Agenda setup
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 8;  // 8:00 AM GMT
-    const endHour = 12;   // 12:00 PM GMT
-    const slotDuration = 30; // 30 minutes
+    const startHour = 8;  // Start hour in GMT
+    const startMinute = 0; // Start minute in GMT
+    const endHour = 12;   // End hour in GMT
+    const endMinute = 0; // End minute in GMT
+    const slotDuration = 30; // Slot duration in minutes
 
-    const slots = getSlotsForSpecificPeriod(startHour, endHour, slotDuration);
+    const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
 
     console.log('Generated Slots:', slots);
 
-    // Delete past schedules
-    await axios.delete('https://server-yvzt.onrender.com/api/schedule/past', { data: { now: moment().utc().toDate() } });
+    try {
+        // Delete past schedules
+        const deleteResponse = await axios.delete('https://server-yvzt.onrender.com/api/schedule/past', { 
+            data: { now: moment().utc().toDate() } 
+        });
+        console.log('Past slots deletion response:', deleteResponse.data);
+    } catch (error) {
+        console.error('Error deleting past slots:', error);
+    }
 
     for (const slot of slots) {
         try {
@@ -98,16 +121,18 @@ agenda.define('manage slots', async job => {
             };
             const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', payload);
             console.log(`Slot created: ${JSON.stringify(response.data)}`);
+
         } catch (error) {
             console.error('Error managing slot:', error);
         }
     }
 });
 
+
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('45 5 * * *', 'manage slots');
+        await agenda.every('05 15 * * *', 'manage slots');
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
@@ -132,6 +157,7 @@ app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
     const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5174'];
+    
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
