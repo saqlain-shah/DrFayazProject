@@ -93,9 +93,9 @@ const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'j
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 8;  // Start hour in GMT
+    const startHour = 19;  // Start hour in GMT
     const startMinute = 0; // Start minute in GMT
-    const endHour = 12;   // End hour in GMT
+    const endHour = 0;   // End hour in GMT
     const endMinute = 0; // End minute in GMT
     const slotDuration = 30; // Slot duration in minutes
 
