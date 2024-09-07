@@ -47,6 +47,7 @@ console.log('MongoDB URI:', process.env.MONGO_URL);
 
 
 // Updated function to generate slots in GMT/UTC
+// Updated function to generate slots in GMT/UTC
 const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, duration) => {
     const slots = [];
     const now = moment().utc(); // Use UTC time
@@ -87,16 +88,19 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
     return slots;
 };
 
+
+
 // Agenda setup
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
+// UK Time: 6 PM to 10 PM GMT = 11:00 PM to 3:00 AM PKT
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 19;  // Start hour in GMT
-    const startMinute = 0; // Start minute in GMT
-    const endHour = 0;   // End hour in GMT
-    const endMinute = 0; // End minute in GMT
+    const startHour = 18;  // Start hour in GMT (6:00 PM GMT)
+    const startMinute = 0; 
+    const endHour = 22;   // End hour in GMT (10:00 PM GMT)
+    const endMinute = 0;  
     const slotDuration = 30; // Slot duration in minutes
 
     const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
@@ -129,10 +133,11 @@ agenda.define('manage slots', async job => {
 });
 
 
+
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('01 5 * * *', 'manage slots');
+        await agenda.every('43 13 * * *', 'manage slots');
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
