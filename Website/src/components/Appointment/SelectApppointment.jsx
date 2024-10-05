@@ -39,22 +39,25 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             console.log('Fetched Slots Data:', allSlots);
     
             const nowUTC = moment.utc(); // Current time in UTC
+            const uniqueSlotsMap = {}; // To keep unique slots
+            const uniqueSlotSet = new Set(); // To track unique date and time combinations
     
-            // Convert slots
-            const convertedSlots = allSlots.map(slot => {
+            // Convert slots and filter out duplicates
+            allSlots.forEach(slot => {
                 const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                return {
-                    ...slot,
-                    startDateTime: start,
-                    endDateTime: end,
-                    timeZone
-                };
+                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`; // Unique key based on time
+    
+                // Only add if not seen before
+                if (!uniqueSlotSet.has(slotKey)) {
+                    uniqueSlotSet.add(slotKey);
+                    uniqueSlotsMap[slot._id] = { ...slot, startDateTime: start, endDateTime: end, timeZone };
+                }
             });
     
-            console.log('Converted Slots Data:', convertedSlots);
+            console.log('Unique Converted Slots Data:', Object.values(uniqueSlotsMap));
     
             // Filter future slots
-            const futureSlots = convertedSlots.filter(slot => {
+            const futureSlots = Object.values(uniqueSlotsMap).filter(slot => {
                 return moment.utc(slot.startDateTime).isAfter(nowUTC);
             });
     
@@ -103,7 +106,6 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
                     convertedNextDaySlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
                     setAppointmentSlots(convertedNextDaySlots.slice(0, 11));
-    
                     console.log('Next Day Converted Slots Data:', convertedNextDaySlots.slice(0, 11));
                 } else {
                     setAppointmentSlots([]); // No slots available for today or the next day
