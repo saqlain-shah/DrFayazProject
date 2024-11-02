@@ -3,6 +3,8 @@ import * as appointmentController from '../controllers/AppointmentController/app
 
 const router = express.Router();
 
+
+
 router.route('/')
     .post(appointmentController.createAppointment)
     .get(appointmentController.getAllAppointments);
