@@ -101,7 +101,7 @@ agenda.define('manage slots', async job => {
     const startMinute = 0; 
     const endHour = 22;   // End hour in GMT (10:00 PM GMT)
     const endMinute = 0;  
-    const slotDuration = 20; // Slot duration in minutes
+    const slotDuration = 30; // Slot duration in minutes
 
     const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
 
@@ -137,11 +137,7 @@ agenda.define('manage slots', async job => {
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-<<<<<<< HEAD
-        await agenda.every('11 56 * * *', 'manage slots');
-=======
         await agenda.every('12 20 * * *', 'manage slots');
->>>>>>> 0dcb5c22b30df1ded63ac68c588799892ce1beb7
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
