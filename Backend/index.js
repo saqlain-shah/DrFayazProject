@@ -131,9 +131,6 @@ agenda.define('manage slots', async job => {
         }
     }
 });
-
-
-
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
@@ -148,9 +145,6 @@ agenda.on('ready', async () => {
 agenda.on('error', error => {
     console.error('Agenda error:', error);
 });
-
-
-
 // MongoDB connection
 connectToDatabase().then(() => {
     console.log('Database connection successful');
@@ -211,10 +205,6 @@ app.use((req, res, next) => {
         next();
     }
 });
-
-
-
-
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);
