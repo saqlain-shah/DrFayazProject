@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import Layout from '../../Layout';
-import { patientTab } from '../../components/Datas';
-import { IoArrowBackOutline } from 'react-icons/io5';
+import React, { useState, useEffect, Fragment } from "react";
+import Layout from "../../Layout";
+import { patientTab } from "../../components/Datas";
+import { IoArrowBackOutline } from "react-icons/io5";
 import { Link, useParams } from "react-router-dom";
 import MedicalRecord from "./MedicalRecord";
 import AppointmentsUsed from "../../components/UsedComp/AppointmentsUsed";
@@ -10,11 +10,13 @@ import PaymentsUsed from "../../components/UsedComp/PaymentUsed";
 import PatientImages from "./PatientImages";
 import HealthInfomation from "./HealthInfomation";
 import DentalChart from "./DentalChart"; // Import DentalChart component
-import axios from 'axios';
-import { PatientTableArray } from '../../components/Tables';
-import { Dialog, Transition } from '@headlessui/react';
-import { FaTimes } from 'react-icons/fa';
-import PatientDetails from '../../components/PatientDetail/Detail';
+import axios from "axios";
+import { PatientTableArray } from "../../components/Tables";
+import { Dialog, Transition } from "@headlessui/react";
+import { FaTimes } from "react-icons/fa";
+import PatientDetails from "../../components/PatientDetail/Detail";
+import BASE_URL from "../../baseUrl.jsx";
+
 function PatientProfile() {
   const { id } = useParams();
   const [profileData, setProfileData] = useState({});
@@ -23,7 +25,7 @@ function PatientProfile() {
   const [healthInfoData, setHealthInfoData] = useState({});
   const [activeTab, setActiveTab] = useState(1);
   const [isDentalModalOpen, setIsDentalModalOpen] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
+  const [otpCode, setOtpCode] = useState("");
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [error, setError] = useState(null); // Define error state
@@ -32,21 +34,24 @@ function PatientProfile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const profileResponse = await axios.get(`https://server-yvzt.onrender.com/api/patients/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const token = localStorage.getItem("token");
+        const profileResponse = await axios.get(
+          `${BASE_URL}/api/patients/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setProfileData(profileResponse.data);
       } catch (error) {
-        console.error('Error fetching profile data:', error);
+        console.error("Error fetching profile data:", error);
       }
     };
 
     const fetchWebPatientData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${BASE_URL}/api/web/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         setWebPatientData(response.data);
         // Set attachments when webPatientData is fetched
@@ -54,7 +59,7 @@ function PatientProfile() {
           setAttachments(response.data.patientInfo.attachment);
         }
       } catch (error) {
-        console.error('Error fetching web patient data:', error);
+        console.error("Error fetching web patient data:", error);
       }
     };
 
@@ -65,19 +70,22 @@ function PatientProfile() {
   useEffect(() => {
     const fetchMedicalRecords = async () => {
       try {
-        const token = localStorage.getItem('token');
-      
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/medical-records/preview/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json' // Optionally, you can specify content type if required by the server
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(
+          `${BASE_URL}/api/medical-records/preview/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json", // Optionally, you can specify content type if required by the server
+            },
           }
-        });
-       
+        );
+
         setMedicalRecords(response.data);
       } catch (error) {
-        console.error('Error fetching medical records:', error);
-        setError('Error fetching medical records.');
+        console.error("Error fetching medical records:", error);
+        setError("Error fetching medical records.");
       }
     };
 
@@ -87,39 +95,44 @@ function PatientProfile() {
   useEffect(() => {
     const fetchInvoiceData = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/invoices/patient/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${BASE_URL}/api/invoices/patient/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setInvoiceData(response.data);
       } catch (error) {
-        console.error('Error fetching invoice data:', error);
+        console.error("Error fetching invoice data:", error);
       }
     };
-  
+
     fetchInvoiceData();
   }, [id]);
-  
+
   useEffect(() => {
     const fetchHealthInformation = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/health-information/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${BASE_URL}/api/health-information/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setHealthInfoData(response.data);
       } catch (error) {
-        console.error('Error fetching health information:', error);
+        console.error("Error fetching health information:", error);
       }
     };
-  
+
     fetchHealthInformation();
   }, [id]);
-  
 
   const openDentalModal = () => {
     setIsDentalModalOpen(true);
@@ -135,100 +148,114 @@ function PatientProfile() {
   };
 
   const verifyOtp = async (otpType) => {
-    const email = 'appointment@avicenahealthcare.com'; // Set your desired email address here
- 
-  
+    const email = "bussinessguy5909@gmail.com"; // Set your desired email address here
+
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otp/verify-otp',
+        `${BASE_URL}/api/otp/verify-otp`,
         { email: email, otp: otpCode, otpType: otpType }, // Pass otpType along with other data
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' } }
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-  
-     
-  
-      if (response.status === 200 && response.data.success) { // Check if response is successful
-    
+
+      if (response.status === 200 && response.data.success) {
+        // Check if response is successful
+
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
       } else {
-      
-        alert('Invalid OTP code. Please try again.');
+        alert("Invalid OTP code. Please try again.");
         setIsOtpValid(false);
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      alert('An error occurred while verifying OTP. Please try again.');
+      console.error("Error verifying OTP:", error);
+      alert("An error occurred while verifying OTP. Please try again.");
       setIsOtpValid(false);
     }
   };
-  
-  
 
   const handleMentalHealthTabClick = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otp/send-otp-to-doctor',
-        { email: 'appointment@avicenahealthcare.com', otpType: 'dental' }, // Pass otpType
+        `${BASE_URL}/api/otp/send-otp-to-doctor`,
+        { email: "bussinessguy5909@gmail.com", otpType: "dental" }, // Pass otpType
         { headers: { Authorization: `Bearer ${token}` } }
       );
-  
+
       if (response.status === 200) {
-      
         openDentalModal();
         setActiveTab(6); // Set the activeTab to 6 after successful OTP sending
       }
     } catch (error) {
-      console.error('Error sending OTP to doctor:', error);
+      console.error("Error sending OTP to doctor:", error);
       if (error.response) {
-        console.error('Error response:', error.response.data);
+        console.error("Error response:", error.response.data);
       }
     }
   };
-  
 
-  
   const tabPanel = () => {
-   
-  
     switch (activeTab) {
       case 1:
         return <MedicalRecord />;
       case 2:
-        return <AppointmentsUsed doctor={false} patientId={id} token={localStorage.getItem('token')} />;
+        return (
+          <AppointmentsUsed
+            doctor={false}
+            patientId={id}
+            token={localStorage.getItem("token")}
+          />
+        );
       case 3:
-        return <InvoiceUsed patientId={id} token={localStorage.getItem('token')} />;
+        return (
+          <InvoiceUsed patientId={id} token={localStorage.getItem("token")} />
+        );
       case 4:
-        // return <PaymentsUsed doctor={false} />;
+      // return <PaymentsUsed doctor={false} />;
       case 5:
-        return  <PatientImages medicalRecords={medicalRecords} webPatientAttachments={attachments} token={localStorage.getItem('token')}  />
-  
+        return (
+          <PatientImages
+            medicalRecords={medicalRecords}
+            webPatientAttachments={attachments}
+            token={localStorage.getItem("token")}
+          />
+        );
+
       case 6:
-       
-        return isOtpValid ? <DentalChart  /> : null; // Render DentalChart only if OTP is valid
+        return isOtpValid ? <DentalChart /> : null; // Render DentalChart only if OTP is valid
       case 7:
-        // return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
-  
+      // return <PatientTableArray data={formatProfileData(profileData, webPatientData)} />;
+
       case 8:
-        return <HealthInfomation patientId={id} setHealthInfoData={setHealthInfoData}  />;
-        case 9:
-          return  <PatientDetails
-          medicalRecords={medicalRecords}
-          profileData={profileData}
-          webPatientData={webPatientData}
-          InvoiceData={InvoiceData}
-          healthInfoData={healthInfoData}
-        />
+        return (
+          <HealthInfomation
+            patientId={id}
+            setHealthInfoData={setHealthInfoData}
+          />
+        );
+      case 9:
+        return (
+          <PatientDetails
+            medicalRecords={medicalRecords}
+            profileData={profileData}
+            webPatientData={webPatientData}
+            InvoiceData={InvoiceData}
+            healthInfoData={healthInfoData}
+          />
+        );
       default:
         return null;
     }
   };
-  
 
   const formatProfileData = (profileData, webPatientData, healthInfoData) => {
     const formattedData = [];
-  
+
     if (profileData && profileData._id) {
       formattedData.push({
         _id: profileData._id,
@@ -241,33 +268,46 @@ function PatientProfile() {
         createdAt: profileData.createdAt,
         updatedAt: profileData.updatedAt,
         profilePicture: profileData.profilePicture,
-        healthInfoData: healthInfoData // Add healthInfoData here
+        healthInfoData: healthInfoData, // Add healthInfoData here
       });
     }
-  
+
     if (webPatientData && webPatientData._id) {
       formattedData.push({
         _id: webPatientData._id,
-        fullName: webPatientData.patientInfo ? webPatientData.patientInfo.name : '',
-        gender: webPatientData.patientInfo ? webPatientData.patientInfo.gender : '',
-        bloodGroup: webPatientData.patientInfo ? webPatientData.patientInfo.bloodGroup : '',
-        address: webPatientData.patientInfo ? webPatientData.patientInfo.address : '',
-        email: webPatientData.patientInfo ? webPatientData.patientInfo.email : '',
-        emergencyContact: webPatientData.patientInfo ? webPatientData.patientInfo.emergencyContact : '',
+        fullName: webPatientData.patientInfo
+          ? webPatientData.patientInfo.name
+          : "",
+        gender: webPatientData.patientInfo
+          ? webPatientData.patientInfo.gender
+          : "",
+        bloodGroup: webPatientData.patientInfo
+          ? webPatientData.patientInfo.bloodGroup
+          : "",
+        address: webPatientData.patientInfo
+          ? webPatientData.patientInfo.address
+          : "",
+        email: webPatientData.patientInfo
+          ? webPatientData.patientInfo.email
+          : "",
+        emergencyContact: webPatientData.patientInfo
+          ? webPatientData.patientInfo.emergencyContact
+          : "",
         createdAt: webPatientData.createdAt,
-        healthInfoData: healthInfoData // Add healthInfoData here
+        healthInfoData: healthInfoData, // Add healthInfoData here
       });
     }
-  
+
     return formattedData;
   };
-  
-
 
   return (
     <Layout>
       <div className="flex items-center gap-4">
-        <Link to="/patients" className="bg-white border border-subMain border-dashed rounded-lg py-3 px-4 text-md">
+        <Link
+          to="/patients"
+          className="bg-white border border-subMain border-dashed rounded-lg py-3 px-4 text-md"
+        >
           <IoArrowBackOutline />
         </Link>
         <h1 className="text-xl font-semibold">{profileData.fullName}</h1>
@@ -277,39 +317,56 @@ function PatientProfile() {
           {profileData.fullName ? ( // Check if profileData is available
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${profileData.profilePicture}`}
+                src={`${BASE_URL}/${profileData.profilePicture}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
               <div className="gap-2 flex-col">
-                <h2 className="text-sm font-semibold">{profileData.fullName}</h2>
+                <h2 className="text-sm font-semibold">
+                  {profileData.fullName}
+                </h2>
                 <p className="text-xs text-textGray">{profileData.email}</p>
                 <p className="text-xs">{profileData.emergencyContact}</p>
               </div>
             </Fragment>
           ) : null}
-          {!profileData.fullName && webPatientData && webPatientData.patientInfo ? (
+          {!profileData.fullName &&
+          webPatientData &&
+          webPatientData.patientInfo ? (
             <Fragment>
               <img
-                src={`https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`}
+                src={`${BASE_URL}/${webPatientData.patientInfo.image}`}
                 alt="Profile"
                 className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
               />
               <div className="gap-2 flex-col">
-                <h2 className="text-sm font-semibold">{webPatientData.patientInfo.name}</h2>
-                <p className="text-xs text-textGray">{webPatientData.patientInfo.email}</p>
-                <p className="text-xs">{webPatientData.patientInfo.emergencyContact}</p>
+                <h2 className="text-sm font-semibold">
+                  {webPatientData.patientInfo.name}
+                </h2>
+                <p className="text-xs text-textGray">
+                  {webPatientData.patientInfo.email}
+                </p>
+                <p className="text-xs">
+                  {webPatientData.patientInfo.emergencyContact}
+                </p>
               </div>
             </Fragment>
           ) : null}
 
-
           <div className="flex-col gap-3 px-2 xl:px-12 w-full">
             {patientTab.map((tab, index) => (
               <button
-                onClick={tab.id === 6 ? handleMentalHealthTabClick : () => setActiveTab(tab.id)}
+                onClick={
+                  tab.id === 6
+                    ? handleMentalHealthTabClick
+                    : () => setActiveTab(tab.id)
+                }
                 key={index}
-                className={`${activeTab === tab.id ? 'bg-text text-subMain' : 'bg-dry text-main hover:bg-text hover:text-subMain'} text-xs gap-4 flex items-center w-full p-4 rounded`}
+                className={`${
+                  activeTab === tab.id
+                    ? "bg-text text-subMain"
+                    : "bg-dry text-main hover:bg-text hover:text-subMain"
+                } text-xs gap-4 flex items-center w-full p-4 rounded`}
               >
                 <tab.icon className="text-lg" /> {tab.title}
               </button>
@@ -338,13 +395,12 @@ function PatientProfile() {
             placeholder="Enter OTP Code"
             className="border border-gray-400 rounded-md p-2 mb-4"
           />
-        <button
-  onClick={() => verifyOtp('dental')} // Pass otpType as 'dental'
-  className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
->
-  Verify OTP
-</button>
-
+          <button
+            onClick={() => verifyOtp("dental")} // Pass otpType as 'dental'
+            className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600"
+          >
+            Verify OTP
+          </button>
         </div>
       </Modal>
     </Layout>
@@ -381,8 +437,9 @@ function Modal({ closeModal, isOpen, width, children, title }) {
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`w-full ${width ? width : 'max-w-4xl'
-                  } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+                className={`w-full ${
+                  width ? width : "max-w-4xl"
+                } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
               >
                 <div className="w-full flex-btn gap-2 mb-8">
                   <h1 className="text-md font-semibold">{title}</h1>

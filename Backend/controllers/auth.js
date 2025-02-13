@@ -119,4 +119,47 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
+export const updateUserById = async (req, res, next) => {
+  const { userId } = req.params;
+  const { name, email, phone, address } = req.body;
+  const profileImage = req.file ? `uploads/${req.file.filename}` : req.body.profileImage; // Ensure file path
 
+  try {
+      const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { name, email, phone, address, profileImage },
+          { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      return res.status(200).json(updatedUser);
+  } catch (error) {
+      console.error('Error updating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+export const getUserById = async (req, res) => {
+  const { Id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(Id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("User Data:", user); // Log user data to check if `profileImage` exists
+
+    // Respond with the user details
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

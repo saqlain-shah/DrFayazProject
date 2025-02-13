@@ -1,10 +1,12 @@
 import React, { useRef } from "react";
 import { Image, Table } from "antd";
 import dayjs from "dayjs";
-import './Detail.css'
+import "./Detail.css";
 import html2canvas from "html2canvas";
 import { Button } from "antd";
 import jsPDF from "jspdf";
+import BASE_URL from "../../baseUrl.jsx";
+
 const PatientDetails = ({
   medicalRecords,
   profileData,
@@ -18,17 +20,17 @@ const PatientDetails = ({
   const pdfRef = useRef();
 
   const handleGeneratePDF = () => {
-    console.log("medicalRecords in handleGeneratePDF:", medicalRecords); 
+    console.log("medicalRecords in handleGeneratePDF:", medicalRecords);
     console.log("Type of medicalRecords:", typeof medicalRecords);
     console.log("medicalRecords:", medicalRecords);
-
+  
     const input = document.getElementById("patientDetails");
-
+  
     const options = {
       width: 900,
       height: 1100,
     };
-
+  
     html2canvas(input, options).then((canvas) => {
       const pdf = new jsPDF();
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -36,59 +38,79 @@ const PatientDetails = ({
       const aspectRatio = canvas.width / canvas.height;
       const pdfHeightAdjusted = pdfWidth / aspectRatio;
       const offsetY = (pdfHeight - pdfHeightAdjusted) / 2;
-
-      // Add main content as image
+  
+      // ✅ Add main content as an image
       const imgData = canvas.toDataURL("image/png");
       pdf.addImage(imgData, "PNG", 0, offsetY, pdfWidth, pdfHeightAdjusted);
-
-      // Add attachments
+  
+      // ✅ Process attachments (Only images, skip PDFs)
       if (Array.isArray(medicalRecords.data)) {
         const promises = medicalRecords.data.map((record) => {
           if (record.attachments && record.attachments.length > 0) {
-            return Promise.all(record.attachments.map((attachment) => {
-              return new Promise((resolve, reject) => {
-                const img = document.createElement('img');
-                img.crossOrigin = "anonymous";
-                img.onload = function () {
-                  const attachmentCanvas = document.createElement("canvas");
-                  attachmentCanvas.width = img.width;
-                  attachmentCanvas.height = img.height;
-                  const ctx = attachmentCanvas.getContext("2d");
-                  ctx.drawImage(img, 0, 0);
-                  const attachmentImgData = attachmentCanvas.toDataURL("image/png");
-                  pdf.addPage();
-                  pdf.addImage(
-                    attachmentImgData,
-                    "PNG",
-                    10,
-                    10,
-                    180,
-                    150
-                  );
-                  resolve();
-                };
-                img.src = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
-              });
-            }));
+            return Promise.all(
+              record.attachments.map((attachment) => {
+                const fileUrl = `${BASE_URL}/${attachment.filename}`;
+  
+                // ✅ Check if the file is an image (JPG, PNG, etc.), skip PDFs
+                const isImage = /\.(jpg|jpeg|png|gif)$/i.test(attachment.filename);
+                if (!isImage) {
+                  console.warn("Skipping non-image file:", fileUrl);
+                  return Promise.resolve(); // Skip non-image files
+                }
+  
+                return new Promise((resolve, reject) => {
+                  const img = document.createElement("img");
+                  img.crossOrigin = "anonymous"; // Fix CORS issue if needed
+  
+                  img.onload = function () {
+                    const attachmentCanvas = document.createElement("canvas");
+                    attachmentCanvas.width = img.width;
+                    attachmentCanvas.height = img.height;
+                    const ctx = attachmentCanvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    const attachmentImgData = attachmentCanvas.toDataURL("image/png");
+  
+                    pdf.addPage();
+                    pdf.addImage(attachmentImgData, "PNG", 10, 10, 180, 150);
+                    resolve(); // Resolve after successful image load
+                  };
+  
+                  img.onerror = function () {
+                    console.error("Failed to load image:", fileUrl);
+                    reject(new Error(`Image failed to load: ${fileUrl}`));
+                  };
+  
+                  console.log("Attempting to load image:", fileUrl);
+                  img.src = fileUrl;
+                });
+              })
+            );
           }
         });
-        Promise.all(promises.flat()).then(() => {
-          pdf.save("patient_details.pdf");
-        }).catch((error) => {
-          console.error("Error adding attachment images to PDF:", error);
-        });
+  
+        // ✅ Save the PDF after processing all attachments
+        Promise.all(promises.flat())
+          .then(() => {
+            pdf.save("patient_details.pdf");
+          })
+          .catch((error) => {
+            console.error("Error adding attachment images to PDF:", error);
+          });
       } else {
         console.error("medicalRecords.data is not an array.");
       }
     });
   };
+  
 
   return (
     <div id="patientDetails" className="patient-details-container">
       <div className="patient-details-header">
         <h1 className="patient-details-title">Patient Details Sheet</h1>
         <div className="patient-details-section">
-          <Button className="export-button" onClick={handleGeneratePDF}>Generate PDF</Button>
+          <Button className="export-button" onClick={handleGeneratePDF}>
+            Generate PDF
+          </Button>
         </div>
       </div>
 
@@ -162,7 +184,7 @@ const PatientDetails = ({
                   record.attachments.map((attachment, index) => (
                     <Image
                       key={index}
-                      src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`}
+                      src={`${BASE_URL}/uploads/${attachment.filename}`}
                       alt={attachment.originalname}
                       width={250}
                       height={250}

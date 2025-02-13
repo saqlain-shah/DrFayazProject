@@ -13,6 +13,7 @@ import { useCreateAppointmentByUnauthenticateUserMutation } from "../../redux/ap
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../../redux/feature/invoiceSlice";
 import { loadStripe } from "@stripe/stripe-js";
+import BASE_URL from '../../baseUrl.jsx';
 
 const initialValue = {
   name: "",
@@ -92,7 +93,7 @@ const AppointmentPage = () => {
 
     try {
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/userauth/${params.clientId}`,
+        `${BASE_URL}/api/userauth/${params.clientId}`,
         config
       );
       if (response) {
@@ -153,7 +154,7 @@ const AppointmentPage = () => {
         Authorization: `Bearer ${token}`,
       };
       const response = await fetch(
-        "https://server-yvzt.onrender.com/api/stripe/checkout",
+        `${BASE_URL}/api/stripe/checkout`,
         {
           method: "POST",
           headers: headers,
@@ -195,7 +196,7 @@ const AppointmentPage = () => {
     };
     try {
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/services",
+        `${BASE_URL}/api/services`,
         config
       );
       setServiceDetails(response.data);
@@ -276,7 +277,7 @@ const AppointmentPage = () => {
   
     try {
       // Send the appointment data
-      const response = await axios.post("https://server-yvzt.onrender.com/api/web/", appointmentData, {
+      const response = await axios.post(`${BASE_URL}/api/web/`, appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -284,7 +285,7 @@ const AppointmentPage = () => {
       });
   
       // Send confirmation email
-      const emailResponse = await axios.post("https://server-yvzt.onrender.com/api/send-confirmation-email", { email, name, bloodGroup, emergencyContact, gender }, {
+      const emailResponse = await axios.post(`${BASE_URL}/api/send-confirmation-email`, { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -293,7 +294,7 @@ const AppointmentPage = () => {
       toast.success("Appointment scheduled successfully!");
   
       // Now, make a request to delete the selected slot
-      const appdelete = await axios.delete(`https://server-yvzt.onrender.com/api/schedule/${selectedSlot._id}`, {
+      const appdelete = await axios.delete(`${BASE_URL}/api/schedule/${selectedSlot._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         }

@@ -4,6 +4,7 @@ import { Button, Checkbox, Input } from '../../components/Form';
 import axios from 'axios';
 import DentalChartTable from './DentalChartTable';
 import { useParams } from 'react-router-dom'; // Add this import
+import BASE_URL from '../../baseUrl.jsx';
 
 function DentalChart() {
   const { id } = useParams();
@@ -29,7 +30,7 @@ function DentalChart() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
+        const response = await axios.get(`${BASE_URL}/api/dental-chart/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -74,7 +75,7 @@ function DentalChart() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/dental-chart/',
+        `${BASE_URL}/api/dental-chart/`,
         {
           seriousDisease,
           dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
@@ -110,7 +111,7 @@ function DentalChart() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id.toString()}`, {
+      await axios.delete(`${BASE_URL}/api/dental-chart/${id.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -7,6 +7,7 @@ import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import AddEditServiceModal from '../components/Modals/AddEditServiceModal';
+import BASE_URL from '../baseUrl.jsx';
 
 function Services() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ function Services() {
     async function fetchData() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/services', {
+        const response = await axios.get(`${BASE_URL}/api/services`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -46,7 +47,7 @@ function Services() {
   const onDelete = async (item) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/services/${item._id}`, {
+      await axios.delete(`${BASE_URL}/api/services/${item._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -66,8 +67,8 @@ function Services() {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
+      await axios.put(`${BASE_URL}/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get(`${BASE_URL}/api/services`);
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -79,7 +80,7 @@ function Services() {
   const createService = async (serviceData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://server-yvzt.onrender.com/api/services', serviceData, {
+      const response = await axios.post(`${BASE_URL}/api/services`, serviceData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -5,6 +5,7 @@ import { BiPlus } from 'react-icons/bi';
 import { InvoiceTable } from '../../components/Tables';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function Invoices() {
   const [invoicesData, setInvoicesData] = useState([]);
@@ -13,7 +14,7 @@ function Invoices() {
     const fetchInvoices = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/invoices', {
+        const response = await axios.get(`${BASE_URL}/api/invoices`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -31,7 +32,7 @@ function Invoices() {
   const deleteInvoice = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/invoices/${id}`, {
+      await axios.delete(`${BASE_URL}/api/invoices/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

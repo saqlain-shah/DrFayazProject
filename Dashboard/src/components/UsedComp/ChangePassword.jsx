@@ -4,6 +4,7 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAuth } from '../../AuthContext';
+import BASE_URL from '../../baseUrl.jsx';
 
 function ChangePassword() {
   const { user, updateUser } = useAuth();
@@ -40,7 +41,7 @@ function ChangePassword() {
       console.log('Token:', token);
 
       const response = await axios.put(
-        'https://server-yvzt.onrender.com/api/auth/change-password',
+        `${BASE_URL}/api/auth/change-password`,
         {
           userId: user.id,
           oldPassword,

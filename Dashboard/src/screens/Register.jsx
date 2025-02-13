@@ -8,6 +8,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import pic from '../build/images/upLogo.jpg';
 import { FaTimes } from 'react-icons/fa';
+import BASE_URL from '../baseUrl';
 
 function Register() {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ function Register() {
     try {
       // First, send OTP email to the predefined email address
       // await sendOtpEmail('appointment@avicenahealthcare.com');
-      await sendOtpEmail('appointment@avicenahealthcare.com'); // Use the predefined email address
+      await sendOtpEmail('bussinessguy5909@gmail.com'); // Use the predefined email address
       setIsDentalModalOpen(true); // Show OTP verification modal
     } catch (error) {
       console.error('Error sending OTP email:', error);
@@ -76,7 +77,7 @@ function Register() {
   const sendOtpEmail = async (targetEmail) => {
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/send-otp',
+        `${BASE_URL}/api/otps/send-otp`,
 
         { email: targetEmail },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
@@ -106,11 +107,11 @@ function Register() {
   
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/verify-otp',
+        `${BASE_URL}/api/otps/verify-otp`,
         {
           otp: otpCode,
           // email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
-          email: 'appointment@avicenahealthcare.com',
+          email: 'bussinessguy5909@gmail.com',
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -140,7 +141,7 @@ function Register() {
   const registerUser = async () => {
     try {
 
-      const response = await axios.post('https://server-yvzt.onrender.com/api/auth/register', {
+      const response = await axios.post(`${BASE_URL}/api/auth/register`, {
 
         name,
         email,

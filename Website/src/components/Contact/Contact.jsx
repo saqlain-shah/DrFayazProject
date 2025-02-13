@@ -5,6 +5,7 @@ import axios from 'axios';
 import Header from "../Shared/Header/Header";
 import SubHeader from "../Shared/SubHeader";
 import Footer from "../Shared/Footer/Footer";
+import BASE_URL from '../../baseUrl';
 
 const Contact = () => {
   const { handleSubmit, register, formState: { errors } } = useForm(); // Update destructuring to include formState
@@ -20,7 +21,7 @@ const Contact = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.post("https://server-yvzt.onrender.com/api/userauth/send-email", {
+      const response = await axios.post(`${BASE_URL}/api/userauth/send-email`, {
         email: data.email,
         subject: "New Contact Form Submission",
         body: `

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PatientTable } from '../Tables';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
 
 function PatientsUsed() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function PatientsUsed() {
   const fetchData = async () => {
     try {
       // Make an HTTP request to fetch data
-      const response = await fetch('https://server-yvzt.onrender.com/api/patients', {
+      const response = await fetch(`${BASE_URL}/api/patients`, {
         headers: {
           'Authorization': `Bearer ${token}`, // Add token to the request header
         },

@@ -8,6 +8,8 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
+
 function PersonalInfo({ titles, onSave }) {
   const [profilePicture, setImageUrl] = useState('');
   const [title, setTitle] = useState(sortsDatas.title[0]);
@@ -36,7 +38,7 @@ function PersonalInfo({ titles, onSave }) {
 
     
 
-      await axios.post('https://server-yvzt.onrender.com/api/patients', data, {
+      await axios.post(`${BASE_URL}/api/patients/`, data, {
 
         headers: {
           'Content-Type': 'multipart/form-data',

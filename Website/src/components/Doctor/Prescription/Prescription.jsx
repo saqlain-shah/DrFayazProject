@@ -6,6 +6,7 @@ import axios from "axios";
 import DashboardLayout from "../DashboardLayout/DashboardLayout";
 import CustomTable from "../../UI/component/CustomTable";
 import { useDeletePrescriptionMutation } from "../../../redux/api/prescriptionApi";
+import BASE_URL from '../../../baseUrl.jsx';
 
 const Prescription = () => {
   const { id } = useParams();
@@ -28,7 +29,7 @@ const Prescription = () => {
         },
       };
       const response = await axios.get(
-        `https://server-yvzt.onrender.com/api/web/web/${id}`,
+        `${BASE_URL}/api/web/web/${id}`,
         config
       );
    

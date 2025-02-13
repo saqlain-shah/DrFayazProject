@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { MenuSelect } from "../components/Form";
 import { TbUser } from "react-icons/tb";
 import { AiOutlinePoweroff } from "react-icons/ai";
@@ -8,16 +8,22 @@ import { useNavigate } from "react-router-dom";
 import MenuDrawer from "../components/Drawer/MenuDrawer"; // Import the MenuDrawer component
 import { BiMenu } from "react-icons/bi";
 import { useAuth } from "../AuthContext"; // Import the useAuth hook
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
-import axios from 'axios';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import BASE_URL from "../baseUrl.jsx";
 
 function Header() {
   const [notificationsData, setNotificationsData] = useState([]);
+  const [userName, setUserName] = useState("");
+  const [profileImage, setProfileImage] = useState("");
   const navigate = useNavigate();
   const { logout } = useAuth(); // Get the logout function from useAuth
-  const name = localStorage.getItem('name');
-  const profileImagePath = localStorage.getItem('profileImage'); // Retrieve profile image from local storage
+  const [id, setId] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    return parsedUser ? parsedUser.id : "";
+  }); // Retrieve user ID from local storage
   const [isOpen, setIsOpen] = React.useState(false);
 
   // toggle drawer
@@ -27,46 +33,77 @@ function Header() {
 
   const DropDown1 = [
     {
-      title: 'Profile',
+      title: "Profile",
       icon: TbUser,
       onClick: () => {
-        navigate('/settings');
+        navigate("/settings");
       },
     },
     {
-      title: 'Logout',
+      title: "Logout",
       icon: AiOutlinePoweroff,
       onClick: () => {
-        localStorage.removeItem('token')
+        localStorage.removeItem("token");
         logout(); // Call the logout function from useAuth
-        navigate('/login');
+        navigate("/login");
       },
     },
   ];
-  const profileImageURL = profileImagePath ? `https://server-yvzt.onrender.com/${profileImagePath}` : null;
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchProfileImage = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/web/notifications', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setNotificationsData(response.data);
+        const token = localStorage.getItem("token");
+    
+        if (!token) {
+          console.error("Token not found. Please login again.");
+          return;
+        }
+    
+        if (id) {
+          const response = await axios.get(`${BASE_URL}/api/auth/get/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+    
+          const { profileImage, name } = response.data;
+    
+          // Construct the full URL for the profile image
+          const imageUrl = profileImage ? `${BASE_URL}/${profileImage}` : "";
+    
+          setProfileImage(imageUrl);
+          setUserName(name);
+        }
       } catch (error) {
-        console.error('Error fetching notifications:', error);
+        console.error("Error fetching profile image:", error);
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${BASE_URL}/api/web/notifications`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setNotificationsData(response.data);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchProfileImage();
     fetchNotifications();
-  }, []);
+  }, [id]);
 
-  
-  
-
-  const unreadNotificationsCount = notificationsData.filter(item => item.status === 'Pending').length;
+  // const profileImage = profileImage
+  // ? `${BASE_URL}${profileImage}`  // Use the correct path for the image
+  // : null;
+  const unreadNotificationsCount = notificationsData.filter(
+    (item) => item.status === "Pending"
+  ).length;
 
   return (
     <>
@@ -97,26 +134,25 @@ function Header() {
 
             <div className=" items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
-                <div className=" items-center md:flex hidden">
-                  <MenuSelect datas={DropDown1}>
-                    <div className="flex gap-4 items-center p-4 rounded-lg">
-                      {/* Profile Image */}
-                      {profileImageURL ? (
-                        <img
-                          src={profileImageURL} // Use complete image URL
-                          alt="profile"
-                          className="w-12 border border-border object-cover h-12 rounded-full"
-                        />
-                      ) : (
-                        <FontAwesomeIcon icon={faUser} className="w-6 h-6" />
-                      )}
-
-                      {/* Display user's name */}
-                      <p className="text-sm text-textGray font-medium">
-                        {name} 
-                      </p>
+                <div className="flex gap-4 items-center p-4 rounded-lg">
+                  {/* Profile Image */}
+                  {profileImage ? (
+                    <img
+                    src={profileImage}
+                    alt="profile"
+                    className="w-12 h-12 rounded-full object-cover border border-dashed border-subMain"
+                  />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center border border-dashed border-subMain">
+                      <span className="text-xl text-gray-600">👤</span>{" "}
+                      {/* Default Icon */}
                     </div>
-                  </MenuSelect>
+                  )}
+
+                  {/* Display user's name */}
+                  <p className="text-sm text-textGray font-medium">
+                    {userName}
+                  </p>
                 </div>
               </MenuSelect>
             </div>

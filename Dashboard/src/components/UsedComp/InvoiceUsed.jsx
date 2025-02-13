@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InvoiceUsedTable } from '../Tables';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function InvoiceUsed({ token, patientId }) {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function InvoiceUsed({ token, patientId }) {
     const fetchInvoices = async () => {
       try {
         if (patientId) { // Check if patientId is defined
-          const response = await axios.get(`https://server-yvzt.onrender.com/api/invoices/patient/${patientId}`, {
+          const response = await axios.get(`${BASE_URL}/api/invoices/patient/${patientId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

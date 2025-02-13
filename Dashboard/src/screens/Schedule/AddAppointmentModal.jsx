@@ -6,6 +6,7 @@ import SelectApppointment from './SelectApppointment';
 import { Button, Steps, message } from 'antd';
 import moment from 'moment';
 import axios from 'axios'; // Import axios
+import BASE_URL from '../../baseUrl.jsx';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
   const [selectedDate, setSelectedDate] = useState('');
@@ -18,7 +19,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://server-yvzt.onrender.com/api/schdule');
+      const response = await axios.get(`${BASE_URL}/api/schdule`);
       setAppointmentSlots(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -40,7 +41,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       }
     };
 
-    axios.post('https://server-yvzt.onrender.com/api/schdule', appointmentPayload, config)
+    axios.post(`${BASE_URL}/api/schdule`, appointmentPayload, config)
       .then(response => {
         // Handle success
         toast.success('Appointment saved successfully');

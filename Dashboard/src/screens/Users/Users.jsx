@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import dayjs from 'dayjs';
 import { CircularProgress } from '@mui/material';
+import BASE_URL from '../../baseUrl.jsx';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -13,7 +14,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('https://server-yvzt.onrender.com/api/userauth/users', {
+        const response = await fetch(`${BASE_URL}/api/userauth/users`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

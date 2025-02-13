@@ -8,6 +8,7 @@ import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import axios from 'axios'; // Import Axios
 import { toast } from 'react-hot-toast';
 import AppointmentDetailsModal from './appointmentDetailModel';
+import BASE_URL from '../baseUrl.jsx';
 
 const CustomToolbar = (toolbar) => {
   // today button handler
@@ -116,7 +117,7 @@ function Appointments({ events }) {
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
+        const response = await axios.get(`${BASE_URL}/api/web/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

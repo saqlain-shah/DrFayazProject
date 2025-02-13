@@ -6,6 +6,7 @@ import Modal from '../../components/Modals/Modal';
 import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
+import BASE_URL from '../../baseUrl.jsx';
 
 function HealthInformation({ patientId }) {
   const [bloodType, setBloodType] = useState(sortsDatas.bloodTypeFilter[0]);
@@ -22,7 +23,7 @@ function HealthInformation({ patientId }) {
       const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       console.log('Patient ID:', patientId); // Log the patientId
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/health-information',
+        `${BASE_URL}/api/health-information`,
         {
           patientId, // Pass patientId here
           bloodType: bloodType.name,

@@ -4,6 +4,7 @@ import { Button, Checkbox, DatePickerComp, Input, Select, Textarea, TimePickerCo
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 const EditAppointmentModal = ({ isOpen, closeModal, appointment, onUpdateAppointment }) => {
     const { _id, patientName, purposeOfVisit, dateOfVisit, startTime, endTime, status, doctor, share, description } = appointment;
@@ -23,7 +24,7 @@ const EditAppointmentModal = ({ isOpen, closeModal, appointment, onUpdateAppoint
     };
 
     const saveAppointment = () => {
-        const apiUrl = `https://server-yvzt.onrender.com/api/appointments/${_id}`;
+        const apiUrl = `${BASE_URL}/api/appointments/${_id}`;
 
         // Format date and time values to strings
         const formattedDateOfVisit = editedDateOfVisit.toISOString();

@@ -13,6 +13,7 @@ import Uploader from "../../components/Uploader";
 import { servicesData, medicineData } from "../../components/Datas";
 import { toast } from "react-hot-toast";
 import MedicineDosageModal from "../../components/Modals/MedicineDosage";
+import BASE_URL from '../../baseUrl.jsx';
 
 function NewMedicalRecord() {
   const location = useLocation(); // Use useLocation hook
@@ -57,7 +58,7 @@ function NewMedicalRecord() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `https://server-yvzt.onrender.com/api/patients/${id}`,
+          `${BASE_URL}/api/patients/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -73,7 +74,7 @@ function NewMedicalRecord() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `https://server-yvzt.onrender.com/api/web/${id}`,
+          `${BASE_URL}/api/web/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -156,7 +157,7 @@ function NewMedicalRecord() {
 
     const token = localStorage.getItem("token");
     axios
-      .post("https://server-yvzt.onrender.com/api/medical-records", formData, {
+      .post(`${BASE_URL}/api/medical-records`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -217,9 +218,9 @@ function NewMedicalRecord() {
             <img
               src={
                 webPatientData.patientInfo?.image
-                  ? `https://server-yvzt.onrender.com/${webPatientData.patientInfo.image}`
+                  ? `${BASE_URL}/${webPatientData.patientInfo.image}`
                   : patientData.profilePicture
-                  ? `https://server-yvzt.onrender.com/${patientData.profilePicture}`
+                  ? `${BASE_URL}/${patientData.profilePicture}`
                   : ""
               }
               alt="profile"

@@ -5,6 +5,7 @@ import { Button } from '../Form';
 import { toast } from 'react-hot-toast';
 import { HiOutlineMail } from 'react-icons/hi';
 import { FaWhatsapp } from 'react-icons/fa';
+import BASE_URL from '../../baseUrl.jsx';
 
 export const shareData = [
   {
@@ -35,7 +36,7 @@ function ShareModal({ closeModal, isOpen, dataToShare }) {
 
     try {
       // Make API request to share data
-      const response = await axios.post('https://server-yvzt.onrender.com/api/files/share/whatsapp', {
+      const response = await axios.post(`${BASE_URL}/api/files/share/whatsapp`, {
         method: selectedOption === 1 ? 'email' : 'whatsapp', // Determine sharing method
         data: dataToShare, // Data to be shared (file path or other relevant data)
       });

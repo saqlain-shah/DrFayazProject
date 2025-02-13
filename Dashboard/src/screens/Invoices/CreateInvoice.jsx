@@ -13,6 +13,7 @@ import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
 import pic from '../../build/images/upLogo.jpg';
 //import { v4 as uuidv4 } from 'uuid';
+import BASE_URL from '../../baseUrl.jsx';
 
 function CreateInvoice() {
   const [dateRange, setDateRange] = useState([
@@ -94,7 +95,7 @@ function CreateInvoice() {
       }
 
       const token = localStorage.getItem("token");
-      const response = await axios.post('https://server-yvzt.onrender.com/api/invoices', {
+      const response = await axios.post(`${BASE_URL}/api/invoices`, {
         selectedPatient,
         invoiceItems,
         tax,

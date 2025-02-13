@@ -4,6 +4,7 @@ import { Button, Input } from '../../components/Form';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
   const [fullName, setFullName] = useState('');
@@ -27,7 +28,7 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
 
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/doctors',
+        `${BASE_URL}/api/doctors`,
         formData,
         {
           headers: {

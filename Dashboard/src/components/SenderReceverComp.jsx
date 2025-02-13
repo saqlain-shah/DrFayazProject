@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BiPlus } from "react-icons/bi";
 import axios from "axios";
+import BASE_URL from '../baseUrl.jsx';
 
 function SenderReceverComp({
   item,
@@ -23,7 +24,7 @@ function SenderReceverComp({
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/patients",
+        `${BASE_URL}/api/patients`,
         {
           headers: {
             Authorization: `Bearer ${token}`

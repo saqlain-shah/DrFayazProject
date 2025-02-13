@@ -12,6 +12,7 @@ import { Link, useParams } from 'react-router-dom';
 import { IoArrowBackOutline } from 'react-icons/io5';
 import { InvoiceProductsTable } from '../../components/Tables';
 import SenderReceverComp from '../../components/SenderReceverComp';
+import BASE_URL from '../../baseUrl.jsx';
 
 function EditInvoice() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ function EditInvoice() {
     const fetchInvoiceData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://server-yvzt.onrender.com/api/invoices/${id}`, {
+        const response = await fetch(`${BASE_URL}/api/invoices/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

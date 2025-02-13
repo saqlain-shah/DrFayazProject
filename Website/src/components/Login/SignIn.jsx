@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import log from "../../images/doc/dr.png";
 import { message, Modal } from "antd";
 import axios from "axios";
+import BASE_URL from '../../baseUrl';
+
 // import { useParams } from 'react-router-dom';
 const SignIn = ({ handleResponse }) => {
   const {
@@ -23,7 +25,7 @@ const SignIn = ({ handleResponse }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://server-yvzt.onrender.com/api/userauth/login",
+        `${BASE_URL}/api/userauth/login`,
         data
       );
       const {

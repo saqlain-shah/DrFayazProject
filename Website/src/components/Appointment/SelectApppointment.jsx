@@ -3,6 +3,7 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import { Card, Typography, Button, Badge } from 'antd';
 import { CalendarOutlined, CheckOutlined } from '@ant-design/icons';
+import BASE_URL from '../../baseUrl';
 
 const { Title, Text } = Typography;
 
@@ -33,7 +34,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
-            const response = await axios.get('https://server-yvzt.onrender.com/api/schedule');
+            const response = await axios.get(`${BASE_URL}/api/schedule`);
             const allSlots = response.data;
     
             console.log('Fetched Slots Data:', allSlots);

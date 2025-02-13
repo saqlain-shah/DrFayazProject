@@ -28,6 +28,7 @@ import {
   fetchwebsitePatient,
   fetchTotalEarnings
 } from "../Api/api.js"; // Import all necessary functions
+import BASE_URL from '../baseUrl.jsx';
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
@@ -211,7 +212,7 @@ function Dashboard() {
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={`https://server-yvzt.onrender.com/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
+                    src={`${BASE_URL}/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
                     alt="patient"
                     className="w-10 h-10 rounded-md object-cover"
                   />

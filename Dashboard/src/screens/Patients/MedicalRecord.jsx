@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { fetchMedicalRecords } from './fetch';
+import BASE_URL from '../../baseUrl.jsx';
+
 function MedicalRecord() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +31,7 @@ function MedicalRecord() {
   const handleDelete = async (recordId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/medical-records/${recordId}`, {
+      await axios.delete(`${BASE_URL}/api/medical-records/${recordId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Update medical records after deletion by passing the patient's id
@@ -46,7 +48,7 @@ function MedicalRecord() {
   const handleEdit = async (recordId, newData) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`https://server-yvzt.onrender.com/api/medical-records/${recordId}`, newData, {
+      await axios.put(`${BASE_URL}/api/medical-records/${recordId}`, newData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchMedicalRecords(); // Update medical records after editing

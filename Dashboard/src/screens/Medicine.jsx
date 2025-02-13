@@ -22,7 +22,7 @@ function Medicine() {
       // Fetch token from wherever you store it (e.g., localStorage)
       const token = localStorage.getItem('token');
 
-      let response = await fetch('https://server-yvzt.onrender.com/api/medicine', {
+      let response = await fetch(`${BASE_URL}/api/medicine`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -65,7 +65,7 @@ function Medicine() {
 
   const onDelete = async (item) => {
     try {
-      const response = await fetch(`https://server-yvzt.onrender.com/api/medicine/${item._id}`, {
+      const response = await fetch(`${BASE_URL}/api/medicine/${item._id}`, {
         method: 'DELETE',
       });
 

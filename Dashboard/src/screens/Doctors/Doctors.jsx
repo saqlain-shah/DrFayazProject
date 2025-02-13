@@ -8,6 +8,7 @@ import { DoctorsTable } from '../../components/Tables';
 import { MdOutlineCloudDownload } from 'react-icons/md';
 import { BiPlus } from 'react-icons/bi';
 import { Button } from '../../components/Form';
+import BASE_URL from '../../baseUrl.jsx';
 
 function Doctors() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +26,7 @@ function Doctors() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/doctors/${id}`, {
+      await axios.delete(`${BASE_URL}/api/doctors/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +43,7 @@ function Doctors() {
   const fetchDoctorInfo = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://server-yvzt.onrender.com/api/doctors', {
+      const response = await axios.get(`${BASE_URL}/api/doctors`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
