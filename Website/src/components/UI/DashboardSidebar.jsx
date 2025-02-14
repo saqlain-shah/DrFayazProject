@@ -10,7 +10,7 @@ import BASE_URL from '../../baseUrl.jsx';
 const DashboardSidebar = () => {
     const { data, role } = useAuthCheck();
     const [userData, setUserData] = useState({});
-    const clientId = localStorage.getItem('clientId'); // Retrieve clientId from local storage
+    const clientId = localStorage.getItem('clientId');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,10 +33,8 @@ const DashboardSidebar = () => {
     }, [clientId]);
 
     const handleLogout = () => {
-        // Clear client ID and token from local storage
         localStorage.removeItem('clientId');
         localStorage.removeItem('token');
-        // Navigate to '/'
         navigate('/');
     };
 
