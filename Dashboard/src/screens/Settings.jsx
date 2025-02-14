@@ -12,8 +12,6 @@ import { HiOutlineCheckCircle } from "react-icons/hi";
 function Settings() {
   const [activeTab, setActiveTab] = useState(1);
   const location = useLocation();
-
-  // State for form fields
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [id, setId] = useState(() => {
@@ -65,8 +63,8 @@ function Settings() {
     const file = e.target.files[0];
     if (!file) return;
 
-    setSelectedFile(file); // Store file for later upload
-    setProfileImage(URL.createObjectURL(file)); // Show preview of selected image
+    setSelectedFile(file);
+    setProfileImage(URL.createObjectURL(file));
   };
 
   const handleSave = async () => {
@@ -75,8 +73,6 @@ function Settings() {
     formData.append("phone", phone);
     formData.append("email", email);
     formData.append("address", address);
-
-    // Attach the selected file only if the user has chosen a new image
     if (selectedFile) {
       formData.append("profileImage", selectedFile);
     }
@@ -98,7 +94,7 @@ function Settings() {
         setProfileImage(
           data.imageUrl ? `${BASE_URL}/${data.imageUrl}` : profileImage
         );
-        setSelectedFile(null); // Reset selected file only on success
+        setSelectedFile(null);
       } else {
         console.error("Error updating user:", data);
       }
