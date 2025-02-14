@@ -15,11 +15,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname); // Use the original file name for the uploaded file
     }
 });
-
-// Create multer instance with specified storage
 const upload = multer({ storage: storage });
-
-// Route to create a new email campaign with file upload
 router.post('/email-campaigns', upload.single('image'), createEmailCampaign);
 
 // Route to get all email campaigns

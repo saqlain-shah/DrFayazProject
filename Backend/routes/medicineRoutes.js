@@ -4,9 +4,9 @@ import { getAllMedicines, createMedicine, getMedicineById, updateMedicine, delet
 const router = express.Router();
 
 // Routes for medicines
-router.get('/', getAllMedicines); // Get all medicines
-router.post('/', createMedicine); // Create a new medicine
-router.get('/:id', getMedicineById); // Get medicine by ID
+router.get('/', getAllMedicines);
+router.post('/', createMedicine);
+router.get('/:id', getMedicineById);
 router.put('/:id', updateMedicine); // Update medicine by ID
 router.delete('/:id', deleteMedicine); // Delete medicine by ID
 

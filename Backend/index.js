@@ -58,8 +58,6 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         });
         startTime = endSlotTime;
     }
-
-    // Generate slots for the next day
     startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
@@ -75,13 +73,7 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
 
     return slots;
 };
-
-
-
-// Agenda setup
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
-
-// UK Time: 6 PM to 10 PM GMT = 11:00 PM to 3:00 AM PKT
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
@@ -96,7 +88,6 @@ agenda.define('manage slots', async job => {
     console.log('Generated Slots:', slots);
 
     try {
-        // Delete past schedules
         const deleteResponse = await axios.delete('http://localhost:5174/api/schedule/past', { 
             data: { now: moment().utc().toDate() } 
         });
@@ -133,7 +124,6 @@ agenda.on('ready', async () => {
 agenda.on('error', error => {
     console.error('Agenda error:', error);
 });
-// MongoDB connection
 connectToDatabase().then(() => {
     console.log('Database connection successful');
 }).catch(error => {
@@ -154,8 +144,6 @@ function setCors(req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 }
-
-// Middleware to disable caching
 app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     next();
@@ -167,22 +155,16 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// Handling file upload
 app.post('/api/upload', upload.single('file'), (req, res) => {
     const file = req.file;
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
-
-// Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     res.redirect('https://www.avicenahealthcare.com');
 });
-
-// Middleware to authenticate
 app.use(authenticate);
 
 // Apply setupMiddleware() only to routes other than /api/schedule

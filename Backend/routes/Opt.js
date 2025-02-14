@@ -4,6 +4,6 @@ import { sendOTP, verifyOTP } from '../controllers/OTP/otp.js'; // Import sendOT
 const router = express.Router();
 
 router.post('/send-otp-to-doctor', sendOTP);
-router.post('/verify-otp', verifyOTP); // New route for OTP verification
+router.post('/verify-otp', verifyOTP);
 
 export default router;

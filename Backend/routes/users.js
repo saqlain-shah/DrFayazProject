@@ -20,11 +20,7 @@ router.get("/checkuser/:id", verifyUser, (req, res, next) => {
 router.get("/checkadmin/:id", verifyAdmin, (req, res, next) => {
   res.send("hello admin, you are logged in and you can delete all accounts")
 })
-
-//UPDATE
 router.put("/:id", verifyUser, updateUser);
-
-//DELETE
 router.delete("/:id", verifyUser, deleteUser);
 
 //GET

@@ -7,7 +7,6 @@ import upload from '../utils/multer.js';
 const router = express.Router();
 // const upload = multer({ dest: 'uploads/' });
 
-// Define routes for webs
 router.get('/total-count', getTotalWebPatientCount);
 router.get('/today-appointments', getTodayWebAppointments);
 
@@ -15,7 +14,6 @@ router.get('/notifications', getNotifications);
 
 router.get('/web/:id', getWebByIds); // Route for getting a web by ID
 router.put('/notifications/mark-all-read', markAllNotificationsAsRead);
-// Route for fetching a Web by its ID
 
 router.get('/:id', getWebById); // Route for getting a web by ID
 router.post('/', upload.array('files'), createWeb); // Route for creating a web
