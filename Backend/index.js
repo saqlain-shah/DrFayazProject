@@ -166,8 +166,6 @@ app.get('/api/auth/google/callback', passport.authenticate('google', { failureRe
     res.redirect('https://www.avicenahealthcare.com');
 });
 app.use(authenticate);
-
-// Apply setupMiddleware() only to routes other than /api/schedule
 app.use((req, res, next) => {
     if (req.path !== '/api/schedule' && req.path !== '/api/schedule/past') {
         authenticate(req, res, next);

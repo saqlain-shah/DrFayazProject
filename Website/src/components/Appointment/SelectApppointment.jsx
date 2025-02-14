@@ -10,8 +10,6 @@ const { Title, Text } = Typography;
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
-
-    // Convert time from UTC to user's local time zone
     const convertToLocalTime = (startTime, endTime) => {
         const userTimeZone = getCurrentTimeZone(); // Get the user's time zone
         console.log('User Time Zone:', userTimeZone);
@@ -24,14 +22,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
         return { start, end, timeZone };
     };
-    
-    
-    // Get the current time zone using Intl.DateTimeFormat
     const getCurrentTimeZone = () => {
         return Intl.DateTimeFormat().resolvedOptions().timeZone;
     };
-
-    // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/schedule`);
@@ -41,14 +34,10 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
             const nowUTC = moment.utc(); // Current time in UTC
             const uniqueSlotsMap = {}; // To keep unique slots
-            const uniqueSlotSet = new Set(); // To track unique date and time combinations
-    
-            // Convert slots and filter out duplicates
+            const uniqueSlotSet = new Set();
             allSlots.forEach(slot => {
                 const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`; // Unique key based on time
-    
-                // Only add if not seen before
+                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`;
                 if (!uniqueSlotSet.has(slotKey)) {
                     uniqueSlotSet.add(slotKey);
                     uniqueSlotsMap[slot._id] = { ...slot, startDateTime: start, endDateTime: end, timeZone };
@@ -121,16 +110,6 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             console.error('Error fetching schedule:', error);
         }
     };
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
     useEffect(() => {
         fetchAndUpdateSlots();
         const interval = setInterval(fetchAndUpdateSlots, 60000); // Check for updates every minute
