@@ -7,8 +7,6 @@ import log from "../../images/doc/dr.png";
 import { message, Modal } from "antd";
 import axios from "axios";
 import BASE_URL from '../../baseUrl';
-
-// import { useParams } from 'react-router-dom';
 const SignIn = ({ handleResponse }) => {
   const {
     register,
@@ -36,7 +34,7 @@ const SignIn = ({ handleResponse }) => {
         bloodGroup,
         gender,
         image,
-      } = response.data; // Assuming token, _id, and isProfileUpdated are returned from the API
+      } = response.data;
       if (token && _id) {
         localStorage.setItem("token", token); // Store token in local storage
         localStorage.setItem("clientId", _id);
@@ -61,7 +59,6 @@ const SignIn = ({ handleResponse }) => {
   const handleUpdateProfile = () => {
     setShowModal(false);
     navigate(`/dashboard/profile-setting/${uerid}`);
-    // Navigate to profile settings
   };
 
   return (

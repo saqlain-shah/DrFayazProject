@@ -11,13 +11,13 @@ const SignInForm = () => {
     const Navigate = useNavigate();
     const handleSignUpSuccess = () => {
        
-        setSignUp(false); // Change the mode to sign-in
+        setSignUp(false);
         Navigate(`/dashboard/${clientId}`);
     };
 
     const handleSignInMode = () => {
        
-        setSignUp(true); // Change the mode to sign-up
+        setSignUp(true);
     };
     useEffect(() => {
       
