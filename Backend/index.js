@@ -97,7 +97,7 @@ agenda.define('manage slots', async job => {
 
     try {
         // Delete past schedules
-        const deleteResponse = await axios.delete('https://server-yvzt.onrender.com/api/schedule/past', { 
+        const deleteResponse = await axios.delete('http://localhost:5174/api/schedule/past', { 
             data: { now: moment().utc().toDate() } 
         });
         console.log('Past slots deletion response:', deleteResponse.data);
@@ -111,7 +111,7 @@ agenda.define('manage slots', async job => {
                 startDateTime: slot.start,
                 endDateTime: slot.end
             };
-            const response = await axios.post('https://server-yvzt.onrender.com/api/schedule', payload);
+            const response = await axios.post('http://localhost:5174/api/schedule', payload);
             console.log(`Slot created: ${JSON.stringify(response.data)}`);
 
         } catch (error) {

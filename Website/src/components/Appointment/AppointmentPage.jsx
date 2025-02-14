@@ -219,8 +219,6 @@ const AppointmentPage = () => {
 
   const handleConfirmAppointment = async () => {
     setLoading(true);
-    
-    // Prepare the appointment data
     setSelectValue({ ...selectValue, id: userId });
     const {
       attachments = [], name, email, emergencyContact, reasonForVisit,
@@ -228,8 +226,6 @@ const AppointmentPage = () => {
     } = selectValue;
     const { endDateTime, startDateTime } = selectedSlot;
     const { serviceName, price } = selectedService;
-    
-    // Create FormData instance
     const appointmentData = new FormData();
     appointmentData.append('id', userId);
     appointmentData.append('name', name);
@@ -244,11 +240,7 @@ const AppointmentPage = () => {
     appointmentData.append("startDateTime", startDateTime);
     appointmentData.append("serviceName", serviceName);
     appointmentData.append("price", price);
-    
-    // Retrieve attachments from local storage
     const savedAttachments = JSON.parse(localStorage.getItem("attachments")) || [];
-    
-    // Convert base64 attachments to File objects and append to FormData
     if (Array.isArray(savedAttachments) && savedAttachments.length > 0) {
       savedAttachments.forEach((attachment, index) => {
         if (attachment.base64 && typeof attachment.base64 === 'string' && attachment.base64.includes(',')) {
@@ -269,22 +261,17 @@ const AppointmentPage = () => {
     } else {
       console.warn('No attachments found in local storage or they are empty');
     }
-  
-    // Log FormData contents
     console.log("Sending data:", [...appointmentData.entries()]);
   
     const token = localStorage.getItem("token");
   
     try {
-      // Send the appointment data
       const response = await axios.post(`${BASE_URL}/api/web/`, appointmentData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
-      // Send confirmation email
       const emailResponse = await axios.post(`${BASE_URL}/api/send-confirmation-email`, { email, name, bloodGroup, emergencyContact, gender }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -292,8 +279,6 @@ const AppointmentPage = () => {
       });
   
       toast.success("Appointment scheduled successfully!");
-  
-      // Now, make a request to delete the selected slot
       const appdelete = await axios.delete(`${BASE_URL}/api/schedule/${selectedSlot._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -306,17 +291,9 @@ const AppointmentPage = () => {
     } catch (error) {
       console.error("Error creating appointment:", error);
     } finally {
-      setLoading(false); // Set loading state to false once the request is completed
+      setLoading(false);
     }
   };
-  
-  
-  
-  
-
-
-
-
   useEffect(() => {
     if (isSuccess) {
       message.success("Successfully Appointment Scheduled");
