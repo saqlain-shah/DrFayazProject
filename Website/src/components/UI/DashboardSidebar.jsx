@@ -5,6 +5,7 @@ import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import { FaTable, FaUserInjured, FaUserCog, FaLock, FaHouseUser, FaSignOutAlt, FaPaperclip } from "react-icons/fa";
 import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
+import BASE_URL from '../../baseUrl.jsx';
 
 const DashboardSidebar = () => {
     const { data, role } = useAuthCheck();
@@ -19,9 +20,9 @@ const DashboardSidebar = () => {
                 'Authorization': `Bearer ${token}`
             }
         };
-        axios.get(`https://server-yvzt.onrender.com/api/userauth/${clientId}`, config)
+        axios.get(`${BASE_URL}/api/userauth/${clientId}`, config)
             .then(response => {
-                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
+                const imagePath = `${BASE_URL}/${response.data.image}`
                 response.data.image = imagePath;
                 setUserData(response.data);
             })

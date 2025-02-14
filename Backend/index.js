@@ -32,8 +32,6 @@ import EmailSent from './routes/ConfirmEmail.js';
 import dentalChartRoutes from './routes/dentalChartRoutes.js';
 import moment from 'moment-timezone'; 
 import Agenda from 'agenda';
-
-// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -41,22 +39,12 @@ app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-// Logging the MongoDB URI
 console.log('MongoDB URI:', process.env.MONGO_URL);
-
-
-// Updated function to generate slots in GMT/UTC
-// Updated function to generate slots in GMT/UTC
 const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, duration) => {
     const slots = [];
-    const now = moment().utc(); // Use UTC time
-
-    // Generate slots for today
+    const now = moment().utc();
     let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
-
-    // If endHour is before startHour, adjust endTime to the next day
     if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
     }
