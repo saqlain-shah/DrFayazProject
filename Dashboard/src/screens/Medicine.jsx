@@ -19,7 +19,6 @@ function Medicine() {
 
   const fetchData = async () => {
     try {
-      // Fetch token from wherever you store it (e.g., localStorage)
       const token = localStorage.getItem('token');
 
       let response = await fetch(`${BASE_URL}/api/medicine`, {
@@ -32,7 +31,6 @@ function Medicine() {
       }
       let responseData = await response.json();
 
-      // Filter data based on selected stock status
       let filtered = responseData;
       if (selectedStockStatus !== 'All') {
         filtered = responseData.filter(item => (item.inStock && selectedStockStatus === 'In Stock') || (!item.inStock && selectedStockStatus === 'Out of Stock'));

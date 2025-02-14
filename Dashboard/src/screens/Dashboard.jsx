@@ -110,8 +110,8 @@ function Dashboard() {
       id: 4,
       title: "Total Earnings",
       icon: MdOutlineAttachMoney,
-      value: totalEarnings, // Use totalEarnings state here
-      percent: earningsPercent, // This can be dynamic too if fetched from API
+      value: totalEarnings,
+      percent: earningsPercent,
       color: ["bg-red-500", "text-red-500", "#FF3B30"],
       datas: [totalEarnings],
     },

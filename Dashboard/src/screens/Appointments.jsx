@@ -11,39 +11,26 @@ import AppointmentDetailsModal from './appointmentDetailModel';
 import BASE_URL from '../baseUrl.jsx';
 
 const CustomToolbar = (toolbar) => {
-  // today button handler
   const goToBack = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() - 1);
     toolbar.onNavigate('prev');
   };
-
-  // next button handler
   const goToNext = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() + 1);
     toolbar.onNavigate('next');
   };
-
-  // today button handler
   const goToCurrent = () => {
     toolbar.onNavigate('TODAY');
   };
-
-  // month button handler
   const goToMonth = () => {
     toolbar.onView('month');
   };
-
-  // week button handler
   const goToWeek = () => {
     toolbar.onView('week');
   };
-
-  // day button handler
   const goToDay = () => {
     toolbar.onView('day');
   };
-
-  // view button group
   const viewNamesGroup = [
     { view: 'month', label: 'Month' },
     { view: 'week', label: 'Week' },

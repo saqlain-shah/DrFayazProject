@@ -48,7 +48,6 @@ function Campaigns() {
     const { title, description, link, message, image } = campaign;
     let whatsappMessage = `Title: ${title}\nDescription: ${description}\nLink: ${link}\nMessage: ${message}`;
   
-    // Append image if available
     if (image) {
       const fullImageUrl = `${BASE_URL}/${image.replace("\\", "/")}`;
       whatsappMessage += `\nImage: ${fullImageUrl}`;

@@ -24,7 +24,7 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
         const mailtoUrl = `mailto:${contact.email}?subject=${subject}&body=${body}`;
         window.location.href = mailtoUrl;
       }
-      onClose(); // Close dialog after action
+      onClose();
     }
   };
 

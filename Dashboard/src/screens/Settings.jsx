@@ -27,7 +27,6 @@ function Settings() {
   const [selectedFile, setSelectedFile] = useState(null); // Store actual file
 
   useEffect(() => {
-    // Fetch user details from the backend API
     const fetchUserData = async () => {
       if (!id) return;
       try {
@@ -62,8 +61,6 @@ function Settings() {
     { id: 1, name: "Personal Information", icon: BiUserPlus },
     { id: 2, name: "Change Password", icon: RiLockPasswordLine },
   ];
-
-  // Handle image selection
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -198,11 +195,8 @@ function Settings() {
     <h1 className="text-xl font-semibold">Settings</h1>
 
     <div className="grid grid-cols-12 gap-6 my-8 items-start">
-      {/* Left Section (Profile Picture & Tab Name) */}
       <div className="col-span-12 flex-col gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
         {renderProfilePicture()}
-
-        {/* Display Selected Tab Name Below Image */}
         <h2 className="text-center text-lg font-semibold mt-4">{tabPanel()}</h2>
 
         {/* Tab Navigation */}

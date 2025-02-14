@@ -122,7 +122,6 @@ function Register() {
         console.log('OTP Verified!');
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
-        // Proceed with registration after OTP is verified
         await registerUser();
       } else {
         console.log('Failed to verify OTP:', response.data.message);
@@ -151,7 +150,6 @@ function Register() {
       if (response.status === 201) {
         const token = response.data.token;
 
-        // Store the token, name, and email in local storage
         localStorage.setItem('token', token);
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);

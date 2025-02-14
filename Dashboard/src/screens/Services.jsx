@@ -52,7 +52,6 @@ function Services() {
           Authorization: `Bearer ${token}`
         }
       });
-      // Filter out the deleted service using its ID
       setServicesData(prevServicesData => prevServicesData.filter(service => service._id !== item._id));
       toast.success('Service deleted successfully.');
     } catch (error) {
