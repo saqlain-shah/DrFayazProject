@@ -184,48 +184,52 @@ function Settings() {
   const tabPanel = () => {
     switch (activeTab) {
       case 1:
-        return renderForm();
+        return "Personal Information";
       case 2:
-        return <ChangePassword />;
+        return "Change Password";
       default:
-        return null;
+        return "";
     }
   };
 
   return (
     <Layout>
-      <Header name={name} profileImage={profileImage} />
-      <h1 className="text-xl font-semibold">Settings</h1>
+    <Header name={name} profileImage={profileImage} />
+    <h1 className="text-xl font-semibold">Settings</h1>
 
-      <div className="grid grid-cols-12 gap-6 my-8 items-start">
-        {/* Profile Picture Section */}
-        <div className="col-span-12 lg:col-span-4 bg-white rounded-xl p-6">
-          {renderProfilePicture()}
-        </div>
+    <div className="grid grid-cols-12 gap-6 my-8 items-start">
+      {/* Left Section (Profile Picture & Tab Name) */}
+      <div className="col-span-12 flex-col gap-6 lg:col-span-4 bg-white rounded-xl border-[1px] border-border p-6 lg:sticky top-28">
+        {renderProfilePicture()}
 
-        {/* Tabs & Content Section */}
-        <div className="col-span-12 lg:col-span-8 bg-white rounded-xl p-6">
-          {/* Tab Navigation */}
-          <div className="flex gap-4 mb-6 border-b pb-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md ${
-                  activeTab === tab.id ? "bg-subMain text-white" : "bg-gray-100"
-                }`}
-              >
-                <tab.icon className="text-xl" />
-                <span className="text-sm">{tab.name}</span>
-              </button>
-            ))}
-          </div>
+        {/* Display Selected Tab Name Below Image */}
+        <h2 className="text-center text-lg font-semibold mt-4">{tabPanel()}</h2>
 
-          {/* Tab Content */}
-          {tabPanel()}
+        {/* Tab Navigation */}
+        <div className="flex-col gap-3 px-2 xl:px-12 w-full">
+          {tabs.map((tab, index) => (
+            <button
+              onClick={() => setActiveTab(tab.id)}
+              key={index}
+              className={`${
+                activeTab === tab.id
+                  ? "bg-text text-subMain"
+                  : "bg-dry text-main hover:bg-text hover:text-subMain"
+              } text-xs gap-4 flex items-center w-full p-4 rounded`}
+            >
+              <tab.icon className="text-lg" /> {tab.name}
+            </button>
+          ))}
         </div>
       </div>
-    </Layout>
+
+      {/* Right Section (Actual Form Content) */}
+      <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border-[1px] border-border p-6">
+        {activeTab === 1 && renderForm()}
+        {activeTab === 2 && <ChangePassword />}
+      </div>
+    </div>
+  </Layout>
   );
 }
 
