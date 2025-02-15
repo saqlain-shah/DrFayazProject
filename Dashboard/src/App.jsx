@@ -30,9 +30,9 @@ import Receptions from './screens/Receptions';
 import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
-import Register from './screens/Register'; // Import the Register component
+import Register from './screens/Register';
 import Schedule from './screens/Schedule/Schedule';
-import { useAuth } from './AuthContext'; // Import useAuth
+import { useAuth } from './AuthContext';
 import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
 import { NotificationProvider } from './components/NotificationContext';
@@ -51,14 +51,11 @@ function App() {
 
   return (
     <>
-      {/* Toaster */}
       <Toast />
       <ToastContainer /> 
-      {/* Routes */}
       <BrowserRouter>
       <NotificationProvider>
         <Routes>
-          {/* Redirect to dashboard if user is already logged in */}
           {user && <Route path="/login" element={<Navigate to="/" replace />} />}
           {/* Render login route only if user is not logged in */}
           {!user && <Route path="/login" element={<Login />} />}

@@ -1,6 +1,6 @@
 import passport from "passport";
 import passportGoogleOAuth2 from 'passport-google-oauth2';
-import userdb from './models/google.js'; // Assuming this is your user model
+import userdb from './models/google.js';
 
 passport.use(new passportGoogleOAuth2.Strategy({
     clientID: process.env.GOOGLE_CLIENT_ID,

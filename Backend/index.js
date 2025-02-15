@@ -53,7 +53,7 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'), // Use [Z] for UTC offset
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
             end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
         });
         startTime = endSlotTime;
@@ -65,7 +65,7 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'), // Use [Z] for UTC offset
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
             end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
         });
         startTime = endSlotTime;
@@ -77,9 +77,9 @@ const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'j
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 18;  // Start hour in GMT (6:00 PM GMT)
+    const startHour = 18;
     const startMinute = 0; 
-    const endHour = 22;   // End hour in GMT (10:00 PM GMT)
+    const endHour = 22;
     const endMinute = 0;  
     const slotDuration = 20; // Slot duration in minutes
 
