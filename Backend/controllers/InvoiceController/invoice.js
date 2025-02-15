@@ -6,16 +6,10 @@ export const createInvoice = async (req, res) => {
         console.log('Request body:', req.body); // Add this line to log the request body
 
         const { selectedPatient, selectedService, invoiceItems, tax, discount, currency } = req.body;
-
-        // Calculate subtotal
         const subtotal = invoiceItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-
-        // Use the grandTotal from the request body
         const grandTotal = req.body.grandTotal;
 
-        console.log('Grand total:', grandTotal); // Add this line to log the calculated grand total
-
-        // Create new invoice instance
+        console.log('Grand total:', grandTotal);
         const invoice = new Invoice({
             patient: selectedPatient._id,
             services: selectedService ? [selectedService._id] : [],

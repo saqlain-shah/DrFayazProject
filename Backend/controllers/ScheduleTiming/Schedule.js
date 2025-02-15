@@ -4,18 +4,12 @@ const scheduleController = {
     saveSchedule: async (req, res) => {
         try {
             const { startDateTime, endDateTime, ...appointmentData } = req.body;
-
-            // Create new schedule instance
             const schedule = new Schedule({
                 startDateTime,
                 endDateTime,
                 ...appointmentData
             });
-
-            // Save schedule to the database
             await schedule.save();
-
-            // Respond with success message
             res.status(201).json({ message: 'Schedule saved successfully' });
         } catch (error) {
             // Handle error

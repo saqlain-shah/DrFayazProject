@@ -4,7 +4,6 @@ import MedicalRecord from '../../models/MedicalReport/medicalReportModel.js';
 
 export const createPatient = async (req, res) => {
     try {
-        // Extracting necessary fields from the request body
         const { firstName, email, gender, emergencyContact, address, bloodGroup } = req.body;
 
         // // Check if all required fields are present
@@ -14,8 +13,6 @@ export const createPatient = async (req, res) => {
 
         // Get profile picture from the request file (assuming multer is used for file upload)
         const profilePicture = req.file;
-
-        // Create the patient object
         const patient = new Patient({
             fullName: firstName,
             email,
@@ -27,14 +24,9 @@ export const createPatient = async (req, res) => {
             bloodGroup,
             profilePicture: profilePicture ? profilePicture.path : null // Assign profile picture path if available
         });
-
-        // Save the patient to the database
         await patient.save();
-
-        // Respond with the created patient object
         res.status(201).json(patient);
     } catch (error) {
-        // If an error occurs, return an error response
         res.status(400).json({ message: error.message });
     }
 };

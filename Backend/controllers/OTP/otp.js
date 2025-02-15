@@ -1,36 +1,20 @@
 import fs from 'fs';
 import nodemailer from 'nodemailer';
 
-// Map to store generated OTPs
 global.otpMap = new Map();
-
-// Function to generate OTP
 const generateOTP = () => {
-    // Generate and return a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
-
-// Function to send OTP to email
 export const sendOTP = async (req, res) => {
     const { email, otpType } = req.body;
-
-    // Check if email and otpType are provided in the request body
     if (!email || !otpType) {
         return res.status(400).json({ success: false, message: "Email and OTP type are required" });
     }
-
-    // Generate OTP
     const generatedOTP = generateOTP();
-
-    // Check if OTP generation failed
     if (!generatedOTP) {
         return res.status(500).json({ success: false, message: "Failed to generate OTP" });
     }
-
-    // Store the OTP temporarily (you can replace this with database storage)
-    otpMap.set(`${email}_${otpType}`, generatedOTP); // Use both email and otpType to create a unique key for storing OTP
-
-    // HTML content for OTP email
+    otpMap.set(`${email}_${otpType}`, generatedOTP);
     const htmlContent = `
     <p>Dear Doctor,</p>
     <p>Your OTP for verification is: <strong>${generatedOTP}</strong></p>
@@ -38,10 +22,7 @@ export const sendOTP = async (req, res) => {
     <p><strong>Warning:</strong> It appears there was an attempt to access your patient records. If this was not initiated by you, please disregard this message. If you suspect unauthorized access, please contact support immediately.</p>
     <p>Thank you!</p>
     `;
-
-    // Send OTP to the provided email
     try {
-        // Create a nodemailer transporter using SMTP transport
         const transporter = nodemailer.createTransport({
             host: 'smtp.office365.com',
             port: 587,
@@ -51,8 +32,6 @@ export const sendOTP = async (req, res) => {
               pass: 'Godaay2024' // Replace with your email password
             }
           });
-
-        // Email content
         const mailOptions = {
             from: 'appointment@avicenahealthcare.com', // Replace with your email address
             to: email,

@@ -1,6 +1,4 @@
 import nodemailer from 'nodemailer'
-
-// Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -8,8 +6,6 @@ const transporter = nodemailer.createTransport({
     pass: "ouodydxliqapokdr", // Your Gmail password
   },
 });
-
-// Function to send appointment confirmation email
 const sendAppointmentConfirmationEmail = async (selectValue) => {
   try {
     await transporter.sendMail({

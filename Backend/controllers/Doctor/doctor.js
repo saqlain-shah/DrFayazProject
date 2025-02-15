@@ -1,7 +1,7 @@
 // controllers/doctorController.js
-import fs from 'fs';  // Using import instead of require
+import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';  // Import fileURLToPath
+import { fileURLToPath } from 'url';
 
 import Doctor from "../../models/doctor/doctor.js";
 
@@ -29,7 +29,6 @@ export const createDoctor = async (req, res) => {
         res.status(500).json({ error: 'Failed to create doctor' });
     }
 };
-// Get all doctors
 export const getAllDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find();
@@ -39,8 +38,6 @@ export const getAllDoctors = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch doctors' });
     }
 };
-
-// Get a doctor by ID
 export const getDoctorById = async (req, res) => {
     try {
         const doctor = await Doctor.findById(req.params.id);
@@ -60,16 +57,11 @@ export const updateDoctor = async (req, res) => {
     try {
         console.log('Request Params ID:', req.params.id);
         console.log('Request Body:', req.body);
-
-        // If there's a new profile image uploaded via multer
         if (req.file) {
             console.log('Updated Profile Image:', req.file.path);
-
-            // Check if the doctor already has a profile image
             const doctor = await Doctor.findById(req.params.id);
 
             if (doctor && doctor.profileImage) {
-                // Delete the old profile image if it exists
                 const oldProfileImagePath = path.join(__dirname, 'uploads', doctor.profileImage);
                 fs.unlink(oldProfileImagePath, (err) => {
                     if (err) {
@@ -79,12 +71,8 @@ export const updateDoctor = async (req, res) => {
                     }
                 });
             }
-
-            // Update the profileImage field in the body to the new image path
             req.body.profileImage = req.file.path;  // Assign the new file path to the profileImage field
         }
-
-        // Update the doctor's data with the new profile image path
         const updatedDoctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, { new: true });
         console.log('Updated doctor:', updatedDoctor);
 

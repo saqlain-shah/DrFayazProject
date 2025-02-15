@@ -2,9 +2,6 @@
 
 // Importing required modules
 import Medicine from '../../models/Medicine/medicine.js';
-
-// Controller functions
-// Get all medicines
 const getAllMedicines = async (req, res) => {
     try {
         const medicines = await Medicine.find();
@@ -16,8 +13,6 @@ const getAllMedicines = async (req, res) => {
 
 const createMedicine = async (req, res) => {
     const { medicineName, measure, price, inStock, description } = req.body;
-
-    // Validate inStock field
     if (typeof inStock !== 'boolean') {
         return res.status(400).json({ message: 'Invalid value for inStock field' });
     }
@@ -37,13 +32,10 @@ const createMedicine = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
-// Get medicine by ID
 const getMedicineById = async (req, res) => {
     try {
         const medicine = await Medicine.findById(req.params.id);
         if (medicine) {
-            // Populate the measure field with its name
             medicine.populate('measure').execPopulate();
             res.json(medicine);
         } else {
@@ -59,10 +51,7 @@ const updateMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findById(req.params.id);
         if (medicine) {
-            // Delete the previous medicine entry
             await medicine.remove();
-
-            // Create a new medicine entry with the updated information
             const updatedMedicine = new Medicine({
                 _id: req.params.id, // Use the same ID for the updated medicine
                 medicineName: req.body.medicineName || medicine.medicineName,
@@ -71,8 +60,6 @@ const updateMedicine = async (req, res) => {
                 inStock: req.body.inStock !== undefined ? req.body.inStock : medicine.inStock,
                 description: req.body.description || medicine.description
             });
-
-            // Save the updated medicine
             const savedMedicine = await updatedMedicine.save();
             res.json(savedMedicine);
         } else {

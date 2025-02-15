@@ -9,8 +9,6 @@ export const getAllSchedules = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Create a new schedule
 export const createSchedule = async (req, res) => {
     const schedule = req.body;
 
@@ -33,8 +31,6 @@ export const deleteSchedule = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Delete past schedules
 export const deletePastSchedules = async (req, res) => {
     try {
         const now = moment().tz('Asia/Karachi').utc().toDate(); // Convert current time to UTC

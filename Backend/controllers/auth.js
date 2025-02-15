@@ -13,14 +13,11 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid email or ' });
     }
     console.log("user", user)
-    // Compare trimmed password using bcrypt
     const isValidPassword = await bcrypt.compare(password, user.password);
     console.log("vlidate", isValidPassword)
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid  or password' });
     }
-
-    // Generate token upon successful login
     const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     // Set token as an HTTP cookie

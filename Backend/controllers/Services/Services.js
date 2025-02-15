@@ -1,8 +1,5 @@
 // Importing required modules
 import Service from '../../models/Services/Service.js';
-
-// Controller functions
-// Get all services
 const getAllServices = async (req, res) => {
     try {
         const services = await Service.find();
@@ -17,7 +14,7 @@ const createService = async (req, res) => {
         name: req.body.name,
         price: req.body.price,
         description: req.body.description,
-        status: req.body.status // Assuming status is sent in the request body
+        status: req.body.status
     });
 
     try {
@@ -27,8 +24,6 @@ const createService = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
-
-// Get service by ID
 const getServiceById = async (req, res) => {
     try {
         const service = await Service.findById(req.params.id);

@@ -4,11 +4,8 @@ import Item from "../../models/Invoice/invoiceModel.js";
 
 export const createItem = async (req, res) => {
     try {
-        // Create the item
         const newItem = new Item(req.body.itemData);
         const savedItem = await newItem.save();
-
-        // Return the saved item data
         res.status(201).json(savedItem);
     } catch (error) {
         res.status(400).json({ message: error.message });

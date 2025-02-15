@@ -3,12 +3,7 @@ export const createMedicalRecord = async (req, res) => {
     try {
         console.log('Request Files:', req.files); // Log request files
         const { patientId, complaints, diagnosis, vitalSigns, prescription, treatment, medicine } = req.body;
-
-
-        // Parse the prescription array if it's a string
         const parsedPrescription = typeof prescription === 'string' ? JSON.parse(prescription) : prescription;
-
-        // Parse the treatment array if it's a string
         const parsedTreatment = typeof treatment === 'string' ? JSON.parse(treatment) : treatment;
 
         // Extract uploaded files from request
