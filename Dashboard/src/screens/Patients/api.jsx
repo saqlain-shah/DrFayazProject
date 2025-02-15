@@ -16,7 +16,7 @@ const fetchData = async (clientId) => {
     return response.data; // Return the fetched data
   } catch (error) {
     console.error('Error fetching user data:', error);
-    throw error; // Throw the error to handle it in the calling component
+    throw error;
   }
 };
 

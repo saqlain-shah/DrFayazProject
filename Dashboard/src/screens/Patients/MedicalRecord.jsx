@@ -18,7 +18,7 @@ function MedicalRecord() {
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [selectedData, setSelectedData] = useState(null);
   const [medicineDosage, setMedicineDosage] = useState([]);
-  const [selectedRecord, setSelectedRecord] = useState(null); // Define selectedRecord state variable
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
 

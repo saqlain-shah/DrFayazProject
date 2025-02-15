@@ -3,7 +3,7 @@ import { BiPlus, BiTrash } from 'react-icons/bi';
 import { Button, Checkbox, Input } from '../../components/Form';
 import axios from 'axios';
 import DentalChartTable from './DentalChartTable';
-import { useParams } from 'react-router-dom'; // Add this import
+import { useParams } from 'react-router-dom';
 import BASE_URL from '../../baseUrl.jsx';
 
 function DentalChart() {
@@ -41,12 +41,10 @@ function DentalChart() {
         console.error('Error message:', error.response.data);
       }
     };
-
-    // Fetch data only if submittedData is empty
     if (submittedData.length === 0) {
       fetchData();
     }
-  }, [id, submittedData]); // Include submittedData in dependency array
+  }, [id, submittedData]);
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);

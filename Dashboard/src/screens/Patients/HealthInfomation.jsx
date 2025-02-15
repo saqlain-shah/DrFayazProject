@@ -25,7 +25,7 @@ function HealthInformation({ patientId }) {
       const response = await axios.post(
         `${BASE_URL}/api/health-information`,
         {
-          patientId, // Pass patientId here
+          patientId,
           bloodType: bloodType.name,
           weight,
           height,
