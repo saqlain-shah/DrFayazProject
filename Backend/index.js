@@ -90,7 +90,10 @@ agenda.define('manage slots', async job => {
     try {
         const deleteResponse = await axios.delete('http://localhost:5174/api/schedule/past', { 
             data: { now: moment().utc().toDate() } 
+
         });
+        console.log('Past slots deletion response:', deleteResponse.status, deleteResponse.data);
+
         console.log('Past slots deletion response:', deleteResponse.data);
     } catch (error) {
         console.error('Error deleting past slots:', error);
@@ -102,8 +105,9 @@ agenda.define('manage slots', async job => {
                 startDateTime: slot.start,
                 endDateTime: slot.end
             };
-            const response = await axios.post('http://localhost:5174/api/schedule', payload);
-            console.log(`Slot created: ${JSON.stringify(response.data)}`);
+            console.log('Sending payload:', payload);
+        const response = await axios.post('http://localhost:5174/api/schedule', payload);
+        console.log(`Slot created: ${JSON.stringify(response.data)}`);
 
         } catch (error) {
             console.error('Error managing slot:', error);
