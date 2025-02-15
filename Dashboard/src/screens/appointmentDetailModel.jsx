@@ -2,11 +2,9 @@ import React from 'react';
 import Modals from './Modals';
 
 const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
-    // If the modal is not open or event data is not available, return null to not render anything
     if (!isOpen || !event) return null;
 
     const handleDelete = () => {
-        // Call the onDelete function and pass the event ID
         onDelete(event.id);
     };
 
@@ -39,11 +37,9 @@ const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
                         </svg>
                     </button>
                 </div>
-                {/* Modal content */}
                 <div className="p-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            {/* Display appointment details */}
                             <p><strong>Title:</strong> {event.title}</p>
                             <p><strong>Start:</strong> {event.start?.toLocaleString()}</p>
                             <p><strong>End:</strong> {event.end?.toLocaleString()}</p>

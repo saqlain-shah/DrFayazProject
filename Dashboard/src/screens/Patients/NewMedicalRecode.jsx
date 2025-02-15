@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom"; // Import useLocation
+import { useLocation, useParams } from "react-router-dom";
 import Layout from "../../Layout";
 import { Link } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
@@ -16,7 +16,7 @@ import MedicineDosageModal from "../../components/Modals/MedicineDosage";
 import BASE_URL from '../../baseUrl.jsx';
 
 function NewMedicalRecord() {
-  const location = useLocation(); // Use useLocation hook
+  const location = useLocation();
   const appointmentData = location.state?.appointmentData; // Get appointmentData from location state
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});

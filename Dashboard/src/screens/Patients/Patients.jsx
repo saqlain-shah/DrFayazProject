@@ -18,7 +18,7 @@ function Patients() {
   const [webPatients, setWebPatients] = useState([]); // Changed appointments to webPatients
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
-  const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
+  const [genderFilter, setGenderFilter] = useState("all");
   const { patientId } = useParams();
 
   const fetchPatients = async () => {

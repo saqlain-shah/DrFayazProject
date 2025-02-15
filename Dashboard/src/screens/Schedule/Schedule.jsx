@@ -8,24 +8,17 @@ import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import AddAppointmentModal from './SchduleModel';
 
 const CustomToolbar = (toolbar) => {
-  // today button handler
   const goToBack = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() - 1);
     toolbar.onNavigate('prev');
   };
-
-  // next button handler
   const goToNext = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() + 1);
     toolbar.onNavigate('next');
   };
-
-  // today button handler
   const goToCurrent = () => {
     toolbar.onNavigate('TODAY');
   };
-
-  // month button handler
   const goToMonth = () => {
     toolbar.onView('month');
   };

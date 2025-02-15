@@ -30,7 +30,6 @@ function PatientProfile() {
   const [medicalRecords, setMedicalRecords] = useState([]);
   const [error, setError] = useState(null); // Define error state
   const [attachments, setAttachments] = useState([]);
-  // Inside PatientProfile component
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -54,7 +53,6 @@ function PatientProfile() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setWebPatientData(response.data);
-        // Set attachments when webPatientData is fetched
         if (response.data.patientInfo && response.data.patientInfo.attachment) {
           setAttachments(response.data.patientInfo.attachment);
         }
@@ -77,7 +75,7 @@ function PatientProfile() {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json", // Optionally, you can specify content type if required by the server
+              "Content-Type": "application/json",
             },
           }
         );

@@ -14,7 +14,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
   const [appointmentSlots, setAppointmentSlots] = useState([]);
 
   useEffect(() => {
-    fetchData(); // Fetch data when component mounts
+    fetchData();
   }, []);
 
   const fetchData = async () => {
@@ -32,8 +32,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       endDateTime,
       shares
     };
-
-    // Add your authentication token to the request headers
     const token = 'token'; // Replace this with your actual token
     const config = {
       headers: {
@@ -43,12 +41,10 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
     axios.post(`${BASE_URL}/api/schdule`, appointmentPayload, config)
       .then(response => {
-        // Handle success
         toast.success('Appointment saved successfully');
         closeModal();
       })
       .catch(error => {
-        // Handle error
         console.error('Error saving appointment:', error);
         toast.error('Failed to save appointment');
       });
@@ -63,7 +59,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     >
       <div>
         <SelectApppointment
-          appointmentSlots={appointmentSlots} // Pass appointmentSlots as prop
+          appointmentSlots={appointmentSlots}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           selectTime={selectTime}

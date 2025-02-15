@@ -29,7 +29,6 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
 
   return (
     <div className="flex flex-wrap justify-center">
-      {/* Render attachments from medical records */}
       {medicalRecords && medicalRecords.data && medicalRecords.data.map((record, index) => (
         <div key={index} className="m-4">
           <div className="flex flex-wrap justify-center gap-4">
@@ -65,7 +64,6 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
         </div>
       ))}
 
-      {/* Render attachments from web patient */}
       {webPatientAttachments && webPatientAttachments.map((attachment, index) => {
         const imageUrl = `${BASE_URL}/uploads/${attachment}`;
         return (
