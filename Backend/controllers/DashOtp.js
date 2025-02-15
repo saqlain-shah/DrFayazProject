@@ -1,14 +1,11 @@
 import nodemailer from 'nodemailer';
 
-// Object to store OTPs for each user
 const otpStore = {};
 
-// Method to send OTP to the provided email address
 export const sendOTP = async (req, res) => {
   try {
     const { email } = req.body; // Extract email from request body
 
-    // Create a Nodemailer transporter
     const transporter = nodemailer.createTransport({
       host: 'smtp.office365.com',
       port: 587,

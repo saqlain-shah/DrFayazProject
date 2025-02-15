@@ -22,7 +22,7 @@ export const createPatient = async (req, res) => {
             emergencyContact,
             address,
             bloodGroup,
-            profilePicture: profilePicture ? profilePicture.path : null // Assign profile picture path if available
+            profilePicture: profilePicture ? profilePicture.path : null
         });
         await patient.save();
         res.status(201).json(patient);
@@ -33,7 +33,7 @@ export const createPatient = async (req, res) => {
 export const getAllPatients = async (req, res, next) => {
     try {
       const { search, gender, startDate } = req.query;
-      console.log('Received query parameters:', { search, gender, startDate }); // Log received parameters
+      console.log('Received query parameters:', { search, gender, startDate });
       let query = {};
   
       if (search) {

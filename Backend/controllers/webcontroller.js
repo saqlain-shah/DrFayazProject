@@ -217,12 +217,9 @@ export const getAllWebs = async (req, res) => {
     const { id, gender } = req.params;
     console.log('Received parameters for webs:', { id, gender }); // Log received parameters
     let query = {};
-
-    // Modify to use req.query instead of req.params for gender filter
     const { gender: genderQuery } = req.query;
 
     if (genderQuery && genderQuery !== 'all') {
-      // Convert gender to lowercase for consistency
       const genderValue = genderQuery.toLowerCase();
       console.log('Gender filter applied for webs:', genderValue); // Log the applied gender filter
       query['patientInfo.gender'] = genderValue;
@@ -232,7 +229,7 @@ export const getAllWebs = async (req, res) => {
       query['patientInfo.id'] = id;
     }
 
-    console.log('Generated MongoDB query for webs:', query); // Log the generated query
+    console.log('Generated MongoDB query for webs:', query);
 
     const webs = await WebPatient.find(query);
     res.status(200).json(webs);
@@ -241,10 +238,6 @@ export const getAllWebs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-
 
 export const getWebByIds = async (req, res) => {
   try {

@@ -38,11 +38,7 @@ export const sendOTP = async (req, res) => {
             subject: 'OTP for Verification',
             html: htmlContent
         };
-
-        // Send email
         await transporter.sendMail(mailOptions);
-
-        // Return success response
         return res.json({ success: true, message: "OTP sent successfully" });
     } catch (error) {
         console.error('Error sending OTP:', error);

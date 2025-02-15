@@ -2,14 +2,14 @@ import nodemailer from 'nodemailer'
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "appointment@avicenahealthcare.com", // Your Gmail email address
+    user: "appointment@avicenahealthcare.com",
     pass: "ouodydxliqapokdr", // Your Gmail password
   },
 });
 const sendAppointmentConfirmationEmail = async (selectValue) => {
   try {
     await transporter.sendMail({
-      from: "your_email@gmail.com", // Replace with your email
+      from: "your_email@gmail.com",
       to: selectValue.email,
       subject: "Appointment Confirmation",
       html: `<p>Your appointment has been successfully scheduled.</p>`,

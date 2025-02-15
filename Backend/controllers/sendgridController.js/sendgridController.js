@@ -1,7 +1,5 @@
 import sgMail from '@sendgrid/mail';
-import SendgridActivity from '../../models/sendgridActivityModel.js'; // Assuming correct path to your SendgridActivity model
-
-// Set your SendGrid API key
+import SendgridActivity from '../../models/sendgridActivityModel.js';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendConfirmationEmail = async (req, res, next) => {
@@ -9,7 +7,7 @@ export const sendConfirmationEmail = async (req, res, next) => {
         const { to, subject, text, html } = req.body;
         const msg = {
             to,
-            from: 'add email', // Replace with your email
+            from: 'add email',
             subject,
             text,
             html,
@@ -18,7 +16,6 @@ export const sendConfirmationEmail = async (req, res, next) => {
         const sendgridActivity = new SendgridActivity({
             recipient: to,
             subject,
-            // You may add other fields here like timestamp, status, etc.
         });
         await sendgridActivity.save();
 

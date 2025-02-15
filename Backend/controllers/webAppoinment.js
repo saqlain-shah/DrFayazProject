@@ -13,7 +13,7 @@ export const createWebAppointmentByUnauthenticatedUser = async (req, res) => {
 };
 export const getWebAppointments = async (req, res) => {
     try {
-        const appointments = await WebAppointment.find(); // Fetch appointment data from the database
+        const appointments = await WebAppointment.find();
         res.status(200).json({ success: true, data: appointments });
     } catch (error) {
         console.error('Error fetching web appointments:', error);

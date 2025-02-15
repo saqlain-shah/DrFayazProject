@@ -19,15 +19,10 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid  or password' });
     }
     const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-    // Set token as an HTTP cookie
     res.cookie('access_token', token, {
       httpOnly: true,
       maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days in milliseconds
   });
-  // Expires in 90 days
-
-    // Set token in response body
     res.status(200).json({ message: 'Login successful', token, id: user._id });
 
   } catch (error) {

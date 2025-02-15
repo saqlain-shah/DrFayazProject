@@ -69,8 +69,4 @@ const deleteService = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-
-
-// Exporting controller functions
 export { getAllServices, createService, getServiceById, updateService, deleteService };

@@ -45,7 +45,6 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
     const now = moment().utc();
     let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
-
     if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
     }
@@ -54,13 +53,11 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.toISOString(),  // 🔹 Ensure UTC format
-            end: endSlotTime.toISOString()
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
         });
         startTime = endSlotTime;
     }
-
-    // Generate next-day slots
     startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
@@ -68,15 +65,14 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.toISOString(),
-            end: endSlotTime.toISOString()
+            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
         });
         startTime = endSlotTime;
     }
 
     return slots;
 };
-
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
@@ -85,7 +81,7 @@ agenda.define('manage slots', async job => {
     const startMinute = 0; 
     const endHour = 22;
     const endMinute = 0;  
-    const slotDuration = 20; // Slot duration in minutes
+    const slotDuration = 20;
 
     const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
 

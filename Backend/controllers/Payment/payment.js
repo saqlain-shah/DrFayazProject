@@ -12,7 +12,7 @@ export const createPayment = async (req, res, next) => {
             currency,
             description,
             payment_method: source, // Payment source (e.g., card token)
-            confirm: true, // Confirm the payment immediately
+            confirm: true,
         });
         if (paymentIntent.status === 'succeeded') {
             const { status, user, items, dueDate, paidBy, subTotal, discount, tax, grandTotal, notes } = req.body;

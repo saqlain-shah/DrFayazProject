@@ -53,7 +53,7 @@ const updateMedicine = async (req, res) => {
         if (medicine) {
             await medicine.remove();
             const updatedMedicine = new Medicine({
-                _id: req.params.id, // Use the same ID for the updated medicine
+                _id: req.params.id,
                 medicineName: req.body.medicineName || medicine.medicineName,
                 measure: req.body.measure || medicine.measure,
                 price: req.body.price || medicine.price,
@@ -69,8 +69,6 @@ const updateMedicine = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Delete medicine by ID
 const deleteMedicine = async (req, res) => {
     try {
         const medicine = await Medicine.findById(req.params.id);
@@ -84,6 +82,4 @@ const deleteMedicine = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Exporting controller functions
 export { getAllMedicines, createMedicine, getMedicineById, updateMedicine, deleteMedicine };
