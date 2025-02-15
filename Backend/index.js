@@ -45,6 +45,7 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
     const now = moment().utc();
     let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+
     if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
     }
@@ -53,11 +54,13 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+            start: startTime.toISOString(),  // 🔹 Ensure UTC format
+            end: endSlotTime.toISOString()
         });
         startTime = endSlotTime;
     }
+
+    // Generate next-day slots
     startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
@@ -65,14 +68,15 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+            start: startTime.toISOString(),
+            end: endSlotTime.toISOString()
         });
         startTime = endSlotTime;
     }
 
     return slots;
 };
+
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
@@ -167,7 +171,7 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect('https://www.avicenahealthcare.com');
+    res.redirect('http://localhost:5174');
 });
 app.use(authenticate);
 app.use((req, res, next) => {
