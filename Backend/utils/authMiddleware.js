@@ -5,7 +5,10 @@ export const authenticate = (req, res, next) => {
         req.path === '/api/userauth/login' ||
         req.path === '/api/userauth/register' ||
         req.path === '/api/schedule/create' ||
-        req.path === '/api/schedule/past'
+        req.path === '/api/schedule/' ||
+        req.path === '/api/schedule/past'||
+        req.path === '/api/schedule/:id'
+
         
     ) {
         return next();

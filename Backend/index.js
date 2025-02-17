@@ -51,20 +51,20 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
     const slots = [];
     const now = moment().utc();
 
+    // Start time set to 6:00 PM PKT (1:00 PM GMT)
     let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
     console.log(`Current UTC Time: ${now.format()}`);
     console.log(`Initial Start Time: ${startTime.format()}`);
     console.log(`Initial End Time: ${endTime.format()}`);
-
-    // If endHour is before startHour, adjust endTime to the next day
     if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
         console.log("Adjusted End Time to Next Day:", endTime.format());
     }
 
-    while (startTime.isBefore(endTime)) {
+    // Generate slots for the current day
+    while (startTime.isBefore(endTime) && slots.length < 5) { // Ensure only 5 slots are generated
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
         slots.push({
@@ -76,39 +76,40 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
 
     console.log(`Generated ${slots.length} Slots for Today:`, slots);
 
-    // Generate slots for the next day
-    startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
-    endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+    // Generate slots for the next day (if needed)
+    if (slots.length < 5) {
+        startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+        endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
-    console.log(`Next Day Start Time: ${startTime.format()}`);
-    console.log(`Next Day End Time: ${endTime.format()}`);
+        console.log(`Next Day Start Time: ${startTime.format()}`);
+        console.log(`Next Day End Time: ${endTime.format()}`);
 
-    while (startTime.isBefore(endTime)) {
-        const endSlotTime = startTime.clone().add(duration, 'minutes');
-        if (endSlotTime.isAfter(endTime)) break;
-        slots.push({
-            start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-            end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-        });
-        startTime = endSlotTime;
+        while (startTime.isBefore(endTime) && slots.length < 5) {
+            const endSlotTime = startTime.clone().add(duration, 'minutes');
+            if (endSlotTime.isAfter(endTime)) break;
+            slots.push({
+                start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+                end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
+            });
+            startTime = endSlotTime;
+        }
+
+        console.log(`Total Generated Slots (Including Next Day): ${slots.length}`);
     }
-
-    console.log(`Total Generated Slots (Including Next Day): ${slots.length}`);
 
     return slots;
 };
 
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
-// UK Time: 6 PM to 10 PM GMT = 11:00 PM to 3:00 AM PKT
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 12;    // 5:00 PM PKT => 12:00 PM GMT
+    const startHour = 13;    // 6:00 PM PKT => 1:00 PM GMT
     const startMinute = 0;
-    const endHour = 13;      // 5:30 PM PKT => 12:30 PM GMT
+    const endHour = 14;      // 6:30 PM PKT => 1:30 PM GMT
     const endMinute = 30;
-    const slotDuration = 30;
+    const slotDuration = 30; // 30-minute gap between slots
 
     console.log('Calling getSlotsForSpecificPeriod...');
     const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
@@ -147,8 +148,6 @@ agenda.define('manage slots', async job => {
     }
 });
 
-
-
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
@@ -166,6 +165,7 @@ agenda.on('error', error => {
 
 
 
+
 // MongoDB connection
 connectToDatabase().then(() => {
     console.log('Database connection successful');
@@ -176,7 +176,7 @@ connectToDatabase().then(() => {
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174','http://localhost:8800','http://localhost:8000'];
+    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174'];
 
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -195,7 +195,7 @@ app.use((req, res, next) => {
 });
 
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174','http://localhost:8800','http://localhost:8000'],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174'],
     credentials: true,
 };
 
@@ -214,39 +214,31 @@ app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile',
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
     res.redirect('https://www.avicenahealthcare.com');
 });
-app.use(authenticate);
 app.use((req, res, next) => {
-    if (req.path !== '/api/schedule/create' && req.path !== '/api/schedule/past') {
-        authenticate(req, res, next);
-    } else {
-        next();
-    }
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    next();
 });
-
-
-
-
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
-app.use('/api/patients', patientRoute);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/web', webRoutes);
-app.use('/api/doctors', doctorRoutes);
-app.use('/api/medical-records', medicalRecordRoutes);
-app.use('/api/invoices', invoiceRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/health-information', healthInformationRoutes);
-app.use('/api/services', servicesRoute);
+app.use('/api/patients', authenticate, patientRoute); // Requires authentication
+app.use('/api/appointments', authenticate, appointmentRoutes); // Requires authentication
+app.use('/api/medical-records', authenticate, medicalRecordRoutes); // Requires authentication
+app.use('/api/invoices', authenticate, invoiceRoutes); // Requires authentication
+app.use('/api/payments', authenticate, paymentRoutes); // Requires authentication
+app.use('/api/health-information', authenticate, healthInformationRoutes); // Requires authentication
+app.use('/api/services', authenticate, servicesRoute); // Requires authentication
+app.use('/api/sandgrid', authenticate, sandGridRoutes); // Requires authentication
+app.use('/api/medicine', authenticate, medicineRoute); // Requires authentication
+app.use('/api/doctors', authenticate, doctorRoutes); // Requires authentication
+app.use('/api/web', authenticate, webRoutes); // Requires authentication
+app.use('/api/v1', authenticate, webAppointmentRoutes); // Requires authentication
+app.use('/api/otps', authenticate, otpDashRoutes); // Requires authentication
+app.use('/api/otp', otpRoutes); // No authentication needed here
+app.use('/api/stripe', authenticate, stripe); // Requires authentication
+app.use('/api/', emailCampaignRoutes); // No authentication needed here
+app.use('/api/', EmailSent); // No authentication needed here
+app.use('/api/dental-chart', authenticate, dentalChartRoutes);
 app.use('/api/schedule', schduleRoutes);
-app.use('/api/sandgrid', sandGridRoutes);
-app.use('/api/medicine', medicineRoute);
-app.use('/api/v1', webAppointmentRoutes);
-app.use('/api/otps', otpDashRoutes);
-app.use('/api/otp', otpRoutes);
-app.use('/api/stripe', stripe);
-app.use('/api/', emailCampaignRoutes);
-app.use('/api/', EmailSent);
-app.use('/api/dental-chart', dentalChartRoutes);
 
 const PORT = process.env.PORT || 8800;
 app.listen(PORT, () => {
