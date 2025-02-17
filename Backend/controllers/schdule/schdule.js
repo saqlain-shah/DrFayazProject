@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 export const getAllSchedules = async (req, res) => {
     try {
         const schedules = await Schedule.find();
-        console.log('Fetched Slots from DB:', schedules);  // ✅ Log actual data
+        console.log('Fetched Slots from DB:', schedules); 
 
         res.status(200).json(schedules);
     } catch (error) {

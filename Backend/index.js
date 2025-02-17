@@ -30,8 +30,10 @@ import stripe from './routes/stripe.js';
 import webRoutes from './routes/webRoutes.js';
 import EmailSent from './routes/ConfirmEmail.js';
 import dentalChartRoutes from './routes/dentalChartRoutes.js';
-import moment from 'moment-timezone'; 
+import moment from 'moment-timezone';
 import Agenda from 'agenda';
+
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -39,14 +41,27 @@ app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Logging the MongoDB URI
 console.log('MongoDB URI:', process.env.MONGO_URL);
+
 const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, duration) => {
+    console.log('getSlotsForSpecificPeriod is running...'); // <-- Ensure this runs
+
     const slots = [];
     const now = moment().utc();
+
     let startTime = now.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     let endTime = now.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+
+    console.log(`Current UTC Time: ${now.format()}`);
+    console.log(`Initial Start Time: ${startTime.format()}`);
+    console.log(`Initial End Time: ${endTime.format()}`);
+
+    // If endHour is before startHour, adjust endTime to the next day
     if (endHour < startHour || (endHour === startHour && endMinute < startMinute)) {
         endTime.add(1, 'days');
+        console.log("Adjusted End Time to Next Day:", endTime.format());
     }
 
     while (startTime.isBefore(endTime)) {
@@ -58,9 +73,16 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         });
         startTime = endSlotTime;
     }
+
+    console.log(`Generated ${slots.length} Slots for Today:`, slots);
+
+    // Generate slots for the next day
     startTime = now.clone().add(1, 'days').set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
     endTime = now.clone().add(1, 'days').set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
+    console.log(`Next Day Start Time: ${startTime.format()}`);
+    console.log(`Next Day End Time: ${endTime.format()}`);
+
     while (startTime.isBefore(endTime)) {
         const endSlotTime = startTime.clone().add(duration, 'minutes');
         if (endSlotTime.isAfter(endTime)) break;
@@ -71,29 +93,40 @@ const getSlotsForSpecificPeriod = (startHour, startMinute, endHour, endMinute, d
         startTime = endSlotTime;
     }
 
+    console.log(`Total Generated Slots (Including Next Day): ${slots.length}`);
+
     return slots;
 };
+
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
+
+// UK Time: 6 PM to 10 PM GMT = 11:00 PM to 3:00 AM PKT
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
-    const startHour = 18;
-    const startMinute = 0; 
-    const endHour = 22;
-    const endMinute = 0;  
-    const slotDuration = 20;
+    const startHour = 12;    // 5:00 PM PKT => 12:00 PM GMT
+    const startMinute = 0;
+    const endHour = 13;      // 5:30 PM PKT => 12:30 PM GMT
+    const endMinute = 30;
+    const slotDuration = 30;
 
+    console.log('Calling getSlotsForSpecificPeriod...');
     const slots = getSlotsForSpecificPeriod(startHour, startMinute, endHour, endMinute, slotDuration);
-
     console.log('Generated Slots:', slots);
 
+    // Check if slots are generated
+    if (slots.length === 0) {
+        console.log('❌ No slots were generated! Check function logic.');
+    } else {
+        console.log('✅ Slots successfully generated:', slots);
+    }
+
     try {
-        const deleteResponse = await axios.delete('http://localhost:5174/api/schedule/past', { 
-            data: { now: moment().utc().toDate() } 
-
+        // Delete past schedules
+        console.log('Deleting past slots...');
+        const deleteResponse = await axios.delete('http://localhost:8800/api/schedule/past', {
+            data: { now: moment().utc().toDate() }
         });
-        console.log('Past slots deletion response:', deleteResponse.status, deleteResponse.data);
-
         console.log('Past slots deletion response:', deleteResponse.data);
     } catch (error) {
         console.error('Error deleting past slots:', error);
@@ -105,19 +138,21 @@ agenda.define('manage slots', async job => {
                 startDateTime: slot.start,
                 endDateTime: slot.end
             };
-            console.log('Sending payload:', payload);
-        const response = await axios.post('http://localhost:5174/api/schedule', payload);
-        console.log(`Slot created: ${JSON.stringify(response.data)}`);
+            const response = await axios.post('http://localhost:8800/api/schedule/create', payload);
+            console.log(`✅ Slot created: ${JSON.stringify(response.data)}`);
 
         } catch (error) {
-            console.error('Error managing slot:', error);
+            console.error('❌ Error managing slot:', error);
         }
     }
 });
+
+
+
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('12 20 * * *', 'manage slots');
+        await agenda.every('*/1 * * * *', 'manage slots'); // Runs every minute
         await agenda.start();
         console.log('Agenda started and job scheduled.');
     } catch (error) {
@@ -128,6 +163,10 @@ agenda.on('ready', async () => {
 agenda.on('error', error => {
     console.error('Agenda error:', error);
 });
+
+
+
+// MongoDB connection
 connectToDatabase().then(() => {
     console.log('Database connection successful');
 }).catch(error => {
@@ -137,8 +176,8 @@ connectToDatabase().then(() => {
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
 
 function setCors(req, res, next) {
-    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5174'];
-    
+    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174','http://localhost:8800','http://localhost:8000'];
+
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -148,35 +187,45 @@ function setCors(req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 }
+
+// Middleware to disable caching
 app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     next();
 });
 
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com','http://localhost:5173','http://localhost:5174'],
+    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174','http://localhost:8800','http://localhost:8000'],
     credentials: true,
 };
 
 app.use(cors(corsOptions));
+
+// Handling file upload
 app.post('/api/upload', upload.single('file'), (req, res) => {
     const file = req.file;
     res.json({ imageUrl: '/uploads/' + file.filename });
 });
 
 app.use('/api/medical-records', uploads, medicalRecordRoutes);
+
+// Google OAuth routes
 app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-    res.redirect('http://localhost:5174');
+    res.redirect('https://www.avicenahealthcare.com');
 });
 app.use(authenticate);
 app.use((req, res, next) => {
-    if (req.path !== '/api/schedule' && req.path !== '/api/schedule/past') {
+    if (req.path !== '/api/schedule/create' && req.path !== '/api/schedule/past') {
         authenticate(req, res, next);
     } else {
         next();
     }
 });
+
+
+
+
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
 app.use('/api/patients', patientRoute);

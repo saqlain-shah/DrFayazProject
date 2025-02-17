@@ -19,7 +19,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/schdule`);
+      const response = await axios.get(`${BASE_URL}/api/schedule`);
       setAppointmentSlots(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -39,7 +39,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       }
     };
 
-    axios.post(`${BASE_URL}/api/schdule`, appointmentPayload, config)
+    axios.post(`${BASE_URL}/api/schdule/create`, appointmentPayload, config)
       .then(response => {
         toast.success('Appointment saved successfully');
         closeModal();

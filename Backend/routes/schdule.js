@@ -3,10 +3,8 @@ import { getAllSchedules, createSchedule, deleteSchedule, deletePastSchedules } 
 
 const router = express.Router();
 router.get('/', getAllSchedules);
-router.post('/', createSchedule);
-// DELETE past schedules
+router.post('/create', createSchedule);
 router.delete('/past', deletePastSchedules);
-// DELETE a schedule by ID
 router.delete('/:id', deleteSchedule);
 
 
