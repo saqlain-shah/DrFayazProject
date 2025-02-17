@@ -3,13 +3,15 @@ import axios from 'axios';
 import moment from 'moment-timezone';
 import { Card, Typography, Button, Badge } from 'antd';
 import { CalendarOutlined, CheckOutlined } from '@ant-design/icons';
-import BASE_URL from '../../baseUrl';
+import BASE_URL from '../../baseUrl.jsx';
 
 const { Title, Text } = Typography;
 
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
+
+    // Convert time from UTC to user's local time zone
     const convertToLocalTime = (startTime, endTime) => {
         const userTimeZone = getCurrentTimeZone(); // Get the user's time zone
         console.log('User Time Zone:', userTimeZone);
@@ -22,9 +24,14 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
         return { start, end, timeZone };
     };
+    
+    
+    // Get the current time zone using Intl.DateTimeFormat
     const getCurrentTimeZone = () => {
         return Intl.DateTimeFormat().resolvedOptions().timeZone;
     };
+
+    // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/schedule`);
@@ -32,14 +39,16 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     
             console.log('Fetched Slots Data:', allSlots);
     
-            const nowLocal = moment().tz("Asia/Karachi"); // Current time in Pakistan Time
-            const uniqueSlotsMap = {};
-            const uniqueSlotSet = new Set();
+            const nowUTC = moment.utc(); // Current time in UTC
+            const uniqueSlotsMap = {}; // To keep unique slots
+            const uniqueSlotSet = new Set(); // To track unique date and time combinations
     
+            // Convert slots and filter out duplicates
             allSlots.forEach(slot => {
                 const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`;
+                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`; // Unique key based on time
     
+                // Only add if not seen before
                 if (!uniqueSlotSet.has(slotKey)) {
                     uniqueSlotSet.add(slotKey);
                     uniqueSlotsMap[slot._id] = { ...slot, startDateTime: start, endDateTime: end, timeZone };
@@ -47,34 +56,40 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             });
     
             console.log('Unique Converted Slots Data:', Object.values(uniqueSlotsMap));
+    
+            // Filter future slots
             const futureSlots = Object.values(uniqueSlotsMap).filter(slot => {
-                return moment(slot.startDateTime).isAfter(nowLocal);
+                return moment.utc(slot.startDateTime).isAfter(nowUTC);
             });
     
             console.log('Future Slots Data:', futureSlots);
-            futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-            const todayStart = nowLocal.clone().startOf('day');
-            const todayEnd = nowLocal.clone().endOf('day');
     
-            console.log('Today Start:', todayStart.format());
-            console.log('Today End:', todayEnd.format());
+            // Sort future slots
+            futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
+    
+            // Check for slots for today
+            const todayStart = nowUTC.clone().startOf('day');
+            const todayEnd = nowUTC.clone().endOf('day');
+    
             const todaySlots = futureSlots.filter(slot => {
-                const slotTime = moment(slot.startDateTime);
-                return slotTime.isBetween(todayStart, todayEnd, null, '[]');
+                const slotTime = moment.utc(slot.startDateTime);
+                return slotTime.isSameOrAfter(todayStart) && slotTime.isSameOrBefore(todayEnd);
             });
     
             console.log('Today Slots Data:', todaySlots);
+    
+            // If no slots available for today, show slots for the next day
             if (todaySlots.length === 0) {
-                const nextDayStart = nowLocal.clone().add(1, 'days').startOf('day');
+                const nextDayStart = nowUTC.clone().add(1, 'days').startOf('day');
                 const nextDayEnd = nextDayStart.clone().endOf('day');
     
                 console.log('Checking Next Day Slots...');
-                console.log('Next Day Start:', nextDayStart.format());
-                console.log('Next Day End:', nextDayEnd.format());
+                console.log('Next Day Start:', nextDayStart.toISOString());
+                console.log('Next Day End:', nextDayEnd.toISOString());
     
                 const nextDaySlots = futureSlots.filter(slot => {
-                    const slotTime = moment(slot.startDateTime);
-                    return slotTime.isBetween(nextDayStart, nextDayEnd, null, '[]');
+                    const slotTime = moment.utc(slot.startDateTime);
+                    return slotTime.isAfter(nextDayStart) && slotTime.isBefore(nextDayEnd);
                 });
     
                 console.log('Next Day Slots Data:', nextDaySlots);
@@ -94,18 +109,28 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                     setAppointmentSlots(convertedNextDaySlots.slice(0, 11));
                     console.log('Next Day Converted Slots Data:', convertedNextDaySlots.slice(0, 11));
                 } else {
-                    setAppointmentSlots([]); // No slots available
+                    setAppointmentSlots([]); // No slots available for today or the next day
                     console.log('No slots available for today or the next day.');
                 }
             } else {
-                setAppointmentSlots(todaySlots.slice(0, 11));
-                console.log('Today Slots to Show:', todaySlots.slice(0, 11));
+                const slotsToShow = todaySlots.slice(0, 11);
+                setAppointmentSlots(slotsToShow);
+                console.log('Today Slots to Show:', slotsToShow);
             }
         } catch (error) {
             console.error('Error fetching schedule:', error);
         }
     };
     
+    
+    
+    
+    
+    
+    
+    
+    
+
     useEffect(() => {
         fetchAndUpdateSlots();
         const interval = setInterval(fetchAndUpdateSlots, 60000); // Check for updates every minute
