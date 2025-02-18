@@ -4,24 +4,18 @@ import moment from 'moment';
 import { Card, Typography, Button, Badge } from 'antd';
 import { CalendarOutlined, CheckOutlined } from '@ant-design/icons';
 import BASE_URL from '../../baseUrl.jsx';
-
 const { Title, Text } = Typography;
-
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
-    const [viewNextDay, setViewNextDay] = useState(false); // New state for toggling days
-
-    // Fetch slots and update state
+    const [viewNextDay, setViewNextDay] = useState(false);
     const fetchAndUpdateSlots = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/schedule`);
             const allSlots = response.data;
-
             const nowUTC = moment.utc();
             const uniqueSlotSet = new Set();
             const processedSlots = [];
-
             allSlots.forEach(slot => {
                 const start = moment.utc(slot.startDateTime); // Directly use UTC time
                 const end = moment.utc(slot.endDateTime); // Directly use UTC time
@@ -36,7 +30,6 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                     });
                 }
             });
-
             const futureSlots = processedSlots.filter(slot => moment(slot.startDateTime).isAfter(nowUTC));
             setAppointmentSlots(futureSlots);
 
@@ -44,7 +37,6 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             console.error('Error fetching schedule:', error);
         }
     };
-
     useEffect(() => {
         fetchAndUpdateSlots();
         const interval = setInterval(fetchAndUpdateSlots, 60000); // Check for updates every minute
@@ -55,28 +47,21 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         setSelectedSlot(slot._id);
         handleSelectAppointment(slot, patientId);
     };
-
     const toggleViewDay = () => {
-        setViewNextDay(prevState => !prevState); // Toggle between today and next day slots
+        setViewNextDay(prevState => !prevState);
     };
-
-    // Filter slots based on today's or tomorrow's view
     const filteredSlots = appointmentSlots.filter(slot => {
         const slotDate = moment(slot.startDateTime).format('YYYY-MM-DD');
         const today = moment().format('YYYY-MM-DD');
         const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
         return viewNextDay ? slotDate === tomorrow : slotDate === today;
     });
-
     if (filteredSlots.length === 0) {
         return <div>No appointments available. Please check again later.</div>;
     }
-
     return (
         <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Title level={4}>Select Appointment</Title>
-
-            {/* Button for toggling between days */}
             <Button 
                 onClick={toggleViewDay} 
                 style={{ 
@@ -135,7 +120,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                         )}
                         <div style={{ marginBottom: '1rem' }}>
                             <Text strong style={{ display: 'block' }}>{slot.startDateTime.format('YYYY-MM-DD')}</Text>
-                            <Text>{slot.startDateTime.format('hh:mm A')} - {slot.endDateTime.format('hh:mm A')} (GMT)</Text>
+                            <Text>{slot.startDateTime.utc().format('hh:mm A')} - {slot.endDateTime.utc().format('hh:mm A')} (GMT)</Text>
                         </div>
                         <Button
                             type='primary'
