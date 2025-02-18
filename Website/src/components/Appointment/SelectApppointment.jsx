@@ -92,7 +92,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                 }}
                 hoverable
             >
-                {viewNextDay ? 'View Today\'s Slots' : 'View Next Day\'s Slots'}
+                {viewNextDay ? 'View Today Slots' : 'View Next Day Slots'}
             </Button>
 
             <div style={{

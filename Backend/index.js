@@ -53,19 +53,24 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     const today = now.clone().startOf('day');
     const tomorrow = today.clone().add(1, 'day');
 
+    // Iterate through the timeRanges (you can have different ranges for each day)
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
+        // Create slots for today
         let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
         let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
-        // Create slots for today
-        while (startTime.isBefore(endTime) && slots.length < 6) { 
+        while (startTime.isBefore(endTime) && slots.filter(slot => slot.day === 'today').length < 6) { 
             const endSlotTime = startTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(endTime)) break;
+
+            // Push the generated slot into the slots array
             slots.push({
                 start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                 end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                 day: 'today' // Tag for today's slots
             });
+
+            // Move start time to the next slot (30 min gap)
             startTime = endSlotTime;
         }
 
@@ -76,6 +81,8 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
         while (nextDayStartTime.isBefore(nextDayEndTime) && slots.filter(slot => slot.day === 'tomorrow').length < 6) { 
             const endSlotTime = nextDayStartTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(nextDayEndTime)) break;
+
+            // Push the generated slot into the slots array for tomorrow
             slots.push({
                 start: nextDayStartTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                 end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
@@ -89,17 +96,21 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     return slots;
 };
 
-
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
 
+    // Updated timeRanges to start from 3:50 PM to 6:50 PM
     const timeRanges = [
-        { startHour: 7, startMinute: 0, endHour: 7, endMinute: 30 },
-        { startHour: 8, startMinute: 0, endHour: 8, endMinute: 30 },
+        { startHour: 15, startMinute: 50, endHour: 16, endMinute: 20 },   // Start at 3:50 PM to 4:20 PM
+        { startHour: 16, startMinute: 20, endHour: 16, endMinute: 50 },   // Next slot from 4:20 PM to 4:50 PM
+        { startHour: 16, startMinute: 50, endHour: 17, endMinute: 20 },   // Next slot from 4:50 PM to 5:20 PM
+        { startHour: 17, startMinute: 20, endHour: 17, endMinute: 50 },   // Next slot from 5:20 PM to 5:50 PM
+        { startHour: 17, startMinute: 50, endHour: 18, endMinute: 20 },   // Next slot from 5:50 PM to 6:20 PM
+        { startHour: 18, startMinute: 20, endHour: 18, endMinute: 50 },   // Next slot from 6:20 PM to 6:50 PM
     ];
-    const slotDuration = 30;
+    const slotDuration = 30; // Slot duration is 30 minutes
 
     const today = moment().utc().startOf('day');
     const tomorrow = today.clone().add(1, 'day').endOf('day');
@@ -160,6 +171,7 @@ agenda.on('ready', async () => {
 agenda.on('error', error => {
     console.error('❌ Agenda error:', error);
 });
+
 
 
 
