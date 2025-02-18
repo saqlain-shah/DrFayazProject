@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import { Card, Typography, Button, Badge } from 'antd';
 import { CalendarOutlined, CheckOutlined } from '@ant-design/icons';
 import BASE_URL from '../../baseUrl.jsx';
@@ -10,126 +10,40 @@ const { Title, Text } = Typography;
 const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     const [appointmentSlots, setAppointmentSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
-
-    // Convert time from UTC to user's local time zone
-    const convertToLocalTime = (startTime, endTime) => {
-        const userTimeZone = getCurrentTimeZone(); // Get the user's time zone
-        console.log('User Time Zone:', userTimeZone);
-        const start = moment.utc(startTime).tz(userTimeZone);
-        const end = moment.utc(endTime).tz(userTimeZone);
-        const timeZone = moment.tz(userTimeZone).format('z'); // Get time zone abbreviation
-        
-        console.log('Converted Start Time:', start.format());
-        console.log('Converted End Time:', end.format());
-    
-        return { start, end, timeZone };
-    };
-    
-    
-    // Get the current time zone using Intl.DateTimeFormat
-    const getCurrentTimeZone = () => {
-        return Intl.DateTimeFormat().resolvedOptions().timeZone;
-    };
+    const [viewNextDay, setViewNextDay] = useState(false); // New state for toggling days
 
     // Fetch slots and update state
     const fetchAndUpdateSlots = async () => {
         try {
             const response = await axios.get(`${BASE_URL}/api/schedule`);
             const allSlots = response.data;
-    
-            console.log('Fetched Slots Data:', allSlots);
-    
-            const nowUTC = moment.utc(); // Current time in UTC
-            const uniqueSlotsMap = {}; // To keep unique slots
-            const uniqueSlotSet = new Set(); // To track unique date and time combinations
-    
-            // Convert slots and filter out duplicates
+
+            const nowUTC = moment.utc();
+            const uniqueSlotSet = new Set();
+            const processedSlots = [];
+
             allSlots.forEach(slot => {
-                const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                const slotKey = `${start.format('YYYY-MM-DD HH:mm')} - ${end.format('HH:mm')} (${timeZone})`; // Unique key based on time
-    
-                // Only add if not seen before
+                const start = moment.utc(slot.startDateTime); // Directly use UTC time
+                const end = moment.utc(slot.endDateTime); // Directly use UTC time
+                const slotKey = `${start.unix()}-${end.unix()}`; // Use Unix timestamp for uniqueness
+
                 if (!uniqueSlotSet.has(slotKey)) {
                     uniqueSlotSet.add(slotKey);
-                    uniqueSlotsMap[slot._id] = { ...slot, startDateTime: start, endDateTime: end, timeZone };
-                }
-            });
-    
-            console.log('Unique Converted Slots Data:', Object.values(uniqueSlotsMap));
-    
-            // Filter future slots
-            const futureSlots = Object.values(uniqueSlotsMap).filter(slot => {
-                return moment.utc(slot.startDateTime).isAfter(nowUTC);
-            });
-    
-            console.log('Future Slots Data:', futureSlots);
-    
-            // Sort future slots
-            futureSlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-    
-            // Check for slots for today
-            const todayStart = nowUTC.clone().startOf('day');
-            const todayEnd = nowUTC.clone().endOf('day');
-    
-            const todaySlots = futureSlots.filter(slot => {
-                const slotTime = moment.utc(slot.startDateTime);
-                return slotTime.isSameOrAfter(todayStart) && slotTime.isSameOrBefore(todayEnd);
-            });
-    
-            console.log('Today Slots Data:', todaySlots);
-    
-            // If no slots available for today, show slots for the next day
-            if (todaySlots.length === 0) {
-                const nextDayStart = nowUTC.clone().add(1, 'days').startOf('day');
-                const nextDayEnd = nextDayStart.clone().endOf('day');
-    
-                console.log('Checking Next Day Slots...');
-                console.log('Next Day Start:', nextDayStart.toISOString());
-                console.log('Next Day End:', nextDayEnd.toISOString());
-    
-                const nextDaySlots = futureSlots.filter(slot => {
-                    const slotTime = moment.utc(slot.startDateTime);
-                    return slotTime.isAfter(nextDayStart) && slotTime.isBefore(nextDayEnd);
-                });
-    
-                console.log('Next Day Slots Data:', nextDaySlots);
-    
-                if (nextDaySlots.length > 0) {
-                    const convertedNextDaySlots = nextDaySlots.map(slot => {
-                        const { start, end, timeZone } = convertToLocalTime(slot.startDateTime, slot.endDateTime);
-                        return {
-                            ...slot,
-                            startDateTime: start,
-                            endDateTime: end,
-                            timeZone
-                        };
+                    processedSlots.push({
+                        ...slot,
+                        startDateTime: start,
+                        endDateTime: end,
                     });
-    
-                    convertedNextDaySlots.sort((a, b) => a.startDateTime.diff(b.startDateTime));
-                    setAppointmentSlots(convertedNextDaySlots.slice(0, 11));
-                    console.log('Next Day Converted Slots Data:', convertedNextDaySlots.slice(0, 11));
-                } else {
-                    setAppointmentSlots([]); // No slots available for today or the next day
-                    console.log('No slots available for today or the next day.');
                 }
-            } else {
-                const slotsToShow = todaySlots.slice(0, 11);
-                setAppointmentSlots(slotsToShow);
-                console.log('Today Slots to Show:', slotsToShow);
-            }
+            });
+
+            const futureSlots = processedSlots.filter(slot => moment(slot.startDateTime).isAfter(nowUTC));
+            setAppointmentSlots(futureSlots);
+
         } catch (error) {
             console.error('Error fetching schedule:', error);
         }
     };
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     useEffect(() => {
         fetchAndUpdateSlots();
@@ -142,20 +56,52 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
         handleSelectAppointment(slot, patientId);
     };
 
-    if (appointmentSlots.length === 0) {
-        return <div>No appointments available for today. Please check for the next day slots.</div>;
+    const toggleViewDay = () => {
+        setViewNextDay(prevState => !prevState); // Toggle between today and next day slots
+    };
+
+    // Filter slots based on today's or tomorrow's view
+    const filteredSlots = appointmentSlots.filter(slot => {
+        const slotDate = moment(slot.startDateTime).format('YYYY-MM-DD');
+        const today = moment().format('YYYY-MM-DD');
+        const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+        return viewNextDay ? slotDate === tomorrow : slotDate === today;
+    });
+
+    if (filteredSlots.length === 0) {
+        return <div>No appointments available. Please check again later.</div>;
     }
 
     return (
         <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Title level={4}>Select Appointment</Title>
+
+            {/* Button for toggling between days */}
+            <Button 
+                onClick={toggleViewDay} 
+                style={{ 
+                    marginBottom: '1rem',
+                    alignSelf: 'flex-start', // Moves the button to the left
+                    backgroundColor: '#1890ff', // Blue color for the button
+                    color: '#fff',
+                    border: 'none',
+                    padding: '8px 16px',
+                    fontWeight: 'bold',
+                    borderRadius: '5px',
+                    transition: 'background-color 0.3s',
+                }}
+                hoverable
+            >
+                {viewNextDay ? 'View Today\'s Slots' : 'View Next Day\'s Slots'}
+            </Button>
+
             <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '1rem',
                 justifyContent: 'center',
             }}>
-                {appointmentSlots.map(slot => (
+                {filteredSlots.map(slot => (
                     <Card
                         key={slot._id}
                         bordered={false}
@@ -180,14 +126,6 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                             alignItems: 'center',
                         }}
                         onClick={() => handleSlotSelection(slot)}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow = selectedSlot === slot._id ? '0 4px 16px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.2)';
-                            e.currentTarget.style.backgroundColor = selectedSlot === slot._id ? '#e6f7ff' : '#f0f0f0';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = selectedSlot === slot._id ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)';
-                            e.currentTarget.style.backgroundColor = selectedSlot === slot._id ? '#e6f7ff' : '#fff';
-                        }}
                     >
                         {selectedSlot === slot._id && (
                             <Badge
@@ -197,7 +135,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                         )}
                         <div style={{ marginBottom: '1rem' }}>
                             <Text strong style={{ display: 'block' }}>{slot.startDateTime.format('YYYY-MM-DD')}</Text>
-                            <Text>{slot.startDateTime.format('hh:mm A')} - {slot.endDateTime.format('hh:mm A')} ({slot.timeZone})</Text>
+                            <Text>{slot.startDateTime.format('hh:mm A')} - {slot.endDateTime.format('hh:mm A')} (GMT)</Text>
                         </div>
                         <Button
                             type='primary'
