@@ -17,9 +17,6 @@ import EditInvoice from './screens/Invoices/EditInvoice';
 import PreviewInvoice from './screens/Invoices/PreviewInvoice';
 import EditPayment from './screens/Payments/EditPayment';
 
-
-
-
 import PreviewPayment from './screens/Payments/PreviewPayment';
 import Medicine from './screens/Medicine';
 import PatientProfile from './screens/Patients/PatientProfile';

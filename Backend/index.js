@@ -32,8 +32,6 @@ import EmailSent from './routes/ConfirmEmail.js';
 import dentalChartRoutes from './routes/dentalChartRoutes.js';
 import moment from 'moment-timezone';
 import Agenda from 'agenda';
-
-// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -41,8 +39,6 @@ app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-// Logging the MongoDB URI
 console.log('MongoDB URI:', process.env.MONGO_URL);
 
 const getSlotsForSpecificPeriod = (timeRanges, duration) => {
@@ -189,8 +185,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// Handling file upload
 app.post('/api/upload', upload.single('file'), (req, res) => {
     const file = req.file;
     res.json({ imageUrl: '/uploads/' + file.filename });

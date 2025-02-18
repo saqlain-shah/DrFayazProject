@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
         cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
-        console.log(`File Type: ${file.mimetype}`);  // Logs the MIME type of the file
+        console.log(`File Type: ${file.mimetype}`);
         console.log(`Original File Name: ${file.originalname}`);  // Logs the original file name
         cb(null, file.originalname);
     },

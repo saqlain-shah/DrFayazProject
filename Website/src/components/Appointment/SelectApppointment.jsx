@@ -17,9 +17,9 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
             const uniqueSlotSet = new Set();
             const processedSlots = [];
             allSlots.forEach(slot => {
-                const start = moment.utc(slot.startDateTime); // Directly use UTC time
-                const end = moment.utc(slot.endDateTime); // Directly use UTC time
-                const slotKey = `${start.unix()}-${end.unix()}`; // Use Unix timestamp for uniqueness
+                const start = moment.utc(slot.startDateTime);
+                const end = moment.utc(slot.endDateTime);
+                const slotKey = `${start.unix()}-${end.unix()}`;
 
                 if (!uniqueSlotSet.has(slotKey)) {
                     uniqueSlotSet.add(slotKey);
