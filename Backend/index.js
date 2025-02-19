@@ -48,8 +48,6 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     const now = moment().utc();
     const today = now.clone().startOf('day');
     const tomorrow = today.clone().add(1, 'day');
-
-    // ✅ Generate slots for Today (only future slots from now)
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
         let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
@@ -67,8 +65,6 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
             startTime = endSlotTime;
         }
     }
-
-    // ✅ Generate full slots for Tomorrow
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let nextDayStartTime = tomorrow.clone().set({ hour: startHour, minute: startMinute });
         let nextDayEndTime = tomorrow.clone().set({ hour: endHour, minute: endMinute });
@@ -84,12 +80,9 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
             nextDayStartTime = endSlotTime;
         }
     }
-
     console.log(`Generated ${slots.length} Slots:`, slots);
     return slots;
 };
-
-
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
 agenda.define('manage slots', async job => {
