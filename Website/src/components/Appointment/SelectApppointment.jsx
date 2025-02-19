@@ -40,7 +40,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
     useEffect(() => {
         fetchAndUpdateSlots();
         const interval = setInterval(fetchAndUpdateSlots, 60000); // Check for updates every minute
-        return () => clearInterval(interval); // Cleanup interval on component unmount
+        return () => clearInterval(interval);
     }, []);
 
     const handleSlotSelection = (slot) => {

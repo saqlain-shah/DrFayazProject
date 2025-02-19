@@ -49,25 +49,31 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     const today = now.clone().startOf('day');
     const tomorrow = today.clone().add(1, 'day');
 
+    // ✅ Generate slots for Today (only future slots from now)
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
         let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
-        while (startTime.isBefore(endTime) && slots.filter(slot => slot.day === 'today').length < 6) {
+        while (startTime.isBefore(endTime)) {
             const endSlotTime = startTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(endTime)) break;
-            slots.push({
-                start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-                end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-                day: 'today'
-            });
+            if (startTime.isSameOrAfter(now)) {
+                slots.push({
+                    start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+                    end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+                    day: 'today'
+                });
+            }
             startTime = endSlotTime;
         }
+    }
 
+    // ✅ Generate full slots for Tomorrow
+    for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let nextDayStartTime = tomorrow.clone().set({ hour: startHour, minute: startMinute });
         let nextDayEndTime = tomorrow.clone().set({ hour: endHour, minute: endMinute });
 
-        while (nextDayStartTime.isBefore(nextDayEndTime) && slots.filter(slot => slot.day === 'tomorrow').length < 6) {
+        while (nextDayStartTime.isBefore(nextDayEndTime)) {
             const endSlotTime = nextDayStartTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(nextDayEndTime)) break;
             slots.push({
@@ -78,9 +84,11 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
             nextDayStartTime = endSlotTime;
         }
     }
+
     console.log(`Generated ${slots.length} Slots:`, slots);
     return slots;
 };
+
 
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
