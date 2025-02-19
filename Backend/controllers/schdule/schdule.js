@@ -35,10 +35,11 @@ export const deleteSchedule = async (req, res) => {
 };
 export const deletePastSchedules = async (req, res) => {
     try {
-        const now = moment().tz('Asia/Karachi').utc().toDate(); // Convert current time to UTC
+        const now = moment().utc().toDate();
 
-        // Delete slots where endDateTime is less than now
-        const result = await Schedule.deleteMany({ endDateTime: { $lt: now } });
+        const result = await Schedule.deleteMany({
+            endDateTime: { $lt: now } // Deletes only if endDateTime is before now
+        });
 
         res.status(200).json({ message: 'Past schedules removed successfully', removedCount: result.deletedCount });
     } catch (error) {

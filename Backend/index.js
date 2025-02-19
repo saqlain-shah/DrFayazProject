@@ -47,6 +47,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     const now = moment().utc();
     const today = now.clone().startOf('day');
     const tomorrow = today.clone().add(1, 'day');
+    
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
         let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
@@ -54,7 +55,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
         while (startTime.isBefore(endTime)) {
             const endSlotTime = startTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(endTime)) break;
-            if (startTime.isSameOrAfter(now)) {
+            if (endSlotTime.isAfter(now)) {
                 slots.push({
                     start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                     end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
@@ -64,6 +65,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
             startTime = endSlotTime;
         }
     }
+
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let nextDayStartTime = tomorrow.clone().set({ hour: startHour, minute: startMinute });
         let nextDayEndTime = tomorrow.clone().set({ hour: endHour, minute: endMinute });
@@ -82,34 +84,48 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     console.log(`Generated ${slots.length} Slots:`, slots);
     return slots;
 };
+
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
-agenda.define('manage slots', async job => {
-    console.log('Executing "manage slots" job...');
-    const timeRanges = [
-        { startHour: 10, startMinute: 0, endHour: 10, endMinute: 30 },  // 3:00 PM - 3:30 PM PKT
-        { startHour: 10, startMinute: 30, endHour: 11, endMinute: 0 },  // 3:30 PM - 4:00 PM PKT
-        { startHour: 11, startMinute: 0, endHour: 11, endMinute: 30 },  // 4:00 PM - 4:30 PM PKT
-        { startHour: 11, startMinute: 30, endHour: 12, endMinute: 0 },  // 4:30 PM - 5:00 PM PKT
-        { startHour: 12, startMinute: 0, endHour: 12, endMinute: 30 },  // 5:00 PM - 5:30 PM PKT
-        { startHour: 12, startMinute: 30, endHour: 13, endMinute: 0 },  // 5:30 PM - 6:00 PM PKT
-    ];
-    const slotDuration = 30;
+
+const timeRanges = [
+    { startHour: 13, startMinute: 30, endHour: 14, endMinute: 0 },   // 1:30 PM - 2:00 PM GMT (6:30 PM PKT)
+    { startHour: 14, startMinute: 0, endHour: 14, endMinute: 30 },   // 2:00 PM - 2:30 PM GMT (7:00 PM PKT)
+    { startHour: 14, startMinute: 30, endHour: 15, endMinute: 0 },   // 2:30 PM - 3:00 PM GMT (7:30 PM PKT)
+    { startHour: 15, startMinute: 0, endHour: 15, endMinute: 30 },   // 3:00 PM - 3:30 PM GMT (8:00 PM PKT)
+    { startHour: 15, startMinute: 30, endHour: 16, endMinute: 0 },   // 3:30 PM - 4:00 PM GMT (8:30 PM PKT)
+    { startHour: 16, startMinute: 0, endHour: 16, endMinute: 30 }    // 4:00 PM - 4:30 PM GMT (9:00 PM PKT)
+];
+
+
+const slotDuration = 30;
+
+// 1️⃣ Job: GET existing slots
+agenda.define('fetch slots', async () => {
+    console.log('Fetching slots...');
+    try {
+        const response = await axios.get(`http://localhost:8800/api/schedule`);
+        console.log(`Existing slots count: ${response.data.length}`);
+    } catch (error) {
+        console.error('❌ Error fetching slots:', error);
+    }
+});
+
+// 2️⃣ Job: POST new slots
+agenda.define('create slots', async () => {
+    console.log('Creating new slots...');
     const today = moment().utc().startOf('day');
     const tomorrow = today.clone().add(1, 'day').endOf('day');
 
     try {
-        console.log('Fetching existing slots...');
         const existingSlotsResponse = await axios.get(`http://localhost:8800/api/schedule`);
         const existingSlots = existingSlotsResponse.data;
-        console.log(`Existing slots count: ${existingSlots.length}`);
 
         const todaySlots = existingSlots.filter(slot => {
             const slotTime = moment.utc(slot.startDateTime);
             return slotTime.isSameOrAfter(today) && slotTime.isBefore(tomorrow);
         });
 
-        console.log(`Today's slots count: ${todaySlots.length}`);
-        if (todaySlots.length >= 6) {
+        if (todaySlots.length >= 10) {
             console.log('✅ Enough slots exist for today, skipping creation.');
             return;
         }
@@ -128,28 +144,43 @@ agenda.define('manage slots', async job => {
                 }
             }
         }
-
-        console.log('Deleting past slots...');
-        await axios.delete('http://localhost:8800/api/schedule/past', { data: { now: moment().utc().toDate() } });
     } catch (error) {
-        console.error('❌ Error in manage slots job:', error);
+        console.error('❌ Error in create slots job:', error);
     }
 });
 
+// 3️⃣ Job: DELETE past slots
+agenda.define('delete past slots', async () => {
+    console.log('Deleting past slots...');
+    const now = moment().utc();
+    try {
+        await axios.delete('http://localhost:8800/api/schedule/past', {
+            data: { now: now.toISOString() }
+        });
+        console.log('✅ Past slots deleted successfully.');
+    } catch (error) {
+        console.error('❌ Error deleting past slots:', error);
+    }
+});
+
+// Schedule the jobs
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs...');
     try {
-        await agenda.every('*/1 * * * *', 'manage slots');
+        await agenda.every('*/1 * * * *', 'fetch slots');   // Runs every 1 minute
+        await agenda.every('*/1 * * * *', 'create slots');  // Runs every 1 minute
+        await agenda.every('*/1 * * * *', 'delete past slots');  // Runs every 1 minute
         await agenda.start();
-        console.log('Agenda started and job scheduled.');
+        console.log('✅ Jobs scheduled and Agenda started.');
     } catch (error) {
-        console.error('❌ Error scheduling job with Agenda:', error);
+        console.error('❌ Error scheduling jobs with Agenda:', error);
     }
 });
 
 agenda.on('error', error => {
     console.error('❌ Agenda error:', error);
 });
+
 
 connectToDatabase().then(() => {
     console.log('Database connection successful');
