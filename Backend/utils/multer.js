@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         console.log(`File Type: ${file.mimetype}`);
-        console.log(`Original File Name: ${file.originalname}`);  // Logs the original file name
+        console.log(`Original File Name: ${file.originalname}`);
         cb(null, file.originalname);
     },
 });

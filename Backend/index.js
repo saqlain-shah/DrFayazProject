@@ -43,7 +43,6 @@ console.log('MongoDB URI:', process.env.MONGO_URL);
 
 const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     console.log('getSlotsForSpecificPeriod is running...');
-
     const slots = [];
     const now = moment().utc();
     const today = now.clone().startOf('day');
@@ -84,20 +83,17 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     return slots;
 };
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
-
 agenda.define('manage slots', async job => {
     console.log('Executing "manage slots" job...');
     const timeRanges = [
-        { startHour: 18, startMinute: 0, endHour: 18, endMinute: 30 },  // 6:00 PM - 6:30 PM
-        { startHour: 18, startMinute: 30, endHour: 19, endMinute: 0 },  // 6:30 PM - 7:00 PM
-        { startHour: 19, startMinute: 0, endHour: 19, endMinute: 30 },  // 7:00 PM - 7:30 PM
-        { startHour: 19, startMinute: 30, endHour: 20, endMinute: 0 },  // 7:30 PM - 8:00 PM
-        { startHour: 20, startMinute: 0, endHour: 20, endMinute: 30 },  // 8:00 PM - 8:30 PM
-        { startHour: 20, startMinute: 30, endHour: 21, endMinute: 0 },  // 8:30 PM - 9:00 PM
+        { startHour: 10, startMinute: 0, endHour: 10, endMinute: 30 },  // 3:00 PM - 3:30 PM PKT
+        { startHour: 10, startMinute: 30, endHour: 11, endMinute: 0 },  // 3:30 PM - 4:00 PM PKT
+        { startHour: 11, startMinute: 0, endHour: 11, endMinute: 30 },  // 4:00 PM - 4:30 PM PKT
+        { startHour: 11, startMinute: 30, endHour: 12, endMinute: 0 },  // 4:30 PM - 5:00 PM PKT
+        { startHour: 12, startMinute: 0, endHour: 12, endMinute: 30 },  // 5:00 PM - 5:30 PM PKT
+        { startHour: 12, startMinute: 30, endHour: 13, endMinute: 0 },  // 5:30 PM - 6:00 PM PKT
     ];
-
     const slotDuration = 30;
-
     const today = moment().utc().startOf('day');
     const tomorrow = today.clone().add(1, 'day').endOf('day');
 
@@ -219,8 +215,8 @@ app.use('/api/v1', authenticate, webAppointmentRoutes); // Requires authenticati
 app.use('/api/otps', authenticate, otpDashRoutes); // Requires authentication
 app.use('/api/otp', otpRoutes); // No authentication needed here
 app.use('/api/stripe', authenticate, stripe); // Requires authentication
-app.use('/api/', emailCampaignRoutes); // No authentication needed here
-app.use('/api/', EmailSent); // No authentication needed here
+app.use('/api/', emailCampaignRoutes);
+app.use('/api/', EmailSent);
 app.use('/api/dental-chart', authenticate, dentalChartRoutes);
 app.use('/api/schedule', schduleRoutes);
 
