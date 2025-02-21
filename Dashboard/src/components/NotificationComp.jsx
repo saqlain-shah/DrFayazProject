@@ -19,14 +19,12 @@ function NotificationComp({ children, unreadCount }) {
           },
         });
 
-        // Sort the notifications by createdAt in descending order
         const sortedNotifications = response.data.sort((a, b) => {
           return new Date(b.createdAt) - new Date(a.createdAt);
         });
 
         setNotificationsData(sortedNotifications);
 
-        // Count unread notifications
         const unreadCount = sortedNotifications.filter(
           (item) => !item.read
         ).length;
@@ -47,9 +45,7 @@ function NotificationComp({ children, unreadCount }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Update the notifications data after marking all read
       setNotificationsData([]);
-      // Set unreadNotificationsCount to 0
       setUnreadNotificationsCount(0);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);

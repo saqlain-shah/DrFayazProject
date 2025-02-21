@@ -4,7 +4,6 @@ import { toast } from 'react-hot-toast';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { FiUploadCloud } from 'react-icons/fi';
 
-// Inside the Uploader component
 const Uploader = ({ setUploadedFiles }) => {
   const [loading, setLoading] = useState(false);
   const [uploadedFiles, setUploadedFilesLocal] = useState([]);

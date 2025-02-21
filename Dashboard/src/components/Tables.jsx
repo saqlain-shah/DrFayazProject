@@ -48,7 +48,6 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
         if (!response.ok) {
           throw new Error('Failed to update status or method');
         }
-        // Handle success response if needed
         toast.success('Transaction updated successfully!');
       })
       .catch((error) => {
@@ -57,10 +56,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
       });
   };
   const handleDelete = (itemId) => {
-  
-  
-    // Ensure itemId is in the correct format
-    const id = itemId._id.toString(); // Assuming _id is an ObjectId
+      const id = itemId._id.toString(); // Assuming _id is an ObjectId
   
     const token = localStorage.getItem('token');
     fetch(`${BASE_URL}/api/web/${id}`, { // Use id instead of itemId
@@ -73,7 +69,6 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
         if (!response.ok) {
           throw new Error('Failed to delete payment');
         }
-        // Remove the deleted payment from UI
         const updatedItems = data.filter((item) => item._id !== itemId._id);
         setUpdatedData(updatedItems);
         toast.success('Payment deleted successfully!');

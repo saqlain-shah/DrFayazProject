@@ -31,7 +31,6 @@ export function Input({ label, name, type, color, placeholder, onChange, value }
 }
 
 
-// button
 
 export function Button({ label, onClick, loading, Icon }) {
   return (
@@ -52,7 +51,6 @@ export function Button({ label, onClick, loading, Icon }) {
   );
 }
 
-// select
 
 export function MenuSelect({ children, datas, item: data }) {
   return (
