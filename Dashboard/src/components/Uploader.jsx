@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { toast } from 'react-hot-toast';
-import { BiLoaderCircle } from 'react-icons/bi';
-import { FiUploadCloud } from 'react-icons/fi';
+import React, { useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { toast } from "react-hot-toast";
+import { BiLoaderCircle } from "react-icons/bi";
+import { FiUploadCloud } from "react-icons/fi";
 
 const Uploader = ({ setUploadedFiles }) => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const Uploader = ({ setUploadedFiles }) => {
       setUploadedFiles(acceptedFiles);
       toast.success(`${acceptedFiles.length} file(s) uploaded successfully.`);
     } catch (error) {
-      toast.error('Failed to upload files.');
+      toast.error("Failed to upload files.");
     } finally {
       setLoading(false);
     }
@@ -34,12 +34,16 @@ const Uploader = ({ setUploadedFiles }) => {
         className="px-6 lg:col-span-10 sm:col-span-8 col-span-12 pt-5 pb-6 border-2 border-dashed rounded-md cursor-pointer"
         {...getRootProps()}
       >
-        <input {...getInputProps({ name: 'attachment' })} />
+        <input {...getInputProps({ name: "attachment" })} />
         <span className="mx-auto flex justify-center">
           <FiUploadCloud className="text-3xl text-subMain" />
         </span>
-        <p className="text-sm mt-2">Drag and drop your files here, or click to select files</p>
-        <em className="text-xs text-gray-400">(Only *.jpeg and *.png images will be accepted)</em>
+        <p className="text-sm mt-2">
+          Drag and drop your files here, or click to select files
+        </p>
+        <em className="text-xs text-gray-400">
+          (Only *.jpeg and *.png images will be accepted)
+        </em>
       </div>
       <div className="lg:col-span-2 sm:col-span-4 col-span-12">
         {loading ? (
@@ -72,6 +76,5 @@ const Uploader = ({ setUploadedFiles }) => {
     </div>
   );
 };
-
 
 export default Uploader;

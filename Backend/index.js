@@ -129,8 +129,9 @@ agenda.define('create slots', async () => {
         const response = await axios.get(`http://localhost:8800/api/schedule`);
         const existingSlots = response.data || [];
 
-        const todayDate = moment().utc().format('YYYY-MM-DD');
-        const tomorrowDate = moment().utc().add(1, 'day').format('YYYY-MM-DD');
+        const now = moment().utc(); // Current time in UTC
+        const todayDate = now.format('YYYY-MM-DD');
+        const tomorrowDate = now.clone().add(1, 'day').format('YYYY-MM-DD');
 
         const todaySlotsCount = existingSlots.filter(slot =>
             moment(slot.startDateTime).utc().format('YYYY-MM-DD') === todayDate
@@ -157,8 +158,11 @@ agenda.define('create slots', async () => {
         let createdTomorrow = tomorrowSlotsCount;
 
         for (const slot of slots) {
-            if (slot.day === 'today' && createdToday >= MAX_SLOTS_PER_DAY) continue;
-            if (slot.day === 'tomorrow' && createdTomorrow >= MAX_SLOTS_PER_DAY) continue;
+            const slotStart = moment(slot.start);
+            if (slot.day === 'today') {
+                // ✅ Only create today's slots if time is in the future
+                if (createdToday >= MAX_SLOTS_PER_DAY || slotStart.isBefore(now)) continue;
+            } else if (slot.day === 'tomorrow' && createdTomorrow >= MAX_SLOTS_PER_DAY) continue;
 
             const payload = { startDateTime: slot.start, endDateTime: slot.end };
             await axios.post('http://localhost:8800/api/schedule/create', payload);
@@ -173,6 +177,7 @@ agenda.define('create slots', async () => {
         console.error('❌ Error creating slots:', error);
     }
 });
+
 
 
 
