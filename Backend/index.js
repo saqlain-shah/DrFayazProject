@@ -129,9 +129,8 @@ agenda.define('create slots', async () => {
         const response = await axios.get(`http://localhost:8800/api/schedule`);
         const existingSlots = response.data || [];
 
-        const now = moment().utc(); // Current time in UTC
-        const todayDate = now.format('YYYY-MM-DD');
-        const tomorrowDate = now.clone().add(1, 'day').format('YYYY-MM-DD');
+        const todayDate = moment().utc().format('YYYY-MM-DD');
+        const tomorrowDate = moment().utc().add(1, 'day').format('YYYY-MM-DD');
 
         const todaySlotsCount = existingSlots.filter(slot =>
             moment(slot.startDateTime).utc().format('YYYY-MM-DD') === todayDate
@@ -144,12 +143,12 @@ agenda.define('create slots', async () => {
         console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
 
         const timeRanges = [
-            { startHour: 6, startMinute: 0, endHour: 6, endMinute: 30 },   // 11:00 AM - 11:30 AM PKT
-            { startHour: 6, startMinute: 30, endHour: 7, endMinute: 0 },   // 11:30 AM - 12:00 PM PKT
-            { startHour: 7, startMinute: 0, endHour: 7, endMinute: 30 },   // 12:00 PM - 12:30 PM PKT
-            { startHour: 7, startMinute: 30, endHour: 8, endMinute: 0 },   // 12:30 PM - 1:00 PM PKT
-            { startHour: 8, startMinute: 0, endHour: 8, endMinute: 30 },   // 1:00 PM - 1:30 PM PKT
-            { startHour: 8, startMinute: 30, endHour: 9, endMinute: 0 }    // 1:30 PM - 2:00 PM PKT
+            { startHour: 8, startMinute: 0, endHour: 6, endMinute: 30 },   // 11:00 AM - 11:30 AM PKT
+            { startHour: 8, startMinute: 30, endHour: 7, endMinute: 0 },   // 11:30 AM - 12:00 PM PKT
+            { startHour: 9, startMinute: 0, endHour: 7, endMinute: 30 },   // 12:00 PM - 12:30 PM PKT
+            { startHour: 9, startMinute: 30, endHour: 8, endMinute: 0 },   // 12:30 PM - 1:00 PM PKT
+            { startHour: 10, startMinute: 0, endHour: 8, endMinute: 30 },   // 1:00 PM - 1:30 PM PKT
+            { startHour: 10, startMinute: 30, endHour: 9, endMinute: 0 }    // 1:30 PM - 2:00 PM PKT
         ];
 
         const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
@@ -158,11 +157,8 @@ agenda.define('create slots', async () => {
         let createdTomorrow = tomorrowSlotsCount;
 
         for (const slot of slots) {
-            const slotStart = moment(slot.start);
-            if (slot.day === 'today') {
-                // ✅ Only create today's slots if time is in the future
-                if (createdToday >= MAX_SLOTS_PER_DAY || slotStart.isBefore(now)) continue;
-            } else if (slot.day === 'tomorrow' && createdTomorrow >= MAX_SLOTS_PER_DAY) continue;
+            if (slot.day === 'today' && createdToday >= MAX_SLOTS_PER_DAY) continue;
+            if (slot.day === 'tomorrow' && createdTomorrow >= MAX_SLOTS_PER_DAY) continue;
 
             const payload = { startDateTime: slot.start, endDateTime: slot.end };
             await axios.post('http://localhost:8800/api/schedule/create', payload);
@@ -177,7 +173,6 @@ agenda.define('create slots', async () => {
         console.error('❌ Error creating slots:', error);
     }
 });
-
 
 
 
