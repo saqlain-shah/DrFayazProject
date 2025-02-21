@@ -43,11 +43,15 @@ console.log('MongoDB URI:', process.env.MONGO_URL);
 
 const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     console.log('getSlotsForSpecificPeriod is running...');
+
     const slots = [];
-    const now = moment().utc();
+    // ✅ Mocked time: 10:50 AM PKT (5:50 AM GMT)
+    const now = moment.utc().set({ hour: 5, minute: 50, second: 0, millisecond: 0 });
+    console.log(`🔄 Mocked current time (GMT): ${now.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')}`);
+
     const today = now.clone().startOf('day');
     const tomorrow = today.clone().add(1, 'day');
-    
+
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
         let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
@@ -85,6 +89,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     return slots;
 };
 
+
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 
 const timeRanges = [
@@ -112,74 +117,67 @@ agenda.define('fetch slots', async () => {
 
 // 2️⃣ Job: POST new slots
 agenda.define('create slots', async () => {
-    console.log('Creating new slots...');
-    const today = moment().utc().startOf('day');
-    const tomorrow = today.clone().add(1, 'day').endOf('day');
+    console.log('Creating slots...');
+    const timeRanges = [
+        { startHour: 13, startMinute: 30, endHour: 14, endMinute: 0 },   // 1:30 PM - 2:00 PM GMT (6:30 PM PKT)
+        { startHour: 14, startMinute: 0, endHour: 14, endMinute: 30 },   // 2:00 PM - 2:30 PM GMT (7:00 PM PKT)
+        { startHour: 14, startMinute: 30, endHour: 15, endMinute: 0 },   // 2:30 PM - 3:00 PM GMT (7:30 PM PKT)
+        { startHour: 15, startMinute: 0, endHour: 15, endMinute: 30 },   // 3:00 PM - 3:30 PM GMT (8:00 PM PKT)
+        { startHour: 15, startMinute: 30, endHour: 16, endMinute: 0 },   // 3:30 PM - 4:00 PM GMT (8:30 PM PKT)
+        { startHour: 16, startMinute: 0, endHour: 16, endMinute: 30 }    // 4:00 PM - 4:30 PM GMT (9:00 PM PKT)
+    ];
 
+    const slotDuration = 30;
+    const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
     try {
-        const existingSlotsResponse = await axios.get(`http://localhost:8800/api/schedule`);
-        const existingSlots = existingSlotsResponse.data;
-
-        const todaySlots = existingSlots.filter(slot => {
-            const slotTime = moment.utc(slot.startDateTime);
-            return slotTime.isSameOrAfter(today) && slotTime.isBefore(tomorrow);
-        });
-
-        if (todaySlots.length >= 10) {
-            console.log('✅ Enough slots exist for today, skipping creation.');
-            return;
-        }
-
-        console.log('Generating new slots...');
-        const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
-
         for (const slot of slots) {
-            if (!todaySlots.some(s => moment.utc(s.startDateTime).isSame(moment.utc(slot.start)))) {
-                try {
-                    const payload = { startDateTime: slot.start, endDateTime: slot.end };
-                    const response = await axios.post('http://localhost:8800/api/schedule/create', payload);
-                    console.log(`✅ Slot created: ${JSON.stringify(response.data)}`);
-                } catch (error) {
-                    console.error('❌ Error creating slot:', error);
-                }
-            }
+            const payload = { startDateTime: slot.start, endDateTime: slot.end };
+            await axios.post('http://localhost:8800/api/schedule/create', payload);
+            console.log(`✅ Slot created: ${JSON.stringify(payload)}`);
         }
     } catch (error) {
-        console.error('❌ Error in create slots job:', error);
+        console.error('❌ Error creating slots:', error);
     }
 });
 
-// 3️⃣ Job: DELETE past slots
+agenda.define('fetch slots', async () => {
+    console.log('Fetching slots...');
+    try {
+        const response = await axios.get(`http://localhost:8800/api/schedule`);
+        console.log(`✅ Fetched ${response.data.length} slots`);
+    } catch (error) {
+        console.error('❌ Error fetching slots:', error);
+    }
+});
+
 agenda.define('delete past slots', async () => {
     console.log('Deleting past slots...');
     const now = moment().utc();
     try {
-        await axios.delete('http://localhost:8800/api/schedule/past', {
+        const response = await axios.delete('http://localhost:8800/api/schedule/past', {
             data: { now: now.toISOString() }
         });
-        console.log('✅ Past slots deleted successfully.');
+        console.log(`✅ Past slots deleted: ${response.data.removedCount}`);
     } catch (error) {
         console.error('❌ Error deleting past slots:', error);
     }
 });
 
-// Schedule the jobs
+// Scheduling all jobs
 agenda.on('ready', async () => {
-    console.log('Agenda is ready. Scheduling jobs...');
+    console.log('Agenda is ready. Scheduling jobs for testing...');
     try {
-        await agenda.every('*/1 * * * *', 'fetch slots');   // Runs every 1 minute
         await agenda.every('*/1 * * * *', 'create slots');  // Runs every 1 minute
-        await agenda.every('*/1 * * * *', 'delete past slots');  // Runs every 1 minute
+        await agenda.every('*/1 * * * *', 'fetch slots');   // Runs every 1 minute
+        await agenda.every('*/1 * * * *', 'delete past slots');
+
         await agenda.start();
-        console.log('✅ Jobs scheduled and Agenda started.');
+        console.log('✅ All jobs scheduled and Agenda started.');
     } catch (error) {
         console.error('❌ Error scheduling jobs with Agenda:', error);
     }
 });
 
-agenda.on('error', error => {
-    console.error('❌ Agenda error:', error);
-});
 
 
 connectToDatabase().then(() => {
