@@ -51,8 +51,6 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     let todayCount = 0;
     let tomorrowCount = 0;
     const MAX_SLOTS_PER_DAY = 6;
-
-    // ✅ Generating slots for today
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         if (todayCount >= MAX_SLOTS_PER_DAY) break; // 🔒 Stop if limit reached
 
@@ -73,8 +71,6 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
             startTime = endSlotTime;
         }
     }
-
-    // ✅ Generating slots for tomorrow
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         if (tomorrowCount >= MAX_SLOTS_PER_DAY) break; // 🔒 Stop if limit reached
 
@@ -143,13 +139,16 @@ agenda.define('create slots', async () => {
         console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
 
         const timeRanges = [
-            { startHour: 8, startMinute: 0, endHour: 6, endMinute: 30 },   // 11:00 AM - 11:30 AM PKT
-            { startHour: 8, startMinute: 30, endHour: 7, endMinute: 0 },   // 11:30 AM - 12:00 PM PKT
-            { startHour: 9, startMinute: 0, endHour: 7, endMinute: 30 },   // 12:00 PM - 12:30 PM PKT
-            { startHour: 9, startMinute: 30, endHour: 8, endMinute: 0 },   // 12:30 PM - 1:00 PM PKT
-            { startHour: 10, startMinute: 0, endHour: 8, endMinute: 30 },   // 1:00 PM - 1:30 PM PKT
-            { startHour: 10, startMinute: 30, endHour: 9, endMinute: 0 }    // 1:30 PM - 2:00 PM PKT
+            { startHour: 10, startMinute: 20, endHour: 10, endMinute: 50 }, // 3:20 PM - 3:50 PM PKT
+            { startHour: 10, startMinute: 50, endHour: 11, endMinute: 20 }, // 3:50 PM - 4:20 PM PKT
+            { startHour: 11, startMinute: 20, endHour: 11, endMinute: 50 }, // 4:20 PM - 4:50 PM PKT
+            { startHour: 11, startMinute: 50, endHour: 12, endMinute: 20 }, // 4:50 PM - 5:20 PM PKT
+            { startHour: 12, startMinute: 20, endHour: 12, endMinute: 50 }, // 5:20 PM - 5:50 PM PKT
+            { startHour: 12, startMinute: 50, endHour: 13, endMinute: 20 }, // 5:50 PM - 6:20 PM PKT
+            { startHour: 13, startMinute: 20, endHour: 13, endMinute: 50 }  // 6:20 PM - 6:50 PM PKT
         ];
+        
+        
 
         const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
 
