@@ -262,21 +262,21 @@ app.use((req, res, next) => {
 });
 app.use('/api/auth', authRoute);
 app.use('/api/userauth', userauth);
-app.use('/api/patients', authenticate, patientRoute); // Requires authentication
-app.use('/api/appointments', authenticate, appointmentRoutes); // Requires authentication
-app.use('/api/medical-records', authenticate, medicalRecordRoutes); // Requires authentication
-app.use('/api/invoices', authenticate, invoiceRoutes); // Requires authentication
-app.use('/api/payments', authenticate, paymentRoutes); // Requires authentication
-app.use('/api/health-information', authenticate, healthInformationRoutes); // Requires authentication
-app.use('/api/services', authenticate, servicesRoute); // Requires authentication
-app.use('/api/sandgrid', authenticate, sandGridRoutes); // Requires authentication
-app.use('/api/medicine', authenticate, medicineRoute); // Requires authentication
-app.use('/api/doctors', authenticate, doctorRoutes); // Requires authentication
-app.use('/api/web', authenticate, webRoutes); // Requires authentication
-app.use('/api/v1', authenticate, webAppointmentRoutes); // Requires authentication
-app.use('/api/otps', authenticate, otpDashRoutes); // Requires authentication
-app.use('/api/otp', otpRoutes); // No authentication needed here
-app.use('/api/stripe', authenticate, stripe); // Requires authentication
+app.use('/api/patients', authenticate, patientRoute);
+app.use('/api/appointments', authenticate, appointmentRoutes);
+app.use('/api/medical-records', authenticate, medicalRecordRoutes);
+app.use('/api/invoices', authenticate, invoiceRoutes);
+app.use('/api/payments', authenticate, paymentRoutes);
+app.use('/api/health-information', authenticate, healthInformationRoutes);
+app.use('/api/services', authenticate, servicesRoute);
+app.use('/api/sandgrid', authenticate, sandGridRoutes);
+app.use('/api/medicine', authenticate, medicineRoute);
+app.use('/api/doctors', authenticate, doctorRoutes);
+app.use('/api/web', authenticate, webRoutes);
+app.use('/api/v1', authenticate, webAppointmentRoutes);
+app.use('/api/otps', authenticate, otpDashRoutes);
+app.use('/api/otp', otpRoutes);
+app.use('/api/stripe', authenticate, stripe);
 app.use('/api/', emailCampaignRoutes);
 app.use('/api/', EmailSent);
 app.use('/api/dental-chart', authenticate, dentalChartRoutes);
