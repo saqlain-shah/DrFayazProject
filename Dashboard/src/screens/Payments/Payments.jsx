@@ -64,7 +64,6 @@ function Payments() {
       datas: sortsDatas.method,
     },
   ];
-  // boxes
   const boxes = [
     {
       id: 1,

@@ -27,7 +27,7 @@ import {
   fetchWebPatientTodayAppointments,
   fetchwebsitePatient,
   fetchTotalEarnings
-} from "../Api/api.js"; // Import all necessary functions
+} from "../Api/api.js";
 import BASE_URL from '../baseUrl.jsx';
 
 function Dashboard() {

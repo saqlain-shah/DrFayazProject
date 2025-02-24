@@ -5,7 +5,7 @@ import Modal from '../../components/Modals/Modal';
 import SelectApppointment from './SelectApppointment';
 import { Button, Steps, message } from 'antd';
 import moment from 'moment';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 import BASE_URL from '../../baseUrl.jsx';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
@@ -32,7 +32,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       endDateTime,
       shares
     };
-    const token = 'token'; // Replace this with your actual token
+    const token = 'token';
     const config = {
       headers: {
         Authorization: `Bearer ${token}`

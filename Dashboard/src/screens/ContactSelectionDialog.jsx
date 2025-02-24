@@ -4,7 +4,7 @@ import Modal from "react-modal";
 const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
   const [selectedContact, setSelectedContact] = useState({
     name: "",
-    phoneNumber: "", // Updated to empty string
+    phoneNumber: "",
     email: "",
   });
 

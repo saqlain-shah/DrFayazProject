@@ -5,7 +5,7 @@ import moment from 'moment';
 import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import AppointmentDetailsModal from './appointmentDetailModel';
 import BASE_URL from '../baseUrl.jsx';
@@ -135,7 +135,6 @@ function Appointments({ events }) {
   const onDelete = (eventId) => {
     // Implement the logic to delete the appointment with the given eventId
     console.log('Deleting event with ID:', eventId);
-    // Here you can make an API call to delete the event or update your state accordingly
   };
 
 

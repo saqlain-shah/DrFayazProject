@@ -22,18 +22,12 @@ const CustomToolbar = (toolbar) => {
   const goToMonth = () => {
     toolbar.onView('month');
   };
-
-  // week button handler
   const goToWeek = () => {
     toolbar.onView('week');
   };
-
-  // day button handler
   const goToDay = () => {
     toolbar.onView('day');
   };
-
-  // view button group
   const viewNamesGroup = [
     { view: 'month', label: 'Month' },
     { view: 'week', label: 'Week' },
