@@ -7,8 +7,6 @@ const router = express.Router();
 router.post('/', create);
 router.delete('/:id', remove);
 router.get('/', list);
-
-// Route to get a specific dental chart record by ID
 router.get('/:id', getById);
 
 export default router;

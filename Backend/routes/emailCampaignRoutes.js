@@ -5,8 +5,6 @@ import multer from 'multer'; // Import multer for handling file uploads
 import { createEmailCampaign, getEmailCampaigns, getEmailCampaignById, updateEmailCampaign, deleteEmailCampaign } from '../controllers/emailCampaignController.js';
 
 const router = express.Router();
-
-// Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/'); // Destination folder for uploaded files
@@ -17,8 +15,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 router.post('/email-campaigns', upload.single('image'), createEmailCampaign);
-
-// Route to get all email campaigns
 router.get('/email-campaigns', getEmailCampaigns);
 
 // Route to get a specific email campaign by ID

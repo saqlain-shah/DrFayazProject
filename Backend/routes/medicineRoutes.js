@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', getAllMedicines);
 router.post('/', createMedicine);
 router.get('/:id', getMedicineById);
-router.put('/:id', updateMedicine); // Update medicine by ID
-router.delete('/:id', deleteMedicine); // Delete medicine by ID
+router.put('/:id', updateMedicine); 
+router.delete('/:id', deleteMedicine); 
 
 export default router;
