@@ -19,7 +19,7 @@ router.get('/:id', getWebById); // Route for getting a web by ID
 router.post('/', upload.array('files'), createWeb); // Route for creating a web
 
 router.get('/', getAllWebs);
-router.put('/:id', updateWeb);
+router.put('/:id', updateWeb); // Route for updating a web
 router.delete('/:id', deleteWeb); // Route for deleting a web
 
 
