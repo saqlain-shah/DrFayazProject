@@ -9,7 +9,7 @@ import InvoiceUsed from "../../components/UsedComp/InvoiceUsed";
 import PaymentsUsed from "../../components/UsedComp/PaymentUsed";
 import PatientImages from "./PatientImages";
 import HealthInfomation from "./HealthInfomation";
-import DentalChart from "./DentalChart"; // Import DentalChart component
+import DentalChart from "./DentalChart";
 import axios from "axios";
 import { PatientTableArray } from "../../components/Tables";
 import { Dialog, Transition } from "@headlessui/react";

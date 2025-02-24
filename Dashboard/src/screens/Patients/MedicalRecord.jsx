@@ -5,7 +5,7 @@ import { FiEye, FiEdit } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import MedicalRecodModal from '../../components/Modals/MedicalRecodModal';
-import EditMedicalRecordModal from './EditMedicalRecordModal'; // Import EditMedicalRecordModal
+import EditMedicalRecordModal from './EditMedicalRecordModal';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';

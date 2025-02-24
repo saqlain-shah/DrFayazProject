@@ -17,7 +17,7 @@ import BASE_URL from '../../baseUrl.jsx';
 
 function NewMedicalRecord() {
   const location = useLocation();
-  const appointmentData = location.state?.appointmentData; // Get appointmentData from location state
+  const appointmentData = location.state?.appointmentData;
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
   const [webPatientData, setWebPatientData] = useState({});

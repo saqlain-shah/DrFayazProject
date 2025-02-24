@@ -15,8 +15,8 @@ function HealthInformation({ patientId }) {
   const [allergies, setAllergies] = useState('');
   const [habits, setHabits] = useState('');
   const [medicalHistory, setMedicalHistory] = useState('');
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [healthInfoData, setHealthInfoData] = useState({}); // State for health information data
+  const [showModal, setShowModal] = useState(false);
+  const [healthInfoData, setHealthInfoData] = useState({});
 
   const handleSubmit = async () => {
     try {

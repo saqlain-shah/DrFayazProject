@@ -15,7 +15,7 @@ function Patients() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patients, setPatients] = useState([]);
-  const [webPatients, setWebPatients] = useState([]); // Changed appointments to webPatients
+  const [webPatients, setWebPatients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [genderFilter, setGenderFilter] = useState("all");
