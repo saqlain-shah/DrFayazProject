@@ -136,35 +136,50 @@ export const fetchTotalEarnings = async () => {
         throw new Error('Error fetching total earnings:', error);
     }
 };
-
-export const fetchTotalEarningsMonth = async (year, month) => {
+export const fetchMonthlyEarnings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${BASE_URL}/api/earnings/${year}/${month}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to fetch monthly earnings');
-      }
-  
-      const data = await response.json();
-  
-      // Assuming each record in the backend represents a service with earnings count
-      const totalEarnings = data.reduce((total, item) => total + (item.totalEarnings || 0), 0);
-  
-      const totalEarningsTarget = 10000; // Update as needed
-      const percent = ((totalEarnings / totalEarningsTarget) * 100).toFixed(2);
-  
-      return { totalEarnings, percent };
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${BASE_URL}/api/web/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch web patients');
+        }
+
+        const data = await response.json();
+        const currentMonth = new Date().getMonth(); // Get current month (0-11)
+        const currentYear = new Date().getFullYear(); // Get current year
+
+        // Calculate total monthly earnings
+        const monthlyEarnings = data.reduce((total, patient) => {
+            const createdAt = new Date(patient.createdAt); // Assuming createdAt is available
+            if (createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear) {
+                return total + parseFloat(patient.selectedService.price);
+            }
+            return total;
+        }, 0);
+
+        // Assuming monthly target is a fixed value
+        const monthlyEarningsTarget = 5000; // Update this with your target value
+
+        // Calculate the percentage
+        const percent = (monthlyEarnings / monthlyEarningsTarget) * 100;
+
+        return { monthlyEarnings, percent };
     } catch (error) {
-      console.error('Error fetching total earnings:', error);
-      throw error;
+        console.error('Error fetching monthly earnings:', error);
+        throw new Error('Error fetching monthly earnings');
     }
-  };
+};
+
+
   
+  
+  
+
 
 
 
