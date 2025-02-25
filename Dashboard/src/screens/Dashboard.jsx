@@ -27,6 +27,7 @@ import {
   fetchWebPatientTodayAppointments,
   fetchwebsitePatient,
   fetchTotalEarnings,
+  fetchTotalEarningsMonth,
 } from "../Api/api.js";
 import BASE_URL from "../baseUrl.jsx";
 

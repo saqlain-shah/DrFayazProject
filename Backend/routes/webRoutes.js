@@ -1,5 +1,5 @@
 import express from 'express';
-import { createWeb, getAllWebs, deleteWeb, getWebById, getNotifications, markAllNotificationsAsRead, getTodayWebAppointments, getTotalWebPatientCount, updateWeb, getWebByIds } from '../controllers/webcontroller.js';
+import { createWeb, getAllWebs, deleteWeb, getWebById, getNotifications, markAllNotificationsAsRead, getTodayWebAppointments, getTotalWebPatientCount, updateWeb, getWebByIds,getEarningsByMonth  } from '../controllers/webcontroller.js';
 import upload from '../utils/multer.js';
 // import multer from 'multer';
 
@@ -17,7 +17,7 @@ router.put('/notifications/mark-all-read', markAllNotificationsAsRead);
 
 router.get('/:id', getWebById); // Route for getting a web by ID
 router.post('/', upload.array('files'), createWeb); // Route for creating a web
-
+router.get('/earnings/:year/:month', getEarningsByMonth);
 router.get('/', getAllWebs);
 router.put('/:id', updateWeb);
 router.delete('/:id', deleteWeb);

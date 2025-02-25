@@ -238,7 +238,45 @@ export const getAllWebs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getEarningsByMonth = async (req, res) => {
+  try {
+    const { year, month } = req.params; // Get year and month from params
+    console.log('Year and month received:', { year, month });
 
+    // Format the start and end of the month
+    const startOfMonth = moment(`${year}-${month}`, 'YYYY-MM').startOf('month').toDate();
+    const endOfMonth = moment(`${year}-${month}`, 'YYYY-MM').endOf('month').toDate();
+
+    // Query for the WebPatient records within the date range
+    const earnings = await WebPatient.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+          status: 'Approved', // You may choose to filter by status if required
+        }
+      },
+      {
+        $group: {
+          _id: '$method', // Group by payment method (Online, Cash)
+          totalEarnings: { $sum: 1 }, // Assuming 1 represents each valid record for earnings, adjust based on your needs
+        }
+      },
+      {
+        $project: {
+          method: '$_id',
+          totalEarnings: 1,
+          _id: 0,
+        }
+      }
+    ]);
+
+    console.log('Earnings by month:', earnings);
+    res.status(200).json(earnings);
+  } catch (error) {
+    console.error('Error fetching earnings by month:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
 export const getWebByIds = async (req, res) => {
   try {
     const { id } = req.params;

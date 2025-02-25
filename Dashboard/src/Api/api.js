@@ -137,7 +137,34 @@ export const fetchTotalEarnings = async () => {
     }
 };
 
-
+export const fetchTotalEarningsMonth = async (year, month) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BASE_URL}/api/earnings/${year}/${month}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch monthly earnings');
+      }
+  
+      const data = await response.json();
+  
+      // Assuming each record in the backend represents a service with earnings count
+      const totalEarnings = data.reduce((total, item) => total + (item.totalEarnings || 0), 0);
+  
+      const totalEarningsTarget = 10000; // Update as needed
+      const percent = ((totalEarnings / totalEarningsTarget) * 100).toFixed(2);
+  
+      return { totalEarnings, percent };
+    } catch (error) {
+      console.error('Error fetching total earnings:', error);
+      throw error;
+    }
+  };
+  
 
 
 
