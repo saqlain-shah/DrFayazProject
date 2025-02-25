@@ -22,8 +22,8 @@ function Settings() {
   });
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const [profileImage, setProfileImage] = useState(""); // Store image URL
-  const [selectedFile, setSelectedFile] = useState(null); // Store actual file
+  const [profileImage, setProfileImage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {

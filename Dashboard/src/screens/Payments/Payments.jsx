@@ -44,12 +44,6 @@ function Payments() {
   useEffect(() => {
     setTransactionData(updatedData);
   }, [updatedData]);
-
-
-
-
-
-
   const sorts = [
     {
       id: 2,
