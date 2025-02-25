@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import BASE_URL from "../baseUrl.jsx";
 import { Button, Input } from "../components/Form";
 import { HiOutlineCheckCircle } from "react-icons/hi";
+import { toast } from 'react-hot-toast';
 
 function Settings() {
   const [activeTab, setActiveTab] = useState(1);
@@ -37,6 +38,8 @@ function Settings() {
 
         if (response.ok) {
           const data = await response.json();
+          // toast.success('Fetch Data sucessfully.');
+
           setName(data.name || "");
           setPhone(data.phone || "");
           setEmail(data.email || "");
@@ -46,6 +49,8 @@ function Settings() {
           );
         } else {
           console.error("Failed to fetch user details");
+          toast.error('Fail to get data check internet Connections.');
+
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -90,6 +95,7 @@ function Settings() {
 
       const data = await response.json();
       if (response.ok) {
+        toast.success('Profile update  successfully.');
         console.log("User updated successfully:", data);
         setProfileImage(
           data.imageUrl ? `${BASE_URL}/${data.imageUrl}` : profileImage
@@ -97,6 +103,8 @@ function Settings() {
         setSelectedFile(null);
       } else {
         console.error("Error updating user:", data);
+        toast.error(' fail to  update Profile.');
+
       }
     } catch (error) {
       console.error("Error during API call:", error);
