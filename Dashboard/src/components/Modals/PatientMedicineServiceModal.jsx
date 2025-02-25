@@ -7,7 +7,7 @@ import BASE_URL from '../../baseUrl.jsx';
 
 function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   const [searchValue, setSearchValue] = useState(''); // State to store search field value
-  const [services, setServices] = useState([]); // State to store fetched services
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     fetchServices();
@@ -26,7 +26,6 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   };
 
   const handleServiceSelect = (service) => {
-    console.log('Selected service:', service);
     onSelectService(service); // Pass selected service to parent component
     closeModal(); // Close the modal
   };

@@ -100,7 +100,6 @@ export function MenuSelectss({ children, datas, item: data }) {
 
 export function Select({ selectedPerson, setSelectedPerson, datas }) {
   console.log("Datas structure:", datas.map(item => ({ value: item.value, name: item.name })));
-  // Ensure selectedPerson is not undefined
   const defaultSelectedPerson = selectedPerson || datas[0]; // Use the first item as default if selectedPerson is undefined
 
   const filteredDatas = datas.filter(person => {
@@ -133,9 +132,6 @@ export function Select({ selectedPerson, setSelectedPerson, datas }) {
 
 export function Selectt({ selectedPerson, setSelectedPerson, datas }) {
   const [active, setActive] = useState(null);
-
-  console.log("Selected Person:", selectedPerson);
-  console.log("Datas:", datas);
 
   return (
     <>

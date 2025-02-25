@@ -24,7 +24,7 @@ function PersonalInfo({ titles, onSave }) {
   const navigate = useNavigate();
   const saveChanges = async () => {
     try {
-      const token = localStorage.getItem('token'); // Retrieve token from local storage
+      const token = localStorage.getItem('token');
       const data = new FormData();
       data.append('profilePicture', profilePicture);
       data.append('firstName', firstName);

@@ -17,13 +17,10 @@ function AddEditMedicineModal({ closeModal, isOpen, onClose, selectedItem }) {
     description: '',
   });
 
-  const [showMeasureOptions, setShowMeasureOptions] = useState(false); // Define showMeasureOptions state
+  const [showMeasureOptions, setShowMeasureOptions] = useState(false);
   useEffect(() => {
     if (selectedItem) {
-      // Find the measure object corresponding to the selectedItem's measure ID
       const selectedMeasure = sortsDatas.measure.find(measure => measure.id === selectedItem.measure);
-
-      // Populate form fields with selected item data when editing
       setFormData({
         name: selectedItem.medicineName,
         measure: selectedMeasure ? selectedMeasure.name : '', // Use the unit name if found, otherwise an empty string

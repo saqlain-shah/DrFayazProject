@@ -11,7 +11,7 @@ function InvoiceUsed({ token, patientId }) {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        if (patientId) { // Check if patientId is defined
+        if (patientId) { 
           const response = await axios.get(`${BASE_URL}/api/invoices/patient/${patientId}`, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -26,9 +26,6 @@ function InvoiceUsed({ token, patientId }) {
 
     fetchInvoices();
   }, [patientId, token]);
-
-
-  // Function to preview invoice
   const previewInvoice = (id) => {
     if (id !== undefined) {
       navigate(`/invoices/preview/${id}`);

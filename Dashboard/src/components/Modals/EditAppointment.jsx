@@ -42,8 +42,6 @@ const EditAppointmentModal = ({ isOpen, closeModal, appointment, onUpdateAppoint
             description: editedDescription,
             share: editedShare,
         };
-
-        console.log("Updating appointment data:", data);
         const token = localStorage.getItem('token');
 
         axios.put(apiUrl, data, {
@@ -52,7 +50,6 @@ const EditAppointmentModal = ({ isOpen, closeModal, appointment, onUpdateAppoint
             .then(response => {
                 console.log('Appointment updated successfully:', response.data);
                 toast.success('Appointment updated successfully');
-                // Call the onUpdateAppointment function passed from the parent component to update the state
                 onUpdateAppointment(response.data);
                 closeModal();
             })
