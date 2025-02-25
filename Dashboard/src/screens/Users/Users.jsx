@@ -6,6 +6,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import dayjs from 'dayjs';
 import { CircularProgress } from '@mui/material';
 import BASE_URL from '../../baseUrl.jsx';
+import { toast } from 'react-hot-toast';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -23,11 +24,13 @@ const Users = () => {
         });
         if (!response.ok) {
           throw new Error('Failed to fetch users');
+          
         }
         const data = await response.json();
         setUsers(data);
         setLoading(false);
       } catch (error) {
+        toast.error('Fail to get data check internet Connections.');
         console.error('Error fetching users:', error);
         setLoading(false);
       }

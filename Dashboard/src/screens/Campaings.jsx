@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { toast, ToastContainer } from "react-toastify";
+import { toast } from 'react-hot-toast';
 import Layout from "../Layout";
 import { Button, MenuSelect } from "../components/Form";
 import { BiDotsVerticalRounded, BiPlus } from "react-icons/bi";
@@ -180,7 +180,9 @@ function Campaigns() {
       setCampaigns((prevCampaigns) =>
         prevCampaigns.filter((campaign) => campaign._id !== id)
       );
-      toast.success("Campaign deleted successfully");
+      toast.success('Campaign deleted successfully.');
+
+      // toast.success("Campaign deleted successfully");
     } catch (error) {
       console.error("Error deleting campaign:", error);
     }
@@ -188,7 +190,6 @@ function Campaigns() {
 
   return (
     <Layout>
-      <ToastContainer />
       {isOpen && (
         <CampaignModal
           isOpen={isOpen}
