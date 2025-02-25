@@ -37,8 +37,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // Check if the response data is an array
       if (Array.isArray(response.data)) {
         setDoctors(response.data); // Set the doctors state with the fetched data
       } else {
@@ -84,8 +82,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
       share: shares,
       patientId: patientId,
     };
-
-    console.log("Sending appointment data:", data);
     const apiUrl = `${BASE_URL}/api/appointments`;
     const token = localStorage.getItem('token');
 

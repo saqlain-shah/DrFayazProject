@@ -15,7 +15,7 @@ function Medicine() {
   const [status, setStatus] = useState(sortsDatas.stocks[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedStockStatus, setSelectedStockStatus] = useState('All'); // Initialize with 'All'
+  const [selectedStockStatus, setSelectedStockStatus] = useState('All');
 
   const fetchData = async () => {
     try {
@@ -46,7 +46,7 @@ function Medicine() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedStockStatus]); // Fetch data when selected stock status changes
+  }, [selectedStockStatus]);
 
   useEffect(() => {
     const filtered = data.filter(item =>

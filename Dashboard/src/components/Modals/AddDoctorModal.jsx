@@ -37,8 +37,6 @@ function AddDoctorModal({ closeModal, isOpen, doctor, datas }) {
           },
         }
       );
-
-      console.log('Response:', response.data);
       toast.success('Doctor information saved successfully');
       closeModal();
     } catch (error) {

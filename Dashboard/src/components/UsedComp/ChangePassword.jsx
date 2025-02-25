@@ -18,18 +18,10 @@ function ChangePassword() {
       console.log('User is not logged in');
       return;
     }
-
-    console.log('User ID:', user.id);
-    console.log('Old Password:', oldPassword);
-    console.log('New Password:', newPassword);
-
-    // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
       toast.error('New password and confirm password do not match');
       return;
     }
-
-    // Check if old password and new password are the same
     if (oldPassword === newPassword) {
       toast.error('New password must be different from old password');
       return;
@@ -38,8 +30,6 @@ function ChangePassword() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      console.log('Token:', token);
-
       const response = await axios.put(
         `${BASE_URL}/api/auth/change-password`,
         {
@@ -53,9 +43,6 @@ function ChangePassword() {
           },
         }
       );
-
-      console.log('Response:', response.data);
-
       toast.success('Password changed successfully');
       setOldPassword('');
       setNewPassword('');

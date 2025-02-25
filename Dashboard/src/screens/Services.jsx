@@ -97,7 +97,6 @@ function Services() {
 
         toast.success('Service updated successfully.');
       } else {
-        // Create a new service
         const response = await axios.post(`${BASE_URL}/api/services`, serviceData, {
           headers: {
             Authorization: `Bearer ${token}`,

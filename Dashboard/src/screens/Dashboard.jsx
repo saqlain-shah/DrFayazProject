@@ -101,7 +101,7 @@ function Dashboard() {
       title: "Total Appointments",
       icon: TbCalendar,
       value: totalWebPatients,
-      percent: webPatientsPercentage, // Use webPatientsPercentage here
+      percent: webPatientsPercentage,
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
       datas: [totalWebPatients],
     },

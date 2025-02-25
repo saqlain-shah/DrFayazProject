@@ -38,21 +38,15 @@ const PatientDetails = ({
       const aspectRatio = canvas.width / canvas.height;
       const pdfHeightAdjusted = pdfWidth / aspectRatio;
       const offsetY = (pdfHeight - pdfHeightAdjusted) / 2;
-  
-      // ✅ Add main content as an image
       const imgData = canvas.toDataURL("image/png");
       pdf.addImage(imgData, "PNG", 0, offsetY, pdfWidth, pdfHeightAdjusted);
-  
-      // ✅ Process attachments (Only images, skip PDFs)
       if (Array.isArray(medicalRecords.data)) {
         const promises = medicalRecords.data.map((record) => {
           if (record.attachments && record.attachments.length > 0) {
             return Promise.all(
               record.attachments.map((attachment) => {
                 const fileUrl = `${BASE_URL}/${attachment.filename}`;
-  
-                // ✅ Check if the file is an image (JPG, PNG, etc.), skip PDFs
-                const isImage = /\.(jpg|jpeg|png|gif)$/i.test(attachment.filename);
+                  const isImage = /\.(jpg|jpeg|png|gif)$/i.test(attachment.filename);
                 if (!isImage) {
                   console.warn("Skipping non-image file:", fileUrl);
                   return Promise.resolve(); // Skip non-image files
@@ -79,17 +73,13 @@ const PatientDetails = ({
                     console.error("Failed to load image:", fileUrl);
                     reject(new Error(`Image failed to load: ${fileUrl}`));
                   };
-  
-                  console.log("Attempting to load image:", fileUrl);
-                  img.src = fileUrl;
+                    img.src = fileUrl;
                 });
               })
             );
           }
         });
-  
-        // ✅ Save the PDF after processing all attachments
-        Promise.all(promises.flat())
+          Promise.all(promises.flat())
           .then(() => {
             pdf.save("patient_details.pdf");
           })

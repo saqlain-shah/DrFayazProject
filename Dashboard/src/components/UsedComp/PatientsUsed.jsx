@@ -6,15 +6,12 @@ import BASE_URL from '../../baseUrl.jsx';
 function PatientsUsed() {
   const navigate = useNavigate();
   const [patientsData, setPatientsData] = useState([]);
-  const [token, setToken] = useState(''); // Assuming you have a token stored in state
-
-  // Function to fetch data
+  const [token, setToken] = useState('');
   const fetchData = async () => {
     try {
-      // Make an HTTP request to fetch data
       const response = await fetch(`${BASE_URL}/api/patients`, {
         headers: {
-          'Authorization': `Bearer ${token}`, // Add token to the request header
+          'Authorization': `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -24,16 +21,12 @@ function PatientsUsed() {
       setPatientsData(data); // Set the fetched data in state
     } catch (error) {
       console.error('Error fetching data:', error);
-      // Handle errors, such as displaying a message to the user
     }
   };
 
   useEffect(() => {
-    // Fetch data when the component mounts
     fetchData();
-  }, [token]); // Fetch data whenever the token changes
-
-  // Function to handle preview
+  }, [token]);
   const preview = (id) => {
     navigate(`/patients/preview/${id}`);
   };

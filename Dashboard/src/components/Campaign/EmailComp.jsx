@@ -31,7 +31,6 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log('Campaign created:', response.data);
       toast.success('Campaign created successfully!');
 
       setCampaignTitle('');
