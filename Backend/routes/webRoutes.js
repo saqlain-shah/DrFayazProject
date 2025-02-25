@@ -1,5 +1,5 @@
 import express from 'express';
-import { createWeb, getAllWebs, deleteWeb, getWebById, getNotifications, markAllNotificationsAsRead, getTodayWebAppointments, getTotalWebPatientCount, updateWeb, getWebByIds,} from '../controllers/webcontroller.js';
+import { createWeb, getAllWebs, deleteWeb, getWebById, getNotifications, markAllNotificationsAsRead, getTodayWebAppointments, getTotalWebPatientCount, updateWeb, getWebByIds,getMonthlyEarnings} from '../controllers/webcontroller.js';
 import upload from '../utils/multer.js';
 // import multer from 'multer';
 
@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/total-count', getTotalWebPatientCount);
 router.get('/today-appointments', getTodayWebAppointments);
-// router.get('/monthly', getMonthlyEarnings);
+router.get('/monthly-earnings', getMonthlyEarnings);
 
 router.get('/notifications', getNotifications);
 

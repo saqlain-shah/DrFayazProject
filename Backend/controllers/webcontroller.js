@@ -377,3 +377,66 @@ export const getWebById = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+// Controller to get monthly earnings
+export const getMonthlyEarnings = async (req, res) => {
+  try {
+    const earnings = await WebPatient.aggregate([
+      {
+        $unwind: "$selectedService",
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            serviceName: "$selectedService.name",
+            servicePrice: "$selectedService.price",
+          },
+          serviceCount: { $sum: 1 }, // Count how many times each service was selected
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          serviceName: "$_id.serviceName",
+          servicePrice: { $toDouble: "$_id.servicePrice" }, // Convert price to a number
+          serviceCount: 1,
+          monthlyEarnings: {
+            $multiply: [{ $toDouble: "$_id.servicePrice" }, "$serviceCount"], // Multiply after casting
+          },
+        },
+      },
+      { $sort: { month: 1 } }, // Sort by month
+    ]);
+
+    // Create default structure for all 12 months
+    const monthlyData = Array.from({ length: 12 }, (_, index) => ({
+      month: index + 1,
+      totalEarnings: 0,
+      services: [],
+    }));
+
+    // Fill in the earnings and service data for each month
+    earnings.forEach((entry) => {
+      const monthIndex = entry.month - 1;
+      monthlyData[monthIndex].totalEarnings += entry.monthlyEarnings;
+      monthlyData[monthIndex].services.push({
+        name: entry.serviceName,
+        price: entry.servicePrice,
+        count: entry.serviceCount,
+        earnings: entry.monthlyEarnings,
+      });
+    });
+
+    res.status(200).json({ monthlyData });
+  } catch (error) {
+    console.error("Error fetching monthly earnings:", error);
+    res.status(500).json({
+      message: "Error fetching monthly earnings",
+      error: error.message,
+    });
+  }
+};
+
+
+

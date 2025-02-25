@@ -165,7 +165,7 @@ function Dashboard() {
   </div>
   {/* 📊 Earning Reports with Monthly Earnings Data */}
   <div className="mt-4">
-    <DashboardBigChart monthlyData={monthlyEarnings} />
+  <DashboardBigChart monthlyData={monthlyEarnings} />
   </div>
 </div>
 

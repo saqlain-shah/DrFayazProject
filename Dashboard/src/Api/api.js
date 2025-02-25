@@ -106,8 +106,6 @@ export const fetchTotalWebPatientCount = async () => {
     }
 };
 
-
-
 export const fetchTotalEarnings = async () => {
     try {
         const token = localStorage.getItem('token');
@@ -139,42 +137,19 @@ export const fetchTotalEarnings = async () => {
 export const fetchMonthlyEarnings = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${BASE_URL}/api/web/`, {
+        const response = await fetch(`${BASE_URL}/api/web/monthly-earnings`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch web patients');
-        }
-
-        const data = await response.json();
-        const currentMonth = new Date().getMonth(); // Get current month (0-11)
-        const currentYear = new Date().getFullYear(); // Get current year
-
-        // Calculate total monthly earnings
-        const monthlyEarnings = data.reduce((total, patient) => {
-            const createdAt = new Date(patient.createdAt); // Assuming createdAt is available
-            if (createdAt.getMonth() === currentMonth && createdAt.getFullYear() === currentYear) {
-                return total + parseFloat(patient.selectedService.price);
-            }
-            return total;
-        }, 0);
-
-        // Assuming monthly target is a fixed value
-        const monthlyEarningsTarget = 5000; // Update this with your target value
-
-        // Calculate the percentage
-        const percent = (monthlyEarnings / monthlyEarningsTarget) * 100;
-
-        return { monthlyEarnings, percent };
+      const data = await response.json();
+      return data; // Now includes earningsByMonth and patientsByMonth
     } catch (error) {
-        console.error('Error fetching monthly earnings:', error);
-        throw new Error('Error fetching monthly earnings');
+      console.error("Error fetching monthly earnings:", error);
     }
-};
-
+  };
+  
+  
 
   
   
