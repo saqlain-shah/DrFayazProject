@@ -62,7 +62,9 @@ function Dashboard() {
       setTotalEarnings(totalEarnings);
       setEarningsPercent(percent);
 
-      const monthlyData = await fetchMonthlyEarnings(); // 🆕 Fetch monthly data
+      const monthlyData = await fetchMonthlyEarnings();
+      console.log("Fetched Monthly Earnings Data:", monthlyData); // 🔍 Debug log
+ // 🆕 Fetch monthly data
       setMonthlyEarnings(monthlyData);
     } catch (error) {
       console.error("Error fetching data:", error);

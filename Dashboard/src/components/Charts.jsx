@@ -1,6 +1,10 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
+import { useEffect, useState,useMemo } from 'react';
+import 'apexcharts/dist/apexcharts.css';
+import ApexCharts from 'apexcharts';
 
+// import { fetchMonthlyEarnings } from '../Api/api.js';
 export function DashboardSmallChart({ data, colors }) {
   const options = {
     chart: {
@@ -98,83 +102,56 @@ export function DashboardSmallChart({ data, colors }) {
 }
 
 export function DashboardBigChart() {
+  const [monthlyEarnings, setMonthlyEarnings] = useState(new Array(12).fill(0));
+
+  useEffect(() => {
+    if (monthlyEarnings.some((earning) => earning !== 0)) {
+      ApexCharts.exec('area-datetime', 'updateSeries', [
+        { name: 'Total Earnings', data: monthlyEarnings },
+      ]);
+    }
+  }, [monthlyEarnings]);
+
+  const series = [{ name: 'Total Earnings', data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120] }];
+
+
   const options = {
     chart: {
       id: 'area-datetime',
-      toolbar: {
-        show: false,
-      },
+      toolbar: { show: false },
       animations: {
         enabled: true,
         easing: 'easeinout',
         speed: 1000,
-        animateGradually: {
-          enabled: true,
-          delay: 150,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 800,
-        },
+        animateGradually: { enabled: true, delay: 150 },
+        dynamicAnimation: { enabled: true, speed: 800 },
       },
     },
     xaxis: {
       categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
       ],
       labels: {
         show: true,
-        style: {
-          colors: '#A0A0A0',
-          fontSize: '12px',
-          fontWeight: 400,
-        },
+        style: { colors: '#A0A0A0', fontSize: '12px', fontWeight: 400 },
       },
-      axisTicks: {
-        show: false,
-      },
+      axisTicks: { show: false },
     },
-
     yaxis: {
       show: true,
       labels: {
         show: true,
-        style: {
-          colors: '#A0A0A0',
-          fontSize: '10px',
-          fontWeight: 400,
-        },
-        formatter: function (value) {
-          return value + 'k';
-        },
+        style: { colors: '#A0A0A0', fontSize: '10px', fontWeight: 400 },
+        formatter: (value) => value + 'k',
       },
     },
-    dataLabels: {
-      enabled: false,
-    },
+    dataLabels: { enabled: false },
     tooltip: {
-      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-        return (
-          '<div className="bg-white py-2 px-2 text-xs border-[.5px] border-border">' +
-          'Total:' +
-          ' ' +
-          '<span className="font-semibold">' +
-          series[seriesIndex][dataPointIndex] +
-          '</span>' +
-          '</div>'
-        );
-      },
+      custom: ({ series, seriesIndex, dataPointIndex }) =>
+        `<div class="bg-white py-2 px-2 text-xs border-[.5px] border-border">
+          Total: <span class="font-semibold">$${series[seriesIndex][dataPointIndex]}</span>
+        </div>`,
     },
     grid: {
       show: true,
@@ -182,11 +159,7 @@ export function DashboardBigChart() {
       strokeDashArray: 4,
       position: 'back',
     },
-    stroke: {
-      curve: 'smooth',
-      width: 1,
-    },
-
+    stroke: { curve: 'smooth', width: 1 },
     fill: {
       type: 'gradient',
       gradient: {
@@ -201,20 +174,15 @@ export function DashboardBigChart() {
     },
     colors: ['#66B5A3'],
   };
-  const series = [
-    {
-      name: 'Total',
-      data: [30, 40, 25, 50, 49, 21, 70, 51, 42, 60, 40, 20],
-    },
-  ];
 
   return (
     <Chart
-      options={options}
-      series={series}
-      type="area"
-      width="100%"
-      height={300}
-    />
+    key={JSON.stringify(monthlyEarnings)} // 🔄 Forces re-render when data updates
+    options={options}
+    series={[{ name: 'Total Earnings', data: monthlyEarnings }]}
+    type="area"
+    width="100%"
+    height={300}
+  />
   );
 }
