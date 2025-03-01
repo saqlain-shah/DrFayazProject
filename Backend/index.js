@@ -112,7 +112,7 @@ agenda.define('fetch slots', async () => {
 });
 agenda.define('create slots', async () => {
     console.log('Creating slots...');
-    const slotDuration = 20; // 20-minute slots
+    const slotDuration = 20;
     const MAX_SLOTS_PER_DAY = 9; // Maximum slots updated for 20-minute intervals
 
     try {
@@ -131,8 +131,6 @@ agenda.define('create slots', async () => {
         ).length;
 
         console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
-
-        // Updated Time Ranges for 6:00 PM - 9:00 PM GMT with 20-minute gaps
         const timeRanges = [
             { startHour: 18, startMinute: 0, endHour: 18, endMinute: 20 },  // 6:00 PM - 6:20 PM GMT
             { startHour: 18, startMinute: 20, endHour: 18, endMinute: 40 }, // 6:20 PM - 6:40 PM GMT
