@@ -40,7 +40,6 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 console.log('MongoDB URI:', process.env.MONGO_URL);
-
 const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     console.log('getSlotsForSpecificPeriod is running...');
     const slots = [];
@@ -50,7 +49,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
 
     let todayCount = 0;
     let tomorrowCount = 0;
-    const MAX_SLOTS_PER_DAY = 6;
+    const MAX_SLOTS_PER_DAY = 9;
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
         if (todayCount >= MAX_SLOTS_PER_DAY) break; // 🔒 Stop if limit reached
 
@@ -92,10 +91,7 @@ const getSlotsForSpecificPeriod = (timeRanges, duration) => {
     console.log(`Generated ${slots.length} Slots (Today: ${todayCount}, Tomorrow: ${tomorrowCount}):`, slots);
     return slots;
 };
-
-
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
-
 const timeRanges = [
     { startHour: 13, startMinute: 30, endHour: 14, endMinute: 0 },   // 1:30 PM - 2:00 PM GMT (6:30 PM PKT)
     { startHour: 14, startMinute: 0, endHour: 14, endMinute: 30 },   // 2:00 PM - 2:30 PM GMT (7:00 PM PKT)
@@ -104,8 +100,6 @@ const timeRanges = [
     { startHour: 15, startMinute: 30, endHour: 16, endMinute: 0 },   // 3:30 PM - 4:00 PM GMT (8:30 PM PKT)
     { startHour: 16, startMinute: 0, endHour: 16, endMinute: 30 }    // 4:00 PM - 4:30 PM GMT (9:00 PM PKT)
 ];
-
-
 const slotDuration = 30;
 agenda.define('fetch slots', async () => {
     console.log('Fetching slots...');
@@ -118,8 +112,8 @@ agenda.define('fetch slots', async () => {
 });
 agenda.define('create slots', async () => {
     console.log('Creating slots...');
-    const slotDuration = 30;
-    const MAX_SLOTS_PER_DAY = 6;
+    const slotDuration = 20; // 20-minute slots
+    const MAX_SLOTS_PER_DAY = 9; // Maximum slots updated for 20-minute intervals
 
     try {
         const response = await axios.get(`http://localhost:8800/api/schedule`);
@@ -138,17 +132,18 @@ agenda.define('create slots', async () => {
 
         console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
 
+        // Updated Time Ranges for 6:00 PM - 9:00 PM GMT with 20-minute gaps
         const timeRanges = [
-            { startHour: 10, startMinute: 20, endHour: 10, endMinute: 50 }, // 3:20 PM - 3:50 PM PKT
-            { startHour: 10, startMinute: 50, endHour: 11, endMinute: 20 }, // 3:50 PM - 4:20 PM PKT
-            { startHour: 11, startMinute: 20, endHour: 11, endMinute: 50 }, // 4:20 PM - 4:50 PM PKT
-            { startHour: 11, startMinute: 50, endHour: 12, endMinute: 20 }, // 4:50 PM - 5:20 PM PKT
-            { startHour: 12, startMinute: 20, endHour: 12, endMinute: 50 }, // 5:20 PM - 5:50 PM PKT
-            { startHour: 12, startMinute: 50, endHour: 13, endMinute: 20 }, // 5:50 PM - 6:20 PM PKT
-            { startHour: 13, startMinute: 20, endHour: 13, endMinute: 50 }  // 6:20 PM - 6:50 PM PKT
+            { startHour: 18, startMinute: 0, endHour: 18, endMinute: 20 },  // 6:00 PM - 6:20 PM GMT
+            { startHour: 18, startMinute: 20, endHour: 18, endMinute: 40 }, // 6:20 PM - 6:40 PM GMT
+            { startHour: 18, startMinute: 40, endHour: 19, endMinute: 0 },  // 6:40 PM - 7:00 PM GMT
+            { startHour: 19, startMinute: 0, endHour: 19, endMinute: 20 },  // 7:00 PM - 7:20 PM GMT
+            { startHour: 19, startMinute: 20, endHour: 19, endMinute: 40 }, // 7:20 PM - 7:40 PM GMT
+            { startHour: 19, startMinute: 40, endHour: 20, endMinute: 0 },  // 7:40 PM - 8:00 PM GMT
+            { startHour: 20, startMinute: 0, endHour: 20, endMinute: 20 },  // 8:00 PM - 8:20 PM GMT
+            { startHour: 20, startMinute: 20, endHour: 20, endMinute: 40 }, // 8:20 PM - 8:40 PM GMT
+            { startHour: 20, startMinute: 40, endHour: 21, endMinute: 0 },  // 8:40 PM - 9:00 PM GMT
         ];
-        
-        
 
         const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
 
@@ -172,9 +167,6 @@ agenda.define('create slots', async () => {
         console.error('❌ Error creating slots:', error);
     }
 });
-
-
-
 agenda.define('fetch slots', async () => {
     console.log('Fetching slots...');
     try {
@@ -184,7 +176,6 @@ agenda.define('fetch slots', async () => {
         console.error('❌ Error fetching slots:', error);
     }
 });
-
 agenda.define('delete past slots', async () => {
     console.log('Deleting past slots...');
     const now = moment().utc();
@@ -197,7 +188,6 @@ agenda.define('delete past slots', async () => {
         console.error('❌ Error deleting past slots:', error);
     }
 });
-
 agenda.on('ready', async () => {
     console.log('Agenda is ready. Scheduling jobs for testing...');
     try {

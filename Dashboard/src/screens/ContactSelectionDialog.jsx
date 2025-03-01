@@ -21,8 +21,8 @@ const ContactSelectionDialog = ({ contacts, isOpen, onClose, message }) => {
       } else if (contact.email) {
         const subject = encodeURIComponent("Check out this campaign");
         const body = encodeURIComponent(message);
-        const mailtoUrl = `mailto:${contact.email}?subject=${subject}&body=${body}`;
-        window.location.href = mailtoUrl;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(contact.email)}&su=${subject}&body=${body}`;
+        window.open(gmailUrl, "_blank");
       }
       onClose();
     }

@@ -13,7 +13,7 @@ import { TbCalendar } from "react-icons/tb";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import BASE_URL from "../baseUrl.jsx";
 
-import { DashboardBigChart, DashboardSmallChart } from "../components/Charts";
+import { DashboardBigChart } from "../components/Charts";
 import { Transactiontables } from "../components/Tables";
 import {
   fetchTotalPatientCount,
@@ -130,7 +130,7 @@ function Dashboard() {
             <div className="grid grid-cols-8 gap-4 mt-4 bg-dry py-5 px-8 items-center rounded-xl">
               <div className="col-span-5">
                 {/* statistc */}
-                <DashboardSmallChart data={card.datas} colors={card.color[2]} />
+                {/* <DashboardSmallChart data={card.datas} colors={card.color[2]} /> */}
               </div>
               <div className="flex flex-col gap-4 col-span-3">
                 <h4 className="text-md font-medium">
