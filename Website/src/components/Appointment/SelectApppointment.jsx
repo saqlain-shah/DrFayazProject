@@ -186,7 +186,7 @@ const SelectAppointment = ({ handleSelectAppointment, patientId }) => {
                                     {slot.startDateTime.format('YYYY-MM-DD')}
                                 </Text>
                                 <Text>
-                                    {slot.startDateTime.utc().format('hh:mm A')} - {slot.endDateTime.utc().format('hh:mm A')} (GMT)
+                                    {slot.startDateTime.utc().format('hh:mm A')} - {slot.endDateTime.utc().format('hh:mm A')} (UK)
                                 </Text>
                             </div>
                             <Button
