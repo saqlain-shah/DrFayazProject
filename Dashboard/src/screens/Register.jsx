@@ -62,10 +62,9 @@ function Register() {
     }
     setLoading(true);
     try {
-      // First, send OTP email to the predefined email address
       // await sendOtpEmail('appointment@avicenahealthcare.com');
-      await sendOtpEmail('bussinessguy5909@gmail.com'); // Use the predefined email address
-      setIsDentalModalOpen(true); // Show OTP verification modal
+      await sendOtpEmail('bussinessguy5909@gmail.com');
+      setIsDentalModalOpen(true);
     } catch (error) {
       console.error('Error sending OTP email:', error);
       toast.error('An error occurred while sending OTP email. Please try again.');
@@ -110,7 +109,7 @@ function Register() {
         `${BASE_URL}/api/otps/verify-otp`,
         {
           otp: otpCode,
-          // email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
+          // email: 'appointment@avicenahealthcare.com',
           email: 'bussinessguy5909@gmail.com',
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }

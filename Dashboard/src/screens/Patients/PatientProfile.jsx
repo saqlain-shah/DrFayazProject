@@ -146,12 +146,13 @@ function PatientProfile() {
   };
 
   const verifyOtp = async (otpType) => {
-    const email = "bussinessguy5909@gmail.com"; // Set your desired email address here
+    const email = "bussinessguy5909@gmail.com";
+    // const email = "appointment@avicenahealthcare.com";
 
     try {
       const response = await axios.post(
         `${BASE_URL}/api/otp/verify-otp`,
-        { email: email, otp: otpCode, otpType: otpType }, // Pass otpType along with other data
+        { email: email, otp: otpCode, otpType: otpType },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -181,7 +182,9 @@ function PatientProfile() {
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${BASE_URL}/api/otp/send-otp-to-doctor`,
-        { email: "bussinessguy5909@gmail.com", otpType: "dental" }, // Pass otpType
+        { email: "bussinessguy5909@gmail.com", otpType: "dental" },
+        // { email: "appointment@avicenahealthcare.com", otpType: "dental" },
+
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
