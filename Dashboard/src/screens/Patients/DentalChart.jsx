@@ -27,24 +27,31 @@ function DentalChart() {
   const [submittedData, setSubmittedData] = useState([]);
 
   useEffect(() => {
+    if (!id) return;
+  
+    console.log("Fetching data for patient ID:", id);
+  
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${BASE_URL}/api/dental-chart/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setSubmittedData([response.data]);
+  
+        console.log("Full Response:", response); // Debugging log
+        console.log("Response Data:", response.data);
+  
+        setSubmittedData(response.data); // Set the array properly
       } catch (error) {
-        console.error('Error:', error);
-        console.error('Error message:', error.response.data);
+        console.error("Error fetching data:", error);
+        if (error.response) {
+          console.error("Error message:", error.response.data);
+        }
       }
     };
-    if (submittedData.length === 0) {
-      fetchData();
-    }
-  }, [id, submittedData]);
+  
+    fetchData();
+  }, [id]);
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);
@@ -75,6 +82,7 @@ function DentalChart() {
       const response = await axios.post(
         `${BASE_URL}/api/dental-chart/`,
         {
+          patientId: id, // Include patient ID
           seriousDisease,
           dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
           mentalHealthIssues,
@@ -105,6 +113,7 @@ function DentalChart() {
       console.error('Error:', error);
     }
   };
+  
 
   const handleDelete = async (id) => {
     try {
