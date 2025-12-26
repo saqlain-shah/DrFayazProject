@@ -3,10 +3,11 @@ import Modal from './Modal';
 import { BiSearch, BiPlus } from 'react-icons/bi';
 import { Button } from '../Form';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   const [searchValue, setSearchValue] = useState(''); // State to store search field value
-  const [services, setServices] = useState([]); // State to store fetched services
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     fetchServices();
@@ -15,7 +16,7 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   const fetchServices = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://server-yvzt.onrender.com/api/services', {
+      const response = await axios.get(`${BASE_URL}/api/services`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setServices(response.data);
@@ -25,7 +26,6 @@ function PatientMedicineServiceModal({ closeModal, isOpen, onSelectService }) {
   };
 
   const handleServiceSelect = (service) => {
-    console.log('Selected service:', service);
     onSelectService(service); // Pass selected service to parent component
     closeModal(); // Close the modal
   };

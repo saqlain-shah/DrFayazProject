@@ -3,20 +3,28 @@ import mongoose from 'mongoose';
 
 export const create = async (req, res) => {
   try {
-    const {  seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
+    const { patientId, seriousDisease, dentalConditions, mentalHealthIssues, allergies, medications } = req.body;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID is required" });
+    }
+
     const dentalChart = new DentalChart({
+      patientId, // Store the patient ID
       seriousDisease,
       dentalConditions,
       mentalHealthIssues,
       allergies,
       medications
     });
+
     const savedChart = await dentalChart.save();
     res.status(201).json(savedChart);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const remove = async (req, res) => {
   const { id } = req.params;
@@ -36,16 +44,21 @@ export const list = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-export const getById = async (req, res) => {
-  const { id } = req.params;
+export const getByPatientId = async (req, res) => {
   try {
-    const dentalChart = await DentalChart.findById(id);
-    if (!dentalChart) {
-      return res.status(404).json({ message: 'Dental chart not found' });
-    }
-    res.status(200).json(dentalChart);
+    const { patientId } = req.params;
+
+    console.log("Received patientId:", patientId); // Debugging log
+
+    // Find the records using `patientId` (not `_id`)
+    const dentalCharts = await DentalChart.find({ patientId });
+
+    console.log("Fetched Dental Charts:", dentalCharts); // Debugging log
+
+    res.status(200).json(dentalCharts);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error fetching dental charts:", error);
+    res.status(500).json({ message: error.message });
   }
 };
+

@@ -1,31 +1,21 @@
 import sgMail from '@sendgrid/mail';
-import SendgridActivity from '../../models/sendgridActivityModel.js'; // Assuming correct path to your SendgridActivity model
-
-// Set your SendGrid API key
+import SendgridActivity from '../../models/sendgridActivityModel.js';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendConfirmationEmail = async (req, res, next) => {
     try {
-        // Assuming appointment data is sent in req.body
         const { to, subject, text, html } = req.body;
-
-        // Construct the email message
         const msg = {
             to,
-            from: 'add email', // Replace with your email
+            from: 'add email',
             subject,
             text,
             html,
         };
-
-        // Send the email
         await sgMail.send(msg);
-
-        // If you want to log email activity, save it to the database
         const sendgridActivity = new SendgridActivity({
             recipient: to,
             subject,
-            // You may add other fields here like timestamp, status, etc.
         });
         await sendgridActivity.save();
 

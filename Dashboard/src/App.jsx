@@ -17,9 +17,6 @@ import EditInvoice from './screens/Invoices/EditInvoice';
 import PreviewInvoice from './screens/Invoices/PreviewInvoice';
 import EditPayment from './screens/Payments/EditPayment';
 
-
-
-
 import PreviewPayment from './screens/Payments/PreviewPayment';
 import Medicine from './screens/Medicine';
 import PatientProfile from './screens/Patients/PatientProfile';
@@ -30,9 +27,9 @@ import Receptions from './screens/Receptions';
 import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
-import Register from './screens/Register'; // Import the Register component
+import Register from './screens/Register';
 import Schedule from './screens/Schedule/Schedule';
-import { useAuth } from './AuthContext'; // Import useAuth
+import { useAuth } from './AuthContext';
 import { Navigate } from 'react-router-dom';
 import Webpatinet from './screens/Patients/Webpatinet';
 import { NotificationProvider } from './components/NotificationContext';
@@ -51,47 +48,32 @@ function App() {
 
   return (
     <>
-      {/* Toaster */}
       <Toast />
       <ToastContainer /> 
-      {/* Routes */}
       <BrowserRouter>
       <NotificationProvider>
         <Routes>
-          {/* Redirect to dashboard if user is already logged in */}
           {user && <Route path="/login" element={<Navigate to="/" replace />} />}
-          {/* Render login route only if user is not logged in */}
           {!user && <Route path="/login" element={<Login />} />}
-          <Route path="/register" element={<Register />} /> {/* Add registration route */}
+          <Route path="/register" element={<Register />} />
           <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
-          {/* invoce */}
           <Route path="/invoices" element={<PrivateRoute element={<Invoices />} />} />
           <Route path="/invoices/create" element={<PrivateRoute element={<CreateInvoice />} />} />
           <Route path="/invoices/edit/:id" element={<PrivateRoute element={<EditInvoice />} />} />
           <Route path="/invoices/preview/:id" element={<PrivateRoute element={<PreviewInvoice />} />} />
-          {/* payments */}
           <Route path="/payments" element={<PrivateRoute element={<Payments />} />} />
           <Route path="/payments/edit/:id" element={<PrivateRoute element={<EditPayment />} />} />
           <Route path="/payments/preview/:id" element={<PrivateRoute element={<PreviewPayment />} />} />
-
-          {/* Users */}
           <Route path="/users" element={<PrivateRoute element={<Users />} />} />
-
-          {/* patient */}
           <Route path="/patients" element={<PrivateRoute element={<Patients />} />} />
           <Route path="/patients/preview/:id" element={<PrivateRoute element={<PatientProfile />} />} />
           <Route path="/patients/profile/:id" element={<PrivateRoute element={<PatientProfile />} />} />
-
           <Route path="/patients/create" element={<PrivateRoute element={<CreatePatient />} />} />
           <Route path="/patients/visiting/:id" element={<PrivateRoute element={<NewMedicalRecode />} />} />
-          {/* doctors */}
           <Route path="/doctors" element={<PrivateRoute element={<Doctors />} />} />
           <Route path="/doctors/preview/:id" element={<PrivateRoute element={<DoctorProfile />} />} />
-          {/* {Schedule} */}
           <Route path="/schedule" element={<PrivateRoute element={<Schedule />} />} />
-          {/* reception */}
           <Route path="/receptions" element={<PrivateRoute element={<Receptions />} />} />
-          {/* others */}
           <Route path="/appointments" element={<PrivateRoute element={<Appointments />} />} />
           <Route path="/campaigns" element={<PrivateRoute element={<Campaings />} />} />
           <Route path="/medicine" element={<PrivateRoute element={<Medicine />} />} />

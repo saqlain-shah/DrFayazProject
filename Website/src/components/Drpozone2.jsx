@@ -15,7 +15,6 @@ export default function AdvancedDropzoneDemo({ handleChange, files }) {
     const [extFiles, setExtFiles] = React.useState([] || files);
     const [imageSrc, setImageSrc] = React.useState(undefined);
     let images = [];
-    //    const [videoSrc, setVideoSrc] = React.useState(undefined);
     useEffect(() => {
     }, [files])
 

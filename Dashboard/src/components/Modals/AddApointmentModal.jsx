@@ -8,6 +8,8 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import PatientList from '../../screens/Patients/PatientList';
 import { servicesData } from '../Datas';
+import BASE_URL from '../../baseUrl.jsx';
+
 function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, patientId }) {
   const [patientName, setPatientName] = useState('');
   const [services, setServices] = useState('');
@@ -30,13 +32,11 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://server-yvzt.onrender.com/api/doctors', {
+      const response = await axios.get(`${BASE_URL}/api/doctors`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      // Check if the response data is an array
       if (Array.isArray(response.data)) {
         setDoctors(response.data); // Set the doctors state with the fetched data
       } else {
@@ -82,9 +82,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas, handleNewAppointment, 
       share: shares,
       patientId: patientId,
     };
-
-    console.log("Sending appointment data:", data);
-    const apiUrl = 'https://server-yvzt.onrender.com/api/appointments';
+    const apiUrl = `${BASE_URL}/api/appointments`;
     const token = localStorage.getItem('token');
 
     axios.post(apiUrl, data, {

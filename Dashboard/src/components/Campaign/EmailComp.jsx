@@ -3,6 +3,7 @@ import { Button, Input, Textarea } from '../Form';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
 
 function EmailComp({ data, closeModal, updateCampaignsState }) {
   const [campaignTitle, setCampaignTitle] = useState('');
@@ -24,13 +25,12 @@ function EmailComp({ data, closeModal, updateCampaignsState }) {
       formData.append('link', link);
 
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://server-yvzt.onrender.com/api/email-campaigns', formData, {
+      const response = await axios.post(`${BASE_URL}/api/email-campaigns`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`
         }
       });
-      console.log('Campaign created:', response.data);
       toast.success('Campaign created successfully!');
 
       setCampaignTitle('');

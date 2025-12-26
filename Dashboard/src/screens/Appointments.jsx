@@ -5,44 +5,32 @@ import moment from 'moment';
 import { BiChevronLeft, BiChevronRight, BiPlus } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import AppointmentDetailsModal from './appointmentDetailModel';
+import BASE_URL from '../baseUrl.jsx';
 
 const CustomToolbar = (toolbar) => {
-  // today button handler
   const goToBack = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() - 1);
     toolbar.onNavigate('prev');
   };
-
-  // next button handler
   const goToNext = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() + 1);
     toolbar.onNavigate('next');
   };
-
-  // today button handler
   const goToCurrent = () => {
     toolbar.onNavigate('TODAY');
   };
-
-  // month button handler
   const goToMonth = () => {
     toolbar.onView('month');
   };
-
-  // week button handler
   const goToWeek = () => {
     toolbar.onView('week');
   };
-
-  // day button handler
   const goToDay = () => {
     toolbar.onView('day');
   };
-
-  // view button group
   const viewNamesGroup = [
     { view: 'month', label: 'Month' },
     { view: 'week', label: 'Week' },
@@ -116,7 +104,7 @@ function Appointments({ events }) {
     const fetchAppointments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
+        const response = await axios.get(`${BASE_URL}/api/web/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -147,7 +135,6 @@ function Appointments({ events }) {
   const onDelete = (eventId) => {
     // Implement the logic to delete the appointment with the given eventId
     console.log('Deleting event with ID:', eventId);
-    // Here you can make an API call to delete the event or update your state accordingly
   };
 
 

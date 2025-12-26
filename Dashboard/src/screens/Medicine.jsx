@@ -15,14 +15,13 @@ function Medicine() {
   const [status, setStatus] = useState(sortsDatas.stocks[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedStockStatus, setSelectedStockStatus] = useState('All'); // Initialize with 'All'
+  const [selectedStockStatus, setSelectedStockStatus] = useState('All');
 
   const fetchData = async () => {
     try {
-      // Fetch token from wherever you store it (e.g., localStorage)
       const token = localStorage.getItem('token');
 
-      let response = await fetch('https://server-yvzt.onrender.com/api/medicine', {
+      let response = await fetch(`${BASE_URL}/api/medicine`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -32,7 +31,6 @@ function Medicine() {
       }
       let responseData = await response.json();
 
-      // Filter data based on selected stock status
       let filtered = responseData;
       if (selectedStockStatus !== 'All') {
         filtered = responseData.filter(item => (item.inStock && selectedStockStatus === 'In Stock') || (!item.inStock && selectedStockStatus === 'Out of Stock'));
@@ -48,7 +46,7 @@ function Medicine() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedStockStatus]); // Fetch data when selected stock status changes
+  }, [selectedStockStatus]);
 
   useEffect(() => {
     const filtered = data.filter(item =>
@@ -65,7 +63,7 @@ function Medicine() {
 
   const onDelete = async (item) => {
     try {
-      const response = await fetch(`https://server-yvzt.onrender.com/api/medicine/${item._id}`, {
+      const response = await fetch(`${BASE_URL}/api/medicine/${item._id}`, {
         method: 'DELETE',
       });
 

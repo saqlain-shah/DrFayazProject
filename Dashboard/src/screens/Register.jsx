@@ -8,6 +8,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import pic from '../build/images/upLogo.jpg';
 import { FaTimes } from 'react-icons/fa';
+import BASE_URL from '../baseUrl';
 
 function Register() {
   const navigate = useNavigate();
@@ -61,10 +62,9 @@ function Register() {
     }
     setLoading(true);
     try {
-      // First, send OTP email to the predefined email address
       // await sendOtpEmail('appointment@avicenahealthcare.com');
-      await sendOtpEmail('appointment@avicenahealthcare.com'); // Use the predefined email address
-      setIsDentalModalOpen(true); // Show OTP verification modal
+      await sendOtpEmail('bussinessguy5909@gmail.com');
+      setIsDentalModalOpen(true);
     } catch (error) {
       console.error('Error sending OTP email:', error);
       toast.error('An error occurred while sending OTP email. Please try again.');
@@ -76,7 +76,7 @@ function Register() {
   const sendOtpEmail = async (targetEmail) => {
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/send-otp',
+        `${BASE_URL}/api/otps/send-otp`,
 
         { email: targetEmail },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
@@ -106,11 +106,11 @@ function Register() {
   
     try {
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/otps/verify-otp',
+        `${BASE_URL}/api/otps/verify-otp`,
         {
           otp: otpCode,
-          // email: 'appointment@avicenahealthcare.com', // Send the email along with the OTP
-          email: 'appointment@avicenahealthcare.com',
+          // email: 'appointment@avicenahealthcare.com',
+          email: 'bussinessguy5909@gmail.com',
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
@@ -121,7 +121,6 @@ function Register() {
         console.log('OTP Verified!');
         setIsOtpValid(true);
         setIsDentalModalOpen(false);
-        // Proceed with registration after OTP is verified
         await registerUser();
       } else {
         console.log('Failed to verify OTP:', response.data.message);
@@ -140,7 +139,7 @@ function Register() {
   const registerUser = async () => {
     try {
 
-      const response = await axios.post('https://server-yvzt.onrender.com/api/auth/register', {
+      const response = await axios.post(`${BASE_URL}/api/auth/register`, {
 
         name,
         email,
@@ -150,7 +149,6 @@ function Register() {
       if (response.status === 201) {
         const token = response.data.token;
 
-        // Store the token, name, and email in local storage
         localStorage.setItem('token', token);
         localStorage.setItem('name', name);
         localStorage.setItem('email', email);

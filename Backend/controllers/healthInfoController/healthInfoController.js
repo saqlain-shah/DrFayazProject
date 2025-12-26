@@ -4,11 +4,11 @@ import HealthInformation from '../../models/HealthInfo/healthInfo.js';
 
 export const createHealthInformation = async (req, res) => {
     try {
-        const { patientId } = req.body; // Extract patientId from request body
+        const { patientId } = req.body;
         const { bloodType, weight, height, allergies, habits, medicalHistory } = req.body;
 
         const newHealthInformation = new HealthInformation({
-            patientId, // Assign patientId
+            patientId,
             bloodType,
             weight,
             height,

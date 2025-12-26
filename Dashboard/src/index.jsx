@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-// Import Swiper styles
 import 'swiper/css';
 import 'aos';
 import 'aos/dist/aos.css';

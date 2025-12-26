@@ -22,7 +22,7 @@ const doctorSchema = new mongoose.Schema({
     profileImage: {
         type: String,
     },
-}, { timestamps: true }); // Add timestamps option
+}, { timestamps: true });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
 

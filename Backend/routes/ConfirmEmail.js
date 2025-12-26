@@ -8,8 +8,8 @@ const router = express.Router();
 router.post('/send-confirmation-email', async (req, res) => {
   try {
     const selectValue = req.body;
-    await sendAppointmentConfirmationEmail(selectValue); // Send email to the patient
-    await sendDoctorAppointmentEmail(selectValue); // Send email to the doctor
+    await sendAppointmentConfirmationEmail(selectValue);
+    await sendDoctorAppointmentEmail(selectValue);
     res.status(200).json({ message: 'Appointment confirmation emails sent successfully' });
   } catch (error) {
     console.error('Error sending appointment confirmation emails:', error);

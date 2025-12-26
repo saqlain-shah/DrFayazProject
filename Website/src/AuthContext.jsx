@@ -12,6 +12,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext); // Export useAuth
+export const useAuth = () => useContext(AuthContext);
 
-export default AuthContext; // Export AuthContext as default
+export default AuthContext;

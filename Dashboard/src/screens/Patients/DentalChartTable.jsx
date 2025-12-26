@@ -20,23 +20,23 @@ function DentalChartTable({ data, onDelete }) {
 
   return (
     <tr className="border-b border-border hover:bg-greyed transitions">
-      <td className={tdClass}>{data.seriousDisease}</td>
+      <td className={tdClass}>{data.seriousDisease || "N/A"}</td>
       <td className={tdClass}>
         <ul>
-          {data.dentalConditions.map((condition, index) => (
+          {(data.dentalConditions || []).map((condition, index) => (
             <li key={index}>{condition}</li>
           ))}
         </ul>
       </td>
       <td className={tdClass}>
         <ul>
-          {data.mentalHealthIssues.map((issue, index) => (
+          {(data.mentalHealthIssues || []).map((issue, index) => (
             <li key={index}>{issue}</li>
           ))}
         </ul>
       </td>
-      <td className={tdClass}>{data.allergies}</td>
-      <td className={tdClass}>{data.medications}</td>
+      <td className={tdClass}>{data.allergies || "N/A"}</td>
+      <td className={tdClass}>{data.medications || "N/A"}</td>
       <td className={tdClass}>
         <button
           onClick={handleDelete}
@@ -48,5 +48,6 @@ function DentalChartTable({ data, onDelete }) {
     </tr>
   );
 }
+
 
 export default DentalChartTable;

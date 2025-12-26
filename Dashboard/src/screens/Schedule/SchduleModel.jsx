@@ -5,6 +5,7 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { DatePicker, Space } from 'antd';
+import BASE_URL from '../../baseUrl.jsx';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     const [startDateTime, setStartDateTime] = useState(null);
@@ -17,7 +18,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     const [existingAppointments, setExistingAppointments] = useState([]);
 
     useEffect(() => {
-        axios.get('https://server-yvzt.onrender.com/api/schedule')
+        axios.get(`${BASE_URL}/api/schedule`)
         .then(response => {
             setExistingAppointments(response.data);
         })
@@ -65,7 +66,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
             shares
         };
 
-        axios.post('https://server-yvzt.onrender.com/api/schedule', appointmentPayload)
+        axios.post(`${BASE_URL}/api/schedule`, appointmentPayload)
         .then(response => {
             toast.success('Appointment saved successfully');
             closeModal();

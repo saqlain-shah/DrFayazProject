@@ -17,17 +17,18 @@ import SenderReceverComp from '../../components/SenderReceverComp';
 import { InvoiceProductsTable } from '../../components/Tables';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import BASE_URL from '../../baseUrl.jsx';
 
 function PreviewInvoice() {
   const { id } = useParams();
-  console.log("id", id)
+  console.log("in preview table", id)
   const [isOpen, setIsoOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [loader, setLoader] = useState(false)
   const [invoice, setInvoice] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching invoice with ID:", id);
+    console.log("Fetching invoice with ID invoice preview table:", id);
     if (!id) {
       console.error("ID parameter is undefined");
       return;
@@ -36,7 +37,7 @@ function PreviewInvoice() {
     const fetchInvoice = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://server-yvzt.onrender.com/api/invoices/${id}`, {
+        const response = await fetch(`${BASE_URL}/api/invoices/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -47,7 +48,7 @@ function PreviewInvoice() {
         }
 
         const invoiceData = await response.json();
-        console.log("Fetched invoice data:", invoiceData);
+        console.log("Fetched invoice data invoice preview table:", invoiceData);
         setInvoice(invoiceData);
       } catch (error) {
         console.error('Error fetching invoice:', error);
@@ -72,9 +73,9 @@ function PreviewInvoice() {
   };
 
   // Inside the PreviewInvoice component
-  console.log("Invoice data:", invoice);
-  console.log("Discount:", invoice?.discount);
-  console.log("Tax:", invoice?.tax);
+  console.log("Invoice data invoice preview table:", invoice);
+  console.log("Discount invoice preview table:", invoice?.discount);
+  console.log("Tax invoice preview table:", invoice?.tax);
 
   const subtotal = calculateSubtotal(invoice?.invoiceItems || []);
   const grandTotal = calculateGrandTotal(subtotal, invoice?.discount || 0, invoice?.tax || 0);

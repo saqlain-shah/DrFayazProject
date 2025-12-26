@@ -9,7 +9,6 @@ router.route('/')
     .post(healthInformationController.createHealthInformation)
     .get(healthInformationController.getAllHealthInformation);
 
-// Add routes for getting, updating, and deleting health information by patient ID
 router.route('/:patientId')
     .get(healthInformationController.getHealthInformationByPatientId)
     .put(healthInformationController.updateHealthInformationByPatientId)

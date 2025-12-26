@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../../components/Modals/Modal';
-import { Button, Input, Select } from '../../components/Form'; // Import necessary components
+import { Button, Input, Select } from '../../components/Form';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { HiOutlineCheckCircle } from 'react-icons/hi';

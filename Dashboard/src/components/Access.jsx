@@ -28,25 +28,18 @@ function Access({ setAccess }) {
     delete: false,
     edit: false,
   });
-
-  // on change patient
   const onChangePatient = (e) => {
     setParientAccess({ ...parientAccess, [e.target.name]: e.target.checked });
   };
-  // on change appointment
   const onChangeAppointment = (e) => {
     setAppointmentAccess({
       ...appointmentAccess,
       [e.target.name]: e.target.checked,
     });
   };
-
-  // on change invoices
   const onChangeInvoices = (e) => {
     setInvoicesAccess({ ...invoicesAccess, [e.target.name]: e.target.checked });
   };
-
-  // on change payments
   const onChangePayments = (e) => {
     setPaymentsAccess({ ...paymentsAccess, [e.target.name]: e.target.checked });
   };
@@ -77,8 +70,6 @@ function Access({ setAccess }) {
       onChange: onChangePayments,
     },
   ];
-
-  // send access to parent component
   useEffect(() => {
     setAccess({
       parientAccess,

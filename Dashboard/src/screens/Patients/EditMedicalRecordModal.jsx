@@ -10,7 +10,7 @@ function EditMedicalRecordModal({ closeModal, isOpen, selectedData, handleEdit }
 
 
     const handleSubmit = () => {
-        handleEdit(selectedData._id, { complaints, diagnosis, vitalSigns }); // Include treatment in the edited data
+        handleEdit(selectedData._id, { complaints, diagnosis, vitalSigns });
         closeModal();
     };
 

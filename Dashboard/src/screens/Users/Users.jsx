@@ -5,6 +5,8 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import dayjs from 'dayjs';
 import { CircularProgress } from '@mui/material';
+import BASE_URL from '../../baseUrl.jsx';
+import { toast } from 'react-hot-toast';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -13,7 +15,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('https://server-yvzt.onrender.com/api/userauth/users', {
+        const response = await fetch(`${BASE_URL}/api/userauth/users`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -22,11 +24,13 @@ const Users = () => {
         });
         if (!response.ok) {
           throw new Error('Failed to fetch users');
+          
         }
         const data = await response.json();
         setUsers(data);
         setLoading(false);
       } catch (error) {
+        toast.error('Fail to get data check internet Connections.');
         console.error('Error fetching users:', error);
         setLoading(false);
       }

@@ -6,6 +6,7 @@ import Modal from '../../components/Modals/Modal';
 import { BiChevronDown } from 'react-icons/bi';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
+import BASE_URL from '../../baseUrl.jsx';
 
 function HealthInformation({ patientId }) {
   const [bloodType, setBloodType] = useState(sortsDatas.bloodTypeFilter[0]);
@@ -14,17 +15,17 @@ function HealthInformation({ patientId }) {
   const [allergies, setAllergies] = useState('');
   const [habits, setHabits] = useState('');
   const [medicalHistory, setMedicalHistory] = useState('');
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [healthInfoData, setHealthInfoData] = useState({}); // State for health information data
+  const [showModal, setShowModal] = useState(false);
+  const [healthInfoData, setHealthInfoData] = useState({});
 
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem('token'); // Assuming you store the token in localStorage
       console.log('Patient ID:', patientId); // Log the patientId
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/health-information',
+        `${BASE_URL}/api/health-information`,
         {
-          patientId, // Pass patientId here
+          patientId,
           bloodType: bloodType.name,
           weight,
           height,

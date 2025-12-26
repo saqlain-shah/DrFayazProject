@@ -9,22 +9,23 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddEditPatientModal from './EditPatient';
 import { useParams } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
 
 function Patients() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patients, setPatients] = useState([]);
-  const [webPatients, setWebPatients] = useState([]); // Changed appointments to webPatients
+  const [webPatients, setWebPatients] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(null);
-  const [genderFilter, setGenderFilter] = useState("all"); // State for selected gender filter
+  const [genderFilter, setGenderFilter] = useState("all");
   const { patientId } = useParams();
 
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
       const formattedDate = startDate ? startDate.toLocaleDateString('en-US') : '';
-      const response = await axios.get('https://server-yvzt.onrender.com/api/patients', {
+      const response = await axios.get(`${BASE_URL}/api/patients`, {
         params: { search: searchQuery, startDate: formattedDate, gender: genderFilter },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -38,7 +39,7 @@ function Patients() {
   const fetchWebPatients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const webPatientsResponse = await axios.get(`https://server-yvzt.onrender.com/api/web/`, {
+      const webPatientsResponse = await axios.get(`${BASE_URL}/api/web/`, {
         params: { gender: genderFilter }, // Add gender filter parameter
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -63,7 +64,7 @@ function Patients() {
   const handleDelete = async (patientId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/patients/${patientId}`, {
+      await axios.delete(`${BASE_URL}/api/patients/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Remove the deleted patient from the patients state
@@ -78,7 +79,7 @@ function Patients() {
   const handleDeleteWebPatient = async (webPatientId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/web/${webPatientId}`, {
+      await axios.delete(`${BASE_URL}/api/web/${webPatientId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Remove the deleted web patient from the webPatients state
@@ -100,12 +101,12 @@ function Patients() {
     try {
       const token = localStorage.getItem('token');
       if (patientData._id) {
-        await axios.put(`https://server-yvzt.onrender.com/api/patients/${patientData._id}`, patientData, {
+        await axios.put(`${BASE_URL}/api/patients/${patientData._id}`, patientData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Patient updated successfully');
       } else {
-        await axios.post('https://server-yvzt.onrender.com/api/patients', patientData, {
+        await axios.post(`${BASE_URL}/api/patients`, patientData, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success('Patient created successfully');

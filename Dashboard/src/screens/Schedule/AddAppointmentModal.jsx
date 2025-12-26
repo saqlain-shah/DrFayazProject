@@ -5,7 +5,8 @@ import Modal from '../../components/Modals/Modal';
 import SelectApppointment from './SelectApppointment';
 import { Button, Steps, message } from 'antd';
 import moment from 'moment';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
   const [selectedDate, setSelectedDate] = useState('');
@@ -13,12 +14,12 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
   const [appointmentSlots, setAppointmentSlots] = useState([]);
 
   useEffect(() => {
-    fetchData(); // Fetch data when component mounts
+    fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://server-yvzt.onrender.com/api/schdule');
+      const response = await axios.get(`${BASE_URL}/api/schedule`);
       setAppointmentSlots(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -31,23 +32,19 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
       endDateTime,
       shares
     };
-
-    // Add your authentication token to the request headers
-    const token = 'token'; // Replace this with your actual token
+    const token = 'token';
     const config = {
       headers: {
         Authorization: `Bearer ${token}`
       }
     };
 
-    axios.post('https://server-yvzt.onrender.com/api/schdule', appointmentPayload, config)
+    axios.post(`${BASE_URL}/api/schdule/create`, appointmentPayload, config)
       .then(response => {
-        // Handle success
         toast.success('Appointment saved successfully');
         closeModal();
       })
       .catch(error => {
-        // Handle error
         console.error('Error saving appointment:', error);
         toast.error('Failed to save appointment');
       });
@@ -62,7 +59,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentData }) {
     >
       <div>
         <SelectApppointment
-          appointmentSlots={appointmentSlots} // Pass appointmentSlots as prop
+          appointmentSlots={appointmentSlots}
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           selectTime={selectTime}

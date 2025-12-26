@@ -798,7 +798,7 @@ export const invoicesData = [
   },
   {
     id: 876543,
-    to: memberData.find(member => member.id === 4), // Find the patient with ID 4
+    to: memberData.find(member => member.id === 4),
     total: 19000,
     createdDate: "08/01/2023",
     dueDate: "12/01/2023",

@@ -4,13 +4,13 @@ import moment from 'moment-timezone';
 export const getAllSchedules = async (req, res) => {
     try {
         const schedules = await Schedule.find();
+        console.log('Fetched Slots from DB:', schedules); 
+
         res.status(200).json(schedules);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Create a new schedule
 export const createSchedule = async (req, res) => {
     const schedule = req.body;
 
@@ -33,14 +33,13 @@ export const deleteSchedule = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
-// Delete past schedules
 export const deletePastSchedules = async (req, res) => {
     try {
-        const now = moment().tz('Asia/Karachi').utc().toDate(); // Convert current time to UTC
+        const now = moment().utc().toDate();
 
-        // Delete slots where endDateTime is less than now
-        const result = await Schedule.deleteMany({ endDateTime: { $lt: now } });
+        const result = await Schedule.deleteMany({
+            endDateTime: { $lt: now } // Deletes only if endDateTime is before now
+        });
 
         res.status(200).json({ message: 'Past schedules removed successfully', removedCount: result.deletedCount });
     } catch (error) {

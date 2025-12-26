@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
 
 function PatientList({ onSelectPatient, setSearchValue }) {
     const [patients, setPatients] = useState([]);
@@ -10,7 +11,7 @@ function PatientList({ onSelectPatient, setSearchValue }) {
         const fetchPatients = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('https://server-yvzt.onrender.com/api/patients', {
+                const response = await axios.get(`${BASE_URL}/api/patients`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setPatients(response.data);

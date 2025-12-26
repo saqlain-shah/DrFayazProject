@@ -72,7 +72,6 @@ function EditPayment() {
             </div>
           </div>
         </div>
-        {/* sender and recever */}
         <SenderReceverComp item={payment.user} functions={{}} button={false} />
         {/* products */}
         <div className="grid grid-cols-6 gap-6 mt-8 items-start">

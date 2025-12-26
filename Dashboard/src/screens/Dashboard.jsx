@@ -9,16 +9,11 @@ import {
   BsXCircleFill,
 } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import { TbCalendar, TbFile } from "react-icons/tb";
-
+import { TbCalendar } from "react-icons/tb";
 import { MdOutlineAttachMoney } from "react-icons/md";
+import BASE_URL from "../baseUrl.jsx";
 
-import { DashboardBigChart, DashboardSmallChart } from "../components/Charts";
-import {
-  appointmentsData,
-  memberData,
-  transactionData,
-} from "../components/Datas";
+import { DashboardBigChart } from "../components/Charts";
 import { Transactiontables } from "../components/Tables";
 import {
   fetchTotalPatientCount,
@@ -26,8 +21,9 @@ import {
   fetchRecentPatients,
   fetchWebPatientTodayAppointments,
   fetchwebsitePatient,
-  fetchTotalEarnings
-} from "../Api/api.js"; // Import all necessary functions
+  fetchTotalEarnings,
+  fetchMonthlyEarnings, // 🆕 Fetch monthly earnings
+} from "../Api/api.js";
 
 function Dashboard() {
   const [totalPatients, setTotalPatients] = useState(0);
@@ -36,41 +32,40 @@ function Dashboard() {
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [websitePatients, setWebsitePatients] = useState([]);
   const [totalWebPatients, setTotalWebPatients] = useState(0);
-  const [webPatientsPercentage, setWebPatientsPercentage] = useState(0); // State for web patients percentage
+  const [webPatientsPercentage, setWebPatientsPercentage] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [earningsPercent, setEarningsPercent] = useState(0);
+  const [monthlyEarnings, setMonthlyEarnings] = useState([]); // 🆕 Monthly earnings state
+
   useEffect(() => {
-    console.log("Dashboard component mounted");
     fetchData();
   }, []);
 
   const fetchData = async () => {
     try {
-      console.log("Fetching data...");
-
       const { totalCount: patientCount, percentage: patientPercentage } =
         await fetchTotalPatientCount();
       setTotalPatients(patientCount);
       setTotalPatientsPercentage(patientPercentage);
 
-      const recentPatientsData = await fetchRecentPatients();
-      setRecentPatients(recentPatientsData);
-
-      const websitePatientsData = await fetchwebsitePatient(); // Assuming you have the patient's id available
-      setWebsitePatients(websitePatientsData);
+      setRecentPatients(await fetchRecentPatients());
+      setWebsitePatients(await fetchwebsitePatient());
 
       const { totalCount: webPatientCount, percentage: webPatientsPercentage } =
         await fetchTotalWebPatientCount();
       setTotalWebPatients(webPatientCount);
       setWebPatientsPercentage(webPatientsPercentage);
 
-      const todayWebAppointmentsData = await fetchWebPatientTodayAppointments(); // Fetch today's web appointments
-      setTodayAppointments(todayWebAppointmentsData);
+      setTodayAppointments(await fetchWebPatientTodayAppointments());
 
-      const { totalEarnings, percent } = await fetchTotalEarnings(); // Destructure totalEarnings and percent from fetchTotalEarnings result
+      const { totalEarnings, percent } = await fetchTotalEarnings();
       setTotalEarnings(totalEarnings);
       setEarningsPercent(percent);
 
+      const monthlyData = await fetchMonthlyEarnings();
+      console.log("Fetched Monthly Earnings Data:", monthlyData); // 🔍 Debug log
+ // 🆕 Fetch monthly data
+      setMonthlyEarnings(monthlyData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -100,21 +95,21 @@ function Dashboard() {
       title: "Total Appointments",
       icon: TbCalendar,
       value: totalWebPatients,
-      percent: webPatientsPercentage, // Use webPatientsPercentage here
+      percent: webPatientsPercentage,
       color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
       datas: [totalWebPatients],
     },
-
     {
       id: 4,
       title: "Total Earnings",
       icon: MdOutlineAttachMoney,
-      value: totalEarnings, // Use totalEarnings state here
-      percent: earningsPercent, // This can be dynamic too if fetched from API
+      value: totalEarnings,
+      percent: earningsPercent,
       color: ["bg-red-500", "text-red-500", "#FF3B30"],
       datas: [totalEarnings],
     },
   ];
+
   return (
     <Layout>
       {/* boxes */}
@@ -135,7 +130,7 @@ function Dashboard() {
             <div className="grid grid-cols-8 gap-4 mt-4 bg-dry py-5 px-8 items-center rounded-xl">
               <div className="col-span-5">
                 {/* statistc */}
-                <DashboardSmallChart data={card.datas} colors={card.color[2]} />
+                {/* <DashboardSmallChart data={card.datas} colors={card.color[2]} /> */}
               </div>
               <div className="flex flex-col gap-4 col-span-3">
                 <h4 className="text-md font-medium">
@@ -160,32 +155,33 @@ function Dashboard() {
       </div>
       <div className="w-full my-6 grid xl:grid-cols-8 grid-cols-1 gap-6">
         <div className="xl:col-span-6  w-full">
-          <div className="bg-white rounded-xl border-[1px] border-border p-5">
-            <div className="flex-btn gap-2">
-            <h2 className="text-sm font-medium">Earning Reports</h2>
-<p className="flex gap-4 text-sm items-center">
-  {totalEarnings} 
-  <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
-    {earningsPercent}%
-  </span>
-</p>
-            </div>
-            {/* Earning Reports */}
-            <div className="mt-4">
-              <DashboardBigChart />
-            </div>
-          </div>
+        <div className="bg-white rounded-xl border-[1px] border-border p-5">
+  <div className="flex-btn gap-2">
+    <h2 className="text-sm font-medium">Earning Reports</h2>
+    <p className="flex gap-4 text-sm items-center">
+      {totalEarnings}$
+      <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
+        {earningsPercent}%
+      </span>
+    </p>
+  </div>
+  {/* 📊 Earning Reports with Monthly Earnings Data */}
+  <div className="mt-4">
+  <DashboardBigChart monthlyData={monthlyEarnings} />
+  </div>
+</div>
+
           {/* transaction */}
           <div className="mt-6 bg-white rounded-xl border-[1px] border-border p-5">
             {/* <div className="flex-btn gap-2">
-              <h2 className="text-sm font-medium">Recent Transaction</h2>
-              <p className="flex gap-4 text-sm items-center">
-                Today{" "}
-                <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
-                  27000$
-                </span>
-              </p>
-            </div> */}
+            <h2 className="text-sm font-medium">Recent Transaction</h2>
+            <p className="flex gap-4 text-sm items-center">
+              Today{" "}
+              <span className="py-1 px-2 bg-subMain text-white text-xs rounded-xl">
+                27000$
+              </span>
+            </p>
+          </div> */}
             {/* table */}
             <div className="mt-4  overflow-x-hidden">
               <Transactiontables data={websitePatients} action={true} />
@@ -211,7 +207,7 @@ function Dashboard() {
               >
                 <div className="flex gap-4 items-center">
                   <img
-                    src={`https://server-yvzt.onrender.com/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
+                    src={`${BASE_URL}/${patient.profilePicture}`} // Adjust the URL according to your backend configuration
                     alt="patient"
                     className="w-10 h-10 rounded-md object-cover"
                   />

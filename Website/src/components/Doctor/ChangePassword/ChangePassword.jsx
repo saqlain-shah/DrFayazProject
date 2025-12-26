@@ -4,6 +4,7 @@ import { Button, message } from 'antd';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { LoadingOutlined } from '@ant-design/icons';
+import BASE_URL from '../../../baseUrl.jsx';
 
 
 const ChangePassword = () => {
@@ -36,7 +37,7 @@ const ChangePassword = () => {
         setLoading(true);
            
         try {
-            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/change-password/${clientId}`, { userId, oldPassword, newPassword }, config);
+            const response = await axios.put(`${BASE_URL}/api/userauth/change-password/${clientId}`, { userId, oldPassword, newPassword }, config);
             message.success(response.data.message);
             setOldPassword('');
             setNewPassword('');

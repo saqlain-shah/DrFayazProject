@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../AuthContext';
 import pic from '../build/images/upLogo.jpg';
+import BASE_URL from '../baseUrl';
 
 function Login() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ function Login() {
     }
     setLoading(true);
     try {
-      const response = await axios.post('https://server-yvzt.onrender.com/api/auth/login', {
+      const response = await axios.post(`${BASE_URL}/api/auth/login`, {
         email,
         password,
       });

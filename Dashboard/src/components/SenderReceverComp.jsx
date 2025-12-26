@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BiPlus } from "react-icons/bi";
 import axios from "axios";
+import BASE_URL from '../baseUrl.jsx';
 
 function SenderReceverComp({
   item,
@@ -14,7 +15,6 @@ function SenderReceverComp({
 
   useEffect(() => {
     if (showPatients) {
-      // Fetch patients when showPatients state is true
       fetchPatients();
     }
   }, [showPatients]);
@@ -23,7 +23,7 @@ function SenderReceverComp({
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://server-yvzt.onrender.com/api/patients",
+        `${BASE_URL}/api/patients`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -33,7 +33,6 @@ function SenderReceverComp({
       setPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
-      // Handle error
     }
   };
 
@@ -72,7 +71,6 @@ function SenderReceverComp({
         </div>
         <div className="flex flex-col gap-2 mt-4">
           {showPatients ? (
-            // Display list of patients if showPatients is true
             patients.map((patient) => {
 
 
@@ -89,14 +87,12 @@ function SenderReceverComp({
               );
             })
           ) : selectedPatient ? (
-            // Display selected patient data if available
             <>
               <h6 className="text-xs font-medium">{selectedPatient.fullName}</h6>
               <p className="text-xs text-textGray">Email: {selectedPatient.email}</p>
               <p className="text-xs text-textGray">Phone: {selectedPatient.emergencyContact}</p>
             </>
           ) : (
-            // If no patient is selected, display default data
             <>
               <h6 className="text-xs font-medium">{item?.title}</h6>
               <p className="text-xs text-textGray">{item?.email}</p>

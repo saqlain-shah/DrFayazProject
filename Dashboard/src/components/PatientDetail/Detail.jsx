@@ -1,10 +1,12 @@
 import React, { useRef } from "react";
 import { Image, Table } from "antd";
 import dayjs from "dayjs";
-import './Detail.css'
+import "./Detail.css";
 import html2canvas from "html2canvas";
 import { Button } from "antd";
 import jsPDF from "jspdf";
+import BASE_URL from "../../baseUrl.jsx";
+
 const PatientDetails = ({
   medicalRecords,
   profileData,
@@ -18,77 +20,127 @@ const PatientDetails = ({
   const pdfRef = useRef();
 
   const handleGeneratePDF = () => {
-    console.log("medicalRecords in handleGeneratePDF:", medicalRecords); 
-    console.log("Type of medicalRecords:", typeof medicalRecords);
-    console.log("medicalRecords:", medicalRecords);
-
+    console.log("medicalRecords in handleGeneratePDF:", medicalRecords);
+  
     const input = document.getElementById("patientDetails");
-
+  
     const options = {
-      width: 900,
-      height: 1100,
+      scale: 3,
+      useCORS: true,
     };
-
+  
     html2canvas(input, options).then((canvas) => {
-      const pdf = new jsPDF();
+      const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const aspectRatio = canvas.width / canvas.height;
-      const pdfHeightAdjusted = pdfWidth / aspectRatio;
-      const offsetY = (pdfHeight - pdfHeightAdjusted) / 2;
-
-      // Add main content as image
+      
+      // Maintain aspect ratio
+      const canvasAspectRatio = canvas.width / canvas.height;
+      const pdfHeightAdjusted = pdfWidth / canvasAspectRatio;
+  
+      // Margins
+      const marginX = 10;
+      const marginY = 10;
+  
+      // Convert canvas to image and add to PDF
       const imgData = canvas.toDataURL("image/png");
-      pdf.addImage(imgData, "PNG", 0, offsetY, pdfWidth, pdfHeightAdjusted);
-
-      // Add attachments
+      pdf.addImage(imgData, "PNG", marginX, marginY, pdfWidth - 2 * marginX, pdfHeightAdjusted - marginY);
+  
+      let addedAttachments = false; // Track if any attachments were added
+  
       if (Array.isArray(medicalRecords.data)) {
-        const promises = medicalRecords.data.map((record) => {
+        medicalRecords.data.forEach((record, recordIndex) => {
           if (record.attachments && record.attachments.length > 0) {
-            return Promise.all(record.attachments.map((attachment) => {
-              return new Promise((resolve, reject) => {
-                const img = document.createElement('img');
-                img.crossOrigin = "anonymous";
-                img.onload = function () {
-                  const attachmentCanvas = document.createElement("canvas");
-                  attachmentCanvas.width = img.width;
-                  attachmentCanvas.height = img.height;
-                  const ctx = attachmentCanvas.getContext("2d");
-                  ctx.drawImage(img, 0, 0);
-                  const attachmentImgData = attachmentCanvas.toDataURL("image/png");
+            let x = marginX;
+            let y = 30;
+            const maxWidth = 90;
+            const maxHeight = 70;
+            const gap = 10;
+  
+            let imagesAdded = 0; // Track number of images added
+  
+            record.attachments.forEach((attachment, attIndex) => {
+              const fileUrl = `${BASE_URL}/uploads/${attachment.filename}`;
+              const isImage = /\.(jpg|jpeg|png|gif)$/i.test(attachment.filename);
+              if (!isImage) return;
+  
+              const img = document.createElement("img");
+              img.crossOrigin = "anonymous";
+  
+              img.onload = function () {
+                const aspectRatio = img.width / img.height;
+                let imgWidth = maxWidth;
+                let imgHeight = imgWidth / aspectRatio;
+  
+                if (imgHeight > maxHeight) {
+                  imgHeight = maxHeight;
+                  imgWidth = imgHeight * aspectRatio;
+                }
+  
+                // If it's the first attachment, add a new page and label it
+                if (!addedAttachments) {
                   pdf.addPage();
-                  pdf.addImage(
-                    attachmentImgData,
-                    "PNG",
-                    10,
-                    10,
-                    180,
-                    150
-                  );
-                  resolve();
-                };
-                img.src = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
-              });
-            }));
+                  pdf.setFontSize(14);
+                  pdf.text(`Attachments for Record ${recordIndex + 1}`, marginX, 20);
+                  addedAttachments = true;
+                }
+  
+                pdf.setFontSize(10);
+                pdf.text(`Attachment ${attIndex + 1}`, x, y - 5);
+                pdf.addImage(img, "PNG", x, y, imgWidth, imgHeight);
+                imagesAdded++;
+  
+                if (x + maxWidth + gap > pdfWidth - marginX) {
+                  x = marginX;
+                  y += maxHeight + gap;
+                } else {
+                  x += maxWidth + gap;
+                }
+  
+                if (y + maxHeight > pdfHeight - marginY) {
+                  pdf.addPage();
+                  pdf.setFontSize(14);
+                  pdf.text(`Attachments (contd.) for Record ${recordIndex + 1}`, marginX, 20);
+                  x = marginX;
+                  y = 30;
+                }
+              };
+  
+              img.onerror = function () {
+                console.error("Failed to load image:", fileUrl);
+              };
+  
+              img.src = fileUrl;
+            });
+  
+            // If no images were added, remove the extra page
+            if (imagesAdded === 0 && addedAttachments) {
+              pdf.deletePage(pdf.internal.pages.length - 1);
+            }
           }
         });
-        Promise.all(promises.flat()).then(() => {
-          pdf.save("patient_details.pdf");
-        }).catch((error) => {
-          console.error("Error adding attachment images to PDF:", error);
-        });
+  
+        pdf.save("patient_details.pdf");
       } else {
         console.error("medicalRecords.data is not an array.");
       }
     });
   };
+  
+  
+  
+  
+  
+  
 
   return (
     <div id="patientDetails" className="patient-details-container">
       <div className="patient-details-header">
         <h1 className="patient-details-title">Patient Details Sheet</h1>
         <div className="patient-details-section">
-          <Button className="export-button" onClick={handleGeneratePDF}>Generate PDF</Button>
+          <Button className="export-button" onClick={handleGeneratePDF}>
+            Generate PDF
+          </Button>
         </div>
       </div>
 
@@ -162,7 +214,7 @@ const PatientDetails = ({
                   record.attachments.map((attachment, index) => (
                     <Image
                       key={index}
-                      src={`https://server-yvzt.onrender.com/uploads/${attachment.filename}`}
+                      src={`${BASE_URL}/uploads/${attachment.filename}`}
                       alt={attachment.originalname}
                       width={250}
                       height={250}

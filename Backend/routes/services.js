@@ -3,8 +3,6 @@ import { getAllServices, createService, getServiceById, updateService, deleteSer
 
 const router = express.Router();
 
-// Routes for services
-// Get all services
 router.get('/', getAllServices);
 
 // Create a new service

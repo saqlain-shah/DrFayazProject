@@ -1,10 +1,11 @@
 import { useMutation } from 'react-query'; // Assuming you're using React Query for data fetching
+import BASE_URL from '../../baseUrl';
 
 const useUserLoginMutation = () => {
     // Define your login mutation function here
     const loginUser = async (formData) => {
         try {
-            const response = await fetch('https://server-yvzt.onrender.com/api/userauth/login', {
+            const response = await fetch(`${BASE_URL}/api/userauth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

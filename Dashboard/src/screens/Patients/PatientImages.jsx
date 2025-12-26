@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Image, Button } from 'antd';
+import BASE_URL from '../../baseUrl.jsx';
 
 function PatientImages({ medicalRecords, webPatientAttachments, token }) {
   useEffect(() => {
@@ -8,10 +9,10 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
       try {
         medicalRecords && medicalRecords.data && medicalRecords.data.forEach(record => {
           record.attachments && record.attachments.forEach(attachment => {
-            const imageUrl = `https://server-yvzt.onrender.com/${attachment.filename}`;
+            const imageUrl = `${BASE_URL}/uploads/${attachment.filename}`;
             axios.get(imageUrl)
               .then(response => {
-                console.log('Image loaded successfully:', response);
+                console.log('Image loaded successfully in fetch images:', response);
               })
               .catch(error => {
                 console.error('Error fetching image:', error);
@@ -28,12 +29,11 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
 
   return (
     <div className="flex flex-wrap justify-center">
-      {/* Render attachments from medical records */}
       {medicalRecords && medicalRecords.data && medicalRecords.data.map((record, index) => (
         <div key={index} className="m-4">
           <div className="flex flex-wrap justify-center gap-4">
             {record.attachments && record.attachments.map((attachment, attachmentIndex) => {
-              const imageUrl = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
+              const imageUrl = `${BASE_URL}/uploads/${attachment.filename}`;
               return (
                 <div key={attachmentIndex} className="flex flex-col items-center">
                   {attachment.filename && (
@@ -64,9 +64,8 @@ function PatientImages({ medicalRecords, webPatientAttachments, token }) {
         </div>
       ))}
 
-      {/* Render attachments from web patient */}
       {webPatientAttachments && webPatientAttachments.map((attachment, index) => {
-        const imageUrl = `https://server-yvzt.onrender.com/${attachment}`;
+        const imageUrl = `${BASE_URL}/uploads/${attachment}`;
         return (
           <div key={index} className="flex flex-col items-center">
             <div className="mb-2">

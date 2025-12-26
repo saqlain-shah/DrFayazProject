@@ -1,36 +1,27 @@
 import fs from 'fs';
 import nodemailer from 'nodemailer';
 
-// Map to store generated OTPs
 global.otpMap = new Map();
+const OTP_EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes
 
-// Function to generate OTP
 const generateOTP = () => {
-    // Generate and return a random 6-digit OTP
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Function to send OTP to email
 export const sendOTP = async (req, res) => {
     const { email, otpType } = req.body;
-
-    // Check if email and otpType are provided in the request body
     if (!email || !otpType) {
         return res.status(400).json({ success: false, message: "Email and OTP type are required" });
     }
 
-    // Generate OTP
     const generatedOTP = generateOTP();
-
-    // Check if OTP generation failed
     if (!generatedOTP) {
         return res.status(500).json({ success: false, message: "Failed to generate OTP" });
     }
 
-    // Store the OTP temporarily (you can replace this with database storage)
-    otpMap.set(`${email}_${otpType}`, generatedOTP); // Use both email and otpType to create a unique key for storing OTP
+    const expiryTime = Date.now() + OTP_EXPIRATION_TIME;
+    otpMap.set(`${email}_${otpType}`, { otp: generatedOTP, expiry: expiryTime });
 
-    // HTML content for OTP email
     const htmlContent = `
     <p>Dear Doctor,</p>
     <p>Your OTP for verification is: <strong>${generatedOTP}</strong></p>
@@ -39,69 +30,55 @@ export const sendOTP = async (req, res) => {
     <p>Thank you!</p>
     `;
 
-    // Send OTP to the provided email
     try {
-        // Create a nodemailer transporter using SMTP transport
         const transporter = nodemailer.createTransport({
             host: 'smtp.office365.com',
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
-              user: 'appointment@avicenahealthcare.com', // Replace with your email address
-              pass: 'Godaay2024' // Replace with your email password
+                user: 'appointment@avicenahealthcare.com',
+                pass: 'Godaay2024'
             }
-          });
+        });
 
-        // Email content
         const mailOptions = {
-            from: 'appointment@avicenahealthcare.com', // Replace with your email address
+            from: 'appointment@avicenahealthcare.com',
             to: email,
             subject: 'OTP for Verification',
             html: htmlContent
         };
 
-        // Send email
         await transporter.sendMail(mailOptions);
-
-        // Return success response
         return res.json({ success: true, message: "OTP sent successfully" });
     } catch (error) {
         console.error('Error sending OTP:', error);
-        // Remove OTP from temporary storage if sending fails
-        otpMap.delete(`${email}_${otpType}`); // Remove the OTP from the map if sending fails
+        otpMap.delete(`${email}_${otpType}`);
         return res.status(500).json({ success: false, message: "Failed to send OTP" });
     }
 };
 
 export const verifyOTP = async (req, res) => {
-    const { email, otp, otpType } = req.body; // Get otpType from the request body
-
-    // Check if email, OTP, and otpType are provided
+    const { email, otp, otpType } = req.body;
     if (!email || !otp || !otpType) {
         return res.status(400).json({ success: false, message: "Email, OTP, and OTP type are required" });
     }
 
-    // Retrieve the stored OTP for the email and otpType
-    const storedOTP = otpMap.get(`${email}_${otpType}`);
-
-    // Check if storedOTP exists
-    if (!storedOTP) {
+    const storedData = otpMap.get(`${email}_${otpType}`);
+    if (!storedData) {
         return res.status(400).json({ success: false, message: "No OTP found for the provided email and OTP type" });
     }
 
-    // Convert storedOTP and user OTP to strings
-    const storedOTPString = storedOTP.toString();
-    const userOTPString = otp.toString();
+    const { otp: storedOTP, expiry } = storedData;
 
-    // Check if OTP is valid
-    if (storedOTPString === userOTPString) {
-        // OTP is valid, remove it from the map
+    if (Date.now() > expiry) {
         otpMap.delete(`${email}_${otpType}`);
-        // Your OTP verification logic here
-        // If OTP is valid, send success response
+        return res.status(400).json({ success: false, message: "OTP has expired" });
+    }
+
+    if (storedOTP.toString() === otp.toString()) {
+        otpMap.delete(`${email}_${otpType}`);
         return res.json({ success: true, message: "OTP verified successfully" });
     } else {
-      // Invalid OTP
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
+        return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
-  };
+};

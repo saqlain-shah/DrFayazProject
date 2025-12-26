@@ -3,6 +3,8 @@ import Modal from './Modal';
 import { FiEye } from 'react-icons/fi';
 import { MedicineDosageTable } from '../../components/Tables';
 import axios from 'axios';
+import BASE_URL from '../../baseUrl.jsx';
+
 function MedicalRecodModal({ closeModal, isOpen, data, }) {
   const { prescription, attachments, complaints, diagnosis, vitalSigns, treatment } = data;
   const [showMedicineDosages, setShowMedicineDosages] = useState(false);
@@ -35,7 +37,7 @@ function MedicalRecodModal({ closeModal, isOpen, data, }) {
           </div>
           <div className="col-span-12 md:col-span-9 border-[1px] border-border rounded-xl p-6 xs:grid-cols-2 md:grid-cols-4 grid gap-4">
             {attachments.map((attachment, index) => {
-              const imageUrl = `https://server-yvzt.onrender.com/uploads/${attachment.filename}`;
+              const imageUrl = `${BASE_URL}/uploads/${attachment.filename}`;
               console.log(imageUrl)
               return (
                 <img

@@ -4,11 +4,6 @@
 import nodemailer from 'nodemailer';
 import twilio from 'twilio';
 
-
-
-
-
-// Function to send email
 const sendEmail = async (emailAddress, filePath) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -30,8 +25,6 @@ const sendEmail = async (emailAddress, filePath) => {
 
   await transporter.sendMail(mailOptions);
 };
-
-// Function to send WhatsApp message
 const sendWhatsAppMessage = async (phoneNumber, filePath) => {
   const twilioClient = twilio('YOUR_TWILIO_ACCOUNT_SID', 'YOUR_TWILIO_AUTH_TOKEN');
 
@@ -42,11 +35,8 @@ const sendWhatsAppMessage = async (phoneNumber, filePath) => {
     mediaUrl: `http://yourserver.com/${filePath}`
   });
 };
-
-// Controller for handling file uploads
 export const uploadFile = async (req, res) => {
   try {
-    // Check if file is present in request
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -58,8 +48,6 @@ export const uploadFile = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while uploading file' });
   }
 };
-
-// Controller for sharing file via email
 export const shareViaEmail = async (req, res) => {
   try {
     const { emailAddress, filePath } = req.body;
@@ -75,8 +63,6 @@ export const shareViaEmail = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while sharing file via email' });
   }
 };
-
-// Controller for sharing file via WhatsApp
 export const shareViaWhatsApp = async (req, res) => {
   try {
     const { phoneNumber, filePath } = req.body;

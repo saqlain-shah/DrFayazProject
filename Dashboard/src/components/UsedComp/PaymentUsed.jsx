@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 function PaymentsUsed({ doctor }) {
   const navigate = useNavigate();
-  // onClick event handler
   const handleEventClick = (id) => {
     navigate(`/payments/preview/${id}`);
   };

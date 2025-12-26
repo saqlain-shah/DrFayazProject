@@ -13,24 +13,16 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid email or ' });
     }
     console.log("user", user)
-    // Compare trimmed password using bcrypt
     const isValidPassword = await bcrypt.compare(password, user.password);
     console.log("vlidate", isValidPassword)
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid  or password' });
     }
-
-    // Generate token upon successful login
     const token = jwt.sign({ email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-    // Set token as an HTTP cookie
     res.cookie('access_token', token, {
       httpOnly: true,
       maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days in milliseconds
   });
-  // Expires in 90 days
-
-    // Set token in response body
     res.status(200).json({ message: 'Login successful', token, id: user._id });
 
   } catch (error) {
@@ -119,4 +111,47 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
+export const updateUserById = async (req, res, next) => {
+  const { userId } = req.params;
+  const { name, email, phone, address } = req.body;
+  const profileImage = req.file ? `uploads/${req.file.filename}` : req.body.profileImage; // Ensure file path
 
+  try {
+      const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { name, email, phone, address, profileImage },
+          { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      return res.status(200).json(updatedUser);
+  } catch (error) {
+      console.error('Error updating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+export const getUserById = async (req, res) => {
+  const { Id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(Id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    console.log("User Data:", user); // Log user data to check if `profileImage` exists
+
+    // Respond with the user details
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

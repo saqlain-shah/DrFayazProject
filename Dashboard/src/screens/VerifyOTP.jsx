@@ -4,6 +4,7 @@ import { Button, Input } from '../components/Form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import BASE_URL from '../baseUrl.jsx';
 
 function VerifyOTP() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ function VerifyOTP() {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post('https://server-yvzt.onrender.com/api/auth/verifyotp', {
+            const response = await axios.post(`${BASE_URL}/api/auth/verifyotp`, {
                 otp,
             });
             if (response.status === 200) {

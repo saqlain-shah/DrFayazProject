@@ -12,6 +12,7 @@ const tdclass = 'text-start text-sm py-4 px-2 whitespace-nowrap';
 import axios from 'axios';
 import { sortsDatas } from './Datas';
 import { RiCloseLine } from 'react-icons/ri';
+import BASE_URL from '../baseUrl.jsx';
 
 export function Transactiontable({ data, action, updatedData, setUpdatedData }) {
 
@@ -32,7 +33,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
 
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+    fetch(`${BASE_URL}/api/web/${itemToUpdate._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +48,6 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
         if (!response.ok) {
           throw new Error('Failed to update status or method');
         }
-        // Handle success response if needed
         toast.success('Transaction updated successfully!');
       })
       .catch((error) => {
@@ -56,13 +56,10 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
       });
   };
   const handleDelete = (itemId) => {
-  
-  
-    // Ensure itemId is in the correct format
-    const id = itemId._id.toString(); // Assuming _id is an ObjectId
+      const id = itemId._id.toString(); // Assuming _id is an ObjectId
   
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${id}`, { // Use id instead of itemId
+    fetch(`${BASE_URL}/api/web/${id}`, { // Use id instead of itemId
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -72,7 +69,6 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
         if (!response.ok) {
           throw new Error('Failed to delete payment');
         }
-        // Remove the deleted payment from UI
         const updatedItems = data.filter((item) => item._id !== itemId._id);
         setUpdatedData(updatedItems);
         toast.success('Payment deleted successfully!');
@@ -139,7 +135,7 @@ export function Transactiontable({ data, action, updatedData, setUpdatedData }) 
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`${BASE_URL}/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -213,7 +209,7 @@ export function Transactiontables({ data, action, updatedData, setUpdatedData })
     const itemToUpdate = updatedData.find((item) => item._id === itemId._id);
 
     const token = localStorage.getItem('token');
-    fetch(`https://server-yvzt.onrender.com/api/web/${itemToUpdate._id}`, {
+    fetch(`${BASE_URL}/api/web/${itemToUpdate._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -273,7 +269,7 @@ export function Transactiontables({ data, action, updatedData, setUpdatedData })
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
+                    src={`${BASE_URL}/${item.patientInfo.image}`} // Adjust the URL according to your backend configuration
                     alt={item.patientInfo.name}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -383,7 +379,7 @@ export function InvoiceTable({ data, deleteInvoice, updateInvoiceData }) {
               <div className="flex gap-4 items-center">
                 <span className="w-12">
                   <img
-                    src={`https://server-yvzt.onrender.com/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
+                    src={`${BASE_URL}/${item?.patient?.profilePicture}`} // Adjust the base URL as needed
                     alt={item?.patient?.fullName}
                     className="w-full h-12 rounded-full object-cover border border-border"
                   />
@@ -507,8 +503,8 @@ export function ServiceTable({ data, onEdit, onDelete, setServicesData }) {
   const handleStatusToggle = async (item) => {
     try {
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
+      await axios.put(`${BASE_URL}/api/services/${item._id}`, updatedItem);
+      const updatedResponse = await axios.get(`${BASE_URL}/api/services`);
       setServicesData(updatedResponse.data);
       toast.success('Service status updated successfully.');
     } catch (error) {
@@ -666,7 +662,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
                 <td className={tdClass}>
                   {item.profilePicture && (
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profilePicture}`}
+                      src={`${BASE_URL}/${item.profilePicture}`}
                       alt={item.fullName}
                       className="w-full h-11 rounded-full object-cover border border-border"
                     />
@@ -709,7 +705,7 @@ export function PatientTable({ patients, webPatients, onDelete, onDeleteWebPatie
       <td className={tdClass}>
         {webPatient.patientInfo && (
           <img
-            src={`https://server-yvzt.onrender.com/${webPatient.patientInfo.image}`}
+            src={`${BASE_URL}/${webPatient.patientInfo.image}`}
             alt={webPatient.patientInfo.name}
             className="w-full h-11 rounded-full object-cover border border-border"
           />
@@ -842,7 +838,7 @@ export function DoctorsTable({ data, functions, doctor }) {
                 <div className="flex gap-4 items-center">
                   <span className="w-12">
                     <img
-                      src={`https://server-yvzt.onrender.com/${item.profileImage}`}
+                      src={`${BASE_URL}/${item.profileImage}`}
                       className="w-full h-12 rounded-full object-cover border border-border"
                     />
                   </span>

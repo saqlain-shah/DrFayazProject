@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import log from '../../images/doc/dr.png';
+import BASE_URL from '../../baseUrl';
 
 import './SignInForm.css';
 
@@ -54,23 +55,19 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     const registerUser = async () => {
         try {
-            const response = await axios.post('https://server-yvzt.onrender.com/api/userauth/register', user);
+            const response = await axios.post(`${BASE_URL}/api/userauth/register`, user);
             if (response.data.message === 'Registration successful') {
                 handleSignUpSuccess();
-                // Redirect to home page after successful sign-up
             } else {
                 setLoading(false);
-                // setInfoError(response.data.message);
             }
 
         } catch (error) {
             setLoading(false);
             if (error.response) {
-                // Server responded with a status code outside of 2xx range
                 console.error('Gmail already exist:', error.response.data);
                 setInfoError('Email already exists');
             } else if (error.request) {
-                // The request was made but no response was received
                 console.error('Network error:', error.request);
                 setInfoError('Network error. Please check your connection.');
             }

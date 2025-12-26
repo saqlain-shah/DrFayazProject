@@ -77,7 +77,6 @@ function PreviewPayment() {
         data-aos-offset="200"
         className="bg-white my-8 rounded-xl border-[1px] border-border p-5"
       >
-        {/* header */}
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-2 items-center">
           <div className="lg:col-span-3 flex items-center gap-2">
             <img
@@ -113,9 +112,7 @@ function PreviewPayment() {
             </div>
           </div>
         </div>
-        {/* sender and recever */}
         <SenderReceverComp item={payment.user} functions={{}} button={false} />
-        {/* products */}
         <div className="grid grid-cols-6 gap-6 mt-8 items-start">
           <div className="lg:col-span-4 col-span-6">
             <div className=" p-6 border border-border rounded-xl overflow-x-scroll">
@@ -151,7 +148,6 @@ function PreviewPayment() {
               <p className="text-sm font-extralight">Grand Total:</p>
               <h6 className="text-sm font-medium text-green-600">$6000</h6>
             </div>
-            {/* notes */}
             <div className="w-full p-4 border border-border rounded-lg">
               <h1 className="text-sm font-medium">Notes</h1>
               <p className="text-xs mt-2 font-light leading-5">

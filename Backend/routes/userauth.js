@@ -1,7 +1,6 @@
 import express from 'express';
 import { login, register, changePassword, getClientById, updateClientById, logout, sendEmail, getAllUsers } from '../controllers/user.js';
 import multer from 'multer';
-// Import the changePassword function
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 

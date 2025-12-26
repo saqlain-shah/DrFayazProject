@@ -7,6 +7,7 @@ import { useUpdatePatientMutation } from '../../../redux/api/patientApi';
 import ImageUpload from '../../UI/form/ImageUpload';
 import pImage from '../../../images/avatar.jpg';
 import axios from 'axios';
+import BASE_URL from '../../../baseUrl.jsx';
 
 const PatientProfileSetting = () => {
     const navigate = useNavigate();
@@ -42,10 +43,10 @@ const PatientProfileSetting = () => {
                 'Authorization': `Bearer ${token}` // Include token in the Authorization header
             }
         };
-        await axios.get(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, config)
+        await axios.get(`${BASE_URL}/api/userauth/${params.clientId}`, config)
             .then(response => {
     
-                const imagePath = `https://server-yvzt.onrender.com/${response.data.image}`
+                const imagePath = `${BASE_URL}/${response.data.image}`
                 response.data.image = imagePath;
                 setData(response.data);
             })
@@ -126,7 +127,7 @@ const PatientProfileSetting = () => {
 
         try {
             // Send PUT request with FormData
-            const response = await axios.put(`https://server-yvzt.onrender.com/api/userauth/${params.clientId}`, formData, config);
+            const response = await axios.put(`${BASE_URL}/api/userauth/${params.clientId}`, formData, config);
         
             message.success('Successfully Profile Updated');
             navigate(`/dashboard/${params.clientId}`);

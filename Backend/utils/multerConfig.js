@@ -10,7 +10,6 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    // Always accept the file by passing `true` as the second parameter to `cb`
     cb(null, true);
 };
 

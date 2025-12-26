@@ -3,7 +3,8 @@ import { BiPlus, BiTrash } from 'react-icons/bi';
 import { Button, Checkbox, Input } from '../../components/Form';
 import axios from 'axios';
 import DentalChartTable from './DentalChartTable';
-import { useParams } from 'react-router-dom'; // Add this import
+import { useParams } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
 
 function DentalChart() {
   const { id } = useParams();
@@ -26,26 +27,31 @@ function DentalChart() {
   const [submittedData, setSubmittedData] = useState([]);
 
   useEffect(() => {
+    if (!id) return;
+  
+    console.log("Fetching data for patient ID:", id);
+  
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`https://server-yvzt.onrender.com/api/dental-chart/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        const response = await axios.get(`${BASE_URL}/api/dental-chart/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setSubmittedData([response.data]);
+  
+        console.log("Full Response:", response); // Debugging log
+        console.log("Response Data:", response.data);
+  
+        setSubmittedData(response.data); // Set the array properly
       } catch (error) {
-        console.error('Error:', error);
-        console.error('Error message:', error.response.data);
+        console.error("Error fetching data:", error);
+        if (error.response) {
+          console.error("Error message:", error.response.data);
+        }
       }
     };
-
-    // Fetch data only if submittedData is empty
-    if (submittedData.length === 0) {
-      fetchData();
-    }
-  }, [id, submittedData]); // Include submittedData in dependency array
+  
+    fetchData();
+  }, [id]);
 
   const handleInputChange = (event) => {
     setSeriousDisease(event.target.value);
@@ -74,8 +80,9 @@ function DentalChart() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'https://server-yvzt.onrender.com/api/dental-chart/',
+        `${BASE_URL}/api/dental-chart/`,
         {
+          patientId: id, // Include patient ID
           seriousDisease,
           dentalConditions: dentalConditions.filter(condition => condition.checked).map(condition => condition.name),
           mentalHealthIssues,
@@ -106,11 +113,12 @@ function DentalChart() {
       console.error('Error:', error);
     }
   };
+  
 
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/dental-chart/${id.toString()}`, {
+      await axios.delete(`${BASE_URL}/api/dental-chart/${id.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

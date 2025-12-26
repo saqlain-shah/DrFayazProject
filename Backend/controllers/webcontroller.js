@@ -217,12 +217,9 @@ export const getAllWebs = async (req, res) => {
     const { id, gender } = req.params;
     console.log('Received parameters for webs:', { id, gender }); // Log received parameters
     let query = {};
-
-    // Modify to use req.query instead of req.params for gender filter
     const { gender: genderQuery } = req.query;
 
     if (genderQuery && genderQuery !== 'all') {
-      // Convert gender to lowercase for consistency
       const genderValue = genderQuery.toLowerCase();
       console.log('Gender filter applied for webs:', genderValue); // Log the applied gender filter
       query['patientInfo.gender'] = genderValue;
@@ -232,7 +229,7 @@ export const getAllWebs = async (req, res) => {
       query['patientInfo.id'] = id;
     }
 
-    console.log('Generated MongoDB query for webs:', query); // Log the generated query
+    console.log('Generated MongoDB query for webs:', query);
 
     const webs = await WebPatient.find(query);
     res.status(200).json(webs);
@@ -241,10 +238,30 @@ export const getAllWebs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// export const getMonthlyEarnings = async (req, res) => {
+//   try {
+//     const earnings = await WebPatient.aggregate([
+//       {
+//         $group: {
+//           _id: { $month: "$createdAt" }, // Group by month
+//           total: { $sum: "$selectedService.price" }, // Adjust field based on where 'amount' or price is stored
+//         },
+//       },
+//       { $sort: { _id: 1 } }, // Sort from Jan to Dec
+//     ]);
 
+//     // Create a 12-month array with default values (0) and fill it with earnings
+//     const monthlyEarnings = new Array(12).fill(0);
+//     earnings.forEach(({ _id, total }) => {
+//       monthlyEarnings[_id - 1] = total; // _id is month number (1 = Jan, 2 = Feb, etc.)
+//     });
 
-
-
+//     res.json({ earningsByMonth: monthlyEarnings });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error fetching earnings" });
+//   }
+// };
 
 export const getWebByIds = async (req, res) => {
   try {
@@ -360,3 +377,66 @@ export const getWebById = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+// Controller to get monthly earnings
+export const getMonthlyEarnings = async (req, res) => {
+  try {
+    const earnings = await WebPatient.aggregate([
+      {
+        $unwind: "$selectedService",
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            serviceName: "$selectedService.name",
+            servicePrice: "$selectedService.price",
+          },
+          serviceCount: { $sum: 1 }, // Count how many times each service was selected
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          serviceName: "$_id.serviceName",
+          servicePrice: { $toDouble: "$_id.servicePrice" }, // Convert price to a number
+          serviceCount: 1,
+          monthlyEarnings: {
+            $multiply: [{ $toDouble: "$_id.servicePrice" }, "$serviceCount"], // Multiply after casting
+          },
+        },
+      },
+      { $sort: { month: 1 } }, // Sort by month
+    ]);
+
+    // Create default structure for all 12 months
+    const monthlyData = Array.from({ length: 12 }, (_, index) => ({
+      month: index + 1,
+      totalEarnings: 0,
+      services: [],
+    }));
+
+    // Fill in the earnings and service data for each month
+    earnings.forEach((entry) => {
+      const monthIndex = entry.month - 1;
+      monthlyData[monthIndex].totalEarnings += entry.monthlyEarnings;
+      monthlyData[monthIndex].services.push({
+        name: entry.serviceName,
+        price: entry.servicePrice,
+        count: entry.serviceCount,
+        earnings: entry.monthlyEarnings,
+      });
+    });
+
+    res.status(200).json({ monthlyData });
+  } catch (error) {
+    console.error("Error fetching monthly earnings:", error);
+    res.status(500).json({
+      message: "Error fetching monthly earnings",
+      error: error.message,
+    });
+  }
+};
+
+
+

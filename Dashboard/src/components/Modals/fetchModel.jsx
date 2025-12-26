@@ -3,8 +3,6 @@ import moment from 'moment';
 
 const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
     if (!isOpen || !event) return null;
-
-    // Function to render details of the appointment
     const renderDetails = () => {
         return Object.keys(event).map((key) => (
             <p key={key} className="mb-2">
@@ -12,14 +10,11 @@ const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
             </p>
         ));
     };
-
-    // Function to render the value based on its type
     const renderValue = (value) => {
         if (moment.isDate(value)) {
             return moment(value).format('LLLL'); // Format Date objects using moment
         }
         if (typeof value === 'object' && value !== null) {
-            // If value is an object, render its keys and values recursively
             return Object.entries(value).map(([key, val]) => (
                 <p key={key} className="mb-2">
                     <span className="font-semibold">{key}:</span> {renderValue(val)}
@@ -28,8 +23,6 @@ const AppointmentDetailsModal = ({ isOpen, closeModal, event, onDelete }) => {
         }
         return value;
     };
-
-    // Function to handle delete button click
     const handleDeleteClick = () => {
         onDelete(event.id); // Pass the id of the event to be deleted
         closeModal(); // Close the modal after deletion

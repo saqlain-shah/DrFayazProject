@@ -5,6 +5,7 @@ import AddAppointmentModal from '../Modals/AddApointmentModal';
 import EditAppointmentModal from '../Modals/EditAppointment';
 import { BiPlus } from 'react-icons/bi';
 import { toast } from 'react-hot-toast';
+import BASE_URL from '../../baseUrl.jsx';
 
 function AppointmentsUsed({ token }) {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function AppointmentsUsed({ token }) {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('https://server-yvzt.onrender.com/api/appointments', {
+      const response = await fetch(`${BASE_URL}/api/appointments`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

@@ -1,8 +1,10 @@
 // Fetch total patient count
+import BASE_URL from '../baseUrl.jsx';
+
 export const fetchTotalPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://server-yvzt.onrender.com/api/patients/total-count', {
+        const response = await fetch(`${BASE_URL}/api/patients/total-count`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -26,7 +28,7 @@ export const fetchTotalPatientCount = async () => {
 export const fetchwebsitePatient = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://server-yvzt.onrender.com/api/web/', {
+        const response = await fetch(`${BASE_URL}/api/web/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -46,7 +48,7 @@ export const fetchwebsitePatient = async () => {
 export const fetchRecentPatients = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://server-yvzt.onrender.com/api/patients/recent', {
+        const response = await fetch(`${BASE_URL}/api/patients/recent`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -63,7 +65,7 @@ export const fetchRecentPatients = async () => {
 export const fetchWebPatientTodayAppointments = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://server-yvzt.onrender.com/api/web/today-appointments', {
+        const response = await fetch(`${BASE_URL}/api/web/today-appointments`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -83,7 +85,7 @@ export const fetchTotalWebPatientCount = async () => {
     try {
         const token = localStorage.getItem('token');
         console.log('Fetching total web patient count...');
-        const response = await fetch('https://server-yvzt.onrender.com/api/web/total-count', {
+        const response = await fetch(`${BASE_URL}/api/web/total-count`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -104,12 +106,10 @@ export const fetchTotalWebPatientCount = async () => {
     }
 };
 
-
-
 export const fetchTotalEarnings = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://server-yvzt.onrender.com/api/web/', {
+        const response = await fetch(`${BASE_URL}/api/web/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -134,7 +134,26 @@ export const fetchTotalEarnings = async () => {
         throw new Error('Error fetching total earnings:', error);
     }
 };
+export const fetchMonthlyEarnings = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${BASE_URL}/api/web/monthly-earnings`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+      const data = await response.json();
+      return data; // Now includes earningsByMonth and patientsByMonth
+    } catch (error) {
+      console.error("Error fetching monthly earnings:", error);
+    }
+  };
+  
+  
 
+  
+  
+  
 
 
 

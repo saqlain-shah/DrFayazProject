@@ -7,6 +7,7 @@ import { BiChevronDown, BiPlus } from 'react-icons/bi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import AddEditServiceModal from '../components/Modals/AddEditServiceModal';
+import BASE_URL from '../baseUrl.jsx';
 
 function Services() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +18,7 @@ function Services() {
     async function fetchData() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://server-yvzt.onrender.com/api/services', {
+        const response = await axios.get(`${BASE_URL}/api/services`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -35,23 +36,19 @@ function Services() {
     setData({});
   };
 
-
   const onEdit = (data) => {
     setIsOpen(true);
     setData(data);
   };
 
-
-
   const onDelete = async (item) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://server-yvzt.onrender.com/api/services/${item._id}`, {
+      await axios.delete(`${BASE_URL}/api/services/${item._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-      // Filter out the deleted service using its ID
       setServicesData(prevServicesData => prevServicesData.filter(service => service._id !== item._id));
       toast.success('Service deleted successfully.');
     } catch (error) {
@@ -60,15 +57,23 @@ function Services() {
     }
   };
 
-
-
-
   const handleStatusToggle = async (item) => {
     try {
+      const token = localStorage.getItem('token');
       const updatedItem = { ...item, status: !item.status };
-      await axios.put(`https://server-yvzt.onrender.com/api/services/${item._id}`, updatedItem);
-      const updatedResponse = await axios.get('https://server-yvzt.onrender.com/api/services');
-      setServicesData(updatedResponse.data);
+
+      await axios.put(`${BASE_URL}/api/services/${item._id}`, updatedItem, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      setServicesData(prevServicesData =>
+        prevServicesData.map(service =>
+          service._id === item._id ? { ...service, status: !service.status } : service
+        )
+      );
+
       toast.success('Service status updated successfully.');
     } catch (error) {
       console.error('Error updating service status:', error);
@@ -76,24 +81,36 @@ function Services() {
     }
   };
 
-  const createService = async (serviceData) => {
+  const saveService = async (serviceData) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://server-yvzt.onrender.com/api/services', serviceData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-     
+      if (serviceData._id) {
+        const response = await axios.put(`${BASE_URL}/api/services/${serviceData._id}`, serviceData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setServicesData(prevData =>
+          prevData.map(service => (service._id === serviceData._id ? response.data : service))
+        );
+
+        toast.success('Service updated successfully.');
+      } else {
+        const response = await axios.post(`${BASE_URL}/api/services`, serviceData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setServicesData(prevData => [...prevData, response.data]);
+
+        toast.success('Service created successfully.');
+      }
+
       onCloseModal();
-      toast.success('Service created successfully.');
-
-      setServicesData(prevData => [...prevData, response.data]);
-
     } catch (error) {
-      console.error('Error creating service:', error);
-      toast.error('Failed to create service. Please try again.');
+      console.error('Error saving service:', error);
+      toast.error('Failed to save service. Please try again.');
     }
   };
 
@@ -104,7 +121,7 @@ function Services() {
           datas={data}
           isOpen={isOpen}
           closeModal={onCloseModal}
-          onCreate={createService}
+          onCreate={saveService} // Updated function name
           setServicesData={setServicesData}
         />
       )}
@@ -118,8 +135,6 @@ function Services() {
 
       <h1 className="text-xl font-semibold">Services</h1>
       <div className="bg-white my-8 rounded-xl border-[1px] border-border p-5">
-
-
         <div className="mt-8 w-full overflow-x-hidden">
           <ServiceTable
             data={servicesData}

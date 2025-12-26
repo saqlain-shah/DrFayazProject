@@ -12,22 +12,14 @@ export const login = async (req, res, next) => {
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
-    // Compare trimmed password using bcrypt
     const isValidPassword = await bcrypt.compare(req.body.password.trim(), user.password);
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
-
-    // Generate token upon successful login
     const token = jwt.sign({ email: req.body.email, id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     const { password, ...details } = user._doc;
-
-    // Set token in cookie
     res.cookie('access_token', token, { httpOnly: true });
-
-    // Send token and id in response
     return res.status(200).json({ message: 'Login successful', token, ...details });
   } catch (error) {
     console.error('Error logging in:', error); // Log any errors

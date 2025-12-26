@@ -10,7 +10,6 @@ const Attachment = ({ onFileChange = () => {}, onDone = () => {} }) => {
   const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
-    // Load attachments from local storage on component mount
     const savedAttachments = JSON.parse(localStorage.getItem('attachments')) || [];
     console.log('Files retrieved from local storage:', savedAttachments);
     if (savedAttachments.length > 0) {

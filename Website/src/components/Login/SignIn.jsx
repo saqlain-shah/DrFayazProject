@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import log from "../../images/doc/dr.png";
 import { message, Modal } from "antd";
 import axios from "axios";
-// import { useParams } from 'react-router-dom';
+import BASE_URL from '../../baseUrl';
 const SignIn = ({ handleResponse }) => {
   const {
     register,
@@ -23,7 +23,7 @@ const SignIn = ({ handleResponse }) => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://server-yvzt.onrender.com/api/userauth/login",
+        `${BASE_URL}/api/userauth/login`,
         data
       );
       const {
@@ -34,7 +34,7 @@ const SignIn = ({ handleResponse }) => {
         bloodGroup,
         gender,
         image,
-      } = response.data; // Assuming token, _id, and isProfileUpdated are returned from the API
+      } = response.data;
       if (token && _id) {
         localStorage.setItem("token", token); // Store token in local storage
         localStorage.setItem("clientId", _id);
@@ -59,7 +59,6 @@ const SignIn = ({ handleResponse }) => {
   const handleUpdateProfile = () => {
     setShowModal(false);
     navigate(`/dashboard/profile-setting/${uerid}`);
-    // Navigate to profile settings
   };
 
   return (

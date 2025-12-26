@@ -12,6 +12,7 @@ import {
 import { toast } from 'react-hot-toast';
 import { BsCalendarMonth } from 'react-icons/bs';
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from '../../baseUrl.jsx';
 
 function Payments() {
   const [status, setStatus] = useState(sortsDatas.status[0]);
@@ -23,7 +24,7 @@ function Payments() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch('https://server-yvzt.onrender.com/api/web/', {
+    fetch(`${BASE_URL}/api/web/`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -43,12 +44,6 @@ function Payments() {
   useEffect(() => {
     setTransactionData(updatedData);
   }, [updatedData]);
-
-
-
-
-
-
   const sorts = [
     {
       id: 2,
@@ -63,7 +58,6 @@ function Payments() {
       datas: sortsDatas.method,
     },
   ];
-  // boxes
   const boxes = [
     {
       id: 1,

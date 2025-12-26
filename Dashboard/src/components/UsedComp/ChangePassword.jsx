@@ -4,6 +4,7 @@ import { HiOutlineCheckCircle } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAuth } from '../../AuthContext';
+import BASE_URL from '../../baseUrl.jsx';
 
 function ChangePassword() {
   const { user, updateUser } = useAuth();
@@ -17,18 +18,10 @@ function ChangePassword() {
       console.log('User is not logged in');
       return;
     }
-
-    console.log('User ID:', user.id);
-    console.log('Old Password:', oldPassword);
-    console.log('New Password:', newPassword);
-
-    // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
       toast.error('New password and confirm password do not match');
       return;
     }
-
-    // Check if old password and new password are the same
     if (oldPassword === newPassword) {
       toast.error('New password must be different from old password');
       return;
@@ -37,10 +30,8 @@ function ChangePassword() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      console.log('Token:', token);
-
       const response = await axios.put(
-        'https://server-yvzt.onrender.com/api/auth/change-password',
+        `${BASE_URL}/api/auth/change-password`,
         {
           userId: user.id,
           oldPassword,
@@ -52,9 +43,6 @@ function ChangePassword() {
           },
         }
       );
-
-      console.log('Response:', response.data);
-
       toast.success('Password changed successfully');
       setOldPassword('');
       setNewPassword('');
