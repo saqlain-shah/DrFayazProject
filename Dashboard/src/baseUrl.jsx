@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
 
-// const BASE_URL = "https://server-yvzt.onrender.com/api";
-const BASE_URL = 'http://localhost:8800';
+const BASE_URL = "https://www.avicenahealthcare.com/api";
+// const BASE_URL = 'http://localhost:8800';
 export default BASE_URL;

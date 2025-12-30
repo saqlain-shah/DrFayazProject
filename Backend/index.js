@@ -36,131 +36,155 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.get('/', (req, res) => {
+    const port = process.env.PORT || 8800;
+
+    res.status(200).send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Backend Status</title>
+            <style>
+                body {
+                    margin: 0;
+                    height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #f7f9fc;
+                    font-family: Arial, Helvetica, sans-serif;
+                }
+                .container {
+                    text-align: center;
+                }
+                h1 {
+                    color: #2c3e50;
+                    margin-bottom: 10px;
+                }
+                p {
+                    color: #555;
+                    margin: 5px 0;
+                    font-size: 16px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Backend API is Running 🚀</h1>
+                <p>Status: <strong>OK</strong></p>
+                <p>Port: <strong>${port}</strong></p>
+            </div>
+        </body>
+        </html>
+    `);
+});
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 console.log('MongoDB URI:', process.env.MONGO_URL);
-const getSlotsForSpecificPeriod = (timeRanges, duration) => {
-    console.log('getSlotsForSpecificPeriod is running...');
+const getSlotsForSpecificPeriod = (timeRanges, duration, maxSlots, dayLabel, existingCount) => {
+    console.log(`Generating slots for ${dayLabel}...`);
     const slots = [];
     const now = moment().utc();
-    const today = now.clone().startOf('day');
-    const tomorrow = today.clone().add(1, 'day');
+    const targetDay = now.clone().startOf('day');
 
-    let todayCount = 0;
-    let tomorrowCount = 0;
-    const MAX_SLOTS_PER_DAY = 9;
+    if (dayLabel === 'tomorrow') {
+        targetDay.add(1, 'day');
+    }
+
+    let slotCount = existingCount;
+
     for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
-        if (todayCount >= MAX_SLOTS_PER_DAY) break; // 🔒 Stop if limit reached
+        if (slotCount >= maxSlots) break; // Stop if limit reached
 
-        let startTime = today.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
-        let endTime = today.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+        let startTime = targetDay.clone().set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+        let endTime = targetDay.clone().set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
 
-        while (startTime.isBefore(endTime) && todayCount < MAX_SLOTS_PER_DAY) {
+        while (startTime.isBefore(endTime) && slotCount < maxSlots) {
             const endSlotTime = startTime.clone().add(duration, 'minutes');
             if (endSlotTime.isAfter(endTime)) break;
             if (endSlotTime.isAfter(now)) {
                 slots.push({
                     start: startTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
                     end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-                    day: 'today'
+                    day: dayLabel
                 });
-                todayCount++;
+                slotCount++;
             }
             startTime = endSlotTime;
         }
     }
-    for (const { startHour, startMinute, endHour, endMinute } of timeRanges) {
-        if (tomorrowCount >= MAX_SLOTS_PER_DAY) break; // 🔒 Stop if limit reached
 
-        let nextDayStartTime = tomorrow.clone().set({ hour: startHour, minute: startMinute });
-        let nextDayEndTime = tomorrow.clone().set({ hour: endHour, minute: endMinute });
-
-        while (nextDayStartTime.isBefore(nextDayEndTime) && tomorrowCount < MAX_SLOTS_PER_DAY) {
-            const endSlotTime = nextDayStartTime.clone().add(duration, 'minutes');
-            if (endSlotTime.isAfter(nextDayEndTime)) break;
-            slots.push({
-                start: nextDayStartTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-                end: endSlotTime.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
-                day: 'tomorrow'
-            });
-            tomorrowCount++;
-            nextDayStartTime = endSlotTime;
-        }
-    }
-    console.log(`Generated ${slots.length} Slots (Today: ${todayCount}, Tomorrow: ${tomorrowCount}):`, slots);
+    console.log(`Generated ${slots.length} Slots for ${dayLabel}:`, slots);
     return slots;
 };
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
-const timeRanges = [
-    { startHour: 13, startMinute: 30, endHour: 14, endMinute: 0 },   // 1:30 PM - 2:00 PM GMT (6:30 PM PKT)
-    { startHour: 14, startMinute: 0, endHour: 14, endMinute: 30 },   // 2:00 PM - 2:30 PM GMT (7:00 PM PKT)
-    { startHour: 14, startMinute: 30, endHour: 15, endMinute: 0 },   // 2:30 PM - 3:00 PM GMT (7:30 PM PKT)
-    { startHour: 15, startMinute: 0, endHour: 15, endMinute: 30 },   // 3:00 PM - 3:30 PM GMT (8:00 PM PKT)
-    { startHour: 15, startMinute: 30, endHour: 16, endMinute: 0 },   // 3:30 PM - 4:00 PM GMT (8:30 PM PKT)
-    { startHour: 16, startMinute: 0, endHour: 16, endMinute: 30 }    // 4:00 PM - 4:30 PM GMT (9:00 PM PKT)
-];
-const slotDuration = 30;
-agenda.define('fetch slots', async () => {
-    console.log('Fetching slots...');
-    try {
-        const response = await axios.get(`http://localhost:8800/api/schedule`);
-        console.log(`Existing slots count: ${response.data.length}`);
-    } catch (error) {
-        console.error('❌ Error fetching slots:', error);
-    }
-});
 agenda.define('create slots', async () => {
     console.log('Creating slots...');
     const slotDuration = 20;
-    const MAX_SLOTS_PER_DAY = 9; // Maximum slots updated for 20-minute intervals
-
     try {
-        const response = await axios.get(`http://localhost:8800/api/schedule`);
+        const response = await axios.get(`https://www.avicenahealthcare.com/api/schedule`);
         const existingSlots = response.data || [];
-
         const todayDate = moment().utc().format('YYYY-MM-DD');
         const tomorrowDate = moment().utc().add(1, 'day').format('YYYY-MM-DD');
-
         const todaySlotsCount = existingSlots.filter(slot =>
             moment(slot.startDateTime).utc().format('YYYY-MM-DD') === todayDate
         ).length;
-
         const tomorrowSlotsCount = existingSlots.filter(slot =>
             moment(slot.startDateTime).utc().format('YYYY-MM-DD') === tomorrowDate
         ).length;
-
         console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
-        const timeRanges = [
-            { startHour: 18, startMinute: 0, endHour: 18, endMinute: 20 },  // 6:00 PM - 6:20 PM GMT
-            { startHour: 18, startMinute: 20, endHour: 18, endMinute: 40 }, // 6:20 PM - 6:40 PM GMT
-            { startHour: 18, startMinute: 40, endHour: 19, endMinute: 0 },  // 6:40 PM - 7:00 PM GMT
-            { startHour: 19, startMinute: 0, endHour: 19, endMinute: 20 },  // 7:00 PM - 7:20 PM GMT
-            { startHour: 19, startMinute: 20, endHour: 19, endMinute: 40 }, // 7:20 PM - 7:40 PM GMT
-            { startHour: 19, startMinute: 40, endHour: 20, endMinute: 0 },  // 7:40 PM - 8:00 PM GMT
-            { startHour: 20, startMinute: 0, endHour: 20, endMinute: 20 },  // 8:00 PM - 8:20 PM GMT
-            { startHour: 20, startMinute: 20, endHour: 20, endMinute: 40 }, // 8:20 PM - 8:40 PM GMT
-            { startHour: 20, startMinute: 40, endHour: 21, endMinute: 0 },  // 8:40 PM - 9:00 PM GMT
+        const isWeekend = [6, 7].includes(moment().utc().isoWeekday());
+        const isTomorrowWeekend = [6, 7].includes(moment().utc().add(1, 'day').isoWeekday());
+        const weekdayTimeRanges = [
+            { startHour: 18, startMinute: 0, endHour: 18, endMinute: 20 },
+            { startHour: 18, startMinute: 20, endHour: 18, endMinute: 40 },
+            { startHour: 18, startMinute: 40, endHour: 19, endMinute: 0 },
+            { startHour: 19, startMinute: 0, endHour: 19, endMinute: 20 },
+            { startHour: 19, startMinute: 20, endHour: 19, endMinute: 40 },
+            { startHour: 19, startMinute: 40, endHour: 20, endMinute: 0 },
+            { startHour: 20, startMinute: 0, endHour: 20, endMinute: 20 },
+            { startHour: 20, startMinute: 20, endHour: 20, endMinute: 40 },
+            { startHour: 20, startMinute: 40, endHour: 21, endMinute: 0 },
         ];
-
-        const slots = getSlotsForSpecificPeriod(timeRanges, slotDuration);
-
-        let createdToday = todaySlotsCount;
-        let createdTomorrow = tomorrowSlotsCount;
-
-        for (const slot of slots) {
-            if (slot.day === 'today' && createdToday >= MAX_SLOTS_PER_DAY) continue;
-            if (slot.day === 'tomorrow' && createdTomorrow >= MAX_SLOTS_PER_DAY) continue;
-
-            const payload = { startDateTime: slot.start, endDateTime: slot.end };
-            await axios.post('http://localhost:8800/api/schedule/create', payload);
-            console.log(`✅ Slot created: ${JSON.stringify(payload)}`);
-
-            if (slot.day === 'today') createdToday++;
-            if (slot.day === 'tomorrow') createdTomorrow++;
+        const weekendTimeRanges = [];
+        let weekendStartHour = 10;
+        let weekendStartMinute = 0;
+        for (let i = 0; i < 33; i++) {
+            let endMinute = weekendStartMinute + 20;
+            let endHour = weekendStartHour;
+            if (endMinute >= 60) {
+                endMinute -= 60;
+                endHour += 1;
+            }
+            weekendTimeRanges.push({ startHour: weekendStartHour, startMinute: weekendStartMinute, endHour, endMinute });
+            weekendStartHour = endHour;
+            weekendStartMinute = endMinute;
         }
+        const todaySlots = getSlotsForSpecificPeriod(
+            isWeekend ? weekendTimeRanges : weekdayTimeRanges,
+            slotDuration,
+            isWeekend ? 33 : 9,
+            'today',
+            todaySlotsCount
+        );
+        const tomorrowSlots = getSlotsForSpecificPeriod(
+            isTomorrowWeekend ? weekendTimeRanges : weekdayTimeRanges,
+            slotDuration,
+            isTomorrowWeekend ? 33 : 9,
+            'tomorrow',
+            tomorrowSlotsCount
+        );
+        const slotsToCreate = [...todaySlots, ...tomorrowSlots];
 
-        console.log(`🎯 Final slots count - Today: ${createdToday}, Tomorrow: ${createdTomorrow}`);
+        for (const slot of slotsToCreate) {
+            const payload = { startDateTime: slot.start, endDateTime: slot.end };
+            await axios.post('https://www.avicenahealthcare.com/api/schedule/create', payload);
+            console.log(`✅ Slot created: ${JSON.stringify(payload)}`);
+        }
+        console.log(`🎯 Final slots count - Today: ${todaySlots.length}, Tomorrow: ${tomorrowSlots.length}`);
     } catch (error) {
         console.error('❌ Error creating slots:', error);
     }
@@ -168,7 +192,7 @@ agenda.define('create slots', async () => {
 agenda.define('fetch slots', async () => {
     console.log('Fetching slots...');
     try {
-        const response = await axios.get(`http://localhost:8800/api/schedule`);
+        const response = await axios.get(`https://www.avicenahealthcare.com/api/schedule`);
         console.log(`✅ Fetched ${response.data.length} slots`);
     } catch (error) {
         console.error('❌ Error fetching slots:', error);
@@ -178,7 +202,7 @@ agenda.define('delete past slots', async () => {
     console.log('Deleting past slots...');
     const now = moment().utc();
     try {
-        const response = await axios.delete('http://localhost:8800/api/schedule/past', {
+        const response = await axios.delete('https://www.avicenahealthcare.com/api/schedule/past', {
             data: { now: now.toISOString() }
         });
         console.log(`✅ Past slots deleted: ${response.data.removedCount}`);
@@ -187,14 +211,10 @@ agenda.define('delete past slots', async () => {
     }
 });
 agenda.on('ready', async () => {
-    console.log('Agenda is ready. Scheduling jobs for testing...');
     try {
         await agenda.every('*/1 * * * *', 'create slots');  // Runs every 1 minute
-        await agenda.every('*/1 * * * *', 'fetch slots');   // Runs every 1 minute
-
-
+        await agenda.every('*/15 * * * *', 'fetch slots'); // Runs every 15 minutes
         await agenda.every('*/1 * * * *', 'delete past slots');
-
         await agenda.start();
         console.log('✅ All jobs scheduled and Agenda started.');
     } catch (error) {
@@ -206,11 +226,9 @@ connectToDatabase().then(() => {
 }).catch(error => {
     console.error('Database connection error:', error);
 });
-
 app.use('/uploads', setCors, express.static(path.join(__dirname, 'uploads')));
-
 function setCors(req, res, next) {
-    const allowedOrigins = ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174'];
+    const allowedOrigins = ['https://admin.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174','https://www.avicenahealthcare.com/api','http://www.avicenahealthcare.com/api'];
 
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -227,7 +245,7 @@ app.use((req, res, next) => {
 });
 
 const corsOptions = {
-    origin: ['https://dashboard.avicenahealthcare.com', 'https://www.avicenahealthcare.com', 'http://localhost:5173', 'http://localhost:5174'],
+    origin: ['https://admin.avicenahealthcare.com', 'https://www.avicenahealthcare.com','https://www.avicenahealthcare.com/api', 'http://localhost:5173', 'http://localhost:5174'],
     credentials: true,
 };
 
