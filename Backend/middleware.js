@@ -12,7 +12,7 @@ const setupMiddleware = () => {
         credentials: true
     }));
     app.use(session({
-        secret: process.env.SESSION_SECRET || "secret",
+        secret: process.env.SESSION_SECRET || "OcocqiMXxBI8ay5MZDUwIyT6U5BAjqCkB06nZFGPrXs",
         resave: false,
         saveUninitialized: true
     }));

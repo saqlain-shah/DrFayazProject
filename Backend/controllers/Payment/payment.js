@@ -11,7 +11,7 @@ export const createPayment = async (req, res, next) => {
             amount,
             currency,
             description,
-            payment_method: source, // Payment source (e.g., card token)
+            payment_method: source,
             confirm: true,
         });
         if (paymentIntent.status === 'succeeded') {
