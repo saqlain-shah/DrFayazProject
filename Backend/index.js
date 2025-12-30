@@ -83,9 +83,9 @@ app.get('/', (req, res) => {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-console.log('MongoDB URI:', process.env.MONGO_URL);
+// console.log('MongoDB URI:', process.env.MONGO_URL);
 const getSlotsForSpecificPeriod = (timeRanges, duration, maxSlots, dayLabel, existingCount) => {
-    console.log(`Generating slots for ${dayLabel}...`);
+    // console.log(`Generating slots for ${dayLabel}...`);
     const slots = [];
     const now = moment().utc();
     const targetDay = now.clone().startOf('day');
@@ -117,12 +117,12 @@ const getSlotsForSpecificPeriod = (timeRanges, duration, maxSlots, dayLabel, exi
         }
     }
 
-    console.log(`Generated ${slots.length} Slots for ${dayLabel}:`, slots);
+    // console.log(`Generated ${slots.length} Slots for ${dayLabel}:`, slots);
     return slots;
 };
 const agenda = new Agenda({ db: { address: process.env.MONGO_URL, collection: 'jobs' } });
 agenda.define('create slots', async () => {
-    console.log('Creating slots...');
+    // console.log('Creating slots...');
     const slotDuration = 20;
     try {
         const response = await axios.get(`https://www.avicenahealthcare.com/api/schedule`);
@@ -135,7 +135,7 @@ agenda.define('create slots', async () => {
         const tomorrowSlotsCount = existingSlots.filter(slot =>
             moment(slot.startDateTime).utc().format('YYYY-MM-DD') === tomorrowDate
         ).length;
-        console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
+        // console.log(`🔎 Existing slots - Today: ${todaySlotsCount}, Tomorrow: ${tomorrowSlotsCount}`);
         const isWeekend = [6, 7].includes(moment().utc().isoWeekday());
         const isTomorrowWeekend = [6, 7].includes(moment().utc().add(1, 'day').isoWeekday());
         const weekdayTimeRanges = [
@@ -182,30 +182,30 @@ agenda.define('create slots', async () => {
         for (const slot of slotsToCreate) {
             const payload = { startDateTime: slot.start, endDateTime: slot.end };
             await axios.post('https://www.avicenahealthcare.com/api/schedule/create', payload);
-            console.log(`✅ Slot created: ${JSON.stringify(payload)}`);
+            // console.log(`✅ Slot created: ${JSON.stringify(payload)}`);
         }
-        console.log(`🎯 Final slots count - Today: ${todaySlots.length}, Tomorrow: ${tomorrowSlots.length}`);
+        // console.log(`🎯 Final slots count - Today: ${todaySlots.length}, Tomorrow: ${tomorrowSlots.length}`);
     } catch (error) {
         console.error('❌ Error creating slots:', error);
     }
 });
 agenda.define('fetch slots', async () => {
-    console.log('Fetching slots...');
+    // console.log('Fetching slots...');
     try {
         const response = await axios.get(`https://www.avicenahealthcare.com/api/schedule`);
-        console.log(`✅ Fetched ${response.data.length} slots`);
+        // console.log(`✅ Fetched ${response.data.length} slots`);
     } catch (error) {
         console.error('❌ Error fetching slots:', error);
     }
 });
 agenda.define('delete past slots', async () => {
-    console.log('Deleting past slots...');
+    // console.log('Deleting past slots...');
     const now = moment().utc();
     try {
         const response = await axios.delete('https://www.avicenahealthcare.com/api/schedule/past', {
             data: { now: now.toISOString() }
         });
-        console.log(`✅ Past slots deleted: ${response.data.removedCount}`);
+        // console.log(`✅ Past slots deleted: ${response.data.removedCount}`);
     } catch (error) {
         console.error('❌ Error deleting past slots:', error);
     }
@@ -216,13 +216,13 @@ agenda.on('ready', async () => {
         await agenda.every('*/15 * * * *', 'fetch slots'); // Runs every 15 minutes
         await agenda.every('*/1 * * * *', 'delete past slots');
         await agenda.start();
-        console.log('✅ All jobs scheduled and Agenda started.');
+        // console.log('✅ All jobs scheduled and Agenda started.');
     } catch (error) {
         console.error('❌ Error scheduling jobs with Agenda:', error);
     }
 });
 connectToDatabase().then(() => {
-    console.log('Database connection successful');
+    // console.log('Database connection successful');
 }).catch(error => {
     console.error('Database connection error:', error);
 });
