@@ -44,9 +44,13 @@ function Settings() {
           setPhone(data.phone || "");
           setEmail(data.email || "");
           setAddress(data.address || "");
-          setProfileImage(
-            data.profileImage ? `${BASE_URL}/${data.profileImage}` : ""
-          );
+          const cleanPath = data.profileImage
+          .replace(/^api\//, "")
+          .replace(/^uploads\/uploads/, "uploads");
+        
+        setProfileImage(`${BASE_URL}/${cleanPath}`);
+        
+          
         } else {
           console.error("Failed to fetch user details");
           toast.error('Fail to get data check internet Connections.');
@@ -64,13 +68,13 @@ function Settings() {
     { id: 1, name: "Personal Information", icon: BiUserPlus },
     { id: 2, name: "Change Password", icon: RiLockPasswordLine },
   ];
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // const handleImageUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
 
-    setSelectedFile(file);
-    setProfileImage(URL.createObjectURL(file));
-  };
+  //   setSelectedFile(file);
+  //   setProfileImage(URL.createObjectURL(file));
+  // };
 
   const handleSave = async () => {
     const formData = new FormData();
@@ -97,9 +101,9 @@ function Settings() {
       if (response.ok) {
         toast.success('Profile update  successfully.');
         console.log("User updated successfully:", data);
-        setProfileImage(
-          data.imageUrl ? `${BASE_URL}/${data.imageUrl}` : profileImage
-        );
+        // setProfileImage(
+        //   data.imageUrl ? `${BASE_URL}/${data.imageUrl}` : profileImage
+        // );
         setSelectedFile(null);
       } else {
         console.error("Error updating user:", data);
@@ -115,15 +119,15 @@ function Settings() {
     return (
       <div className="flex justify-center items-center flex-col">
         {profileImage ? (
-          <img
-            src={profileImage}
-            alt="Profile"
-            className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
-            onError={(e) => (e.target.src = "/default-profile.png")} // Fallback image
-          />
+        <img
+        // src={profileImage}
+        // alt="Profile"
+        // className="w-40 h-40 rounded-full object-cover border border-dashed border-subMain"
+      />
+      
         ) : (
           <div className="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center border border-dashed border-subMain">
-            <span className="text-2xl text-gray-600">👤</span>
+            <span className="text-2xl text-gray-600"></span>
           </div>
         )}
         <div className="gap-2 flex-col text-center mt-4">
@@ -166,10 +170,10 @@ function Settings() {
           value={address}
           onChange={(e) => setAddress(e.target.value)}
         />
-        <div>
+        {/* <div>
           <p className="text-sm">Profile Image</p>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
-        </div>
+        </div> */}
         <br />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
           <Button
